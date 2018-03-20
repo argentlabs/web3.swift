@@ -1,4 +1,4 @@
-![web3.swift: Ethereum API for Swift](https://raw.githubusercontent.com/argentlabs/web3.swift/master/web3swift.png)
+![web3.swift: Ethereum API for Swift](https://raw.github.com/argentlabs/web3.swift/master/web3swift.png)
 
 ## Installation
 
