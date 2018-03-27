@@ -31,13 +31,13 @@ extension Int {
     }
 }
 
-extension Data {
-    var hexString: String {
+public extension Data {
+    public var hexString: String {
         let bytes = Array<UInt8>(self)
         return "0x" + bytes.map { String(format: "%02hhx", $0) }.joined()
     }
     
-    init?(hex: String) {
+    public init?(hex: String) {
         if let byteArray = try? HexUtil.byteArray(fromHex: hex.noHexPrefix) {
             self.init(bytes: byteArray, count: byteArray.count)
         } else {
@@ -47,7 +47,7 @@ extension Data {
 }
 
 extension String {
-    var noHexPrefix: String {
+    public var noHexPrefix: String {
         if self.hasPrefix("0x") {
             let index = self.index(self.startIndex, offsetBy: 2)
             return String(self[index...])
@@ -55,7 +55,7 @@ extension String {
         return self
     }
     
-    var withHexPrefix: String {
+    public var withHexPrefix: String {
         if !self.hasPrefix("0x") {
             return "0x" + self
         }
