@@ -1072,8 +1072,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/web3swift/lib/**";
-				"SWIFT_INCLUDE_PATHS[sdk=*]" = "$(SRCROOT)/web3swift/lib/**";
-				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(SRCROOT)/web3swift/lib/**";
+				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(SRCROOT)/web3swift/lib/** $(SRCROOT)/web3swift/frameworks/CommonCrypto/iphoneos";
+				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(SRCROOT)/web3swift/lib/** $(SRCROOT)/web3swift/frameworks/CommonCrypto/iphonesimulator";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
@@ -1101,8 +1101,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/web3swift/lib/**";
-				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(SRCROOT)/web3swift/lib/**";
-				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(SRCROOT)/web3swift/lib/**";
+				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(SRCROOT)/web3swift/lib/** $(SRCROOT)/web3swift/frameworks/CommonCrypto/iphoneos/**";
+				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(SRCROOT)/web3swift/lib/** $(SRCROOT)/web3swift/frameworks/CommonCrypto/iphonesimulator";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
