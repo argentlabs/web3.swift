@@ -19,34 +19,33 @@ public struct Ether {
     
     public let wei: BigInt
     
-    init(wei: BigInt) {
+    public init(wei: BigInt) {
         self.wei = wei
     }
     
-    init(kwei: BigInt) {
+    public init(kwei: BigInt) {
         self.wei = kwei * Ether.kweiMultiplier
     }
     
-    init(mwei: BigInt) {
+    public init(mwei: BigInt) {
         self.wei = mwei * Ether.mweiMultiplier
     }
     
-    init(gwei: BigInt) {
+    public init(gwei: BigInt) {
         self.wei = gwei * Ether.gweiMultiplier
     }
     
-    init(szabo: BigInt) {
+    public init(szabo: BigInt) {
         self.wei = szabo * Ether.szaboMultiplier
     }
     
-    init(finney: BigInt) {
+    public init(finney: BigInt) {
         self.wei = finney * Ether.finneyMultiplier
     }
     
-    init(ether: BigInt) {
+    public init(ether: BigInt) {
         self.wei = ether * Ether.etherMultiplier
     }
-
 }
 
 extension Ether: Codable {
