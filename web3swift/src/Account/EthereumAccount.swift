@@ -11,8 +11,12 @@ import Foundation
 protocol EthereumAccountProtocol {
     var address: String { get }
     
+    // For Keystore handling
     init?(keyStorage: EthereumKeyStorageProtocol, keystorePassword: String) throws
     static func create(keyStorage: EthereumKeyStorageProtocol, keystorePassword password: String) throws -> EthereumAccount
+    
+    // For non-Keystore formats. This is not recommended, however some apps may wish to implement their own storage.
+    init(keyStorage: EthereumKeyStorageProtocol) throws
     
     func sign(data: Data) throws -> Data
     func sign(hash: String) throws -> Data?
@@ -54,7 +58,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         }
     }
     
-    init(keyStorage: EthereumKeyStorageProtocol) throws {
+    required public init(keyStorage: EthereumKeyStorageProtocol) throws {
         do {
             let data = try keyStorage.loadPrivateKey()
             self.privateKeyData = data

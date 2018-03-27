@@ -17,7 +17,7 @@ public struct Ether {
     public static let finneyMultiplier: BigInt = 1_000_000_000_000_000
     public static let etherMultiplier: BigInt = 1_000_000_000_000_000_000
     
-    let wei: BigInt
+    public let wei: BigInt
     
     init(wei: BigInt) {
         self.wei = wei
