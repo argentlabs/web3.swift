@@ -89,6 +89,10 @@ public class EthereumClient: EthereumClientProtocol {
         self.init(url: url, sessionConfig: URLSession.shared.configuration)
     }
     
+    deinit {
+        self.session.invalidateAndCancel()
+    }
+    
     public func net_version(completion: @escaping ((EthereumClientError?, EthereumNetwork?) -> Void)) {
         let emptyParams: Array<Bool> = []
         EthereumRPC.execute(session: session, url: url, method: "net_version", params: emptyParams, receive: String.self) { (error, response) in
