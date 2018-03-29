@@ -52,7 +52,7 @@ extension Ether: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let hexValue = try container.decode(String.self)
-        if let intValue = BigInt(hexValue) {
+        if let intValue = BigInt(hex: hexValue) {
             self.init(wei: intValue)
         } else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot convert string(hex) to BigInt")
@@ -61,6 +61,7 @@ extension Ether: Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(self.wei)
+        let hexValue = String(hexFromBytes: self.wei.bytes)
+        try container.encode(hexValue)
     }
 }

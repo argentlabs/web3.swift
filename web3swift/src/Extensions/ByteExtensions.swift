@@ -27,6 +27,10 @@ extension BigInt {
         let lastIndex = bytes.count - 1
         let firstIndex = bytes.index(where: {$0 != 0x00}) ?? lastIndex
         
+        if lastIndex < 0 {
+            return Array([0])
+        }
+        
         return Array(bytes[firstIndex...lastIndex])
     }
     
