@@ -25,7 +25,7 @@ protocol EthereumContractProtocol {
     var address: String { get }
 }
 
-public class EthereumContract: EthereumContractProtocol {
+open class EthereumContract: EthereumContractProtocol {
     public var abi: [ABIEntry]
     public var address: String
     
@@ -41,9 +41,11 @@ public class EthereumContract: EthereumContractProtocol {
         self.address = address
     }
     
-    convenience public init?(url: URL, address: String) {
-        guard let json = try? String(contentsOf: url) as String else { return nil }
-        self.init(json: json, address: address)
+    public init?(url: URL, address: String) {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        guard let abi = try? JSONDecoder().decode([ABIEntry].self, from: data) else { return nil }
+        self.abi = abi
+        self.address = address
     }
     
     public var functions: [String] {
