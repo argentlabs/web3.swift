@@ -24,7 +24,10 @@ extension ABIDecoder {
     }
     
     public static func decode(_ data: String, to: EthereumAddress.Type) throws -> EthereumAddress {
-        return EthereumAddress(data)
+        guard let bytes = data.bytesFromHex else { throw ABIError.invalidValue }
+        guard let decodedData = try ABIDecoder.decode(bytes, forType: ABIRawType.FixedAddress, offset: 0) as? String else { throw ABIError.invalidValue }
+        
+        return EthereumAddress(decodedData)
     }
     
     public static func decode(_ data: String, to: BigInt.Type) throws -> BigInt {

@@ -13,7 +13,7 @@ public class ABIFunctionEncoder {
     private let name: String
     private var head = [UInt8]()
     private var tail = [UInt8]()
-    private var types: [ABIType.Type] = []
+    private var types: [ABIRawType] = []
     
     public func encode(_ value: String) throws {
         let strValue = value
@@ -61,6 +61,8 @@ public class ABIFunctionEncoder {
         } else {
             head += result
         }
+        
+        self.types.append(type)
     }
     
     init(_ name: String) {

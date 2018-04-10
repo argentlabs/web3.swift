@@ -98,11 +98,12 @@
 		C9A78E6D2059406A00CF8316 /* ByteExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A78E6C2059406A00CF8316 /* ByteExtensionsTests.swift */; };
 		C9A78E7020595B5700CF8316 /* TestEthereumKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A78E6F20595B5700CF8316 /* TestEthereumKeyStorage.swift */; };
 		C9D43D21207CED0300685FB6 /* ABIRawType+Static.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D20207CED0300685FB6 /* ABIRawType+Static.swift */; };
-		C9D43D23207CED1000685FB6 /* ABIEncoder+Static.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D22207CED1000685FB6 /* ABIEncoder+Static.swift */; };
 		C9D43D25207CED1D00685FB6 /* ABIDecoder+Static.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D24207CED1D00685FB6 /* ABIDecoder+Static.swift */; };
 		C9D43D27207CED2B00685FB6 /* ABIRawType+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D26207CED2B00685FB6 /* ABIRawType+JSON.swift */; };
 		C9D43D29207CED3A00685FB6 /* ABIDecoder+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D28207CED3A00685FB6 /* ABIDecoder+JSON.swift */; };
 		C9D43D2B207CED5400685FB6 /* ABIEncoder+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D2A207CED5400685FB6 /* ABIEncoder+JSON.swift */; };
+		C9D43D2D207D0DB800685FB6 /* ABIEncoder+Static.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D2C207D0DB800685FB6 /* ABIEncoder+Static.swift */; };
+		C9D43D31207D140E00685FB6 /* EthereumClient+Static.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D43D30207D140E00685FB6 /* EthereumClient+Static.swift */; };
 		C9F836B52078049E004F45A9 /* EthereumAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F836B42078049E004F45A9 /* EthereumAddress.swift */; };
 		C9F836B7207806AE004F45A9 /* ABIEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F836B6207806AE004F45A9 /* ABIEvent.swift */; };
 		C9F836C1207B932E004F45A9 /* ABIFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F836C0207B932E004F45A9 /* ABIFunction.swift */; };
@@ -229,11 +230,12 @@
 		C9A78E6C2059406A00CF8316 /* ByteExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteExtensionsTests.swift; sourceTree = "<group>"; };
 		C9A78E6F20595B5700CF8316 /* TestEthereumKeyStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEthereumKeyStorage.swift; sourceTree = "<group>"; };
 		C9D43D20207CED0300685FB6 /* ABIRawType+Static.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ABIRawType+Static.swift"; sourceTree = "<group>"; };
-		C9D43D22207CED1000685FB6 /* ABIEncoder+Static.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ABIEncoder+Static.swift"; sourceTree = "<group>"; };
 		C9D43D24207CED1D00685FB6 /* ABIDecoder+Static.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ABIDecoder+Static.swift"; sourceTree = "<group>"; };
 		C9D43D26207CED2B00685FB6 /* ABIRawType+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ABIRawType+JSON.swift"; sourceTree = "<group>"; };
 		C9D43D28207CED3A00685FB6 /* ABIDecoder+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ABIDecoder+JSON.swift"; sourceTree = "<group>"; };
 		C9D43D2A207CED5400685FB6 /* ABIEncoder+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ABIEncoder+JSON.swift"; sourceTree = "<group>"; };
+		C9D43D2C207D0DB800685FB6 /* ABIEncoder+Static.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ABIEncoder+Static.swift"; sourceTree = "<group>"; };
+		C9D43D30207D140E00685FB6 /* EthereumClient+Static.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EthereumClient+Static.swift"; sourceTree = "<group>"; };
 		C9F836B42078049E004F45A9 /* EthereumAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddress.swift; sourceTree = "<group>"; };
 		C9F836B6207806AE004F45A9 /* ABIEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIEvent.swift; sourceTree = "<group>"; };
 		C9F836C0207B932E004F45A9 /* ABIFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIFunction.swift; sourceTree = "<group>"; };
@@ -640,8 +642,9 @@
 				C9F836C0207B932E004F45A9 /* ABIFunction.swift */,
 				C9F836C2207B9365004F45A9 /* ABIFunctionEncoder.swift */,
 				C9D43D20207CED0300685FB6 /* ABIRawType+Static.swift */,
+				C9D43D2C207D0DB800685FB6 /* ABIEncoder+Static.swift */,
 				C9D43D24207CED1D00685FB6 /* ABIDecoder+Static.swift */,
-				C9D43D22207CED1000685FB6 /* ABIEncoder+Static.swift */,
+				C9D43D30207D140E00685FB6 /* EthereumClient+Static.swift */,
 			);
 			path = "Statically Typed";
 			sourceTree = "<group>";
@@ -903,7 +906,6 @@
 				C927FD59204EB1F4005922DC /* JSONRPC.swift in Sources */,
 				C9A78E67205878AE00CF8316 /* KeccakExtensions.swift in Sources */,
 				C9236B852052CBFC00CE5557 /* EthereumNetwork.swift in Sources */,
-				C9D43D23207CED1000685FB6 /* ABIEncoder+Static.swift in Sources */,
 				C9F836B7207806AE004F45A9 /* ABIEvent.swift in Sources */,
 				C9A78E412057F04800CF8316 /* HexUtil.swift in Sources */,
 				C9D43D21207CED0300685FB6 /* ABIRawType+Static.swift in Sources */,
@@ -936,11 +938,13 @@
 				C91A7E86205C1F370074D3B4 /* ABIJSONEntry.swift in Sources */,
 				C9F836C3207B9365004F45A9 /* ABIFunctionEncoder.swift in Sources */,
 				C9A78E5B205855B300CF8316 /* ByteExtensions.swift in Sources */,
+				C9D43D2D207D0DB800685FB6 /* ABIEncoder+Static.swift in Sources */,
 				C9D43D29207CED3A00685FB6 /* ABIDecoder+JSON.swift in Sources */,
 				C9D43D27207CED2B00685FB6 /* ABIRawType+JSON.swift in Sources */,
 				C9A78E5D205871E500CF8316 /* ENSContracts.swift in Sources */,
 				3C8D94F6203ECA2D00D0D5D7 /* RLP.swift in Sources */,
 				C91A7E80205C1F120074D3B4 /* ABIEncoder.swift in Sources */,
+				C9D43D31207D140E00685FB6 /* EthereumClient+Static.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
