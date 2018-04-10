@@ -13,7 +13,7 @@ public protocol ABIFunction {
     static var name: String { get }
     var gasPrice: BigUInt? { get }
     var gasLimit: BigUInt? { get }
-    var to: EthereumAddress { get }
+    var contract: EthereumAddress { get }
     var from: EthereumAddress? { get }
     func encode(to encoder: ABIFunctionEncoder) throws
     func transaction() throws -> EthereumTransaction
@@ -45,6 +45,6 @@ extension ABIFunction {
         try self.encode(to: encoder)
         let data = try encoder.encoded()
         
-        return EthereumTransaction(from: from?.value, to: to.value, data: data, gasPrice: gasPrice ?? BigUInt(0), gasLimit: gasLimit ?? BigUInt(0))
+        return EthereumTransaction(from: from?.value, to: contract.value, data: data, gasPrice: gasPrice ?? BigUInt(0), gasLimit: gasLimit ?? BigUInt(0))
     }
 }
