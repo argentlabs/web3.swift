@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ENSRegistryContract: EthereumContract {
+class ENSRegistryContract: EthereumJSONContract {
     private var chainId: Int
     
     init?(chainId: Int) {
@@ -36,8 +36,8 @@ class ENSRegistryContract: EthereumContract {
     
     func owner(namehash: String) throws -> EthereumTransaction {
         let dataStr = try self.data(function: "owner", args: [namehash])
-        guard let data = Data(hex: dataStr) else { throw EthereumContractError.unknownError }
-        return EthereumTransaction(to: self.address, data: data, chainId: self.chainId)
+        guard let data = Data(hex: dataStr) else { throw ABIError.invalidValue }
+        return EthereumTransaction(to: self.address, data: data)
     }
     
     func resolver(name: String) throws -> EthereumTransaction {
@@ -47,7 +47,7 @@ class ENSRegistryContract: EthereumContract {
     
     func resolver(namehash: String) throws -> EthereumTransaction {
         let dataStr = try self.data(function: "resolver", args: [namehash])
-        guard let data = Data(hex: dataStr) else { throw EthereumContractError.unknownError }
-        return EthereumTransaction(to: self.address, data: data, chainId: self.chainId)
+        guard let data = Data(hex: dataStr) else { throw ABIError.invalidValue }
+        return EthereumTransaction(to: self.address, data: data)
     }
 }

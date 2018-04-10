@@ -24,13 +24,13 @@ class EthereumAccount_SignTests: XCTestCase {
         //https://medium.com/@codetractio/walkthrough-of-an-ethereum-improvement-proposal-eip-6fda3966d171
         
         let nonce = 9
-        let gasPrice = Ether(wei:20000000000)
+        let gasPrice = BigUInt(20000000000)
         let gasLimit = BigUInt(21000)
         let to = "3535353535353535353535353535353535353535"
-        let value = Ether(wei: 1000000000000000000)
+        let value = BigUInt(1000000000000000000)
         let chainID = 1
         
-        let tx = EthereumTransaction(to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainID)
+        let tx = EthereumTransaction(from: nil, to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainID)
         
         let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
         let signed = try! account.sign(tx)
@@ -48,10 +48,10 @@ class EthereumAccount_SignTests: XCTestCase {
     func testTransactionVitalik1Raw() {
         
         let nonce = Int(hex: "0x00")!
-        let gasPrice = Ether(wei: BigInt(hex: "0x04a817c800")!)
+        let gasPrice = BigUInt(hex: "0x04a817c800")!
         let gasLimit = BigUInt(hex: "0x5208")!
         let to = "0x3535353535353535353535353535353535353535"
-        let value = Ether(wei: BigInt(hex: "0x0")!)
+        let value = BigUInt(hex: "0x0")!
         let v = Int(hex: "0x25")!
         let r = Data(hex: "0x044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d")!
         let s = Data(hex: "0x044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d")!
@@ -61,7 +61,7 @@ class EthereumAccount_SignTests: XCTestCase {
             chainId = (chainId - 35) / 2
         }
         
-        let tx = EthereumTransaction(to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainId)
+        let tx = EthereumTransaction(from: nil, to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainId)
         let signed = SignedTransaction(transaction: tx, v: v, r: r, s: s)
         
         let raw = signed.raw!.hexString

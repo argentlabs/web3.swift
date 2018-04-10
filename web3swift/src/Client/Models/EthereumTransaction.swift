@@ -10,10 +10,8 @@ import Foundation
 import BigInt
 
 protocol EthereumTransactionProtocol {
-    init(to: String, value: Ether?, data: Data?, nonce: Int?, gasPrice: Ether?, gasLimit: BigUInt?, chainId: Int?)
-    init(to: String, data: Data, chainId: Int?)
-    
-    init(to: String, value: Ether?, data: Data?, nonce: Int?, gasPrice: Ether?, gasLimit: BigUInt?)
+    init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?)
+    init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt)
     init(to: String, data: Data)
     
     var raw: Data? { get }
@@ -21,15 +19,17 @@ protocol EthereumTransactionProtocol {
 }
 
 public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
+    public let from: String?
     public let to: String
-    public let value: Ether?
+    public let value: BigUInt?
     public let data: Data?
     public var nonce: Int?
-    public let gasPrice: Ether?
+    public let gasPrice: BigUInt?
     public let gasLimit: BigUInt?
     var chainId: Int?
-        
-    init(to: String, value: Ether?, data: Data?, nonce: Int?, gasPrice: Ether?, gasLimit: BigUInt?, chainId: Int?) {
+    
+    public init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?) {
+        self.from = from
         self.to = to
         self.value = value
         self.data = data ?? Data()
@@ -39,23 +39,24 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.chainId = chainId
     }
     
-    public init(to: String, value: Ether?, data: Data?, nonce: Int?, gasPrice: Ether?, gasLimit: BigUInt?) {
+    public init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt) {
+        self.from = from
         self.to = to
-        self.value = value
-        self.data = data ?? Data()
-        self.nonce = nonce
+        self.value = BigUInt(0)
+        self.data = data
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
     }
     
-    init(to: String, data: Data, chainId: Int?) {
-        self.init(to: to, value: nil, data: data, nonce: nil, gasPrice: nil, gasLimit: nil, chainId: chainId)
+    public init(to: String, data: Data) {
+        self.from = nil
+        self.to = to
+        self.value = BigUInt(0)
+        self.data = data
+        self.gasPrice = BigUInt(0)
+        self.gasLimit = BigUInt(0)
     }
     
-    public init(to: String, data: Data) {
-        self.init(to: to, value: nil, data: data, nonce: nil, gasPrice: nil, gasLimit: nil)
-    }
-
     var raw: Data? {
         let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
 
