@@ -10,15 +10,15 @@ import Foundation
 import BigInt
 
 public struct EthereumLog: Decodable {
-    let logIndex: BigUInt?
-    let transactionIndex: BigUInt?
-    let transactionHash: String?
-    let blockHash: String?
-    let blockNumber: BigUInt?
-    let address: String
-    var data: String
-    var topics: Array<String>
-    let removed: Bool
+    public let logIndex: BigUInt?
+    public let transactionIndex: BigUInt?
+    public let transactionHash: String?
+    public let blockHash: String?
+    public let blockNumber: BigUInt?
+    public let address: String
+    public var data: String
+    public var topics: Array<String>
+    public let removed: Bool
     
     enum CodingKeys: String, CodingKey {
         case removed            // Bool

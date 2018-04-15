@@ -9,7 +9,7 @@
 import Foundation
 import BigInt
 
-protocol EthereumClientProtocol {
+public protocol EthereumClientProtocol {
     init(url: URL, sessionConfig: URLSessionConfiguration)
     init(url: URL)
     var network: EthereumNetwork? { get }
@@ -17,7 +17,7 @@ protocol EthereumClientProtocol {
     func net_version(completion: @escaping((EthereumClientError?, EthereumNetwork?) -> Void))
     func eth_gasPrice(completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_blockNumber(completion: @escaping((EthereumClientError?, Int?) -> Void))
-    func eth_getBalance(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, Ether?) -> Void))
+    func eth_getBalance(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_getCode(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_getTransactionCount(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
@@ -131,10 +131,10 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getBalance(address: String, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Ether?) -> Void)) {
+    public func eth_getBalance(address: String, block: EthereumBlock, completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
         EthereumRPC.execute(session: session, url: url, method: "eth_getBalance", params: [address, block.stringValue], receive: String.self) { (error, response) in
-            if let resString = response as? String, let balanceInt = BigInt(hex: resString.noHexPrefix) {
-                completion(nil, Ether(wei: balanceInt))
+            if let resString = response as? String, let balanceInt = BigUInt(hex: resString.noHexPrefix) {
+                completion(nil, balanceInt)
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
             }
@@ -219,11 +219,13 @@ public class EthereumClient: EthereumClientProtocol {
         }
         
         struct CallParams: Encodable {
+            let from: String?
             let to: String
             let data: String
             let block: String
             
             enum TransactionCodingKeys: String, CodingKey {
+                case from
                 case to
                 case data
             }
@@ -231,13 +233,16 @@ public class EthereumClient: EthereumClientProtocol {
             func encode(to encoder: Encoder) throws {
                 var container = encoder.unkeyedContainer()
                 var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
+                if let from = from {
+                    try nested.encode(from, forKey: .from)
+                }
                 try nested.encode(to, forKey: .to)
                 try nested.encode(data, forKey: .data)
                 try container.encode(block)
             }
         }
         
-        let params = CallParams(to: transaction.to, data: transactionData.hexString, block: block.stringValue)
+        let params = CallParams(from: transaction.from, to: transaction.to, data: transactionData.hexString, block: block.stringValue)
         EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)

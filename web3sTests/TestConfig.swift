@@ -17,4 +17,7 @@ struct TestConfig {
     
     // This is the expected public key (address) from the above private key
     static let publicKey = "MY_PUBLIC_KEY"
+    
+    // A test ERC20 token contract (BOKKY)
+    static let erc20Contract = "0x583cbBb8a8443B38aBcC0c956beCe47340ea1367"
 }
