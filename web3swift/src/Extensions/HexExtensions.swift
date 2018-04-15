@@ -10,13 +10,13 @@ import Foundation
 import BigInt
 
 extension BigUInt {
-    init?(hex: String) {
+    public init?(hex: String) {
         self.init(hex.noHexPrefix.lowercased(), radix: 16)
     }
 }
 
-extension BigInt {
-    init?(hex: String) {
+public extension BigInt {
+    public init?(hex: String) {
         self.init(hex.noHexPrefix.lowercased(), radix: 16)
     }
 }
@@ -79,7 +79,7 @@ extension String {
         return nil
     }
     
-    init(bytes: [UInt8]) {
+    public init(bytes: [UInt8]) {
         self.init("0x" + bytes.map { String(format: "%02hhx", $0) }.joined())
     }
     

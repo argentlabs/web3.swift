@@ -86,7 +86,7 @@ class RLPTests: XCTestCase {
     
     
     func testEncodeEther() {
-        let input = Ether(gwei: 42)
+        let input = BigInt(42000000000)
         let encoded = RLP.encode(input)!
         XCTAssertEqual(encoded.hexString, "0x8509c7652400")
     }

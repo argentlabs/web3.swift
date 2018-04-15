@@ -90,7 +90,7 @@ class EthereumClientTests: XCTestCase {
     func testEthSendRawTransaction() {
         let expectation = XCTestExpectation(description: "send raw transaction")
             
-        let tx = EthereumTransaction(to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: Ether(wei: 1600000), data: nil, nonce: 2, gasPrice: Ether(gwei: 400), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+        let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
         
         self.client?.eth_sendRawTransaction(tx, withAccount: self.account!, completion: { (error, txHash) in
             XCTAssert(txHash != nil, "Transaction hash not available: \(error?.localizedDescription ?? "no error")")
@@ -137,7 +137,7 @@ class EthereumClientTests: XCTestCase {
     func testEthCall() {
         let expectation = XCTestExpectation(description: "send raw transaction")
         
-        let tx = EthereumTransaction(to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: Ether(wei: 1800000), data: nil, nonce: 2, gasPrice: Ether(gwei: 400), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+        let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
         client?.eth_call(tx, block: .Latest, completion: { (error, txHash) in
             XCTAssert(txHash != nil, "Transaction hash not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()

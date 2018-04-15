@@ -17,8 +17,8 @@ struct RLP {
             return encodeInt(int)
         case let string as String:
             return encodeString(string)
-        case let ether as Ether:
-            return encodeEther(ether)
+        case let bint as BigInt:
+            return encodeBigInt(bint)
         case let array as [Any]:
             return encodeArray(array)
         case let buint as BigUInt:
@@ -45,14 +45,15 @@ struct RLP {
         guard int >= 0 else {
             return nil
         }
-        return encodeBigUInt(BigUInt(int))
+        return encodeBigInt(BigInt(int))
     }
     
-    static func encodeEther(_ ether: Ether) -> Data? {
-        guard ether.wei >= 0 else {
+    static func encodeBigInt(_ bint: BigInt) -> Data? {
+        guard bint >= 0 else {
+            // TODO implement properly to support negatives if RLP supports.. twos complement reverse?
             return nil
         }
-        return encodeBigUInt(BigUInt(ether.wei))
+        return encodeBigUInt(BigUInt(bint))
     }
     
     static func encodeBigUInt(_ buint: BigUInt) -> Data? {

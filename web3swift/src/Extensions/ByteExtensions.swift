@@ -9,8 +9,23 @@
 import Foundation
 import BigInt
 
+extension BigUInt {
+    public var bytes: [UInt8] {
+        let data = self.magnitude.serialize()
+        let bytes = data.bytes
+        let lastIndex = bytes.count - 1
+        let firstIndex = bytes.index(where: {$0 != 0x00}) ?? lastIndex
+        
+        if lastIndex < 0 {
+            return Array([0])
+        }
+        
+        return Array(bytes[firstIndex...lastIndex])
+    }
+}
+
 extension BigInt {
-    var bytes: [UInt8] {
+    public var bytes: [UInt8] {
         let data: Data
         if self.sign == .plus {
             data = self.magnitude.serialize()
@@ -74,7 +89,7 @@ extension String {
         }
     }
     
-    init(hexFromBytes bytes: [UInt8]) {
+    public init(hexFromBytes bytes: [UInt8]) {
         self.init("0x" + bytes.map() { String(format: "%02x", $0) }.reduce("", +))
     }
 }
