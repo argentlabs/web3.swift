@@ -14,7 +14,7 @@ public enum EthereumBlock {
     case Pending
     case Number(Int)
     
-    var stringValue: String {
+    public var stringValue: String {
         switch self {
         case .Latest:
             return "latest"
@@ -24,6 +24,18 @@ public enum EthereumBlock {
             return "pending"
         case .Number(let int):
             return int.hexString
+        }
+    }
+    
+    public init(rawValue: String) {
+        if rawValue == "latest" {
+            self = .Latest
+        } else if rawValue == "earliest" {
+            self = .Earliest
+        } else if rawValue == "pending" {
+            self = .Pending
+        } else {
+            self = .Number(Int(hex: rawValue) ?? 0)
         }
     }
 }

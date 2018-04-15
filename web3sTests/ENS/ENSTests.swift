@@ -53,7 +53,7 @@ class ENSTests: XCTestCase {
         let expect = expectation(description: "Get the ENS address")
         
         let nameService = EthereumNameService(client: client!)
-        nameService.resolve(address: "0xb0b874220ff95d62a676f58d186c832b3e6529c8", completion: { (error, ens) in
+        nameService.resolve(address: EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c8"), completion: { (error, ens) in
             XCTAssert("julien.argent.test" == ens)
             expect.fulfill()
         })

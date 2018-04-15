@@ -45,7 +45,7 @@ client.eth_getPrice { (error, currentPrice) in
 }
 ```
 
-For more advanced use, you will find support for Ethereum Name Service and smart contract parsing.
+For more advanced use, you will find support for smart contract parsing. This can be from an ABI JSON definition (e.g. ENS), or by creating strictly typed functions and responses (e.g. ERC20).
 
 
 ### Running Tests
@@ -66,13 +66,14 @@ We also use Apple's own CommonCrypto (via [this](https://github.com/sergejp/Comm
 
 There's some features that have yet to be fully implemented! Not every RPC method is currently supported, and here's some other suggestions we would like to see in the future:
 
-- ABI encoding support for tuples
+
+- ABI encoding support for tuples and arrays
 - Batch support for JSONRPC interface
 - Use a Hex struct for values to be more explicit in expected types
 - Use [Truffle](https://github.com/trufflesuite/ganache-cli) for running tests
-- Add support for Carthage and Swift Package Manager
+- Add support for Swift Package Manager
 - Bloom Filter support
-- ERC20 token support
+- Full ERC20 token support of totalSupply, allowance, transfer, approve, transferFrom, and Transfer/Approval events
 
 ## Contributors
 

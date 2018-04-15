@@ -16,7 +16,7 @@ extension ABIDecoder {
     }
     
     public static func decode(_ data: String, to: String.Type) throws -> String {
-        return data
+        return data.stringValue
     }
     
     public static func decode(_ data: String, to: Bool.Type) throws -> Bool {

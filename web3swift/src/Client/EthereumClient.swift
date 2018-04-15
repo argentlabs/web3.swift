@@ -9,7 +9,7 @@
 import Foundation
 import BigInt
 
-protocol EthereumClientProtocol {
+public protocol EthereumClientProtocol {
     init(url: URL, sessionConfig: URLSessionConfiguration)
     init(url: URL)
     var network: EthereumNetwork? { get }

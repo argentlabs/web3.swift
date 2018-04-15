@@ -10,11 +10,11 @@ import Foundation
 
 protocol EthereumNameServiceProtocol {
     init(client: EthereumClientProtocol)
-    func resolve(address: String, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
+    func resolve(address: EthereumAddress, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
     func resolve(ens: String, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
 }
 
-enum EthereumNameServiceError: Error {
+public enum EthereumNameServiceError: Error {
     case noNetwork
     case noResolver
     case ensUnknown
@@ -22,19 +22,20 @@ enum EthereumNameServiceError: Error {
     case decodeIssue
 }
 
-class EthereumNameService: EthereumNameServiceProtocol {
+// This is an example of interacting via a JSON Definition contract API
+public class EthereumNameService: EthereumNameServiceProtocol {
     let client: EthereumClientProtocol
     
-    required init(client: EthereumClientProtocol) {
+    required public init(client: EthereumClientProtocol) {
         self.client = client
     }
     
-    func resolve(address: String, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
+    public func resolve(address: EthereumAddress, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
         guard let network = client.network else {
             return completion(EthereumNameServiceError.noNetwork, nil)
         }
         
-        let ensReverse = address.noHexPrefix + ".addr.reverse"
+        let ensReverse = address.value.noHexPrefix + ".addr.reverse"
         guard let regContract = ENSRegistryContract(chainId: network.intValue), let registryTransaction = try? regContract.resolver(name: ensReverse) else {
             return completion(EthereumNameServiceError.contractIssue, nil)
         }
@@ -66,7 +67,7 @@ class EthereumNameService: EthereumNameServiceProtocol {
         })
     }
     
-    func resolve(ens: String, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
+    public func resolve(ens: String, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
         
         guard let network = client.network else {
             return completion(EthereumNameServiceError.noNetwork, nil)
