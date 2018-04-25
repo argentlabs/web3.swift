@@ -35,7 +35,7 @@ extension ABIEncoder {
     }
     
     public static func signature(name: String, types: [String]) throws -> [UInt8] {
-        let rawTypes = types.map { ABIRawType(rawValue: $0) }.flatMap { $0 }
+        let rawTypes = types.map { ABIRawType(rawValue: $0) }.compactMap { $0 }
         return try signature(name: name, types: rawTypes)
     }
 }

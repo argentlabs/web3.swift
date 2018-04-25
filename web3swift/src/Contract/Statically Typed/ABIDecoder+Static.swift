@@ -11,7 +11,7 @@ import BigInt
 
 extension ABIDecoder {
     static func decodeData(_ data: String, types: [ABIType.Type]) throws -> [Any] {
-        let rawTypes = types.map { ABIRawType(type: $0) }.flatMap { $0 }
+        let rawTypes = types.map { ABIRawType(type: $0) }.compactMap { $0 }
         return try ABIDecoder.decodeData(data, types: rawTypes)
     }
     
