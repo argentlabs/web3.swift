@@ -11,16 +11,20 @@ import Foundation
 public protocol ABIEvent {
     static var name: String { get }
     static var types: [ABIType.Type] { get }
-    var transactionHash: String { get }
-    init?(values: [String], transactionHash: String) throws
+    static var typesIndexed: [Bool] { get }
+    var log: EthereumLog { get }
+    init?(topics: [String], data: [ABIType], log: EthereumLog) throws
     
-    static func checkValueCount(_ values: [String]) throws
+    static func checkParameters(_ topics: [String], _ data: [ABIType]) throws
     static func signature() throws -> String
 }
 
 extension ABIEvent {
-    public static func checkValueCount(_ values: [String]) throws {
-        guard values.count == Self.types.count else {
+    public static func checkParameters(_ topics: [String], _ data: [ABIType]) throws {
+        let indexedCount = Self.typesIndexed.filter { $0 == true }.count
+        let unindexedCount = Self.typesIndexed.filter { $0 == false }.count
+        
+        guard Self.typesIndexed.count == Self.types.count, topics.count == indexedCount, data.count == unindexedCount else {
             print("Incorrect param count")
             throw ABIError.incorrectParameterCount
         }
