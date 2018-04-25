@@ -10,7 +10,7 @@ import Foundation
 
 extension ABIEncoder {
     static func signature(name: String, types: [ABIType.Type]) throws -> [UInt8] {
-        let rawTypes = types.map { ABIRawType(type: $0) }.flatMap { $0 }
+        let rawTypes = types.map { ABIRawType(type: $0) }.compactMap { $0 }
         return try signature(name: name, types: rawTypes)
     }
 }
