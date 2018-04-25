@@ -9,6 +9,16 @@
 import Foundation
 import BigInt
 
+public protocol ABIType { }
+extension String: ABIType { }
+extension Bool: ABIType { }
+extension EthereumAddress: ABIType { }
+extension BigInt: ABIType { }
+extension BigUInt: ABIType { }
+extension Data: ABIType { }
+// TODO (U)Double. Function. Array. Other Int sizes. Fixed binary type (byte<M>)
+extension Array: ABIType { }
+
 extension ABIRawType {
     init?(type: ABIType.Type) {
         switch type {
