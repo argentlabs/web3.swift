@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 
 extension ABIDecoder {
-    static func decodeData(_ data: String, types: [ABIType.Type]) throws -> [Any] {
+    static func decodeData(_ data: String, types: [ABIType.Type]) throws -> [ABIType] {
         let rawTypes = types.map { ABIRawType(type: $0) }.compactMap { $0 }
         return try ABIDecoder.decodeData(data, types: rawTypes)
     }

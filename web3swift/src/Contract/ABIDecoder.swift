@@ -10,8 +10,8 @@ import Foundation
 import BigInt
 
 public class ABIDecoder {
-    static func decodeData(_ data: String, types: [ABIRawType]) throws -> [Any] {
-        var result: [Any] = []
+    static func decodeData(_ data: String, types: [ABIRawType]) throws -> [ABIType] {
+        var result: [ABIType] = []
         var offset = 0
         for type in types {
             if data == "0x" {
@@ -26,7 +26,7 @@ public class ABIDecoder {
         return result
     }
     
-    static func decode(_ data: [UInt8], forType type: ABIRawType, offset: Int) throws -> Any {
+    static func decode(_ data: [UInt8], forType type: ABIRawType, offset: Int) throws -> ABIType {
         switch type {
         case .FixedBool:
             return try decode(data, forType: ABIRawType.FixedUInt(8), offset: offset)
@@ -42,7 +42,10 @@ public class ABIDecoder {
                 throw ABIError.invalidValue
             }
             let size = Int(bint)
-            let hex = String(hexFromBytes: Array(data[newOffset + 32 ... newOffset + 32 + size - 1]))
+            let lowerRange = newOffset + 32
+            let upperRange = newOffset + 32 + size - 1
+            guard lowerRange <= upperRange else { throw ABIError.invalidValue }
+            let hex = String(hexFromBytes: Array(data[lowerRange...upperRange]))
             return hex
         case .FixedInt(_):
             let startIndex = offset + 32 - type.size

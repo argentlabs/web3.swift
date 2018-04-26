@@ -27,6 +27,19 @@ public enum EthereumBlock {
         }
     }
     
+    public var intValue: Int? {
+        switch self {
+        case .Number(let int):
+            return int
+        default:
+            return nil
+        }
+    }
+    
+    public init(rawValue: Int) {
+        self = .Number(rawValue)
+    }
+    
     public init(rawValue: String) {
         if rawValue == "latest" {
             self = .Latest
@@ -37,5 +50,47 @@ public enum EthereumBlock {
         } else {
             self = .Number(Int(hex: rawValue) ?? 0)
         }
+    }
+}
+
+extension EthereumBlock: Codable {
+    public init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer()
+        let strValue = try value.decode(String.self)
+        self = EthereumBlock(rawValue: strValue)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.stringValue)
+    }
+}
+
+extension EthereumBlock: Comparable {
+    static public func == (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
+        return lhs.stringValue == rhs.stringValue
+    }
+    
+    static public func < (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
+        switch lhs {
+        case .Earliest:
+            return false
+        case .Latest:
+            return rhs != .Pending ? true : false
+        case .Pending:
+            return true
+        case .Number(let lhsInt):
+            switch rhs {
+            case .Earliest:
+                return false
+            case .Latest:
+                return true
+            case .Pending:
+                return true
+            case .Number(let rhsInt):
+                return lhsInt < rhsInt
+            }
+        }
+        
     }
 }

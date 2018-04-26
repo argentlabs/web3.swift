@@ -49,7 +49,11 @@ public extension ABIFunction {
 public extension EthereumClient {
     public func getEvents(addresses: [String]?, topics: [String]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
         
-        self.eth_getLogs(addresses: addresses, topics: nil, fromBlock: fromBlock, toBlock: toBlock) { (error, logs) in
+        self.eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock) { (error, logs) in
+            
+            if let error = error {
+                return completion(error, [], [])
+            }
             
             guard let logs = logs else { return completion(nil, [], []) }
             
@@ -64,11 +68,20 @@ public extension EthereumClient {
             }
             
             for log in logs {
-                if let hash = log.transactionHash, let signature = log.topics.first, let eventType = eventTypesBySignature[signature], let eventOpt = try? eventType.init(values: Array(log.topics.dropFirst()), transactionHash: hash), let event = eventOpt {
-                    events.append(event)
-                } else {
+                
+                guard let signature = log.topics.first, let eventType = eventTypesBySignature[signature] else {
                     unprocessed.append(log)
+                    continue
                 }
+                
+                let dataTypes = eventType.types.enumerated().filter { eventType.typesIndexed[$0.offset] == false }.compactMap { $0.element }
+                    
+                guard let decoded = try? ABIDecoder.decodeData(log.data, types: dataTypes), let eventOpt = try? eventType.init(topics: Array(log.topics.dropFirst()), data: decoded, log: log), let event = eventOpt else {
+                        unprocessed.append(log)
+                    continue
+                }
+                
+                events.append(event)
             }
             
             return completion(error, events, unprocessed)

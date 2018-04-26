@@ -79,6 +79,7 @@
 		C927FD59204EB1F4005922DC /* JSONRPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C927FD58204EB1F4005922DC /* JSONRPC.swift */; };
 		C927FD62204EF4E1005922DC /* EthereumNameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C927FD61204EF4E1005922DC /* EthereumNameService.swift */; };
 		C927FD702052819C005922DC /* EthereumClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C927FD6F2052819C005922DC /* EthereumClientTests.swift */; };
+		C94C2BD02090C70D00F024EE /* ERC20Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94C2BCF2090C70D00F024EE /* ERC20Events.swift */; };
 		C967AAA72080BF7100A24D15 /* ERC20Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967AAA62080BF7100A24D15 /* ERC20Functions.swift */; };
 		C967AAA92080BF7900A24D15 /* ERC20Responses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967AAA82080BF7900A24D15 /* ERC20Responses.swift */; };
 		C967AAAB2080BF8400A24D15 /* ERC20.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967AAAA2080BF8400A24D15 /* ERC20.swift */; };
@@ -215,6 +216,7 @@
 		C927FD58204EB1F4005922DC /* JSONRPC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPC.swift; sourceTree = "<group>"; };
 		C927FD61204EF4E1005922DC /* EthereumNameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumNameService.swift; sourceTree = "<group>"; };
 		C927FD6F2052819C005922DC /* EthereumClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClientTests.swift; sourceTree = "<group>"; };
+		C94C2BCF2090C70D00F024EE /* ERC20Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20Events.swift; sourceTree = "<group>"; };
 		C967AAA62080BF7100A24D15 /* ERC20Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20Functions.swift; sourceTree = "<group>"; };
 		C967AAA82080BF7900A24D15 /* ERC20Responses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20Responses.swift; sourceTree = "<group>"; };
 		C967AAAA2080BF8400A24D15 /* ERC20.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20.swift; sourceTree = "<group>"; };
@@ -642,6 +644,7 @@
 			children = (
 				C967AAAA2080BF8400A24D15 /* ERC20.swift */,
 				C967AAA62080BF7100A24D15 /* ERC20Functions.swift */,
+				C94C2BCF2090C70D00F024EE /* ERC20Events.swift */,
 				C967AAA82080BF7900A24D15 /* ERC20Responses.swift */,
 			);
 			path = ERC20;
@@ -785,7 +788,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Argent Labs Limited";
 				TargetAttributes = {
 					3CF37C2B203437D70030520E = {
@@ -958,6 +961,7 @@
 				C9236B8D2052E51100CE5557 /* EthereumAccount+SignTransaction.swift in Sources */,
 				3CF37C5F20343BA60030520E /* keccak-tiny.c in Sources */,
 				C967AAA92080BF7900A24D15 /* ERC20Responses.swift in Sources */,
+				C94C2BD02090C70D00F024EE /* ERC20Events.swift in Sources */,
 				C91A7E84205C1F260074D3B4 /* ABIRawType.swift in Sources */,
 				3C8D94FE20402D8400D0D5D7 /* EthereumTransaction.swift in Sources */,
 				C9A78E63205874E300CF8316 /* ENSRegistryContract.swift in Sources */,
@@ -1033,6 +1037,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1040,6 +1045,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1093,6 +1099,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1100,6 +1107,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
