@@ -47,7 +47,7 @@ public extension ABIFunction {
 }
 
 public extension EthereumClient {
-    public func getEvents(addresses: [String]?, topics: [String]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
+    public func getEvents(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
         
         self.eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock) { (error, logs) in
             
