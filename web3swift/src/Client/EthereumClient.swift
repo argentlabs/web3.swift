@@ -23,7 +23,7 @@ public protocol EthereumClientProtocol {
     func eth_getTransactionCount(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
     func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
     func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_getLogs(addresses: [String]?, topics: [String]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
+    func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
 }
 
 public enum EthereumClientError: Error {
@@ -252,13 +252,13 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getLogs(addresses: [String]?, topics: [String]?, fromBlock: EthereumBlock = .Earliest, toBlock: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    public func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock = .Earliest, toBlock: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
         
         struct CallParams: Encodable {
             let fromBlock: String
             let toBlock: String
             let address: [String]?
-            let topics: [String]?
+            let topics: [String?]?
         }
         
         let params = CallParams(fromBlock: fromBlock.stringValue, toBlock: toBlock.stringValue, address: addresses, topics: topics)
