@@ -19,8 +19,9 @@ protocol EthereumAccountProtocol {
     init(keyStorage: EthereumKeyStorageProtocol) throws
     
     func sign(data: Data) throws -> Data
-    func sign(hash: String) throws -> Data?
-    func sign(message: String) throws -> Data?
+    func sign(hash: String) throws -> Data
+    func sign(message: Data) throws -> Data
+    func sign(message: String) throws -> Data
     func sign(_ transaction: EthereumTransaction) throws -> SignedTransaction
 }
 
@@ -94,7 +95,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         }
     }
     
-    public func sign(hash: String) throws -> Data? {
+    public func sign(hash: String) throws -> Data {
         if let data = hash.hexData {
             return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: false)
         } else {
@@ -102,11 +103,11 @@ public class EthereumAccount: EthereumAccountProtocol {
         }
     }
     
-    public func sign(hash: Data) throws -> Data? {
-        return try KeyUtil.sign(message: hash, with: self.privateKeyData, hashing: false)
+    public func sign(message: Data) throws -> Data {
+        return try KeyUtil.sign(message: message, with: self.privateKeyData, hashing: false)
     }
     
-    public func sign(message: String) throws -> Data? {
+    public func sign(message: String) throws -> Data {
         if let data = message.data(using: .utf8) {
             return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
         } else {
