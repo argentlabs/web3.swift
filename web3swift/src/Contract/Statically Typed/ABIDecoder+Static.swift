@@ -64,7 +64,8 @@ extension ABIDecoder {
         return UInt64(value)
     }
 
-    public static func decode(_ data: String, to: Data.Type) throws -> String {
+    public static func decode(_ data: String, to: Data.Type) throws -> Data {
+        guard let data = Data(hex: data) else { throw ABIError.invalidValue }
         return data
     }
 }
