@@ -9,8 +9,8 @@
 import Foundation
 import keccaktiny
 
-extension Data {
-    var keccak256: Data {
+public extension Data {
+    public var keccak256: Data {
         let nsData = self as NSData
         let input = nsData.bytes.bindMemory(to: UInt8.self, capacity: self.count)
         let result = UnsafeMutablePointer<UInt8>.allocate(capacity: 32)
@@ -19,9 +19,14 @@ extension Data {
     }
 }
 
-extension String {
-    var keccak256: Data {
+public extension String {
+    public var keccak256: Data {
         let data = self.data(using: .utf8) ?? Data()
+        return data.keccak256
+    }
+    
+    public var keccak256fromHex: Data {
+        let data = self.hexData!
         return data.keccak256
     }
 }
