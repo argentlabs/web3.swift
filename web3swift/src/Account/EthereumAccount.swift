@@ -102,6 +102,10 @@ public class EthereumAccount: EthereumAccountProtocol {
         }
     }
     
+    public func sign(hash: Data) throws -> Data? {
+        return try KeyUtil.sign(message: hash, with: self.privateKeyData, hashing: false)
+    }
+    
     public func sign(message: String) throws -> Data? {
         if let data = message.data(using: .utf8) {
             return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
