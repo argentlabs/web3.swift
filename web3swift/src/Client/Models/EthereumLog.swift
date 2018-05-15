@@ -15,7 +15,7 @@ public struct EthereumLog {
     public let transactionHash: String?
     public let blockHash: String?
     public let blockNumber: EthereumBlock
-    public let address: String
+    public let address: EthereumAddress
     public var data: String
     public var topics: [String]
     public let removed: Bool
@@ -38,7 +38,7 @@ extension EthereumLog: Codable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
         self.removed = try values.decode(Bool.self, forKey: .removed)
-        self.address = try values.decode(String.self, forKey: .address)
+        self.address = try values.decode(EthereumAddress.self, forKey: .address)
         self.data = try values.decode(String.self, forKey: .data)
         self.topics = try values.decode([String].self, forKey: .topics)
         
