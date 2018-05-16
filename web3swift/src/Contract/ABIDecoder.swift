@@ -45,22 +45,26 @@ public class ABIDecoder {
             let lowerRange = newOffset + 32
             let upperRange = newOffset + 32 + size - 1
             guard lowerRange <= upperRange else { throw ABIError.invalidValue }
+            guard data.count > upperRange else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[lowerRange...upperRange]))
             return hex
         case .FixedInt(_):
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
+            guard data.count > endIndex else { throw ABIError.invalidValue }
             let buf = Data(bytes: Array(data[startIndex...endIndex]))
             let bint = BigInt(twosComplement: buf)
             return String(hexFromBytes: bint.bytes)
         case .FixedUInt(_):
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
+            guard data.count > endIndex else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[startIndex...endIndex])) // Do not use BInt because address is treated as uint160 and BInt is based on 64 bits (160/64 = 2.5)
             return hex
         case .FixedBytes(_):
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
+            guard data.count > endIndex else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[startIndex...endIndex]))
             return hex
         case .FixedArray(let arrayType, _):
