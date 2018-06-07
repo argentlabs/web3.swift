@@ -76,4 +76,33 @@ class ABIDecoderTests: XCTestCase {
         
     }
     
+    func testDecodeFixedBytes1() {
+        do {
+            let decoded = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000000063", types: [.FixedBytes(1)]) as! [String]
+            XCTAssertEqual(decoded.first, "0x63")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testDecodeFixedBytes3() {
+        do {
+            let decoded = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000616263", types: [.FixedBytes(3)]) as! [String]
+            XCTAssertEqual(decoded.first, "0x616263")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testDecodeFixedBytes32() {
+        do {
+            let decoded = try ABIDecoder.decodeData("0x0200000000000000000000000050000000000000000000000000000000616263", types: [.FixedBytes(32)]) as! [String]
+            XCTAssertEqual(decoded.first, "0x0200000000000000000000000050000000000000000000000000000000616263")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
 }
