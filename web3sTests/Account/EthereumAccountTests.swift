@@ -62,7 +62,7 @@ class EthereumAccountTests: XCTestCase {
         
         let expectedSignature = "8152ada8bece83905602d6b9a8a0f137dace41cd6a2da9d3fb26baa9fb79e2080e871937b634213a0e4cd7dee00c119567fa53096532e88ddf0fb183097bb4d701"
         
-        XCTAssertEqual(signature?.hexString.noHexPrefix, expectedSignature)
+        XCTAssertEqual(signature.hexString.noHexPrefix, expectedSignature)
     }
     
     func testSignTxHash() {
