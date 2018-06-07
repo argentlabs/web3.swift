@@ -77,4 +77,36 @@ class ABIEncoderTests: XCTestCase {
         }
     }
     
+    func testEncodeBytes1() {
+        
+        do {
+            let encoded = try ABIEncoder.encode("0x63", forType: ABIRawType.FixedBytes(1))
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x0000000000000000000000000000000000000000000000000000000000000063")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testEncodeBytes3() {
+        
+        do {
+            let encoded = try ABIEncoder.encode("0x616263", forType: ABIRawType.FixedBytes(3))
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x0000000000000000000000000000000000000000000000000000000000616263")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testEncodeBytes32() {
+        
+        do {
+            let encoded = try ABIEncoder.encode("0x0200000000000000000000000050000000000000000000000000000000616263", forType: ABIRawType.FixedBytes(32))
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x0200000000000000000000000050000000000000000000000000000000616263")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
 }
