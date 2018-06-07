@@ -20,6 +20,7 @@ protocol EthereumAccountProtocol {
     
     func sign(data: Data) throws -> Data
     func sign(hash: String) throws -> Data
+    func sign(hex: String) throws -> Data
     func sign(message: Data) throws -> Data
     func sign(message: String) throws -> Data
     func sign(_ transaction: EthereumTransaction) throws -> SignedTransaction
@@ -87,7 +88,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
     }
     
-    public func sign(hex: String) throws -> Data? {
+    public func sign(hex: String) throws -> Data {
         if let data = Data.init(hex: hex) {
             return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
         } else {
