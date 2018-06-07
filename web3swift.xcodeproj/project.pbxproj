@@ -749,7 +749,6 @@
 				3CF37C28203437D70030520E /* Frameworks */,
 				3CF37C29203437D70030520E /* Headers */,
 				3CF37C2A203437D70030520E /* Resources */,
-				32ABBDA53C9920533A735F34 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -769,7 +768,6 @@
 				3CF37C32203437D70030520E /* Frameworks */,
 				3CF37C33203437D70030520E /* Resources */,
 				E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */,
-				5A87DAA93D9B084B49D2C94A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -839,21 +837,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		32ABBDA53C9920533A735F34 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-web3swift/Pods-web3swift-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		39415C47288B0BD7BD250BDC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -888,21 +871,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5A87DAA93D9B084B49D2C94A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */ = {
