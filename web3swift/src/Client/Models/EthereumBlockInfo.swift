@@ -14,7 +14,7 @@ public struct EthereumBlockInfo {
     public var transactions: [String]
 }
 
-extension EthereumBlockInfo: Decodable {
+extension EthereumBlockInfo: Codable {
     enum CodingKeys: CodingKey {
         case number
         case timestamp
@@ -39,6 +39,14 @@ extension EthereumBlockInfo: Decodable {
         self.number = number
         self.timestamp = Date(timeIntervalSince1970: timestamp)
         self.transactions = transactions
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(number, forKey: .number)
+        try container.encode(Int(timestamp.timeIntervalSince1970).hexString, forKey: .timestamp)
+        try container.encode(transactions, forKey: .transactions)
     }
 }
 
