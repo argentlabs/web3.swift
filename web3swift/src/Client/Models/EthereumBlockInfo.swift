@@ -9,7 +9,7 @@
 import Foundation
 
 public struct EthereumBlockInfo {
-    public var number: Int
+    public var number: EthereumBlock
     public var timestamp: Date
     public var transactions: [String]
 }
@@ -23,8 +23,7 @@ extension EthereumBlockInfo: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        guard let numberRaw = try? container.decode(String.self, forKey: .number),
-            let number = Int(hex: numberRaw) else {
+        guard let number = try? container.decode(EthereumBlock.self, forKey: .number) else {
             throw JSONRPCError.decodingError
         }
         
