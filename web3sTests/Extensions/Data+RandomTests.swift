@@ -21,12 +21,12 @@ class Data_RandomTests: XCTestCase {
     
     func testRandomData16() {
         let data = Data.randomOfLength(16)!
-        XCTAssert(data.count == 16)
+        XCTAssertEqual(data.count, 16)
     }
     
     func testRandomData32() {
         let data = Data.randomOfLength(32)!
-        XCTAssert(data.count == 32)
+        XCTAssertEqual(data.count, 32)
     }
     
 }

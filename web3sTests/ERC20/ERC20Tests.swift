@@ -29,7 +29,7 @@ class ERC20Tests: XCTestCase {
         let expect = expectation(description: "Get token name")
         erc20?.name(tokenContract: self.testContractAddress, completion: { (error, name) in
             XCTAssertNil(error)
-            XCTAssert(name == "BokkyPooBah Test Token")
+            XCTAssertEqual(name, "BokkyPooBah Test Token")
             expect.fulfill()
         })
         waitForExpectations(timeout: 10)
@@ -39,7 +39,7 @@ class ERC20Tests: XCTestCase {
         let expect = expectation(description: "Get token decimals")
         erc20?.decimals(tokenContract: self.testContractAddress, completion: { (error, decimals) in
             XCTAssertNil(error)
-            XCTAssert(decimals == BigUInt(18))
+            XCTAssertEqual(decimals, BigUInt(18))
             expect.fulfill()
         })
         waitForExpectations(timeout: 10)
@@ -49,7 +49,7 @@ class ERC20Tests: XCTestCase {
         let expect = expectation(description: "Get token symbol")
         erc20?.symbol(tokenContract: self.testContractAddress, completion: { (error, symbol) in
             XCTAssertNil(error)
-            XCTAssert(symbol == "BOKKY")
+            XCTAssertEqual(symbol, "BOKKY")
             expect.fulfill()
         })
         waitForExpectations(timeout: 10)

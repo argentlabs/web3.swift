@@ -21,12 +21,12 @@ class EthereumAccountTests: XCTestCase {
     
     func testLoadAccountAndAddress() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        XCTAssert(account.address == TestConfig.publicKey)
+        XCTAssertEqual(account.address.lowercased(), TestConfig.publicKey.lowercased())
     }
     
     func testCreateAccount() {
         let account = try? EthereumAccount.create(keyStorage: EthereumKeyLocalStorage(), keystorePassword: "PASSWORD")
-        XCTAssert(account != nil)
+        XCTAssertNotNil(account)
     }
     
     func testSignMessage() {

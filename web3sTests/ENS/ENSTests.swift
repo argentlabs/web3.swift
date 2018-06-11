@@ -25,7 +25,7 @@ class ENSTests: XCTestCase {
     func testNameHash() {
         let name = "argent.test"
         let nameHash = EthereumNameService.nameHash(name: name)
-        XCTAssert(nameHash == "0x3e58ef7a2e196baf0b9d36a65cc590ac9edafb3395b7cdeb8f39206049b4534c")
+        XCTAssertEqual(nameHash, "0x3e58ef7a2e196baf0b9d36a65cc590ac9edafb3395b7cdeb8f39206049b4534c")
     }
     
     func testOwner() {
@@ -54,7 +54,7 @@ class ENSTests: XCTestCase {
         
         let nameService = EthereumNameService(client: client!)
         nameService.resolve(address: EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c8"), completion: { (error, ens) in
-            XCTAssert("julien.argent.test" == ens)
+            XCTAssertEqual("julien.argent.test", ens)
             expect.fulfill()
         })
         
@@ -66,7 +66,7 @@ class ENSTests: XCTestCase {
         
         let nameService = EthereumNameService(client: client!)
         nameService.resolve(ens: "julien.argent.test", completion: { (error, ens) in
-            XCTAssert("0xb0b874220ff95d62a676f58d186c832b3e6529c8" == ens)
+            XCTAssertEqual("0xb0b874220ff95d62a676f58d186c832b3e6529c8", ens)
             expect.fulfill()
         })
         
