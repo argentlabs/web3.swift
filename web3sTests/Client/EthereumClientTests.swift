@@ -157,4 +157,59 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
+    func testGivenGenesisBlock_ReturnsByNumber() {
+        let expectation = XCTestExpectation(description: "get block by number")
+        
+        client?.eth_getBlockByNumber(.Number(0)) { error, block in
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 0)
+            XCTAssertEqual(block?.transactions.count, 0)
+            XCTAssertEqual(block?.number, .Number(0))
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenLatestBlock_ReturnsByNumber() {
+        let expectation = XCTestExpectation(description: "get block by number")
+        
+        client?.eth_getBlockByNumber(.Latest) { error, block in
+            XCTAssertNil(error)
+            
+            XCTAssert((block?.transactions.count ?? 0) > 0);
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenExistingBlock_getsBlockByNumber() {
+        let expectation = XCTestExpectation(description: "get block by number")
+        
+        client?.eth_getBlockByNumber(.Number(3415757)) { error, block in
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(block?.number, .Number(3415757))
+            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 1528711895)
+            XCTAssertEqual(block?.transactions.count, 40)
+            XCTAssertEqual(block?.transactions.first, "0x387867d052b3f89fb87937572891118aa704c1ba604c157bbd9c5a07f3a7e5cd")
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenUnexistingBlockNumber_getBlockByNumberReturnsError() {
+        let expectation = XCTestExpectation(description: "get block by number")
+        
+        client?.eth_getBlockByNumber(.Number(Int.max)) { error, block in
+            XCTAssertNotNil(error)
+            XCTAssertNil(block)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
 }
