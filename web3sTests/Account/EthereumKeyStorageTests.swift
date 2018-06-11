@@ -37,7 +37,7 @@ class EthereumKeyStorageTests: XCTestCase {
         do {
             try keyStorage.storePrivateKey(key: randomData)
             let storedData = try keyStorage.loadPrivateKey()
-            XCTAssert(randomData == storedData, "Stored and Received data do not match")
+            XCTAssertEqual(randomData, storedData)
         } catch {
             XCTFail()
         }
