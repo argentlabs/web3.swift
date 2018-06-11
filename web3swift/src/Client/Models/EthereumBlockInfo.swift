@@ -10,7 +10,7 @@ import Foundation
 
 public struct EthereumBlockInfo {
     public var number: Int
-    public var timestamp: TimeInterval
+    public var timestamp: Date
     public var transactions: [String]
 }
 
@@ -38,7 +38,7 @@ extension EthereumBlockInfo: Decodable {
         }
         
         self.number = number
-        self.timestamp = timestamp
+        self.timestamp = Date(timeIntervalSince1970: timestamp)
         self.transactions = transactions
     }
 }
