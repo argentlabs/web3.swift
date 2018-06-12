@@ -36,7 +36,7 @@ public enum EthereumClientError: Error {
 }
 
 public class EthereumClient: EthereumClientProtocol {
-    private let url: URL
+    public let url: URL
     private let sessionConfig: URLSessionConfiguration
     private var retreivedNetwork: EthereumNetwork?
 
@@ -56,7 +56,7 @@ public class EthereumClient: EthereumClientProtocol {
         return queue
     }()
     
-    private lazy var session: URLSession = {
+    public lazy var session: URLSession = {
         return URLSession(configuration: self.sessionConfig, delegate: nil, delegateQueue: self.networkQueue)
     }()
     
