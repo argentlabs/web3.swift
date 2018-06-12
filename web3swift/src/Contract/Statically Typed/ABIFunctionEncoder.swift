@@ -51,6 +51,12 @@ public class ABIFunctionEncoder {
         return try self.encode(type: type, value: strValue)
     }
     
+    public func encode(_ value: Data, size: ABIFixedSizeDataType.Type) throws {
+        let strValue = String(bytes: value.bytes)
+        guard let type = ABIRawType(type: size) else { throw ABIError.invalidType }
+        return try self.encode(type: type, value: strValue)
+    }
+    
     private func encode(type: ABIRawType, value: String) throws {
         let result = try ABIEncoder.encode(value, forType: type)
         
