@@ -70,6 +70,50 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     var hash: Data? {
         return raw?.keccak256
     }
+    
+    enum CodingKeys : String, CodingKey {
+        case from
+        case to
+        case value
+        case data
+        case nonce
+        case gasPrice
+        case gas
+        case gasLimit
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.to = try container.decode(String.self, forKey: .to)
+        self.from = try? container.decode(String.self, forKey: .from)
+        self.data = try? container.decode(Data.self, forKey: .data)
+        
+        let decodeHexUInt = { (key: CodingKeys) -> BigUInt? in
+            return (try? container.decode(String.self, forKey: key)).flatMap { BigUInt(hex: $0)}
+        }
+        
+        let decodeHexInt = { (key: CodingKeys) -> Int? in
+            return (try? container.decode(String.self, forKey: key)).flatMap { Int(hex: $0)}
+        }
+        
+        self.value = decodeHexUInt(.value)
+        self.gasLimit = decodeHexUInt(.gasLimit)
+        self.gasPrice = decodeHexUInt(.gasPrice)
+        self.gas = decodeHexUInt(.gas)
+        self.nonce = decodeHexInt(.nonce)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(to, forKey: .to)
+        try? container.encode(from, forKey: .from)
+        try? container.encode(data, forKey: .data)
+        try? container.encode(value?.hexString, forKey: .value)
+        try? container.encode(gasPrice?.hexString, forKey: .gasPrice)
+        try? container.encode(gasLimit?.hexString, forKey: .gasLimit)
+        try? container.encode(gas?.hexString, forKey: .gas)
+        try? container.encode(nonce?.hexString, forKey: .nonce)
+    }
 }
 
 struct SignedTransaction {
