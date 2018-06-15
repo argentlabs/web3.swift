@@ -157,7 +157,7 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testGivenGenesisBlock_ReturnsByNumber() {
+    func testGivenGenesisBlock_ThenReturnsByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Number(0)) { error, block in
@@ -172,7 +172,7 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
 
-    func testGivenLatestBlock_ReturnsByNumber() {
+    func testGivenLatestBlock_ThenReturnsByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Latest) { error, block in
@@ -185,7 +185,7 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testGivenExistingBlock_getsBlockByNumber() {
+    func testGivenExistingBlock_ThenGetsBlockByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Number(3415757)) { error, block in
@@ -201,7 +201,7 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testGivenUnexistingBlockNumber_getBlockByNumberReturnsError() {
+    func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Number(Int.max)) { error, block in
