@@ -27,6 +27,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     public let gasPrice: BigUInt?
     public let gasLimit: BigUInt?
     public let gas: BigUInt?
+    public let blockNumber: EthereumBlock?
     var chainId: Int?
     
     public init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?) {
@@ -39,6 +40,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.gasLimit = gasLimit
         self.chainId = chainId
         self.gas = nil
+        self.blockNumber = nil
     }
     
     public init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt) {
@@ -49,6 +51,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
         self.gas = nil
+        self.blockNumber = nil
     }
     
     public init(to: String, data: Data) {
@@ -59,6 +62,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.gasPrice = BigUInt(0)
         self.gasLimit = BigUInt(0)
         self.gas = nil
+        self.blockNumber = nil
     }
     
     var raw: Data? {
@@ -80,6 +84,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         case gasPrice
         case gas
         case gasLimit
+        case blockNumber
     }
     
     public init(from decoder: Decoder) throws {
@@ -101,6 +106,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.gasPrice = decodeHexUInt(.gasPrice)
         self.gas = decodeHexUInt(.gas)
         self.nonce = decodeHexInt(.nonce)
+        self.blockNumber = try? container.decode(EthereumBlock.self, forKey: .blockNumber)
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -113,6 +119,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         try? container.encode(gasLimit?.hexString, forKey: .gasLimit)
         try? container.encode(gas?.hexString, forKey: .gas)
         try? container.encode(nonce?.hexString, forKey: .nonce)
+        try? container.encode(blockNumber, forKey: .blockNumber)
     }
 }
 
