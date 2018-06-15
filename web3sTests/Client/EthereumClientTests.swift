@@ -157,7 +157,7 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testGivenGenesisBlock_ReturnsByNumber() {
+    func testGivenGenesisBlock_ThenReturnsByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Number(0)) { error, block in
@@ -172,7 +172,7 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
 
-    func testGivenLatestBlock_ReturnsByNumber() {
+    func testGivenLatestBlock_ThenReturnsByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Latest) { error, block in
@@ -185,7 +185,7 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testGivenExistingBlock_getsBlockByNumber() {
+    func testGivenExistingBlock_ThenGetsBlockByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Number(3415757)) { error, block in
@@ -201,12 +201,43 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testGivenUnexistingBlockNumber_getBlockByNumberReturnsError() {
+    func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError() {
         let expectation = XCTestExpectation(description: "get block by number")
         
         client?.eth_getBlockByNumber(.Number(Int.max)) { error, block in
             XCTAssertNotNil(error)
             XCTAssertNil(block)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenMinedTransactionHash_ThenGetsTransactionByHash() {
+        let expectation = XCTestExpectation(description: "get transaction by hash")
+        
+        client?.eth_getTransaction(byHash: "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af") { error, transaction in
+            XCTAssertNil(error)
+            XCTAssertEqual(transaction?.from, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
+            XCTAssertEqual(transaction?.to, "0x37f13b5ffcc285d2452c0556724afb22e58b6bbe")
+            XCTAssertEqual(transaction?.gas, "30400")
+            XCTAssertEqual(transaction?.gasPrice, BigUInt(hex: "0x9184e72a000"))
+            XCTAssertEqual(transaction?.nonce, 973253)
+            XCTAssertEqual(transaction?.value, BigUInt(hex: "0x56bc75e2d63100000"))
+            XCTAssertEqual(transaction?.blockNumber, EthereumBlock.Number(3439303))
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash() {
+        let expectation = XCTestExpectation(description: "get transaction by hash")
+        
+        client?.eth_getTransaction(byHash: "0x01234") { error, transaction in
+            XCTAssertNotNil(error)
+            XCTAssertNil(transaction)
             expectation.fulfill()
         }
         

@@ -21,6 +21,7 @@ public protocol EthereumClientProtocol {
     func eth_getCode(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_getTransactionCount(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
+    func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void))
     func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
     func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
@@ -208,6 +209,17 @@ public class EthereumClient: EthereumClientProtocol {
                 completion(nil, receipt)
             } else if let _ = response {
                 completion(EthereumClientError.noResultFound, nil)
+            } else {
+                completion(EthereumClientError.unexpectedReturnValue, nil)
+            }
+        }
+    }
+    
+    public func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void)) {
+        
+        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self) { (error, response) in
+            if let transaction = response as? EthereumTransaction {
+                completion(nil, transaction)
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
             }
