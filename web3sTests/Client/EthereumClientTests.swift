@@ -212,4 +212,34 @@ class EthereumClientTests: XCTestCase {
         
         wait(for: [expectation], timeout: timeout)
     }
+    
+    func testGivenMinedTransactionHash_ThenGetsTransactionByHash() {
+        let expectation = XCTestExpectation(description: "get transaction by hash")
+        
+        client?.eth_getTransaction(byHash: "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af") { error, transaction in
+            XCTAssertNil(error)
+            XCTAssertEqual(transaction?.from, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
+            XCTAssertEqual(transaction?.to, "0x37f13b5ffcc285d2452c0556724afb22e58b6bbe")
+            XCTAssertEqual(transaction?.gas, "30400")
+            XCTAssertEqual(transaction?.gasPrice, BigUInt(hex: "0x9184e72a000"))
+            XCTAssertEqual(transaction?.nonce, 973253)
+            XCTAssertEqual(transaction?.value, BigUInt(hex: "0x56bc75e2d63100000"))
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash() {
+        let expectation = XCTestExpectation(description: "get transaction by hash")
+        
+        client?.eth_getTransaction(byHash: "0x01234") { error, transaction in
+            XCTAssertNotNil(error)
+            XCTAssertNil(transaction)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
 }
