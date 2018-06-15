@@ -26,6 +26,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     public var nonce: Int?
     public let gasPrice: BigUInt?
     public let gasLimit: BigUInt?
+    public let gas: BigUInt?
     var chainId: Int?
     
     public init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?) {
@@ -37,6 +38,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
         self.chainId = chainId
+        self.gas = nil
     }
     
     public init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt) {
@@ -46,6 +48,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.data = data
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
+        self.gas = nil
     }
     
     public init(to: String, data: Data) {
@@ -55,6 +58,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.data = data
         self.gasPrice = BigUInt(0)
         self.gasLimit = BigUInt(0)
+        self.gas = nil
     }
     
     var raw: Data? {
