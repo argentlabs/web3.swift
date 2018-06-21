@@ -16,15 +16,15 @@ public enum EthereumTransactionReceiptStatus: Int {
 }
 
 public struct EthereumTransactionReceipt: Decodable {
-    var transactionHash: String
-    var transactionIndex: BigUInt
-    var blockHash: String
-    var blockNumber: BigUInt
-    var gasUsed: BigUInt
-    var contractAddress: EthereumAddress?
-    var logs: Array<EthereumLog> = []
+    public var transactionHash: String
+    public var transactionIndex: BigUInt
+    public var blockHash: String
+    public var blockNumber: BigUInt
+    public var gasUsed: BigUInt
+    public var contractAddress: EthereumAddress?
+    public var logs: Array<EthereumLog> = []
     var logsBloom: Data?
-    var status: EthereumTransactionReceiptStatus
+    public var status: EthereumTransactionReceiptStatus
     
     enum CodingKeys: String, CodingKey {
         case transactionHash    // Data
