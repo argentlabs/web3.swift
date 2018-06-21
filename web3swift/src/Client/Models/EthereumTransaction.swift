@@ -9,7 +9,7 @@
 import Foundation
 import BigInt
 
-protocol EthereumTransactionProtocol {
+public protocol EthereumTransactionProtocol {
     init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?)
     init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt)
     init(to: String, data: Data)
@@ -65,13 +65,13 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.blockNumber = nil
     }
     
-    var raw: Data? {
+    public var raw: Data? {
         let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
 
         return RLP.encode(txArray)
     }
     
-    var hash: Data? {
+    public var hash: Data? {
         return raw?.keccak256
     }
     
