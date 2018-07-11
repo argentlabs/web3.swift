@@ -225,6 +225,7 @@ class EthereumClientTests: XCTestCase {
             XCTAssertEqual(transaction?.nonce, 973253)
             XCTAssertEqual(transaction?.value, BigUInt(hex: "0x56bc75e2d63100000"))
             XCTAssertEqual(transaction?.blockNumber, EthereumBlock.Number(3439303))
+            XCTAssertEqual(transaction?.hash?.hexString, "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
             
             expectation.fulfill()
         }
