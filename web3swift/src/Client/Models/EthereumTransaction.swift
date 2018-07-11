@@ -28,8 +28,12 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     public let gasLimit: BigUInt?
     public let gas: BigUInt?
     public let blockNumber: EthereumBlock?
-    public let hash: Data?
-    var chainId: Int?
+    public private(set) var hash: Data?
+    var chainId: Int? {
+        didSet {
+            self.hash = self.raw?.keccak256
+        }
+    }
     
     public init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?) {
         self.from = from
@@ -42,7 +46,8 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.chainId = chainId
         self.gas = nil
         self.blockNumber = nil
-        self.hash = nil
+        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
+        self.hash = RLP.encode(txArray)
     }
     
     public init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt) {
@@ -109,6 +114,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.nonce = decodeHexInt(.nonce)
         self.blockNumber = try? container.decode(EthereumBlock.self, forKey: .blockNumber)
         self.hash = (try? container.decode(String.self, forKey: .hash))?.hexData
+        self.chainId = nil
     }
     
     public func encode(to encoder: Encoder) throws {
