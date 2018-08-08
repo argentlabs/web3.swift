@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct EthereumBlockInfo {
+public struct EthereumBlockInfo: Equatable {
     public var number: EthereumBlock
     public var timestamp: Date
     public var transactions: [String]
