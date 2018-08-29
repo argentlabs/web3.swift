@@ -33,6 +33,6 @@ extension EthereumAddress: Hashable {
     }
     
     public static func == (lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {
-        return lhs.value == rhs.value
+        return lhs.value.lowercased() == rhs.value.lowercased()
     }
 }
