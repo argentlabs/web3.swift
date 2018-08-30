@@ -11,7 +11,7 @@ import Foundation
 class ENSResolverContract: EthereumJSONContract {
     private var chainId: Int
     
-    init?(chainId: Int, address: String) {
+    init?(chainId: Int, address: EthereumAddress) {
         self.chainId = chainId
         
         let json = ENSContracts.ResolverJson

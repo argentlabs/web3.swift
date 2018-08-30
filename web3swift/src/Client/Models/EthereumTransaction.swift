@@ -10,17 +10,17 @@ import Foundation
 import BigInt
 
 public protocol EthereumTransactionProtocol {
-    init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?)
-    init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt)
-    init(to: String, data: Data)
+    init(from: EthereumAddress?, to: EthereumAddress, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?)
+    init(from: EthereumAddress?, to: EthereumAddress, data: Data, gasPrice: BigUInt, gasLimit: BigUInt)
+    init(to: EthereumAddress, data: Data)
     
     var raw: Data? { get }
     var hash: Data? { get }
 }
 
 public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
-    public let from: String?
-    public let to: String
+    public let from: EthereumAddress?
+    public let to: EthereumAddress
     public let value: BigUInt?
     public let data: Data?
     public var nonce: Int?
@@ -35,7 +35,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         }
     }
     
-    public init(from: String?, to: String, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?) {
+    public init(from: EthereumAddress?, to: EthereumAddress, value: BigUInt?, data: Data?, nonce: Int?, gasPrice: BigUInt?, gasLimit: BigUInt?, chainId: Int?) {
         self.from = from
         self.to = to
         self.value = value
@@ -46,11 +46,11 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.chainId = chainId
         self.gas = nil
         self.blockNumber = nil
-        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
+        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
         self.hash = RLP.encode(txArray)
     }
     
-    public init(from: String?, to: String, data: Data, gasPrice: BigUInt, gasLimit: BigUInt) {
+    public init(from: EthereumAddress?, to: EthereumAddress, data: Data, gasPrice: BigUInt, gasLimit: BigUInt) {
         self.from = from
         self.to = to
         self.value = BigUInt(0)
@@ -62,7 +62,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.hash = nil
     }
     
-    public init(to: String, data: Data) {
+    public init(to: EthereumAddress, data: Data) {
         self.from = nil
         self.to = to
         self.value = BigUInt(0)
@@ -75,7 +75,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     }
     
     public var raw: Data? {
-        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
+        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
 
         return RLP.encode(txArray)
     }
@@ -95,8 +95,8 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.to = try container.decode(String.self, forKey: .to)
-        self.from = try? container.decode(String.self, forKey: .from)
+        self.to = try container.decode(EthereumAddress.self, forKey: .to)
+        self.from = try? container.decode(EthereumAddress.self, forKey: .from)
         self.data = try? container.decode(Data.self, forKey: .data)
         
         let decodeHexUInt = { (key: CodingKeys) -> BigUInt? in
@@ -146,7 +146,7 @@ struct SignedTransaction {
     }
     
     var raw: Data? {
-        let txArray: [Any?] = [transaction.nonce, transaction.gasPrice, transaction.gasLimit, transaction.to.noHexPrefix, transaction.value, transaction.data, self.v, self.r, self.s]
+        let txArray: [Any?] = [transaction.nonce, transaction.gasPrice, transaction.gasLimit, transaction.to.value.noHexPrefix, transaction.value, transaction.data, self.v, self.r, self.s]
 
         return RLP.encode(txArray)
     }

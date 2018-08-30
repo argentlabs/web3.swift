@@ -11,8 +11,8 @@ import BigInt
 @testable import web3swift
 
 class TransactionTests: XCTestCase {
-    let withoutChainID: EthereumTransaction = EthereumTransaction(from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
-                                                                  to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
+    let withoutChainID: EthereumTransaction = EthereumTransaction(from: EthereumAddress("0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"),
+                                                                  to: EthereumAddress("0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174"),
                                                                   value: 0,
                                                                   data: Data(),
                                                                   nonce: 1,
@@ -21,14 +21,14 @@ class TransactionTests: XCTestCase {
                                                                   chainId: nil)
     
     func test_GivenLocalTransaction_WhenTransactionOnlyWithToAndData_HashIsNil() {
-        let transaction = EthereumTransaction(to: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
+        let transaction = EthereumTransaction(to: EthereumAddress("0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"),
                                               data: Data())
         XCTAssertNil(transaction.hash)
     }
     
     func test_GivenLocalTransaction_WhenTransactionDoesNotHaveNonce_HashIsNil() {
-        let transaction = EthereumTransaction(from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
-                                              to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
+        let transaction = EthereumTransaction(from: EthereumAddress("0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"),
+                                              to: EthereumAddress("0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174"),
                                               data: Data(),
                                               gasPrice: 10,
                                               gasLimit: 400000)
@@ -36,8 +36,8 @@ class TransactionTests: XCTestCase {
     }
     
     func test_GivenLocalTransaction_WhenTransactionWithNonce_HashIsCorrect() {
-        let transaction = EthereumTransaction(from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
-                                              to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
+        let transaction = EthereumTransaction(from: EthereumAddress("0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"),
+                                              to: EthereumAddress("0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174"),
                                               value: 0,
                                               data: Data(),
                                               nonce: 1,

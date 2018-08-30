@@ -90,7 +90,7 @@ class EthereumClientTests: XCTestCase {
     func testEthSendRawTransaction() {
         let expectation = XCTestExpectation(description: "send raw transaction")
             
-        let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
         
         self.client?.eth_sendRawTransaction(tx, withAccount: self.account!, completion: { (error, txHash) in
             XCTAssertNotNil(txHash, "Transaction hash not available: \(error?.localizedDescription ?? "no error")")
@@ -137,7 +137,7 @@ class EthereumClientTests: XCTestCase {
     func testEthCall() {
         let expectation = XCTestExpectation(description: "send raw transaction")
         
-        let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
         client?.eth_call(tx, block: .Latest, completion: { (error, txHash) in
             XCTAssertNotNil(txHash, "Transaction hash not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
@@ -218,8 +218,8 @@ class EthereumClientTests: XCTestCase {
         
         client?.eth_getTransaction(byHash: "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af") { error, transaction in
             XCTAssertNil(error)
-            XCTAssertEqual(transaction?.from, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
-            XCTAssertEqual(transaction?.to, "0x37f13b5ffcc285d2452c0556724afb22e58b6bbe")
+            XCTAssertEqual(transaction?.from?.value, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
+            XCTAssertEqual(transaction?.to.value, "0x37f13b5ffcc285d2452c0556724afb22e58b6bbe")
             XCTAssertEqual(transaction?.gas, "30400")
             XCTAssertEqual(transaction?.gasPrice, BigUInt(hex: "0x9184e72a000"))
             XCTAssertEqual(transaction?.nonce, 973253)

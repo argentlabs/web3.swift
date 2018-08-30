@@ -15,7 +15,7 @@ class ENSRegistryContract: EthereumJSONContract {
         self.chainId = chainId
         
         let network = EthereumNetwork.fromString(String(chainId))
-        let address: String
+        let address: EthereumAddress
         switch network {
         case .Ropsten:
             address = ENSContracts.RopstenAddress
