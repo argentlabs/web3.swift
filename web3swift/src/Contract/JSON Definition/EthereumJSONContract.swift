@@ -15,26 +15,26 @@ public enum EthereumJSONContractError: Error {
 
 protocol EthereumJSONContractProtocol {
     var abi: [ABIJSONEntry] { get }
-    var address: String { get }
+    var address: EthereumAddress { get }
 }
 
 open class EthereumJSONContract: EthereumJSONContractProtocol {
     public var abi: [ABIJSONEntry]
-    public var address: String
+    public var address: EthereumAddress
     
-    public init(abi: [ABIJSONEntry], address: String) {
+    public init(abi: [ABIJSONEntry], address: EthereumAddress) {
         self.abi = abi
         self.address = address
     }
     
-    public init?(json: String, address: String) {
+    public init?(json: String, address: EthereumAddress) {
         guard let data = json.data(using: .utf8) else { return nil }
         guard let abi = try? JSONDecoder().decode([ABIJSONEntry].self, from: data) else { return nil }
         self.abi = abi
         self.address = address
     }
     
-    public init?(url: URL, address: String) {
+    public init?(url: URL, address: EthereumAddress) {
         guard let data = try? Data(contentsOf: url) else { return nil }
         guard let abi = try? JSONDecoder().decode([ABIJSONEntry].self, from: data) else { return nil }
         self.abi = abi
@@ -51,7 +51,7 @@ open class EthereumJSONContract: EthereumJSONContractProtocol {
     
     /// Generates the data for calling a function with a set of inputs.
     ///   - args: the input values
-    public func data(function: String, args: [String]) throws -> String {
+    public func data(function: String, args: [String]) throws -> Data {
         guard let entry = self.abi.first(where: { $0.name == function && $0.type == "function"}) else {
             throw EthereumJSONContractError.unknownFunction
         }
@@ -59,7 +59,7 @@ open class EthereumJSONContract: EthereumJSONContractProtocol {
         let types = inputs.map { $0.type }
         
         let bytes = try ABIEncoder.encode(function: function, args: args, types: types)
-        return String(hexFromBytes: bytes)
+        return Data(bytes: bytes)
     }
     
     ///   - data: the data returned by the function as an hexadecimal string

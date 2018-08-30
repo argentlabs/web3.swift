@@ -255,7 +255,7 @@ public class EthereumClient: EthereumClientProtocol {
             }
         }
         
-        let params = CallParams(from: transaction.from, to: transaction.to, data: transactionData.hexString, block: block.stringValue)
+        let params = CallParams(from: transaction.from?.value, to: transaction.to.value, data: transactionData.hexString, block: block.stringValue)
         EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)

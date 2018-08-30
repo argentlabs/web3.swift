@@ -46,7 +46,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             }
             
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
-            let resolverAddress = String(resolverData[idx...]).withHexPrefix
+            let resolverAddress = EthereumAddress(String(resolverData[idx...]).withHexPrefix)
             let nameHash = EthereumNameService.nameHash(name: ensReverse)
             
             guard let resContract = ENSResolverContract(chainId: network.intValue, address: resolverAddress), let addressTransaction = try? resContract.name(namehash: nameHash) else {
@@ -83,7 +83,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             }
             
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
-            let resolverAddress = String(resolverData[idx...]).withHexPrefix
+            let resolverAddress = EthereumAddress(String(resolverData[idx...]).withHexPrefix)
             
             guard let resContract = ENSResolverContract(chainId: network.intValue, address: resolverAddress), let addressTransaction = try? resContract.address(name: ens) else {
                 return completion(EthereumNameServiceError.contractIssue, nil)

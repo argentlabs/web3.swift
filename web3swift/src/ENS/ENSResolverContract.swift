@@ -11,7 +11,7 @@ import Foundation
 class ENSResolverContract: EthereumJSONContract {
     private var chainId: Int
     
-    init?(chainId: Int, address: String) {
+    init?(chainId: Int, address: EthereumAddress) {
         self.chainId = chainId
         
         let json = ENSContracts.ResolverJson
@@ -24,8 +24,7 @@ class ENSResolverContract: EthereumJSONContract {
     }
     
     func address(namehash: String) throws -> EthereumTransaction {
-        let dataStr = try self.data(function: "addr", args: [namehash])
-        guard let data = Data(hex: dataStr) else { throw ABIError.invalidValue }
+        let data = try self.data(function: "addr", args: [namehash])
         return EthereumTransaction(to: self.address, data: data)
     }
     
@@ -36,8 +35,7 @@ class ENSResolverContract: EthereumJSONContract {
     }
     
     func name(namehash: String) throws -> EthereumTransaction {
-        let dataStr = try self.data(function: "name", args: [namehash])
-        guard let data = Data(hex: dataStr) else { throw ABIError.invalidValue }
+        let data = try self.data(function: "name", args: [namehash])
         return EthereumTransaction(to: self.address, data: data)
     }
 }

@@ -45,6 +45,6 @@ extension ABIFunction {
         try self.encode(to: encoder)
         let data = try encoder.encoded()
         
-        return EthereumTransaction(from: from?.value, to: contract.value, data: data, gasPrice: gasPrice ?? BigUInt(0), gasLimit: gasLimit ?? BigUInt(0))
+        return EthereumTransaction(from: from, to: contract, data: data, gasPrice: gasPrice ?? BigUInt(0), gasLimit: gasLimit ?? BigUInt(0))
     }
 }
