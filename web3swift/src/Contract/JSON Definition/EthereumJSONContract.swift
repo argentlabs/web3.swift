@@ -62,6 +62,13 @@ open class EthereumJSONContract: EthereumJSONContractProtocol {
         return Data(bytes: bytes)
     }
     
+    /// Generates the transaction for calling a function with a set of inputs.
+    ///   - args: the input values
+    public func transaction(function: String, args: [String]) throws -> EthereumTransaction {
+        let data = try self.data(function: function, args: args)
+        return EthereumTransaction(to: address, data: data)
+    }
+    
     ///   - data: the data returned by the function as an hexadecimal string
     // Any is either a string or array
     public func decode(function: String, data: String) throws -> Any {
