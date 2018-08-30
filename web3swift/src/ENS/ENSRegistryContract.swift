@@ -35,8 +35,7 @@ class ENSRegistryContract: EthereumJSONContract {
     }
     
     func owner(namehash: String) throws -> EthereumTransaction {
-        let dataStr = try self.data(function: "owner", args: [namehash])
-        guard let data = Data(hex: dataStr) else { throw ABIError.invalidValue }
+        let data = try self.data(function: "owner", args: [namehash])
         return EthereumTransaction(to: self.address, data: data)
     }
     
@@ -46,8 +45,7 @@ class ENSRegistryContract: EthereumJSONContract {
     }
     
     func resolver(namehash: String) throws -> EthereumTransaction {
-        let dataStr = try self.data(function: "resolver", args: [namehash])
-        guard let data = Data(hex: dataStr) else { throw ABIError.invalidValue }
+        let data = try self.data(function: "resolver", args: [namehash])
         return EthereumTransaction(to: self.address, data: data)
     }
 }

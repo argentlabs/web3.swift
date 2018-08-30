@@ -51,7 +51,7 @@ open class EthereumJSONContract: EthereumJSONContractProtocol {
     
     /// Generates the data for calling a function with a set of inputs.
     ///   - args: the input values
-    public func data(function: String, args: [String]) throws -> String {
+    public func data(function: String, args: [String]) throws -> Data {
         guard let entry = self.abi.first(where: { $0.name == function && $0.type == "function"}) else {
             throw EthereumJSONContractError.unknownFunction
         }
@@ -59,7 +59,7 @@ open class EthereumJSONContract: EthereumJSONContractProtocol {
         let types = inputs.map { $0.type }
         
         let bytes = try ABIEncoder.encode(function: function, args: args, types: types)
-        return String(hexFromBytes: bytes)
+        return Data(bytes: bytes)
     }
     
     ///   - data: the data returned by the function as an hexadecimal string
