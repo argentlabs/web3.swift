@@ -10,8 +10,8 @@ import Foundation
 import BigInt
 
 public class ABIDecoder {
-    static func decodeData(_ data: String, types: [ABIRawType]) throws -> [Any] {
-        var result: [Any] = []
+    static func decodeData(_ data: String, types: [ABIRawType]) throws -> [ABIType] {
+        var result: [ABIType] = []
         var offset = 0
         for type in types {
             if data == "0x" {
@@ -26,7 +26,7 @@ public class ABIDecoder {
         return result
     }
     
-    static func decode(_ data: [UInt8], forType type: ABIRawType, offset: Int) throws -> Any {
+    static func decode(_ data: [UInt8], forType type: ABIRawType, offset: Int) throws -> ABIType {
         switch type {
         case .FixedBool:
             return try decode(data, forType: ABIRawType.FixedUInt(8), offset: offset)
@@ -42,22 +42,29 @@ public class ABIDecoder {
                 throw ABIError.invalidValue
             }
             let size = Int(bint)
-            let hex = String(hexFromBytes: Array(data[newOffset + 32 ... newOffset + 32 + size - 1]))
+            let lowerRange = newOffset + 32
+            let upperRange = newOffset + 32 + size - 1
+            guard lowerRange <= upperRange else { throw ABIError.invalidValue }
+            guard data.count > upperRange else { throw ABIError.invalidValue }
+            let hex = String(hexFromBytes: Array(data[lowerRange...upperRange]))
             return hex
         case .FixedInt(_):
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
+            guard data.count > endIndex else { throw ABIError.invalidValue }
             let buf = Data(bytes: Array(data[startIndex...endIndex]))
             let bint = BigInt(twosComplement: buf)
             return String(hexFromBytes: bint.bytes)
         case .FixedUInt(_):
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
+            guard data.count > endIndex else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[startIndex...endIndex])) // Do not use BInt because address is treated as uint160 and BInt is based on 64 bits (160/64 = 2.5)
             return hex
         case .FixedBytes(_):
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
+            guard data.count > endIndex else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[startIndex...endIndex]))
             return hex
         case .FixedArray(let arrayType, _):

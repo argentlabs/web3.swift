@@ -13,6 +13,10 @@ extension BigUInt {
     public init?(hex: String) {
         self.init(hex.noHexPrefix.lowercased(), radix: 16)
     }
+    
+    public var hexString: String {
+        return String(bytes: self.bytes)
+    }
 }
 
 public extension BigInt {
@@ -21,12 +25,12 @@ public extension BigInt {
     }
 }
 
-extension Int {
-    var hexString: String {
+public extension Int {
+    public var hexString: String {
         return "0x" + String(format: "%x", self)
     }
     
-    init?(hex: String) {
+    public init?(hex: String) {
         self.init(hex.noHexPrefix, radix: 16)
     }
 }

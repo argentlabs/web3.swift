@@ -17,15 +17,6 @@ public enum ABIError: Error {
     case notCurrentlySupported
 }
 
-public protocol ABIType { }
-extension String: ABIType { }
-extension Bool: ABIType { }
-extension EthereumAddress: ABIType { }
-extension BigInt: ABIType { }
-extension BigUInt: ABIType { }
-extension Data: ABIType { }
-// TODO (U)Double. Function. Array. Other Int sizes. Fixed binary type (byte<M>)
-
 enum ABIRawType {
     case FixedUInt(Int)
     case FixedInt(Int)

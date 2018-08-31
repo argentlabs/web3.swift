@@ -59,6 +59,8 @@
 		3CF37CEB20372CA10030520E /* KeyDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CEA20372CA10030520E /* KeyDerivationTests.swift */; };
 		3CF37CF520373E320030520E /* Data+RandomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CF420373E320030520E /* Data+RandomTests.swift */; };
 		3CF37CF7203744400030520E /* KeystoreUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CF6203744400030520E /* KeystoreUtilTests.swift */; };
+		473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D9B8820F6297D00FD04BB /* TransactionTests.swift */; };
+		473E682F20CE7F80006D11AF /* EthereumBlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */; };
 		6C4ABDDAA3313A1B32EAB620 /* Pods_web3swiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */; };
 		9164E8EEDA7FB33A6638D561 /* Pods_web3swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD54E6F686FEE6C1126AB6A0 /* Pods_web3swift.framework */; };
 		C91A7E80205C1F120074D3B4 /* ABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91A7E7F205C1F120074D3B4 /* ABIEncoder.swift */; };
@@ -79,6 +81,7 @@
 		C927FD59204EB1F4005922DC /* JSONRPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C927FD58204EB1F4005922DC /* JSONRPC.swift */; };
 		C927FD62204EF4E1005922DC /* EthereumNameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C927FD61204EF4E1005922DC /* EthereumNameService.swift */; };
 		C927FD702052819C005922DC /* EthereumClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C927FD6F2052819C005922DC /* EthereumClientTests.swift */; };
+		C94C2BD02090C70D00F024EE /* ERC20Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94C2BCF2090C70D00F024EE /* ERC20Events.swift */; };
 		C967AAA72080BF7100A24D15 /* ERC20Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967AAA62080BF7100A24D15 /* ERC20Functions.swift */; };
 		C967AAA92080BF7900A24D15 /* ERC20Responses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967AAA82080BF7900A24D15 /* ERC20Responses.swift */; };
 		C967AAAB2080BF8400A24D15 /* ERC20.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967AAAA2080BF8400A24D15 /* ERC20.swift */; };
@@ -189,6 +192,8 @@
 		3CF37CF420373E320030520E /* Data+RandomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+RandomTests.swift"; sourceTree = "<group>"; };
 		3CF37CF6203744400030520E /* KeystoreUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystoreUtilTests.swift; sourceTree = "<group>"; };
 		45FF08D408285DBA7FF4564A /* Pods-web3sTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3sTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3sTests/Pods-web3sTests.release.xcconfig"; sourceTree = "<group>"; };
+		473D9B8820F6297D00FD04BB /* TransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTests.swift; sourceTree = "<group>"; };
+		473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBlockInfo.swift; sourceTree = "<group>"; };
 		52B3D38DF87EAFCBBD99CCF1 /* Pods-web3swiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3swiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests.debug.xcconfig"; sourceTree = "<group>"; };
 		595F7375549A81C8950C1F8E /* Pods-web3s.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3s.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3s/Pods-web3s.release.xcconfig"; sourceTree = "<group>"; };
 		5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_web3swiftTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -215,6 +220,7 @@
 		C927FD58204EB1F4005922DC /* JSONRPC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPC.swift; sourceTree = "<group>"; };
 		C927FD61204EF4E1005922DC /* EthereumNameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumNameService.swift; sourceTree = "<group>"; };
 		C927FD6F2052819C005922DC /* EthereumClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClientTests.swift; sourceTree = "<group>"; };
+		C94C2BCF2090C70D00F024EE /* ERC20Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20Events.swift; sourceTree = "<group>"; };
 		C967AAA62080BF7100A24D15 /* ERC20Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20Functions.swift; sourceTree = "<group>"; };
 		C967AAA82080BF7900A24D15 /* ERC20Responses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20Responses.swift; sourceTree = "<group>"; };
 		C967AAAA2080BF8400A24D15 /* ERC20.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20.swift; sourceTree = "<group>"; };
@@ -341,17 +347,18 @@
 		3CF37C39203437D70030520E /* web3sTests */ = {
 			isa = PBXGroup;
 			children = (
-				3CF37C3C203437D70030520E /* Info.plist */,
-				C91A7E8D206144CC0074D3B4 /* TestConfig.swift */,
-				C9A78E6E20595B3000CF8316 /* Mocks */,
 				C9236B912052FD1600CE5557 /* Account */,
 				C9236B922052FD1900CE5557 /* Client */,
 				C9236B932052FD1D00CE5557 /* Contract */,
 				C9236B942052FD2400CE5557 /* ENS */,
 				C967AAAC2080C35500A24D15 /* ERC20 */,
 				C9236B952052FD2800CE5557 /* Extensions */,
-				C9236B962052FD2E00CE5557 /* Utils */,
+				3CF37C3C203437D70030520E /* Info.plist */,
+				C9A78E6E20595B3000CF8316 /* Mocks */,
 				3C8D94F9204024DE00D0D5D7 /* Resources */,
+				C91A7E8D206144CC0074D3B4 /* TestConfig.swift */,
+				473D9B8720F6296900FD04BB /* Transaction */,
+				C9236B962052FD2E00CE5557 /* Utils */,
 			);
 			path = web3sTests;
 			sourceTree = "<group>";
@@ -528,6 +535,14 @@
 			path = iphonesimulator;
 			sourceTree = "<group>";
 		};
+		473D9B8720F6296900FD04BB /* Transaction */ = {
+			isa = PBXGroup;
+			children = (
+				473D9B8820F6297D00FD04BB /* TransactionTests.swift */,
+			);
+			path = Transaction;
+			sourceTree = "<group>";
+		};
 		C9236B832052C6AC00CE5557 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -537,6 +552,7 @@
 				C9236B842052CBFC00CE5557 /* EthereumNetwork.swift */,
 				C9236B7F2052C68D00CE5557 /* EthereumLog.swift */,
 				C9236B812052C69B00CE5557 /* EthereumTransactionReceipt.swift */,
+				473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -642,6 +658,7 @@
 			children = (
 				C967AAAA2080BF8400A24D15 /* ERC20.swift */,
 				C967AAA62080BF7100A24D15 /* ERC20Functions.swift */,
+				C94C2BCF2090C70D00F024EE /* ERC20Events.swift */,
 				C967AAA82080BF7900A24D15 /* ERC20Responses.swift */,
 			);
 			path = ERC20;
@@ -746,7 +763,6 @@
 				3CF37C28203437D70030520E /* Frameworks */,
 				3CF37C29203437D70030520E /* Headers */,
 				3CF37C2A203437D70030520E /* Resources */,
-				32ABBDA53C9920533A735F34 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -766,7 +782,6 @@
 				3CF37C32203437D70030520E /* Frameworks */,
 				3CF37C33203437D70030520E /* Resources */,
 				E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */,
-				5A87DAA93D9B084B49D2C94A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -785,7 +800,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Argent Labs Limited";
 				TargetAttributes = {
 					3CF37C2B203437D70030520E = {
@@ -836,21 +851,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		32ABBDA53C9920533A735F34 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-web3swift/Pods-web3swift-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		39415C47288B0BD7BD250BDC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -885,21 +885,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5A87DAA93D9B084B49D2C94A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */ = {
@@ -958,6 +943,8 @@
 				C9236B8D2052E51100CE5557 /* EthereumAccount+SignTransaction.swift in Sources */,
 				3CF37C5F20343BA60030520E /* keccak-tiny.c in Sources */,
 				C967AAA92080BF7900A24D15 /* ERC20Responses.swift in Sources */,
+				473E682F20CE7F80006D11AF /* EthereumBlockInfo.swift in Sources */,
+				C94C2BD02090C70D00F024EE /* ERC20Events.swift in Sources */,
 				C91A7E84205C1F260074D3B4 /* ABIRawType.swift in Sources */,
 				3C8D94FE20402D8400D0D5D7 /* EthereumTransaction.swift in Sources */,
 				C9A78E63205874E300CF8316 /* ENSRegistryContract.swift in Sources */,
@@ -1003,6 +990,7 @@
 				C9A78E7020595B5700CF8316 /* TestEthereumKeyStorage.swift in Sources */,
 				C9A78E6D2059406A00CF8316 /* ByteExtensionsTests.swift in Sources */,
 				3CF37CF7203744400030520E /* KeystoreUtilTests.swift in Sources */,
+				473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */,
 				C9A78E652058787300CF8316 /* ENSTests.swift in Sources */,
 				C91A7E8E206144CC0074D3B4 /* TestConfig.swift in Sources */,
 			);
@@ -1033,6 +1021,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1040,6 +1029,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1093,6 +1083,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1100,6 +1091,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

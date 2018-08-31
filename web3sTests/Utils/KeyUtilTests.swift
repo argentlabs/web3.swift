@@ -22,8 +22,6 @@ class KeyUtilTests: XCTestCase {
     func testPrivateKeyGeneration() {
         if let privateKey = KeyUtil.generatePrivateKeyData() {
             XCTAssertEqual(privateKey.count, 32)
-        } else {
-            XCTAssert(true)
         }
     }
     

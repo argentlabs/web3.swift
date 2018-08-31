@@ -11,10 +11,13 @@ import Foundation
 extension Data {
     static func randomOfLength(_ length: Int) -> Data? {
         var data = Data(count: length)
+        var mutableData = data
         
-        let result = data.withUnsafeMutableBytes { mutableBytes in
+        let result = mutableData.withUnsafeMutableBytes { mutableBytes in
             SecRandomCopyBytes(kSecRandomDefault, data.count, mutableBytes)
         }
+        
+        data = mutableData
         
         if result == errSecSuccess {
             return data

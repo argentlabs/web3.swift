@@ -10,8 +10,8 @@ import Foundation
 import BigInt
 
 extension ABIDecoder {
-    static func decodeData(_ data: String, types: [ABIType.Type]) throws -> [Any] {
-        let rawTypes = types.map { ABIRawType(type: $0) }.flatMap { $0 }
+    static func decodeData(_ data: String, types: [ABIType.Type]) throws -> [ABIType] {
+        let rawTypes = types.map { ABIRawType(type: $0) }.compactMap { $0 }
         return try ABIDecoder.decodeData(data, types: rawTypes)
     }
     
@@ -39,8 +39,33 @@ extension ABIDecoder {
         guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
         return value
     }
+    
+    public static func decode(_ data: String, to: UInt8.Type) throws -> UInt8 {
+        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
+        guard value.bitWidth <= 8 else { throw ABIError.invalidValue }
+        return UInt8(value)
+    }
+    
+    public static func decode(_ data: String, to: UInt16.Type) throws -> UInt16 {
+        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
+        guard value.bitWidth <= 16 else { throw ABIError.invalidValue }
+        return UInt16(value)
+    }
+    
+    public static func decode(_ data: String, to: UInt32.Type) throws -> UInt32 {
+        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
+        guard value.bitWidth <= 32 else { throw ABIError.invalidValue }
+        return UInt32(value)
+    }
+    
+    public static func decode(_ data: String, to: UInt64.Type) throws -> UInt64 {
+        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
+        guard value.bitWidth <= 64 else { throw ABIError.invalidValue }
+        return UInt64(value)
+    }
 
-    public static func decode(_ data: String, to: Data.Type) throws -> String {
+    public static func decode(_ data: String, to: Data.Type) throws -> Data {
+        guard let data = Data(hex: data) else { throw ABIError.invalidValue }
         return data
     }
 }

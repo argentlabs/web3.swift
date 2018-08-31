@@ -10,7 +10,7 @@ import Foundation
 
 extension ABIDecoder {
     public static func decodeData(_ data: String, types: [String]) throws -> [Any] {
-        let rawTypes = types.map { ABIRawType(rawValue: $0) }.flatMap { $0 }
+        let rawTypes = types.map { ABIRawType(rawValue: $0) }.compactMap { $0 }
         return try ABIDecoder.decodeData(data, types: rawTypes)
     }
     

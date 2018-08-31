@@ -9,17 +9,19 @@
 import Foundation
 import BigInt
 
-public struct EthereumLog: Decodable {
+public struct EthereumLog {
     public let logIndex: BigUInt?
     public let transactionIndex: BigUInt?
     public let transactionHash: String?
     public let blockHash: String?
-    public let blockNumber: BigUInt?
-    public let address: String
+    public let blockNumber: EthereumBlock
+    public let address: EthereumAddress
     public var data: String
-    public var topics: Array<String>
+    public var topics: [String]
     public let removed: Bool
-    
+}
+
+extension EthereumLog: Codable {
     enum CodingKeys: String, CodingKey {
         case removed            // Bool
         case logIndex           // Quantity or null
@@ -36,7 +38,7 @@ public struct EthereumLog: Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
         self.removed = try values.decode(Bool.self, forKey: .removed)
-        self.address = try values.decode(String.self, forKey: .address)
+        self.address = try values.decode(EthereumAddress.self, forKey: .address)
         self.data = try values.decode(String.self, forKey: .data)
         self.topics = try values.decode([String].self, forKey: .topics)
         
@@ -52,23 +54,34 @@ public struct EthereumLog: Decodable {
             self.transactionIndex = nil
         }
         
-        if let transactionHash = try? values.decode(String.self, forKey: .transactionHash) {
-            self.transactionHash = transactionHash
-        } else {
-            self.transactionHash = nil
-        }
+        self.transactionHash = try? values.decode(String.self, forKey: .transactionHash)
+        self.blockHash = try? values.decode(String.self, forKey: .blockHash)
         
-        if let blockHash = try? values.decode(String.self, forKey: .blockHash) {
-            self.blockHash = blockHash
+        if let blockNumberString = try? values.decode(String.self, forKey: .blockNumber) {
+            self.blockNumber = EthereumBlock(rawValue: blockNumberString)
         } else {
-            self.blockHash = nil
-        }
-        
-        if let blockNumberString = try? values.decode(String.self, forKey: .blockNumber), let blockNumber = BigUInt(hex: blockNumberString) {
-            self.blockNumber = blockNumber
-        } else {
-            self.blockNumber = nil
+            self.blockNumber = EthereumBlock.Earliest
         }
     }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.removed, forKey: .removed)
+        if let bytes = self.logIndex?.bytes {
+            try? container.encode(String(bytes: bytes).withHexPrefix, forKey: .logIndex)
+        }
+        if let bytes = self.transactionIndex?.bytes {
+            try? container.encode(String(bytes: bytes).withHexPrefix, forKey: .transactionIndex)
+        }
+        try? container.encode(self.transactionHash, forKey: .transactionHash)
+        try? container.encode(self.blockHash, forKey: .blockHash)
+        try container.encode(self.blockNumber.stringValue, forKey: .blockNumber)
+        try container.encode(self.address, forKey: .address)
+        try container.encode(self.data, forKey: .data)
+        try container.encode(self.topics, forKey: .topics)
+        
+    }
+    
+
 }
 
