@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source = { :git => 'https://github.com/argentlabs/web3.swift.git', :tag => s.version.to_s }
   s.module_name = 'web3'
 
-  s.swift_version = '4.0'
+  s.swift_version = '4.1'
   s.ios.deployment_target = '9.0'
 
   s.source_files = 'web3swift/web3swift.h', 'web3swift/src/**/*.swift', 'web3swift/lib/**/*.{c,h}'
