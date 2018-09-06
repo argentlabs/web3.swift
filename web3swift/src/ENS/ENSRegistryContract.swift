@@ -11,18 +11,23 @@ import Foundation
 class ENSRegistryContract: EthereumJSONContract {
     private var chainId: Int
     
-    init?(chainId: Int) {
+    init?(chainId: Int, registryAddress: EthereumAddress?) {
         self.chainId = chainId
         
         let network = EthereumNetwork.fromString(String(chainId))
+        
         let address: EthereumAddress
-        switch network {
-        case .Ropsten:
-            address = ENSContracts.RopstenAddress
-        case .Mainnet:
-            address = ENSContracts.MainnetAddress
-        default:
-            return nil
+        if let registryAddress = registryAddress {
+            address = registryAddress
+        } else {
+            switch network {
+            case .Ropsten:
+                address = ENSContracts.RopstenAddress
+            case .Mainnet:
+                address = ENSContracts.MainnetAddress
+            default:
+                return nil
+            }
         }
         
         let json = ENSContracts.RegistryJson

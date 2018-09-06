@@ -32,7 +32,7 @@ class ENSTests: XCTestCase {
         let expect = expectation(description: "Get the ENS owner")
         
         do {
-            let contract = ENSRegistryContract(chainId: EthereumNetwork.Ropsten.intValue)
+            let contract = ENSRegistryContract(chainId: EthereumNetwork.Ropsten.intValue, registryAddress: nil)
             let tx = try contract?.owner(name: "test")
             
             client?.eth_call(tx!, block: .Latest, completion: { (error, dataStr) in
