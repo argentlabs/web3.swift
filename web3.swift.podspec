@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'web3.swift'
-  s.version = '0.0.5'
+  s.version = '0.0.6'
   s.license = 'MIT'
   s.summary = 'Ethereum API for Swift'
   s.homepage = 'https://github.com/argentlabs/web3.swift'
@@ -13,10 +13,10 @@ Pod::Spec.new do |s|
 
   s.source_files = 'web3swift/web3swift.h', 'web3swift/src/**/*.swift', 'web3swift/lib/**/*.{c,h}'
   s.pod_target_xcconfig = {
-    'SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]' => '$(PODS_TARGET_SRCROOT)/web3swift/lib/** $(PODS_TARGET_SRCROOT)/web3swift/frameworks/CommonCrypto/iphonesimulator/',
-    'SWIFT_INCLUDE_PATHS[sdk=iphoneos*]' => '$(PODS_TARGET_SRCROOT)/web3swift/lib/** $(PODS_TARGET_SRCROOT)/web3swift/frameworks/CommonCrypto/iphoneos/'
+    'SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]' => '$(PODS_TARGET_SRCROOT)/web3swift/lib/**',
+    'SWIFT_INCLUDE_PATHS[sdk=iphoneos*]' => '$(PODS_TARGET_SRCROOT)/web3swift/lib/**'
   }
-  s.preserve_paths = 'web3swift/lib/**/module.map', 'web3swift/frameworks/CommonCrypto/**/*'
+  s.preserve_paths = 'web3swift/lib/**/module.map'
 
 
   # Do not include the C libs in export
