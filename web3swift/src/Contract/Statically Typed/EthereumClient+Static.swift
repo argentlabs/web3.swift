@@ -75,8 +75,19 @@ public extension EthereumClient {
                 }
                 
                 let dataTypes = eventType.types.enumerated().filter { eventType.typesIndexed[$0.offset] == false }.compactMap { $0.element }
-                    
-                guard let decoded = try? ABIDecoder.decodeData(log.data, types: dataTypes), let eventOpt = try? eventType.init(topics: Array(log.topics.dropFirst()), data: decoded, log: log), let event = eventOpt else {
+                
+                guard let decoded = try? ABIDecoder.decodeData(log.data, types: dataTypes) else {
+                    unprocessed.append(log)
+                    continue
+                }
+                
+                let strs = decoded.compactMap { $0 as? String }
+                guard strs.count == decoded.count else {
+                    unprocessed.append(log)
+                    continue
+                }
+                
+                guard let eventOpt = try? eventType.init(topics: Array(log.topics.dropFirst()), data: strs, log: log), let event = eventOpt else {
                         unprocessed.append(log)
                     continue
                 }
