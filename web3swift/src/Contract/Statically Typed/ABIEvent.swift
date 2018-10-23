@@ -13,7 +13,7 @@ public protocol ABIEvent {
     static var types: [ABIType.Type] { get }
     static var typesIndexed: [Bool] { get }
     var log: EthereumLog { get }
-    init?(topics: [String], data: [ABIType], log: EthereumLog) throws
+    init?(topics: [String], data: [String], log: EthereumLog) throws
     
     static func checkParameters(_ topics: [String], _ data: [ABIType]) throws
     static func signature() throws -> String

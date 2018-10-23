@@ -24,8 +24,16 @@ extension ABIDecoder {
     }
     
     public static func decode(_ data: String, to: EthereumAddress.Type) throws -> EthereumAddress {
+        // If from log value, already decoded during initial log decode process
+        if data.count == EthereumAddress.zero.value.count {
+            return EthereumAddress(data)
+        }
+        
         guard let bytes = data.bytesFromHex else { throw ABIError.invalidValue }
-        guard let decodedData = try ABIDecoder.decode(bytes, forType: ABIRawType.FixedAddress, offset: 0) as? String else { throw ABIError.invalidValue }
+        
+        guard let decodedData = try ABIDecoder.decode(bytes, forType: ABIRawType.FixedAddress, offset: 0) as? String else {
+            throw ABIError.invalidValue
+        }
         
         return EthereumAddress(decodedData)
     }
@@ -68,4 +76,5 @@ extension ABIDecoder {
         guard let data = Data(hex: data) else { throw ABIError.invalidValue }
         return data
     }
+
 }
