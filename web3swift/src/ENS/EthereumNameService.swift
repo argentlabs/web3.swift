@@ -47,6 +47,10 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
             
+            guard resolverData != "0x" else {
+                return completion(EthereumNameServiceError.ensUnknown, nil)
+            }
+            
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
             let resolverAddress = EthereumAddress(String(resolverData[idx...]).withHexPrefix)
             let nameHash = EthereumNameService.nameHash(name: ensReverse)
