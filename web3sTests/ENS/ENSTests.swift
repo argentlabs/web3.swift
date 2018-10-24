@@ -18,17 +18,13 @@ class ENSTests: XCTestCase {
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
     }
     
-    override func tearDown() {
-        super.tearDown()
-    }
-    
-    func testNameHash() {
+    func testGivenName_ThenResolvesNameHash() {
         let name = "argent.test"
         let nameHash = EthereumNameService.nameHash(name: name)
         XCTAssertEqual(nameHash, "0x3e58ef7a2e196baf0b9d36a65cc590ac9edafb3395b7cdeb8f39206049b4534c")
     }
     
-    func testOwner() {
+    func testGivenExistingDomainName_ResolvesOwnerAddressCorrectly() {
         let expect = expectation(description: "Get the ENS owner")
         
         do {
@@ -49,7 +45,7 @@ class ENSTests: XCTestCase {
         waitForExpectations(timeout: 20)
     }
     
-    func testResolveAddress() {
+    func testGivenExistingAddress_ThenResolvesCorrectly() {
         let expect = expectation(description: "Get the ENS address")
         
         let nameService = EthereumNameService(client: client!)
@@ -61,7 +57,7 @@ class ENSTests: XCTestCase {
         waitForExpectations(timeout: 20)
     }
     
-    func testResolveAlias() {
+    func testGivenExistingENS_ThenResolvesAddressCorrectly() {
         let expect = expectation(description: "Get the ENS reverse lookup address")
         
         let nameService = EthereumNameService(client: client!)
