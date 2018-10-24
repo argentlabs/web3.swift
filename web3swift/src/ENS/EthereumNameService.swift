@@ -14,7 +14,7 @@ protocol EthereumNameServiceProtocol {
     func resolve(ens: String, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
 }
 
-public enum EthereumNameServiceError: Error {
+public enum EthereumNameServiceError: Error, Equatable {
     case noNetwork
     case noResolver
     case ensUnknown
@@ -82,6 +82,10 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
             guard let resolverData = resolverData else {
                 return completion(EthereumNameServiceError.noResolver, nil)
+            }
+            
+            guard resolverData != "0x" else {
+                return completion(EthereumNameServiceError.ensUnknown, nil)
             }
             
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
