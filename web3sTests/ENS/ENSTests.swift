@@ -57,6 +57,32 @@ class ENSTests: XCTestCase {
         waitForExpectations(timeout: 20)
     }
     
+    func testGivenRopstenRegistry_WhenNotExistingAddress_ThenFailsCorrectly() {
+        let expect = expectation(description: "Get the ENS address")
+        
+        let nameService = EthereumNameService(client: client!)
+        nameService.resolve(address: EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c9"), completion: { (error, ens) in
+            XCTAssertNil(ens)
+            XCTAssertEqual(error, .ensUnknown)
+            expect.fulfill()
+        })
+        
+        waitForExpectations(timeout: 20)
+    }
+    
+    func testGivenCustomRegistry_WhenNotExistingAddress_ThenResolvesFailsCorrectly() {
+        let expect = expectation(description: "Get the ENS address")
+        
+        let nameService = EthereumNameService(client: client!, registryAddress: EthereumAddress("0x7D7C04B7A05539a92541105806e0971E45969F85"))
+        nameService.resolve(address: EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c9"), completion: { (error, ens) in
+            XCTAssertNil(ens)
+            XCTAssertEqual(error, .ensUnknown)
+            expect.fulfill()
+        })
+        
+        waitForExpectations(timeout: 20)
+    }
+    
     func testGivenRopstenRegistry_WhenExistingENS_ThenResolvesAddressCorrectly() {
         let expect = expectation(description: "Get the ENS reverse lookup address")
         
