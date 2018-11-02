@@ -29,7 +29,7 @@ public struct EthereumAddress: Codable {
 
 extension EthereumAddress: Hashable {
     public var hashValue: Int {
-        return self.value.hashValue
+        return self.value.lowercased().hashValue
     }
     
     public static func == (lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {
