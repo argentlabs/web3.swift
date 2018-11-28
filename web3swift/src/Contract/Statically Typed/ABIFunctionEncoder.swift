@@ -59,9 +59,9 @@ public class ABIFunctionEncoder {
     
     private func encode(type: ABIRawType, value: String) throws {
         let result = try ABIEncoder.encode(value, forType: type)
-        
+
         if type.isDynamic {
-            let pos = self.types.count*32 + tail.count
+            let pos = 32 + self.types.count*32 + tail.count
             head += try ABIEncoder.encode(String(pos), forType: ABIRawType.FixedInt(256))
             tail += result
         } else {

@@ -61,6 +61,7 @@
 		3CF37CF7203744400030520E /* KeystoreUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CF6203744400030520E /* KeystoreUtilTests.swift */; };
 		473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D9B8820F6297D00FD04BB /* TransactionTests.swift */; };
 		473E682F20CE7F80006D11AF /* EthereumBlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */; };
+		47ADCD9221AE9CA3006DE71F /* ABIFunctionEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */; };
 		6C4ABDDAA3313A1B32EAB620 /* Pods_web3swiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */; };
 		9164E8EEDA7FB33A6638D561 /* Pods_web3swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD54E6F686FEE6C1126AB6A0 /* Pods_web3swift.framework */; };
 		C91A7E80205C1F120074D3B4 /* ABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91A7E7F205C1F120074D3B4 /* ABIEncoder.swift */; };
@@ -192,6 +193,7 @@
 		45FF08D408285DBA7FF4564A /* Pods-web3sTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3sTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3sTests/Pods-web3sTests.release.xcconfig"; sourceTree = "<group>"; };
 		473D9B8820F6297D00FD04BB /* TransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTests.swift; sourceTree = "<group>"; };
 		473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBlockInfo.swift; sourceTree = "<group>"; };
+		47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIFunctionEncoderTests.swift; sourceTree = "<group>"; };
 		52B3D38DF87EAFCBBD99CCF1 /* Pods-web3swiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3swiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests.debug.xcconfig"; sourceTree = "<group>"; };
 		595F7375549A81C8950C1F8E /* Pods-web3s.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3s.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3s/Pods-web3s.release.xcconfig"; sourceTree = "<group>"; };
 		5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_web3swiftTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -557,6 +559,7 @@
 				3C1C133C203D71110052986A /* EthereumContractTests.swift */,
 				C9A78E502058498800CF8316 /* ABIEncoderTests.swift */,
 				C91A7E87206120EA0074D3B4 /* ABIDecoderTests.swift */,
+				47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */,
 			);
 			path = Contract;
 			sourceTree = "<group>";
@@ -955,6 +958,7 @@
 				C9A78E6D2059406A00CF8316 /* ByteExtensionsTests.swift in Sources */,
 				3CF37CF7203744400030520E /* KeystoreUtilTests.swift in Sources */,
 				473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */,
+				47ADCD9221AE9CA3006DE71F /* ABIFunctionEncoderTests.swift in Sources */,
 				C9A78E652058787300CF8316 /* ENSTests.swift in Sources */,
 				C91A7E8E206144CC0074D3B4 /* TestConfig.swift in Sources */,
 			);
