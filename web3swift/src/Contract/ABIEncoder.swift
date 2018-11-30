@@ -53,7 +53,13 @@ public class ABIEncoder {
             // Bytes are hex encoded
             guard let bytes = value.bytesFromHex else { throw ABIError.invalidValue }
             let len = try encode(String(bytes.count), forType: ABIRawType.FixedUInt(256))
-            let pack = (bytes.count - (bytes.count % 32)) / 32 + 1
+            let pack: Int
+            if bytes.count == 0 {
+                pack = 0
+            } else {
+                pack = (bytes.count - (bytes.count % 32)) / 32 + 1
+            }
+            
             encoded = len + bytes + [UInt8](repeating: 0x00, count: pack * 32 - bytes.count)
         case .FixedBytes(_):
             // Bytes are hex encoded
