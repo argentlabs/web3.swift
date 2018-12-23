@@ -64,7 +64,7 @@ We also use Apple's own CommonCrypto (via [this](https://github.com/sergejp/Comm
 
 ## Todos
 
-There's some features that have yet to be fully implemented! Not every RPC method is currently supported, and here's some other suggestions we would like to see in the future:
+There are some features that have yet to be fully implemented! Not every RPC method is currently supported, and here's some other suggestions we would like to see in the future:
 
 
 - ABI encoding support for tuples and arrays
@@ -77,7 +77,7 @@ There's some features that have yet to be fully implemented! Not every RPC metho
 
 ## Contributors
 
-The initial project was crafted by the team at Argent. However, we encorage anyone to help implement new features and to keep this library up-to-date. For features and fixes, simply submit a pull request to the develop branch. Please follow the [contributing guidelines](https://github.com/argentlabs/web3.swift/blob/master/CONTRIBUTING.md).
+The initial project was crafted by the team at Argent. However, we encourage anyone to help implement new features and to keep this library up-to-date. For features and fixes, simply submit a pull request to the [develop](https://github.com/argentlabs/web3.swift/tree/develop) branch. Please follow the [contributing guidelines](https://github.com/argentlabs/web3.swift/blob/master/CONTRIBUTING.md).
 
 For bug reports and feature requests, please open an [issue](https://github.com/argentlabs/web3.swift/issues).
 
