@@ -79,7 +79,6 @@ public class ABIDecoder {
             return result
         case .DynamicArray(let arrayType):
             var result: [String] = []
-            var size = type.size
             var newOffset = offset
             
             guard let offsetHex = (try? decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)) as? String else {
@@ -90,7 +89,9 @@ public class ABIDecoder {
             guard let sizeHex = (try? decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)) as? String else {
                 throw ABIError.invalidValue
             }
-            size = Int(hex: sizeHex) ?? size
+            guard var size = Int(hex: sizeHex) else {
+                throw ABIError.invalidValue
+            }
             newOffset += 32
             
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)

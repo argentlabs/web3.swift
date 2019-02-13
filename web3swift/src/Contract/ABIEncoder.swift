@@ -66,7 +66,28 @@ public class ABIEncoder {
             guard let bytes = value.bytesFromHex else { throw ABIError.invalidValue }
             encoded = bytes + [UInt8](repeating: 0x00, count: 32 - bytes.count)
         case .DynamicArray(_):
-            throw ABIError.notCurrentlySupported // TODO
+            let unitSize = 4 * 2 // TODO: Hardcoding bytes4 here for now
+            let stringValue = value.noHexPrefix
+            let size = stringValue.count / unitSize
+
+            var bytes = [UInt8]()
+            for i in (0..<size) {
+                let start =  stringValue.index(stringValue.startIndex, offsetBy: i * unitSize)
+                let end = stringValue.index(start, offsetBy: unitSize)
+                let unitValue = String(stringValue[start..<end])
+                guard let unitBytes = unitValue.bytesFromHex else { throw ABIError.invalidValue }
+                bytes.append(contentsOf: unitBytes)
+            }
+            let len = try encode(String(size), forType: ABIRawType.FixedUInt(256))
+            
+            let pack: Int
+            if bytes.count == 0 {
+                pack = 0
+            } else {
+                pack = (bytes.count - (bytes.count % 32)) / 32 + 1
+            }
+            
+            encoded = len + bytes + [UInt8](repeating: 0x00, count: pack * 32 - bytes.count)
         case .FixedArray(_, _):
             throw ABIError.notCurrentlySupported // TODO
         }

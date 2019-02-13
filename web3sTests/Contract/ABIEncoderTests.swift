@@ -110,4 +110,26 @@ class ABIEncoderTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    func testEncodeSmallDynamicBytes4Array() {
+        
+        do {
+            let encoded = try ABIEncoder.encode("0x01010101aabbccdd9988776678947894", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x000000000000000000000000000000000000000000000000000000000000000401010101aabbccdd998877667894789400000000000000000000000000000000")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testEncodeBigDynamicBytes4Array() {
+        
+        do {
+            let encoded = try ABIEncoder.encode("0x01010101aabbccdd99887766789478941234567891011121314151617181920212223443", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x000000000000000000000000000000000000000000000000000000000000000901010101aabbccdd9988776678947894123456789101112131415161718192021222344300000000000000000000000000000000000000000000000000000000")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
 }
