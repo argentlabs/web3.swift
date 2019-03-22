@@ -187,8 +187,6 @@
 		3CF37CE02037096A0030520E /* AesUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AesUtilTests.swift; sourceTree = "<group>"; };
 		3CF37CE2203720F30030520E /* KeyDerivation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyDerivation.swift; sourceTree = "<group>"; };
 		3CF37CEA20372CA10030520E /* KeyDerivationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDerivationTests.swift; sourceTree = "<group>"; };
-		3CF37CEF20372FF70030520E /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.map; sourceTree = "<group>"; };
-		3CF37CF120372FF70030520E /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.map; sourceTree = "<group>"; };
 		3CF37CF420373E320030520E /* Data+RandomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+RandomTests.swift"; sourceTree = "<group>"; };
 		3CF37CF6203744400030520E /* KeystoreUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystoreUtilTests.swift; sourceTree = "<group>"; };
 		45FF08D408285DBA7FF4564A /* Pods-web3sTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3sTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3sTests/Pods-web3sTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -338,7 +336,6 @@
 				3CF37C2F203437D70030520E /* web3swift.h */,
 				3CF37C6120343BDD0030520E /* src */,
 				3CF37C46203438590030520E /* lib */,
-				3CF37CEC20372FF70030520E /* frameworks */,
 				3CF37C30203437D70030520E /* Info.plist */,
 			);
 			path = web3swift;
@@ -500,39 +497,6 @@
 				3CF37CDD2037041E0030520E /* module.map */,
 			);
 			path = aes;
-			sourceTree = "<group>";
-		};
-		3CF37CEC20372FF70030520E /* frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37CED20372FF70030520E /* CommonCrypto */,
-			);
-			path = frameworks;
-			sourceTree = "<group>";
-		};
-		3CF37CED20372FF70030520E /* CommonCrypto */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37CEE20372FF70030520E /* iphoneos */,
-				3CF37CF020372FF70030520E /* iphonesimulator */,
-			);
-			path = CommonCrypto;
-			sourceTree = "<group>";
-		};
-		3CF37CEE20372FF70030520E /* iphoneos */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37CEF20372FF70030520E /* module.map */,
-			);
-			path = iphoneos;
-			sourceTree = "<group>";
-		};
-		3CF37CF020372FF70030520E /* iphonesimulator */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37CF120372FF70030520E /* module.map */,
-			);
-			path = iphonesimulator;
 			sourceTree = "<group>";
 		};
 		473D9B8720F6296900FD04BB /* Transaction */ = {
@@ -781,7 +745,6 @@
 				3CF37C31203437D70030520E /* Sources */,
 				3CF37C32203437D70030520E /* Frameworks */,
 				3CF37C33203437D70030520E /* Resources */,
-				E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -885,26 +848,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
-				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
