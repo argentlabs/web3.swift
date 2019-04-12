@@ -25,7 +25,7 @@ public protocol ABIResponse {
 }
 
 public extension ABIResponse {
-    public init?(data: String) throws {
+    init?(data: String) throws {
         guard let decodedData = try ABIDecoder.decodeData(data, types: Self.types) as? [String] else {
             // Response is not an array of Strings - likely array of array of Strings
             throw ABIError.invalidType
