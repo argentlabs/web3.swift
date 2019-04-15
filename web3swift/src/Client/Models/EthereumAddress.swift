@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct EthereumAddress: Codable {
+public struct EthereumAddress: Codable, Hashable {
     public let value: String
     public static let zero = EthereumAddress("0x0000000000000000000000000000000000000000")
     
@@ -25,11 +25,9 @@ public struct EthereumAddress: Codable {
         var container = encoder.singleValueContainer()
         try container.encode(self.value)
     }
-}
 
-extension EthereumAddress: Hashable {
-    public var hashValue: Int {
-        return self.value.lowercased().hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.value.lowercased())
     }
     
     public static func == (lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {

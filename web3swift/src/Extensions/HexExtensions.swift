@@ -20,28 +20,28 @@ extension BigUInt {
 }
 
 public extension BigInt {
-    public init?(hex: String) {
+    init?(hex: String) {
         self.init(hex.noHexPrefix.lowercased(), radix: 16)
     }
 }
 
 public extension Int {
-    public var hexString: String {
+    var hexString: String {
         return "0x" + String(format: "%x", self)
     }
     
-    public init?(hex: String) {
+    init?(hex: String) {
         self.init(hex.noHexPrefix, radix: 16)
     }
 }
 
 public extension Data {
-    public var hexString: String {
+    var hexString: String {
         let bytes = Array<UInt8>(self)
         return "0x" + bytes.map { String(format: "%02hhx", $0) }.joined()
     }
     
-    public init?(hex: String) {
+    init?(hex: String) {
         if let byteArray = try? HexUtil.byteArray(fromHex: hex.noHexPrefix) {
             self.init(bytes: byteArray, count: byteArray.count)
         } else {

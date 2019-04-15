@@ -44,14 +44,14 @@ class KeyUtil {
         let outputPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: publicKeyLength)
         secp256k1_ec_pubkey_serialize(ctx, outputPtr, &publicKeyLength, publicKeyPtr, UInt32(SECP256K1_EC_UNCOMPRESSED))
         
-        let publicKey = Data(bytes: outputPtr, count: publicKeyLength).subdata(in: Range(1..<publicKeyLength))
+        let publicKey = Data(bytes: outputPtr, count: publicKeyLength).subdata(in: 1..<publicKeyLength)
         
         return publicKey
     }
     
     static func generateAddress(from publicKey: Data) -> String {
         let hash = publicKey.keccak256
-        let address = hash.subdata(in: Range(12..<hash.count))
+        let address = hash.subdata(in: 12..<hash.count)
         return address.hexString
     }
     

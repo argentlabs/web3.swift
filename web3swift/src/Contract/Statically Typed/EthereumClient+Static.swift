@@ -9,7 +9,7 @@
 import Foundation
 
 public extension ABIFunction {
-    public func execute(withClient client: EthereumClient, account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void)) {
+    func execute(withClient client: EthereumClient, account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
@@ -26,7 +26,7 @@ public extension ABIFunction {
         
     }
     
-    public func call<T: ABIResponse>(withClient client: EthereumClient, responseType: T.Type, completion: @escaping((EthereumClientError?, T?) -> Void)) {
+    func call<T: ABIResponse>(withClient client: EthereumClient, responseType: T.Type, completion: @escaping((EthereumClientError?, T?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
@@ -47,7 +47,7 @@ public extension ABIFunction {
 }
 
 public extension EthereumClient {
-    public func getEvents(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
+    func getEvents(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
         
         self.eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock) { (error, logs) in
             
