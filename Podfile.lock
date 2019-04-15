@@ -1,10 +1,10 @@
 PODS:
-  - BigInt (3.0.1):
+  - BigInt (3.1.0):
     - SipHash (~> 1.2)
-  - SipHash (1.2.0)
+  - SipHash (1.2.2)
 
 DEPENDENCIES:
-  - BigInt (~> 3.0.1)
+  - BigInt (= 3.1.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -12,9 +12,9 @@ SPEC REPOS:
     - SipHash
 
 SPEC CHECKSUMS:
-  BigInt: 8e8a52161c745cd3ab78e3dc346a9fbee51e6cf6
-  SipHash: c6e9e43e9c531b5bc6602545130c26194a6d31ce
+  BigInt: 76b5dfdfa3e2e478d4ffdf161aeede5502e2742f
+  SipHash: fad90a4683e420c52ef28063063dbbce248ea6d4
 
-PODFILE CHECKSUM: 67f19944c0b15799d71ad44aab63ca30fcbd5189
+PODFILE CHECKSUM: 7d6817b2b66ca961a4ac6f21b073018916aa7067
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.5.3

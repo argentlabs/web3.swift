@@ -9,7 +9,7 @@
 import Foundation
 
 public extension ABIFunction {
-    public func execute(withClient client: EthereumClient, account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void)) {
+    func execute(withClient client: EthereumClient, account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
@@ -26,7 +26,7 @@ public extension ABIFunction {
         
     }
     
-    public func call<T: ABIResponse>(withClient client: EthereumClient, responseType: T.Type, completion: @escaping((EthereumClientError?, T?) -> Void)) {
+    func call<T: ABIResponse>(withClient client: EthereumClient, responseType: T.Type, completion: @escaping((EthereumClientError?, T?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
@@ -47,7 +47,7 @@ public extension ABIFunction {
 }
 
 public extension EthereumClient {
-    public func getEvents(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
+    func getEvents(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
         
         self.eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock) { (error, logs) in
             
@@ -75,8 +75,19 @@ public extension EthereumClient {
                 }
                 
                 let dataTypes = eventType.types.enumerated().filter { eventType.typesIndexed[$0.offset] == false }.compactMap { $0.element }
-                    
-                guard let decoded = try? ABIDecoder.decodeData(log.data, types: dataTypes), let eventOpt = try? eventType.init(topics: Array(log.topics.dropFirst()), data: decoded, log: log), let event = eventOpt else {
+                
+                guard let decoded = try? ABIDecoder.decodeData(log.data, types: dataTypes) else {
+                    unprocessed.append(log)
+                    continue
+                }
+                
+                let strs = decoded.compactMap { $0 as? String }
+                guard strs.count == decoded.count else {
+                    unprocessed.append(log)
+                    continue
+                }
+                
+                guard let eventOpt = try? eventType.init(topics: Array(log.topics.dropFirst()), data: strs, log: log), let event = eventOpt else {
                         unprocessed.append(log)
                     continue
                 }

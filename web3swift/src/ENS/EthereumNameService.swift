@@ -9,12 +9,12 @@
 import Foundation
 
 protocol EthereumNameServiceProtocol {
-    init(client: EthereumClientProtocol)
+    init(client: EthereumClientProtocol, registryAddress: EthereumAddress?)
     func resolve(address: EthereumAddress, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
     func resolve(ens: String, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
 }
 
-public enum EthereumNameServiceError: Error {
+public enum EthereumNameServiceError: Error, Equatable {
     case noNetwork
     case noResolver
     case ensUnknown
@@ -25,9 +25,11 @@ public enum EthereumNameServiceError: Error {
 // This is an example of interacting via a JSON Definition contract API
 public class EthereumNameService: EthereumNameServiceProtocol {
     let client: EthereumClientProtocol
+    let registryAddress: EthereumAddress?
     
-    required public init(client: EthereumClientProtocol) {
+    required public init(client: EthereumClientProtocol, registryAddress: EthereumAddress? = nil) {
         self.client = client
+        self.registryAddress = registryAddress
     }
     
     public func resolve(address: EthereumAddress, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
@@ -36,13 +38,17 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         }
         
         let ensReverse = address.value.noHexPrefix + ".addr.reverse"
-        guard let regContract = ENSRegistryContract(chainId: network.intValue), let registryTransaction = try? regContract.resolver(name: ensReverse) else {
+        guard let regContract = ENSRegistryContract(chainId: network.intValue, registryAddress: registryAddress), let registryTransaction = try? regContract.resolver(name: ensReverse) else {
             return completion(EthereumNameServiceError.contractIssue, nil)
         }
 
         client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
             guard let resolverData = resolverData else {
                 return completion(EthereumNameServiceError.noResolver, nil)
+            }
+            
+            guard resolverData != "0x" else {
+                return completion(EthereumNameServiceError.ensUnknown, nil)
             }
             
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
@@ -73,13 +79,17 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             return completion(EthereumNameServiceError.noNetwork, nil)
         }
         
-        guard let regContract = ENSRegistryContract(chainId: network.intValue), let registryTransaction = try? regContract.resolver(name: ens) else {
+        guard let regContract = ENSRegistryContract(chainId: network.intValue, registryAddress: registryAddress), let registryTransaction = try? regContract.resolver(name: ens) else {
             return completion(EthereumNameServiceError.contractIssue, nil)
         }
         
         client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
             guard let resolverData = resolverData else {
                 return completion(EthereumNameServiceError.noResolver, nil)
+            }
+            
+            guard resolverData != "0x" else {
+                return completion(EthereumNameServiceError.ensUnknown, nil)
             }
             
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)

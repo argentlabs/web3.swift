@@ -105,4 +105,26 @@ class ABIDecoderTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    func testDecodeEmptyDynamicData() {
+        do {
+            let decoded = try ABIDecoder.decodeData("0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000", types: [.DynamicBytes]) as! [String]
+            XCTAssertEqual(decoded.first, "")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testDecodeDynamicData() {
+        do {
+            let decoded = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000", types: [.DynamicBytes]) as! [String]
+                
+            XCTAssertEqual(decoded.first, "0x48656c6c6f2c20776f726c6421")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+
 }
