@@ -72,6 +72,18 @@ extension Data {
         }
         return Data.init(bytes: bytes)
     }
+    
+    public var bytes4: Data {
+        return prefix(4)
+    }
+    
+    public static func ^ (lhs: Data, rhs: Data) -> Data {
+        let bytes = zip(lhs.bytes, rhs.bytes).map { lhsByte, rhsByte in
+            return lhsByte ^ rhsByte
+        }
+        
+        return Data(bytes: bytes)
+    }
 }
 
 extension String {

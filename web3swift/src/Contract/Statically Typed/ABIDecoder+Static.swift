@@ -71,6 +71,15 @@ extension ABIDecoder {
         guard value.bitWidth <= 64 else { throw ABIError.invalidValue }
         return UInt64(value)
     }
+    
+    public static func decode(_ data: String, to: URL.Type) throws -> URL {
+        // If from log value, already decoded during initial log decode process
+        guard let url = URL(string: data.stringValue) else {
+            throw ABIError.invalidValue
+        }
+        
+        return url
+    }
 
     public static func decode(_ data: String, to: Data.Type) throws -> Data {
         guard let data = Data(hex: data) else { throw ABIError.invalidValue }

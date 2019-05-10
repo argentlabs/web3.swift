@@ -72,5 +72,24 @@ class ByteExtensionsTests: XCTestCase {
         XCTAssertEqual(str, "0x68656c6c6f20776f726c64")
     }
     
+    
+    func test_GivenEqualSizeData_XorIsCorrect() {
+        let dataA = "932545426104aec98a84b11f89010e409615d4e118552c694c4a726f29caf77a".hexData!
+        
+        let dataB = "c87b56dda752230262935940d907f047a9f86bb5ee6aa33511fc86db33fea6cc".hexData!
+        
+        let result = dataA ^ dataB
+        XCTAssertEqual(result.hexString, "0x5b5e139fc6568dcbe817e85f5006fe073fedbf54f63f8f5c5db6f4b41a3451b6")
+    }
+    
+    func test_GivenDifferentSizeData_XorIsCutToSmallest() {
+        let dataA = "932545426104aec98a84b11f89010e409615d4e118552c694c4a726f29caf7".hexData!
+        
+        let dataB = "c87b56dda752230262935940d907f047a9f86bb5ee6aa33511fc86db33fea6cc".hexData!
+        
+        let result = dataA ^ dataB
+        XCTAssertEqual(result.hexString, "0x5b5e139fc6568dcbe817e85f5006fe073fedbf54f63f8f5c5db6f4b41a3451")
+    }
+    
 }
 
