@@ -62,6 +62,13 @@
 		473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D9B8820F6297D00FD04BB /* TransactionTests.swift */; };
 		473E682F20CE7F80006D11AF /* EthereumBlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */; };
 		47ADCD9221AE9CA3006DE71F /* ABIFunctionEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */; };
+		47F2EA9B2284896A007063C2 /* ERC721Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EA992284894A007063C2 /* ERC721Tests.swift */; };
+		47F2EAA622848B5D007063C2 /* ERC721.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAA522848B5D007063C2 /* ERC721.swift */; };
+		47F2EAA922848B8C007063C2 /* ERC165.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAA822848B8C007063C2 /* ERC165.swift */; };
+		47F2EAAB22848B9C007063C2 /* ERC721Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAAA22848B9C007063C2 /* ERC721Functions.swift */; };
+		47F2EAAD22848BA7007063C2 /* ERC721Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAAC22848BA7007063C2 /* ERC721Events.swift */; };
+		47F2EAAF22848BB2007063C2 /* ERC721Responses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAAE22848BB2007063C2 /* ERC721Responses.swift */; };
+		47F2EAB32285BBDF007063C2 /* ERC165Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAB12285BAB6007063C2 /* ERC165Tests.swift */; };
 		6C4ABDDAA3313A1B32EAB620 /* Pods_web3swiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */; };
 		9164E8EEDA7FB33A6638D561 /* Pods_web3swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD54E6F686FEE6C1126AB6A0 /* Pods_web3swift.framework */; };
 		C91A7E80205C1F120074D3B4 /* ABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91A7E7F205C1F120074D3B4 /* ABIEncoder.swift */; };
@@ -194,6 +201,13 @@
 		473D9B8820F6297D00FD04BB /* TransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTests.swift; sourceTree = "<group>"; };
 		473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBlockInfo.swift; sourceTree = "<group>"; };
 		47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIFunctionEncoderTests.swift; sourceTree = "<group>"; };
+		47F2EA992284894A007063C2 /* ERC721Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721Tests.swift; sourceTree = "<group>"; };
+		47F2EAA522848B5D007063C2 /* ERC721.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721.swift; sourceTree = "<group>"; };
+		47F2EAA822848B8C007063C2 /* ERC165.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC165.swift; sourceTree = "<group>"; };
+		47F2EAAA22848B9C007063C2 /* ERC721Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721Functions.swift; sourceTree = "<group>"; };
+		47F2EAAC22848BA7007063C2 /* ERC721Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721Events.swift; sourceTree = "<group>"; };
+		47F2EAAE22848BB2007063C2 /* ERC721Responses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721Responses.swift; sourceTree = "<group>"; };
+		47F2EAB12285BAB6007063C2 /* ERC165Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC165Tests.swift; sourceTree = "<group>"; };
 		52B3D38DF87EAFCBBD99CCF1 /* Pods-web3swiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3swiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests.debug.xcconfig"; sourceTree = "<group>"; };
 		595F7375549A81C8950C1F8E /* Pods-web3s.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3s.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3s/Pods-web3s.release.xcconfig"; sourceTree = "<group>"; };
 		5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_web3swiftTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -350,7 +364,9 @@
 				C9236B922052FD1900CE5557 /* Client */,
 				C9236B932052FD1D00CE5557 /* Contract */,
 				C9236B942052FD2400CE5557 /* ENS */,
+				47F2EA9822848937007063C2 /* ERC721 */,
 				C967AAAC2080C35500A24D15 /* ERC20 */,
+				47F2EAB02285BA9C007063C2 /* ERC165 */,
 				C9236B952052FD2800CE5557 /* Extensions */,
 				3CF37C3C203437D70030520E /* Info.plist */,
 				C9A78E6E20595B3000CF8316 /* Mocks */,
@@ -389,6 +405,8 @@
 				3CF37CBA2035A6820030520E /* Client */,
 				3C1C1339203C71670052986A /* Contract */,
 				C967AAA52080BF3F00A24D15 /* ERC20 */,
+				47F2EAA722848B7A007063C2 /* ERC165 */,
+				47F2EA9C22848981007063C2 /* ERC721 */,
 				C927FD60204ECFE3005922DC /* ENS */,
 				C927FD6E20527A67005922DC /* Extensions */,
 				3CF37C6220343BDD0030520E /* Utils */,
@@ -507,6 +525,41 @@
 				473D9B8820F6297D00FD04BB /* TransactionTests.swift */,
 			);
 			path = Transaction;
+			sourceTree = "<group>";
+		};
+		47F2EA9822848937007063C2 /* ERC721 */ = {
+			isa = PBXGroup;
+			children = (
+				47F2EA992284894A007063C2 /* ERC721Tests.swift */,
+			);
+			path = ERC721;
+			sourceTree = "<group>";
+		};
+		47F2EA9C22848981007063C2 /* ERC721 */ = {
+			isa = PBXGroup;
+			children = (
+				47F2EAA522848B5D007063C2 /* ERC721.swift */,
+				47F2EAAA22848B9C007063C2 /* ERC721Functions.swift */,
+				47F2EAAC22848BA7007063C2 /* ERC721Events.swift */,
+				47F2EAAE22848BB2007063C2 /* ERC721Responses.swift */,
+			);
+			path = ERC721;
+			sourceTree = "<group>";
+		};
+		47F2EAA722848B7A007063C2 /* ERC165 */ = {
+			isa = PBXGroup;
+			children = (
+				47F2EAA822848B8C007063C2 /* ERC165.swift */,
+			);
+			path = ERC165;
+			sourceTree = "<group>";
+		};
+		47F2EAB02285BA9C007063C2 /* ERC165 */ = {
+			isa = PBXGroup;
+			children = (
+				47F2EAB12285BAB6007063C2 /* ERC165Tests.swift */,
+			);
+			path = ERC165;
 			sourceTree = "<group>";
 		};
 		C9236B832052C6AC00CE5557 /* Models */ = {
@@ -891,9 +944,11 @@
 				C9A78E412057F04800CF8316 /* HexUtil.swift in Sources */,
 				C9D43D21207CED0300685FB6 /* ABIRawType+Static.swift in Sources */,
 				C9236B822052C69B00CE5557 /* EthereumTransactionReceipt.swift in Sources */,
+				47F2EAAD22848BA7007063C2 /* ERC721Events.swift in Sources */,
 				C9F836B52078049E004F45A9 /* EthereumAddress.swift in Sources */,
 				C9236B802052C68D00CE5557 /* EthereumLog.swift in Sources */,
 				C9D43D2B207CED5400685FB6 /* ABIEncoder+JSON.swift in Sources */,
+				47F2EAAB22848B9C007063C2 /* ERC721Functions.swift in Sources */,
 				C9236B8B2052E12200CE5557 /* HexExtensions.swift in Sources */,
 				C927FD62204EF4E1005922DC /* EthereumNameService.swift in Sources */,
 				C927FD57204EAD6E005922DC /* EthereumKeyStorage.swift in Sources */,
@@ -905,17 +960,20 @@
 				3CF37CDF203704490030520E /* AesUtil.swift in Sources */,
 				C9A78E61205874D600CF8316 /* ENSResolverContract.swift in Sources */,
 				C91A7E8A20613A8D0074D3B4 /* EthereumBlock.swift in Sources */,
+				47F2EAAF22848BB2007063C2 /* ERC721Responses.swift in Sources */,
 				3CF37CDB203704050030520E /* aes.c in Sources */,
 				3CF37CB4203453D80030520E /* KeyUtil.swift in Sources */,
 				C9236B8D2052E51100CE5557 /* EthereumAccount+SignTransaction.swift in Sources */,
 				3CF37C5F20343BA60030520E /* keccak-tiny.c in Sources */,
 				C967AAA92080BF7900A24D15 /* ERC20Responses.swift in Sources */,
 				473E682F20CE7F80006D11AF /* EthereumBlockInfo.swift in Sources */,
+				47F2EAA922848B8C007063C2 /* ERC165.swift in Sources */,
 				C94C2BD02090C70D00F024EE /* ERC20Events.swift in Sources */,
 				C91A7E84205C1F260074D3B4 /* ABIRawType.swift in Sources */,
 				3C8D94FE20402D8400D0D5D7 /* EthereumTransaction.swift in Sources */,
 				C9A78E63205874E300CF8316 /* ENSRegistryContract.swift in Sources */,
 				3CF37CBE2035A8240030520E /* EthereumAccount.swift in Sources */,
+				47F2EAA622848B5D007063C2 /* ERC721.swift in Sources */,
 				3CF37CE3203720F30030520E /* KeyDerivation.swift in Sources */,
 				3CF37CC02035ABE90030520E /* EthereumClient.swift in Sources */,
 				C9A78E59205851D700CF8316 /* String+Numeric.swift in Sources */,
@@ -953,6 +1011,8 @@
 				C9236BA52057CE7B00CE5557 /* EthereumAccount+SignTransactionTests.swift in Sources */,
 				3CF37CB62034542F0030520E /* KeyUtilTests.swift in Sources */,
 				3CF37CF520373E320030520E /* Data+RandomTests.swift in Sources */,
+				47F2EA9B2284896A007063C2 /* ERC721Tests.swift in Sources */,
+				47F2EAB32285BBDF007063C2 /* ERC165Tests.swift in Sources */,
 				3C1C133D203D71110052986A /* EthereumContractTests.swift in Sources */,
 				C9A78E7020595B5700CF8316 /* TestEthereumKeyStorage.swift in Sources */,
 				C9A78E6D2059406A00CF8316 /* ByteExtensionsTests.swift in Sources */,

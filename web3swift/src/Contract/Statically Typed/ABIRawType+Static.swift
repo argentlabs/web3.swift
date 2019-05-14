@@ -23,6 +23,7 @@ extension UInt8: ABIType { }
 extension UInt16: ABIType { }
 extension UInt32: ABIType { }
 extension UInt64: ABIType { }
+extension URL : ABIType { }
 
 public protocol ABIFixedSizeDataType: ABIType {
     static var fixedSize: Int { get }
@@ -168,6 +169,7 @@ extension ABIRawType {
         case is UInt16.Type: self = ABIRawType.FixedUInt(16)
         case is UInt32.Type: self = ABIRawType.FixedUInt(32)
         case is UInt64.Type: self = ABIRawType.FixedUInt(64)
+        case is URL.Type: self = ABIRawType.DynamicString
         case is Data.Type: self = ABIRawType.DynamicBytes
         case is ABIFixedSizeDataType.Type:
             guard let fixed = type as? ABIFixedSizeDataType.Type else { return nil }
