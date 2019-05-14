@@ -41,7 +41,7 @@ public enum ERC721Events {
         public let tokenId: BigUInt
         
         public init?(topics: [String], data: [String], log: EthereumLog) throws {
-            try Transfer.checkParameters(topics, data)
+            try Approval.checkParameters(topics, data)
             self.log = log
             
             self.from = try ABIDecoder.decode(topics[0], to: EthereumAddress.self)
@@ -61,7 +61,7 @@ public enum ERC721Events {
         public let approved: Bool
         
         public init?(topics: [String], data: [String], log: EthereumLog) throws {
-            try Transfer.checkParameters(topics, data)
+            try ApprovalForAll.checkParameters(topics, data)
             self.log = log
             
             self.from = try ABIDecoder.decode(topics[0], to: EthereumAddress.self)
