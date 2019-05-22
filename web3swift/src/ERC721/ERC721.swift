@@ -74,7 +74,7 @@ public class ERC721Metadata: ERC721 {
             "tokenURI(uint256)".keccak256.bytes4
     }
     
-    let session: URLSession
+    private let session: URLSession
     
     public init(client: EthereumClient, metadataSession: URLSession) {
         self.session = metadataSession
