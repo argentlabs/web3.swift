@@ -58,13 +58,13 @@ public class ERC721Metadata: ERC721 {
         }
         
         public struct Properties: Equatable, Decodable {
-            public let name: Property<String>
-            public let description: Property<String>
-            public let image: Property<URL>
+            public let name: Property<String>?
+            public let description: Property<String>?
+            public let image: Property<URL>?
         }
         
-        public let title: String
-        public let type: String
+        public let title: String?
+        public let type: String?
         public let properties: Properties
     }
     
