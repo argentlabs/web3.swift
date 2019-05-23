@@ -74,7 +74,8 @@ extension ABIDecoder {
     
     public static func decode(_ data: String, to: URL.Type) throws -> URL {
         // If from log value, already decoded during initial log decode process
-        guard let url = URL(string: data.stringValue) else {
+        let filtered = data.stringValue.trimmingCharacters(in: CharacterSet(charactersIn: "\0"))
+        guard let url = URL(string: filtered) else {
             throw ABIError.invalidValue
         }
         

@@ -126,5 +126,36 @@ class ABIDecoderTests: XCTestCase {
             XCTFail()
         }
     }
-
+    
+    func test_GivenSimpleURL_ThenDecodesCorrectly() {
+        do {
+            let decoded = try ABIDecoder.decode("68747470733a2f2f7777772e617267656e742e78797a", to: URL.self)
+            XCTAssertEqual(decoded.absoluteString, "https://www.argent.xyz")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenURLNullTermiated_ThenDecodesCorrectly() {
+        do {
+            let decoded = try ABIDecoder.decode("68747470733a2f2f7777772e617267656e742e78797a0000000000000000", to: URL.self)
+            XCTAssertEqual(decoded.absoluteString, "https://www.argent.xyz")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenLongerURLNullTerminated_ThenDecodesCorrectly() {
+        do {
+            let decoded = try ABIDecoder.decode("68747470733a2f2f7777772e63727970746f61746f6d732e6f72672f637265732f7572692f3333300000000000000000000000000000000000000000000000000000000000", to: URL.self)
+            XCTAssertEqual(decoded.absoluteString, "https://www.cryptoatoms.org/cres/uri/330")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
 }
+
+
