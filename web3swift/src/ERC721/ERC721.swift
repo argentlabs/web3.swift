@@ -57,15 +57,55 @@ public class ERC721Metadata: ERC721 {
             public let description: T
         }
         
+        enum CodingKeys: String, CodingKey {
+            case title
+            case type
+            case properties
+            case fallback_property_image = "image"
+            case fallback_property_description = "description"
+            case fallback_property_name = "name"
+        }
+        
+        public init(title: String?,
+                    type: String?,
+                    properties: Properties?) {
+            self.title = title
+            self.type = type
+            self.properties = properties
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.title = try? container.decode(String.self, forKey: .title)
+            self.type = try? container.decode(String.self, forKey: .type)
+            let properties = try? container.decode(Properties.self, forKey: .properties)
+            
+            if let properties = properties {
+                self.properties = properties
+            } else {
+                // try decoding properties from root directly
+                let name = try? container.decode(String.self, forKey: .fallback_property_name)
+                let image = try? container.decode(URL.self, forKey: .fallback_property_image)
+                let description = try? container.decode(String.self, forKey: .fallback_property_description)
+                if name != nil || image != nil || description != nil {
+                    self.properties = Properties(name: Property(description: name),
+                                                 description: Property(description: description),
+                                                 image: Property(description: image))
+                } else {
+                    self.properties = nil
+                }
+            }
+        }
+        
         public struct Properties: Equatable, Decodable {
-            public let name: Property<String>?
-            public let description: Property<String>?
-            public let image: Property<URL>?
+            public let name: Property<String?>
+            public let description: Property<String?>
+            public let image: Property<URL?>
         }
         
         public let title: String?
         public let type: String?
-        public let properties: Properties
+        public let properties: Properties?
     }
     
     static var interfaceID: Data {
@@ -75,7 +115,7 @@ public class ERC721Metadata: ERC721 {
     }
     
     public let session: URLSession
-
+    
     public init(client: EthereumClient, metadataSession: URLSession) {
         self.session = metadataSession
         super.init(client: client)
