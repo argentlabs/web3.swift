@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 
 public enum ERC721Functions {
-    static var interfaceID: Data {
+    public static var interfaceID: Data {
         return "0x80ac58cd".hexData!
     }
     
@@ -42,7 +42,7 @@ public enum ERC721Functions {
 }
 
 public enum ERC721MetadataFunctions {
-    static var interfaceID: Data {
+    public static var interfaceID: Data {
         return "name()".keccak256.bytes4 ^
             "symbol()".keccak256.bytes4 ^
             "tokenURI(uint256)".keccak256.bytes4
@@ -84,7 +84,7 @@ public enum ERC721MetadataFunctions {
 }
 
 public enum ERC721EnumerableFunctions {
-    static var interfaceID: Data {
+    public static var interfaceID: Data {
         return "totalSupply()".keccak256.bytes4 ^
             "tokenByIndex(uint256)".keccak256.bytes4 ^
             "tokenOfOwnerByIndex(address,uint256)".keccak256.bytes4

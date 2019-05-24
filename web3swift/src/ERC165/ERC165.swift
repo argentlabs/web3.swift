@@ -28,7 +28,7 @@ public class ERC165 {
 }
 
 public enum ERC165Functions {
-    static var interfaceID: Data {
+    public static var interfaceId: Data {
         return "supportsInterface(bytes4)".keccak256.bytes4
     }
     
