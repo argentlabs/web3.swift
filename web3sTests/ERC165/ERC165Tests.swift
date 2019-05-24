@@ -36,4 +36,16 @@ class ERC165Tests: XCTestCase {
         
         waitForExpectations(timeout: 10)
     }
+    
+    func test_GivenInterfaceERC165_returnsSupported() {
+        let expect = expectation(description: "Supports own interface")
+        erc165.supportsInterface(contract: address,
+                                 id: ERC165Functions.interfaceID) { (error, supported) in
+                                    XCTAssertNil(error)
+                                    XCTAssertEqual(supported, true)
+                                    expect.fulfill()
+        }
+        
+        waitForExpectations(timeout: 10)
+    }
 }

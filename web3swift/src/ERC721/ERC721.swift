@@ -108,12 +108,6 @@ public class ERC721Metadata: ERC721 {
         public let properties: Properties?
     }
     
-    static var interfaceID: Data {
-        return "name()".keccak256.bytes4 ^
-            "symbol()".keccak256.bytes4 ^
-            "tokenURI(uint256)".keccak256.bytes4
-    }
-    
     public let session: URLSession
     
     public init(client: EthereumClient, metadataSession: URLSession) {
@@ -183,12 +177,6 @@ public class ERC721Metadata: ERC721 {
 }
 
 public class ERC721Enumerable: ERC721 {
-    static var interfaceID: Data {
-        return "totalSupply()".keccak256.bytes4 ^
-            "tokenByIndex(uint256)".keccak256.bytes4 ^
-            "tokenOfOwnerByIndex(address,uint256)".keccak256.bytes4
-    }
-    
     public func totalSupply(contract: EthereumAddress,
                             completion: @escaping((Error?, BigUInt?) -> Void)) {
         let function = ERC721EnumerableFunctions.totalSupply(contract: contract)

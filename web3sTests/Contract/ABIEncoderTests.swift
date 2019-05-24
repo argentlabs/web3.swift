@@ -81,7 +81,8 @@ class ABIEncoderTests: XCTestCase {
         
         do {
             let encoded = try ABIEncoder.encode("0x63", forType: ABIRawType.FixedBytes(1))
-            XCTAssertEqual(String(hexFromBytes: encoded), "0x0000000000000000000000000000000000000000000000000000000000000063")
+            XCTAssertEqual(String(hexFromBytes: encoded),
+             "0x6300000000000000000000000000000000000000000000000000000000000000")
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
@@ -92,7 +93,7 @@ class ABIEncoderTests: XCTestCase {
         
         do {
             let encoded = try ABIEncoder.encode("0x616263", forType: ABIRawType.FixedBytes(3))
-            XCTAssertEqual(String(hexFromBytes: encoded), "0x0000000000000000000000000000000000000000000000000000000000616263")
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x6162630000000000000000000000000000000000000000000000000000000000")
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
