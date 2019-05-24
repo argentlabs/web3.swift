@@ -64,7 +64,7 @@ public class ABIEncoder {
         case .FixedBytes(_):
             // Bytes are hex encoded
             guard let bytes = value.bytesFromHex else { throw ABIError.invalidValue }
-            encoded = [UInt8](repeating: 0x00, count: 32 - bytes.count) + bytes
+            encoded = bytes + [UInt8](repeating: 0x00, count: 32 - bytes.count)
         case .DynamicArray(_):
             throw ABIError.notCurrentlySupported // TODO
         case .FixedArray(_, _):
