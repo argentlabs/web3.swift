@@ -54,7 +54,7 @@ public class ERC721Metadata: ERC721 {
     public struct Token: Equatable, Decodable {
         public typealias PropertyType = Equatable & Decodable
         public struct Property<T: PropertyType>: Equatable, Decodable {
-            public let description: T
+            public var description: T
         }
         
         enum CodingKeys: String, CodingKey {
@@ -98,14 +98,14 @@ public class ERC721Metadata: ERC721 {
         }
         
         public struct Properties: Equatable, Decodable {
-            public let name: Property<String?>
-            public let description: Property<String?>
-            public let image: Property<URL?>
+            public var name: Property<String?>
+            public var description: Property<String?>
+            public var image: Property<URL?>
         }
         
-        public let title: String?
-        public let type: String?
-        public let properties: Properties?
+        public var title: String?
+        public var type: String?
+        public var properties: Properties?
     }
     
     public let session: URLSession
@@ -154,7 +154,8 @@ public class ERC721Metadata: ERC721 {
                         return completion(error, nil)
                     }
                     
-                    let task = self?.session.dataTask(with: response,
+                    let baseURL = response
+                    let task = self?.session.dataTask(with: baseURL,
                                                       completionHandler: { (data, response, error) in
                                                         guard let data = data else {
                                                             return completion(error, nil)
@@ -164,7 +165,11 @@ public class ERC721Metadata: ERC721 {
                                                         }
                                                         
                                                         do {
-                                                            let metadata = try JSONDecoder().decode(Token.self, from: data)
+                                                            var metadata = try JSONDecoder().decode(Token.self, from: data)
+                                                            
+                                                            if let image = metadata.properties?.image.description, image.host == nil, let relative = URL(string: image.absoluteString, relativeTo: baseURL) {
+                                                                metadata.properties?.image = Token.Property(description: relative)
+                                                            }
                                                             completion(nil, metadata)
                                                         } catch let decodeError {
                                                             completion(decodeError, nil)
