@@ -18,7 +18,7 @@ public class ERC165 {
     public func supportsInterface(contract: EthereumAddress,
                                   id: Data,
                                   completion: @escaping((Error?, Bool?) -> Void)) {
-        let function = ERC165Functions.supportsInterface(contract: contract, interfaceID: id)
+        let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
         function.call(withClient: self.client,
                       responseType: ERC165Responses.supportsInterfaceResponse.self) { (error, response) in
             return completion(error, response?.supported)
@@ -39,11 +39,11 @@ public enum ERC165Functions {
         var contract: EthereumAddress
         let from: EthereumAddress? = nil
         
-        let interfaceID: Data
+        let interfaceId: Data
         
         func encode(to encoder: ABIFunctionEncoder) throws {
-            assert(interfaceID.count == 4, "Interface data should contain exactly 4 bytes")
-            try encoder.encode(interfaceID, size: Data4.self)
+            assert(interfaceId.count == 4, "Interface data should contain exactly 4 bytes")
+            try encoder.encode(interfaceId, size: Data4.self)
         }
     }
 }

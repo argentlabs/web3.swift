@@ -108,7 +108,7 @@ class ERC721MetadataTests: XCTestCase {
     
     
     func test_InterfaceIDMatch() {
-        XCTAssertEqual(ERC721MetadataFunctions.interfaceID.hexString, "0x5b5e139f")
+        XCTAssertEqual(ERC721MetadataFunctions.interfaceId.hexString, "0x5b5e139f")
     }
     
     func test_ReturnsName() {
@@ -168,7 +168,7 @@ class ERC721EnumerableTests: XCTestCase {
     }
     
     func test_InterfaceIDMatch() {
-        XCTAssertEqual(ERC721EnumerableFunctions.interfaceID.hexString, "0x780e9d63")
+        XCTAssertEqual(ERC721EnumerableFunctions.interfaceId.hexString, "0x780e9d63")
     }
     
     func test_returnsTotalSupply() {
