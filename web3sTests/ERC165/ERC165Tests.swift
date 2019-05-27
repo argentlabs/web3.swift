@@ -22,7 +22,7 @@ class ERC165Tests: XCTestCase {
     }
     
     func test_InterfaceIDMatch() {
-        XCTAssertEqual(ERC165Functions.interfaceID.hexString, "0x01ffc9a7")
+        XCTAssertEqual(ERC165Functions.interfaceId.hexString, "0x01ffc9a7")
     }
     
     func test_GivenInterfaceffff_returnsNotSupported() {
@@ -40,7 +40,7 @@ class ERC165Tests: XCTestCase {
     func test_GivenInterfaceERC165_returnsSupported() {
         let expect = expectation(description: "Supports own interface")
         erc165.supportsInterface(contract: address,
-                                 id: ERC165Functions.interfaceID) { (error, supported) in
+                                 id: ERC165Functions.interfaceId) { (error, supported) in
                                     XCTAssertNil(error)
                                     XCTAssertEqual(supported, true)
                                     expect.fulfill()
