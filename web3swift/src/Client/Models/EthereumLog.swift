@@ -9,7 +9,7 @@
 import Foundation
 import BigInt
 
-public struct EthereumLog {
+public struct EthereumLog: Equatable {
     public let logIndex: BigUInt?
     public let transactionIndex: BigUInt?
     public let transactionHash: String?
@@ -84,4 +84,17 @@ extension EthereumLog: Codable {
     
 
 }
+
+extension EthereumLog: Comparable {
+    public static func < (lhs: EthereumLog, rhs: EthereumLog) -> Bool {
+        if lhs.blockNumber == rhs.blockNumber,
+            let lhsIndex = lhs.logIndex,
+            let rhsIndex = rhs.logIndex {
+            return lhsIndex < rhsIndex
+        }
+        
+        return lhs.blockNumber < rhs.blockNumber
+    }
+}
+
 
