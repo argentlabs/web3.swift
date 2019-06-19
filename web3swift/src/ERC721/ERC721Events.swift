@@ -20,13 +20,13 @@ public enum ERC721Events {
         public let to: EthereumAddress
         public let tokenId: BigUInt
         
-        public init?(topics: [String], data: [String], log: EthereumLog) throws {
+        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
             try Transfer.checkParameters(topics, data)
             self.log = log
             
-            self.from = try ABIDecoder.decode(topics[0], to: EthereumAddress.self)
-            self.to = try ABIDecoder.decode(topics[1], to: EthereumAddress.self)
-            self.tokenId = try ABIDecoder.decode(topics[2], to: BigUInt.self)
+            self.from = try topics[0].decoded()
+            self.to = try topics[1].decoded()
+            self.tokenId = try topics[2].decoded()
         }
     }
     
@@ -40,13 +40,13 @@ public enum ERC721Events {
         public let approved: EthereumAddress
         public let tokenId: BigUInt
         
-        public init?(topics: [String], data: [String], log: EthereumLog) throws {
+        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
             try Approval.checkParameters(topics, data)
             self.log = log
             
-            self.from = try ABIDecoder.decode(topics[0], to: EthereumAddress.self)
-            self.approved = try ABIDecoder.decode(topics[1], to: EthereumAddress.self)
-            self.tokenId = try ABIDecoder.decode(topics[2], to: BigUInt.self)
+            self.from = try topics[0].decoded()
+            self.approved = try topics[1].decoded()
+            self.tokenId = try topics[2].decoded()
         }
     }
     
@@ -60,13 +60,13 @@ public enum ERC721Events {
         public let `operator`: EthereumAddress
         public let approved: Bool
         
-        public init?(topics: [String], data: [String], log: EthereumLog) throws {
+        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
             try ApprovalForAll.checkParameters(topics, data)
             self.log = log
             
-            self.from = try ABIDecoder.decode(topics[0], to: EthereumAddress.self)
-            self.operator = try ABIDecoder.decode(topics[1], to: EthereumAddress.self)
-            self.approved = try ABIDecoder.decode(topics[2], to: Bool.self)
+            self.from = try topics[0].decoded()
+            self.operator = try topics[1].decoded()
+            self.approved = try topics[2].decoded()
         }
     }
 }

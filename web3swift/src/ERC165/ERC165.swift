@@ -53,8 +53,8 @@ public enum ERC165Responses {
         static var types: [ABIType.Type] = [ Bool.self ]
         let supported: Bool
         
-        init?(values: [String]) throws {
-            self.supported = try ABIDecoder.decode(values[0], to: Bool.self)
+        init?(values: [ABIType]) throws {
+            self.supported = try values[0].decoded()
         }
     }
 }

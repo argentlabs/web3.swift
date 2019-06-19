@@ -13,7 +13,8 @@ public class ABIEncoder {
     
     static func encode(_ value: String,
                        forType type: ABIRawType,
-                       packed: Bool = true) throws -> [UInt8] {
+                       packed: Bool = true,
+                       size: Int = 1) throws -> [UInt8] {
         var encoded: [UInt8] = [UInt8]()
         
         switch type {
