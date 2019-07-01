@@ -66,6 +66,10 @@ extension ABIRawType: RawRepresentable {
     
     var size: Int {
         switch self {
+        case .FixedBool:
+            return 8
+        case .FixedAddress:
+            return 160
         case .FixedUInt(let size), .FixedInt(let size):
             return size / 8
         case .FixedBytes(let size), .FixedArray(_, let size):

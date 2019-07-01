@@ -73,21 +73,34 @@ public extension EthereumClient {
                     unprocessed.append(log)
                     continue
                 }
+                let topicTypes = eventType.types.enumerated()
+                    .filter { eventType.typesIndexed[$0.offset] == true }
+                    .compactMap { $0.element }
                 
-                let dataTypes = eventType.types.enumerated().filter { eventType.typesIndexed[$0.offset] == false }.compactMap { $0.element }
+                let dataTypes = eventType.types.enumerated()
+                    .filter { eventType.typesIndexed[$0.offset] == false }
+                    .compactMap { $0.element }
                 
-                guard let decoded = try? ABIDecoder.decodeData(log.data, types: dataTypes) else {
+                guard let data = try? ABIDecoder.decodeData(log.data, types: dataTypes) else {
                     unprocessed.append(log)
                     continue
                 }
                 
-                let strs = decoded.compactMap { $0 as? String }
-                guard strs.count == decoded.count else {
+                guard data.count == dataTypes.count else {
                     unprocessed.append(log)
                     continue
                 }
                 
-                guard let eventOpt = try? eventType.init(topics: Array(log.topics.dropFirst()), data: strs, log: log), let event = eventOpt else {
+                let rawTopics = Array(log.topics.dropFirst())
+                    
+                guard let parsedTopics = (try? zip(rawTopics, topicTypes).map { pair in
+                    try ABIDecoder.decodeData(pair.0, types: [pair.1])
+                    }) else {
+                        unprocessed.append(log)
+                        continue
+                }
+                
+                guard let eventOpt = try? eventType.init(topics: parsedTopics.flatMap { $0 }, data: data, log: log), let event = eventOpt else {
                         unprocessed.append(log)
                     continue
                 }

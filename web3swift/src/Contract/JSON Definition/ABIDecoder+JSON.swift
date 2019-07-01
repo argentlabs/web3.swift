@@ -10,8 +10,20 @@ import Foundation
 
 extension ABIDecoder {
     public static func decodeData(_ data: String, types: [String]) throws -> [Any] {
-        let rawTypes = types.map { ABIRawType(rawValue: $0) }.compactMap { $0 }
-        return try ABIDecoder.decodeData(data, types: rawTypes)
+        let rawTypes = types.compactMap { ABIRawType(rawValue: $0) }
+        guard rawTypes.count == types.count else {
+            throw ABIError.incorrectParameterCount
+        }
+        
+        let rawDecoded = try ABIDecoder.decodeData(data, types: rawTypes)
+        let decoded: [Any] = zip(rawDecoded, rawTypes).map { raw, type in
+            if type.isArray {
+                return raw
+            } else {
+                return raw.first ?? ""
+            }
+        }
+        return decoded
     }
     
     public static func decode(_ data: String, type: String) throws -> Any {

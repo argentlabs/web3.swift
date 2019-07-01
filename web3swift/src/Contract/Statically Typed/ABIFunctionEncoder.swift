@@ -57,8 +57,23 @@ public class ABIFunctionEncoder {
         return try self.encode(type: type, value: strValue)
     }
     
-    private func encode(type: ABIRawType, value: String) throws {
-        let result = try ABIEncoder.encode(value, forType: type)
+    public func encode(_ value: [Data], size: ABIFixedSizeDataType.Type) throws {
+        let strValue = String(bytes: value.flatMap { $0 })
+        guard let containedType = ABIRawType(type: size) else { throw ABIError.invalidType }
+        let type: ABIRawType = .DynamicArray(containedType)
+        return try self.encode(type: type, value: strValue)
+    }
+    
+    public func encode(_ value: [EthereumAddress]) throws {
+        guard let type = ABIRawType(type: [EthereumAddress].self) else {
+            throw ABIError.invalidType
+        }
+        let bytes = try value.flatMap { try ABIEncoder.encode($0) }
+        return try self.encode(type: type, value: String(hexFromBytes: bytes), size: value.count)
+    }
+
+    private func encode(type: ABIRawType, value: String, size: Int = 1) throws {
+        let result = try ABIEncoder.encode(value, forType: type, size: size)
 
         if type.isDynamic {
             let pos = 32 + self.types.count*32 + tail.count

@@ -21,21 +21,13 @@ public protocol ABIFunction {
 
 public protocol ABIResponse {
     static var types: [ABIType.Type] { get }
-    init?(values: [String]) throws
+    init?(values: [ABIType]) throws
 }
 
 public extension ABIResponse {
     init?(data: String) throws {
-        guard let decodedData = try ABIDecoder.decodeData(data, types: Self.types) as? [String] else {
-            // Response is not an array of Strings - likely array of array of Strings
-            throw ABIError.invalidType
-        }
-        
-        guard decodedData.count == Self.types.count else {
-            throw ABIError.incorrectParameterCount
-        }
-        
-        try self.init(values: decodedData)
+        let decoded = try ABIDecoder.decodeData(data, types: Self.types)
+        try self.init(values: decoded)
     }
 }
 

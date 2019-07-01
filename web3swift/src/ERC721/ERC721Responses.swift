@@ -14,8 +14,8 @@ public enum ERC721Responses {
         static var types: [ABIType.Type] = [ BigUInt.self ]
         let value: BigUInt
         
-        init?(values: [String]) throws {
-            self.value = try ABIDecoder.decode(values[0], to: BigUInt.self)
+        init?(values: [ABIType]) throws {
+            self.value = try values[0].decoded()
         }
     }
     
@@ -23,8 +23,8 @@ public enum ERC721Responses {
         static var types: [ABIType.Type] = [ EthereumAddress.self ]
         let value: EthereumAddress
         
-        init?(values: [String]) throws {
-            self.value = try ABIDecoder.decode(values[0], to: EthereumAddress.self)
+        init?(values: [ABIType]) throws {
+            self.value = try values[0].decoded()
         }
     }
 }
@@ -34,8 +34,8 @@ public enum ERC721MetadataResponses {
         static var types: [ABIType.Type] = [ String.self ]
         let value: String
         
-        init?(values: [String]) throws {
-            self.value = try ABIDecoder.decode(values[0], to: String.self)
+        init?(values: [ABIType]) throws {
+            self.value = try values[0].decoded()
         }
     }
     
@@ -43,8 +43,8 @@ public enum ERC721MetadataResponses {
         static var types: [ABIType.Type] = [ String.self ]
         let value: String
         
-        init?(values: [String]) throws {
-            self.value = try ABIDecoder.decode(values[0], to: String.self)
+        init?(values: [ABIType]) throws {
+            self.value = try values[0].decoded()
         }
     }
     
@@ -52,8 +52,8 @@ public enum ERC721MetadataResponses {
         static var types: [ABIType.Type] = [ URL.self ]
         let uri: URL
         
-        init?(values: [String]) throws {
-            self.uri = try ABIDecoder.decode(values[0], to: URL.self)
+        init?(values: [ABIType]) throws {
+            self.uri = try values[0].decoded()
         }
     }
 }
@@ -63,8 +63,8 @@ public enum ERC721EnumerableResponses {
         static var types: [ABIType.Type] = [ BigUInt.self ]
         let value: BigUInt
         
-        init?(values: [String]) throws {
-            self.value = try ABIDecoder.decode(values[0], to: BigUInt.self)
+        init?(values: [ABIType]) throws {
+            self.value = try values[0].decoded()
         }
     }
 }
