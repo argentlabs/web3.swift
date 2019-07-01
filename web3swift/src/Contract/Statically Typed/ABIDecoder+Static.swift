@@ -14,13 +14,13 @@ extension ABIDecoder {
     public typealias ParsedABIEntry = String
     public typealias ABIEntry = [String]
     
-    public static func decodeData(_ data: RawABI, types: [ABIType.Type]) throws -> [ABIType] {
+    public static func decodeData(_ data: RawABI, types: [ABIType.Type], asArray: Bool = false) throws -> [ABIType] {
         let rawTypes = types.compactMap { ABIRawType(type: $0) }
         guard rawTypes.count == types.count else {
             throw ABIError.incorrectParameterCount
         }
         
-        let rawDecoded = try ABIDecoder.decodeData(data, types: rawTypes)
+        let rawDecoded = try ABIDecoder.decodeData(data, types: rawTypes, asArray: asArray)
         guard rawDecoded.count == types.count else {
             throw ABIError.incorrectParameterCount
         }
@@ -42,11 +42,22 @@ extension ABIDecoder {
     }
     
     public static func decode(_ data: ParsedABIEntry, to: Bool.Type) throws -> Bool {
-        return data == "0x01" ? true : false
+        if data == "0x01"{
+            return true
+        } else if data == "0x00" {
+            return false
+        } else {
+            throw ABIError.invalidValue
+        }
     }
     
     public static func decode(_ data: ParsedABIEntry, to: EthereumAddress.Type) throws -> EthereumAddress {
-        return EthereumAddress(data)
+        let address = EthereumAddress(data)
+        guard address.value.hasPrefix("0x") else {
+            throw ABIError.invalidValue
+        }
+        
+        return address
     }
     
     public static func decode(_ data: ParsedABIEntry, to: BigInt.Type) throws -> BigInt {
