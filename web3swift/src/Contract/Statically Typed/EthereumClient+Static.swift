@@ -81,7 +81,7 @@ public extension EthereumClient {
                     .filter { eventType.typesIndexed[$0.offset] == false }
                     .compactMap { $0.element }
                 
-                guard let data = try? ABIDecoder.decodeData(log.data, types: dataTypes) else {
+                guard let data = try? ABIDecoder.decodeData(log.data, types: dataTypes, asArray: true) else {
                     unprocessed.append(log)
                     continue
                 }

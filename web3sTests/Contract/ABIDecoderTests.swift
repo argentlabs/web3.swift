@@ -172,6 +172,92 @@ class ABIDecoderTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    func test_GivenExpectingBigInt_WhenEmptyDataMarker_ThenDecodeFails() {
+        do {
+            let value = try ABIDecoder.decodeData("0x", types: [BigInt.self])
+            XCTAssertEqual(try value[0].decoded(), BigInt(0))
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenExpectingBigUInt_WhenEmptyDataMarker_ThenDecodeFails() {
+        do {
+            let value = try ABIDecoder.decodeData("0x", types: [BigUInt.self])
+            XCTAssertEqual(try value[0].decoded(), BigUInt(0))
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenExpectingUInt_WhenEmptyDataMarker_ThenDecodeSuceeds() {
+        do {
+            let value = try ABIDecoder.decodeData("0x", types: [UInt64.self])
+            XCTAssertEqual(try value[0].decoded(), UInt64(0))
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenExpectingAddress_WhenEmptyDataMarker_ThenDecodeFails() {
+        do {
+            let _ = try ABIDecoder.decodeData("0x", types: [EthereumAddress.self])
+            XCTFail()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func test_GivenExpectingBool_WhenEmptyDataMarker_ThenDecodeFails() {
+        do {
+            let _ = try ABIDecoder.decodeData("0x", types: [Bool.self])
+            XCTFail()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func test_GivenExpectingData_WhenEmptyDataMarker_ThenDecodeSucceeds() {
+        do {
+            let data = try ABIDecoder.decodeData("0x", types: [Data.self])
+            XCTAssertEqual(try data[0].decoded(), Data())
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenExpectingString_WhenEmptyDataMarker_ThenDecodeSucceeds() {
+        do {
+            let data = try ABIDecoder.decodeData("0x", types: [String.self])
+            XCTAssertEqual(try data[0].decoded(), "")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenExpectingManyElements_WhenEmptyDataMarker_ThenDecodeFails() {
+        do {
+            let _ = try ABIDecoder.decodeData("0x", types: [String.self, String.self])
+            XCTFail()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func test_GivenExpectingArrayOfElements_WhenEmptyDataMarker_ThenDecodeFails() {
+        do {
+            let _ = try ABIDecoder.decodeData("0x", types: [String.self], asArray: true)
+            XCTFail()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
 }
 
 

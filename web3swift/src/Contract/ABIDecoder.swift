@@ -12,9 +12,15 @@ import BigInt
 public class ABIDecoder {
     typealias RawParsedABI = [[String]]
     
-    static func decodeData(_ data: RawABI, types: [ABIRawType]) throws -> RawParsedABI {
+    static func decodeData(_ data: RawABI, types: [ABIRawType], asArray: Bool = false) throws -> RawParsedABI {
         var result = RawParsedABI()
         var offset = 0
+        
+        let expectingArray = asArray || types.count > 1
+        if data == "0x" && expectingArray {
+            return []
+        }
+        
         for type in types {
             if data == "0x" {
                 type.isArray ? result.append([]) : result.append([""])
