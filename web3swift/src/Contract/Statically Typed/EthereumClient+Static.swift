@@ -46,8 +46,39 @@ public extension ABIFunction {
     }
 }
 
+public struct EventFilter {
+    public let type: ABIEvent.Type
+    public let allowedSenders: [EthereumAddress]
+    
+    public init(type: ABIEvent.Type,
+                allowedSenders: [EthereumAddress]) {
+        self.type = type
+        self.allowedSenders = allowedSenders
+    }
+}
+
 public extension EthereumClient {
-    func getEvents(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, eventTypes: [ABIEvent.Type], completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
+    func getEvents(addresses: [String]?,
+                   topics: [String?]?,
+                   fromBlock: EthereumBlock,
+                   toBlock: EthereumBlock,
+                   eventTypes: [ABIEvent.Type],
+                   completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
+        let unfiltered = eventTypes.map { EventFilter(type: $0, allowedSenders: []) }
+        getEvents(addresses: addresses,
+                  topics: topics,
+                  fromBlock: fromBlock,
+                  toBlock: toBlock,
+                  matching: unfiltered,
+                  completion: completion)
+    }
+    
+    func getEvents(addresses: [String]?,
+                   topics: [String?]?,
+                   fromBlock: EthereumBlock,
+                   toBlock: EthereumBlock,
+                   matching matches: [EventFilter],
+                   completion: @escaping((EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void)) {
         
         self.eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock) { (error, logs) in
             
@@ -60,19 +91,16 @@ public extension EthereumClient {
             var events: [ABIEvent] = []
             var unprocessed: [EthereumLog] = []
             
-            var eventTypesBySignature: [String: ABIEvent.Type] = [:]
-            for eventType in eventTypes {
-                if let sig = try? eventType.signature() {
-                    eventTypesBySignature[sig] = eventType
+            var filtersBySignature: [String: [EventFilter]] = [:]
+            for filter in matches {
+                if let sig = try? filter.type.signature() {
+                    var filters = filtersBySignature[sig, default: [EventFilter]()]
+                    filters.append(filter)
+                    filtersBySignature[sig] = filters
                 }
             }
             
-            for log in logs {
-                
-                guard let signature = log.topics.first, let eventType = eventTypesBySignature[signature] else {
-                    unprocessed.append(log)
-                    continue
-                }
+            let parseEvent: (EthereumLog, ABIEvent.Type) -> ABIEvent? = { log, eventType in
                 let topicTypes = eventType.types.enumerated()
                     .filter { eventType.typesIndexed[$0.offset] == true }
                     .compactMap { $0.element }
@@ -82,30 +110,45 @@ public extension EthereumClient {
                     .compactMap { $0.element }
                 
                 guard let data = try? ABIDecoder.decodeData(log.data, types: dataTypes, asArray: true) else {
-                    unprocessed.append(log)
-                    continue
+                    return nil
                 }
                 
                 guard data.count == dataTypes.count else {
+                    return nil
+                }
+                
+                let rawTopics = Array(log.topics.dropFirst())
+                
+                guard let parsedTopics = (try? zip(rawTopics, topicTypes).map { pair in
+                    try ABIDecoder.decodeData(pair.0, types: [pair.1])
+                    }) else {
+                        return nil
+                }
+                
+                guard let eventOpt = try? eventType.init(topics: parsedTopics.flatMap { $0 }, data: data, log: log), let event = eventOpt else {
+                    return nil
+                }
+
+                return event
+            }
+            
+            for log in logs {
+                guard let signature = log.topics.first,
+                    let filters = filtersBySignature[signature] else {
                     unprocessed.append(log)
                     continue
                 }
                 
-                let rawTopics = Array(log.topics.dropFirst())
-                    
-                guard let parsedTopics = (try? zip(rawTopics, topicTypes).map { pair in
-                    try ABIDecoder.decodeData(pair.0, types: [pair.1])
-                    }) else {
+                for filter in filters {
+                    let allowedSenders = Set(filter.allowedSenders)
+                    if allowedSenders.count > 0 && !allowedSenders.contains(log.address) {
                         unprocessed.append(log)
-                        continue
-                }
-                
-                guard let eventOpt = try? eventType.init(topics: parsedTopics.flatMap { $0 }, data: data, log: log), let event = eventOpt else {
+                    } else if let event = parseEvent(log, filter.type) {
+                        events.append(event)
+                    } else {
                         unprocessed.append(log)
-                    continue
+                    }
                 }
-                
-                events.append(event)
             }
             
             return completion(error, events, unprocessed)

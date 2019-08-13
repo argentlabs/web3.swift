@@ -39,7 +39,11 @@ public class ERC721: ERC165 {
             return
         }
         
-        client.getEvents(addresses: nil, topics: [ sig, nil, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self]) { (error, events, unprocessedLogs) in
+        client.getEvents(addresses: nil,
+                         topics: [ sig, nil, String(hexFromBytes: result)],
+                         fromBlock: fromBlock,
+                         toBlock: toBlock,
+                         eventTypes: [ERC721Events.Transfer.self]) { (error, events, unprocessedLogs) in
             
             if let events = events as? [ERC721Events.Transfer] {
                 return completion(error, events)

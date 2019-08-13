@@ -12,6 +12,7 @@ public protocol ABIEvent {
     static var name: String { get }
     static var types: [ABIType.Type] { get }
     static var typesIndexed: [Bool] { get }
+
     var log: EthereumLog { get }
     init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws
     

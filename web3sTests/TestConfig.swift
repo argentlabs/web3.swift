@@ -13,10 +13,10 @@ struct TestConfig {
     static let clientUrl = "https://ropsten.infura.io/MY_INFURA_URL"
     
     // A private key with some Ether, so that we can test sending transactions (pay for gas)
-    static let privateKey = "MY_PRIVATE_KEY"
+    static let privateKey = "0xdeadbeef"
     
     // This is the expected public key (address) from the above private key
-    static let publicKey = "MY_PUBLIC_KEY"
+    static let publicKey = "0xdeadbeef"
     
     // A test ERC20 token contract (BOKKY)
     static let erc20Contract = "0x583cbBb8a8443B38aBcC0c956beCe47340ea1367"

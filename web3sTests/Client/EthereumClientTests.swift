@@ -10,6 +10,28 @@ import XCTest
 @testable import web3swift
 import BigInt
 
+struct TransferMatchingSignatureEvent: ABIEvent {
+    public static let name = "Transfer"
+    public static let types: [ABIType.Type] = [ EthereumAddress.self , EthereumAddress.self , BigUInt.self]
+    public static let typesIndexed = [true, true, false]
+    public let log: EthereumLog
+    
+    public let from: EthereumAddress
+    public let to: EthereumAddress
+    public let value: BigUInt
+    
+    public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+        try TransferMatchingSignatureEvent.checkParameters(topics, data)
+        self.log = log
+        
+        self.from = try topics[0].decoded()
+        self.to = try topics[1].decoded()
+        
+        self.value = try data[0].decoded()
+    }
+}
+
+
 class EthereumClientTests: XCTestCase {
     var client: EthereumClient?
     var account: EthereumAccount?
@@ -18,7 +40,7 @@ class EthereumClientTests: XCTestCase {
     override func setUp() {
         super.setUp()
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
-        self.account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
+        self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         print("Public address: \(self.account?.address ?? "NONE")")
     }
     
@@ -28,7 +50,7 @@ class EthereumClientTests: XCTestCase {
     
     func testEthGetBalance() {
         let expectation = XCTestExpectation(description: "get remote balance")
-        client?.eth_getBalance(address: account!.address, block: .Latest, completion: { (error, balance) in
+        client?.eth_getBalance(address: account?.address ?? "", block: .Latest, completion: { (error, balance) in
             XCTAssertNotNil(balance, "Balance not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -240,6 +262,89 @@ class EthereumClientTests: XCTestCase {
             XCTAssertNotNil(error)
             XCTAssertNil(transaction)
             expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned() {
+        let expectation = XCTestExpectation(description: "get events")
+        
+        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        
+        client?.getEvents(addresses: nil,
+                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          fromBlock: .Earliest,
+                          toBlock: .Latest,
+                          eventTypes: [ERC20Events.Transfer.self]) { (error, events, logs) in
+            XCTAssertNil(error)
+            XCTAssertEqual(events.count, 2)
+            XCTAssertEqual(logs.count, 0)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned() {
+        let expectation = XCTestExpectation(description: "get events")
+        
+        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        
+        client?.getEvents(addresses: nil,
+                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          fromBlock: .Earliest,
+                          toBlock: .Latest,
+                          eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self]) { (error, events, logs) in
+                            XCTAssertNil(error)
+                            XCTAssertEqual(events.count, 4)
+                            XCTAssertEqual(logs.count, 0)
+                            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenContractFilter_WhenMatchingSingleTransferEvents_OnlyMatchingSourceEventReturned() {
+        let expectation = XCTestExpectation(description: "get events")
+        
+        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        let filters = [
+            EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
+        ]
+        
+        client?.getEvents(addresses: nil,
+                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          fromBlock: .Earliest,
+                          toBlock: .Latest,
+                          matching: filters) { (error, events, logs) in
+                            XCTAssertNil(error)
+                            XCTAssertEqual(events.count, 1)
+                            XCTAssertEqual(logs.count, 1)
+                            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testGivenContractFilter_WhenMatchingMultipleTransferEvents_OnlyMatchingSourceEventsReturned() {
+        let expectation = XCTestExpectation(description: "get events")
+        
+        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        let filters = [
+            EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")]),
+            EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
+        ]
+        
+        client?.getEvents(addresses: nil,
+                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          fromBlock: .Earliest,
+                          toBlock: .Latest,
+                          matching: filters) { (error, events, logs) in
+                            XCTAssertNil(error)
+                            XCTAssertEqual(events.count, 2)
+                            XCTAssertEqual(logs.count, 2)
+                            expectation.fulfill()
         }
         
         wait(for: [expectation], timeout: timeout)
