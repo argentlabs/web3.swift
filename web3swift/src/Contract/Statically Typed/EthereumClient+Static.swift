@@ -26,13 +26,13 @@ public extension ABIFunction {
         
     }
     
-    func call<T: ABIResponse>(withClient client: EthereumClient, responseType: T.Type, completion: @escaping((EthereumClientError?, T?) -> Void)) {
+    func call<T: ABIResponse>(withClient client: EthereumClient, responseType: T.Type, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, T?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
         }
         
-        client.eth_call(tx) { (error, res) in
+        client.eth_call(tx, block: block) { (error, res) in
             guard let res = res, error == nil else {
                 return completion(EthereumClientError.unexpectedReturnValue, nil)
             }
