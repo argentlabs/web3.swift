@@ -34,12 +34,16 @@ public class ERC721: ERC165 {
                                  fromBlock: EthereumBlock,
                                  toBlock: EthereumBlock,
                                  completion: @escaping((Error?, [ERC721Events.Transfer]?) -> Void)) {
-        guard let addressType = ABIRawType(type: EthereumAddress.self), let result = try? ABIEncoder.encode(recipient.value, forType: addressType), let sig = try? ERC20Events.Transfer.signature() else {
+        guard let addressType = ABIRawType(type: EthereumAddress.self), let result = try? ABIEncoder.encode(recipient.value, forType: addressType), let sig = try? ERC721Events.Transfer.signature() else {
             completion(EthereumSignerError.unknownError, nil)
             return
         }
         
-        client.getEvents(addresses: nil, topics: [ sig, nil, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self]) { (error, events, unprocessedLogs) in
+        client.getEvents(addresses: nil,
+                         topics: [ sig, nil, String(hexFromBytes: result)],
+                         fromBlock: fromBlock,
+                         toBlock: toBlock,
+                         eventTypes: [ERC721Events.Transfer.self]) { (error, events, unprocessedLogs) in
             
             if let events = events as? [ERC721Events.Transfer] {
                 return completion(error, events)
@@ -54,27 +58,61 @@ public class ERC721Metadata: ERC721 {
     public struct Token: Equatable, Decodable {
         public typealias PropertyType = Equatable & Decodable
         public struct Property<T: PropertyType>: Equatable, Decodable {
-            public let description: T
+            public var description: T
+        }
+        
+        enum CodingKeys: String, CodingKey {
+            case title
+            case type
+            case properties
+            case fallback_property_image = "image"
+            case fallback_property_description = "description"
+            case fallback_property_name = "name"
+        }
+        
+        public init(title: String?,
+                    type: String?,
+                    properties: Properties?) {
+            self.title = title
+            self.type = type
+            self.properties = properties
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.title = try? container.decode(String.self, forKey: .title)
+            self.type = try? container.decode(String.self, forKey: .type)
+            let properties = try? container.decode(Properties.self, forKey: .properties)
+            
+            if let properties = properties {
+                self.properties = properties
+            } else {
+                // try decoding properties from root directly
+                let name = try? container.decode(String.self, forKey: .fallback_property_name)
+                let image = try? container.decode(URL.self, forKey: .fallback_property_image)
+                let description = try? container.decode(String.self, forKey: .fallback_property_description)
+                if name != nil || image != nil || description != nil {
+                    self.properties = Properties(name: Property(description: name),
+                                                 description: Property(description: description),
+                                                 image: Property(description: image))
+                } else {
+                    self.properties = nil
+                }
+            }
         }
         
         public struct Properties: Equatable, Decodable {
-            public let name: Property<String>
-            public let description: Property<String>
-            public let image: Property<URL>
+            public var name: Property<String?>
+            public var description: Property<String?>
+            public var image: Property<URL?>
         }
         
-        public let title: String
-        public let type: String
-        public let properties: Properties
+        public var title: String?
+        public var type: String?
+        public var properties: Properties?
     }
     
-    static var interfaceID: Data {
-        return "name()".keccak256.bytes4 ^
-            "symbol()".keccak256.bytes4 ^
-            "tokenURI(uint256)".keccak256.bytes4
-    }
-    
-    private let session: URLSession
+    public let session: URLSession
     
     public init(client: EthereumClient, metadataSession: URLSession) {
         self.session = metadataSession
@@ -120,7 +158,8 @@ public class ERC721Metadata: ERC721 {
                         return completion(error, nil)
                     }
                     
-                    let task = self?.session.dataTask(with: response,
+                    let baseURL = response
+                    let task = self?.session.dataTask(with: baseURL,
                                                       completionHandler: { (data, response, error) in
                                                         guard let data = data else {
                                                             return completion(error, nil)
@@ -130,7 +169,11 @@ public class ERC721Metadata: ERC721 {
                                                         }
                                                         
                                                         do {
-                                                            let metadata = try JSONDecoder().decode(Token.self, from: data)
+                                                            var metadata = try JSONDecoder().decode(Token.self, from: data)
+                                                            
+                                                            if let image = metadata.properties?.image.description, image.host == nil, let relative = URL(string: image.absoluteString, relativeTo: baseURL) {
+                                                                metadata.properties?.image = Token.Property(description: relative)
+                                                            }
                                                             completion(nil, metadata)
                                                         } catch let decodeError {
                                                             completion(decodeError, nil)
@@ -143,12 +186,6 @@ public class ERC721Metadata: ERC721 {
 }
 
 public class ERC721Enumerable: ERC721 {
-    static var interfaceID: Data {
-        return "totalSupply()".keccak256.bytes4 ^
-            "tokenByIndex(uint256)".keccak256.bytes4 ^
-            "tokenOfOwnerByIndex(address,uint256)".keccak256.bytes4
-    }
-    
     public func totalSupply(contract: EthereumAddress,
                             completion: @escaping((Error?, BigUInt?) -> Void)) {
         let function = ERC721EnumerableFunctions.totalSupply(contract: contract)

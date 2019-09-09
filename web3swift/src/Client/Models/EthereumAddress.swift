@@ -13,12 +13,12 @@ public struct EthereumAddress: Codable, Hashable {
     public static let zero = EthereumAddress("0x0000000000000000000000000000000000000000")
     
     public init(_ value: String) {
-        self.value = value
+        self.value = value.lowercased()
     }
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.value = try container.decode(String.self)
+        self.value = try container.decode(String.self).lowercased()
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -27,10 +27,10 @@ public struct EthereumAddress: Codable, Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.value.lowercased())
+        hasher.combine(self.value)
     }
     
     public static func == (lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {
-        return lhs.value.lowercased() == rhs.value.lowercased()
+        return lhs.value == rhs.value
     }
 }

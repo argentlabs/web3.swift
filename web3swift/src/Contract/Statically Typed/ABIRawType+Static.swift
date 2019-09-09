@@ -11,6 +11,15 @@ import BigInt
 
 public protocol ABIType { }
 
+extension ABIType {
+    public func decoded<T: ABIType>() throws -> T {
+        guard let decoded = self as? T else {
+            throw ABIError.invalidValue
+        }
+        return decoded
+    }
+}
+
 extension String: ABIType { }
 extension Bool: ABIType { }
 extension EthereumAddress: ABIType { }
@@ -160,21 +169,35 @@ public struct Data32: ABIFixedSizeDataType {
 extension ABIRawType {
     init?(type: ABIType.Type) {
         switch type {
-        case is String.Type: self = ABIRawType.DynamicString
-        case is Bool.Type: self = ABIRawType.FixedBool
-        case is EthereumAddress.Type: self = ABIRawType.FixedAddress
-        case is BigInt.Type: self = ABIRawType.FixedInt(256)
-        case is BigUInt.Type: self = ABIRawType.FixedUInt(256)
-        case is UInt8.Type: self = ABIRawType.FixedUInt(8)
-        case is UInt16.Type: self = ABIRawType.FixedUInt(16)
-        case is UInt32.Type: self = ABIRawType.FixedUInt(32)
-        case is UInt64.Type: self = ABIRawType.FixedUInt(64)
-        case is URL.Type: self = ABIRawType.DynamicString
-        case is Data.Type: self = ABIRawType.DynamicBytes
+        case is String.Type:
+            self = ABIRawType.DynamicString
+        case is Bool.Type:
+            self = ABIRawType.FixedBool
+        case is EthereumAddress.Type:
+            self = ABIRawType.FixedAddress
+        case is BigInt.Type:
+            self = ABIRawType.FixedInt(256)
+        case is BigUInt.Type:
+            self = ABIRawType.FixedUInt(256)
+        case is UInt8.Type:
+            self = ABIRawType.FixedUInt(8)
+        case is UInt16.Type:
+            self = ABIRawType.FixedUInt(16)
+        case is UInt32.Type:
+            self = ABIRawType.FixedUInt(32)
+        case is UInt64.Type:
+            self = ABIRawType.FixedUInt(64)
+        case is URL.Type:
+            self = ABIRawType.DynamicString
+        case is Data.Type:
+            self = ABIRawType.DynamicBytes
         case is ABIFixedSizeDataType.Type:
             guard let fixed = type as? ABIFixedSizeDataType.Type else { return nil }
             self = ABIRawType.FixedBytes(fixed.fixedSize)
-        default: return nil
+        case is Array<EthereumAddress>.Type:
+            self = ABIRawType.DynamicArray(.FixedAddress)
+        default:
+            return nil
         }
     }
 }

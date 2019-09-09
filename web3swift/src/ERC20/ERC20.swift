@@ -51,7 +51,11 @@ public class ERC20 {
             return
         }
         
-        self.client.getEvents(addresses: nil, topics: [ sig, nil, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC20Events.Transfer.self]) { (error, events, unprocessedLogs) in
+        self.client.getEvents(addresses: nil,
+                              topics: [ sig, nil, String(hexFromBytes: result)],
+                              fromBlock: fromBlock,
+                              toBlock: toBlock,
+                              eventTypes: [ERC20Events.Transfer.self]) { (error, events, unprocessedLogs) in
             
             if let events = events as? [ERC20Events.Transfer] {
                 return completion(error, events)

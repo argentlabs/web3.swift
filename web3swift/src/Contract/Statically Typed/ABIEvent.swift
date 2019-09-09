@@ -12,15 +12,17 @@ public protocol ABIEvent {
     static var name: String { get }
     static var types: [ABIType.Type] { get }
     static var typesIndexed: [Bool] { get }
+
     var log: EthereumLog { get }
-    init?(topics: [String], data: [String], log: EthereumLog) throws
+    init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws
     
-    static func checkParameters(_ topics: [String], _ data: [ABIType]) throws
+    static func checkParameters(_ topics: [ABIType], _ data: [ABIType]) throws
+    
     static func signature() throws -> String
 }
 
 extension ABIEvent {
-    public static func checkParameters(_ topics: [String], _ data: [ABIType]) throws {
+    public static func checkParameters(_ topics: [ABIType], _ data: [ABIType]) throws {
         let indexedCount = Self.typesIndexed.filter { $0 == true }.count
         let unindexedCount = Self.typesIndexed.filter { $0 == false }.count
         

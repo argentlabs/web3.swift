@@ -20,14 +20,14 @@ public enum ERC20Events {
         public let to: EthereumAddress
         public let value: BigUInt
         
-        public init?(topics: [String], data: [String], log: EthereumLog) throws {
+        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
             try Transfer.checkParameters(topics, data)
             self.log = log
             
-            self.from = try ABIDecoder.decode(topics[0], to: EthereumAddress.self)
-            self.to = try ABIDecoder.decode(topics[1], to: EthereumAddress.self)
+            self.from = try topics[0].decoded()
+            self.to = try topics[1].decoded()
             
-            self.value = try ABIDecoder.decode(data[0], to: BigUInt.self)
+            self.value = try data[0].decoded()
         }
     }
 }

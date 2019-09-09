@@ -81,7 +81,8 @@ class ABIEncoderTests: XCTestCase {
         
         do {
             let encoded = try ABIEncoder.encode("0x63", forType: ABIRawType.FixedBytes(1))
-            XCTAssertEqual(String(hexFromBytes: encoded), "0x0000000000000000000000000000000000000000000000000000000000000063")
+            XCTAssertEqual(String(hexFromBytes: encoded),
+             "0x6300000000000000000000000000000000000000000000000000000000000000")
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
@@ -92,7 +93,7 @@ class ABIEncoderTests: XCTestCase {
         
         do {
             let encoded = try ABIEncoder.encode("0x616263", forType: ABIRawType.FixedBytes(3))
-            XCTAssertEqual(String(hexFromBytes: encoded), "0x0000000000000000000000000000000000000000000000000000000000616263")
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x6162630000000000000000000000000000000000000000000000000000000000")
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
@@ -104,6 +105,28 @@ class ABIEncoderTests: XCTestCase {
         do {
             let encoded = try ABIEncoder.encode("0x0200000000000000000000000050000000000000000000000000000000616263", forType: ABIRawType.FixedBytes(32))
             XCTAssertEqual(String(hexFromBytes: encoded), "0x0200000000000000000000000050000000000000000000000000000000616263")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testEncodeSmallDynamicBytes4Array() {
+        
+        do {
+            let encoded = try ABIEncoder.encode("0x01010101aabbccdd9988776678947894", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x000000000000000000000000000000000000000000000000000000000000000401010101aabbccdd998877667894789400000000000000000000000000000000")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testEncodeBigDynamicBytes4Array() {
+        
+        do {
+            let encoded = try ABIEncoder.encode("0x01010101aabbccdd99887766789478941234567891011121314151617181920212223443", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
+            XCTAssertEqual(String(hexFromBytes: encoded), "0x000000000000000000000000000000000000000000000000000000000000000901010101aabbccdd9988776678947894123456789101112131415161718192021222344300000000000000000000000000000000000000000000000000000000")
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
