@@ -1,5 +1,5 @@
 def all_pods
-  pod 'BigInt', '3.1.0'
+  pod 'BigInt', '5.0.0'
 end
 
 target 'web3swift' do
