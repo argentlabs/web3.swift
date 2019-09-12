@@ -29,7 +29,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeString() {
         let input = "dog"
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 4)
         
@@ -43,7 +43,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeLongString() {
         let input = "zoo255zoo255zzzzzzzzzzzzssssssssssssssssssssssssssssssssssssssssssssss"
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 72)
         
@@ -56,7 +56,7 @@ class RLPTests: XCTestCase {
 
     func testEncodeList() {
         let input = ["dog", "god", "cat"]
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 13)
         
@@ -68,7 +68,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeInt() {
         let input = 15
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 1)
         XCTAssertEqual(encoded[0], 15)
@@ -76,7 +76,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeLongInt() {
         let input = 1024
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 3)
         XCTAssertEqual(encoded[0], 130)
