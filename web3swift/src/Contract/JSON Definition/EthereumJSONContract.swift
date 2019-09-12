@@ -59,7 +59,7 @@ open class EthereumJSONContract: EthereumJSONContractProtocol {
         let types = inputs.map { $0.type }
         
         let bytes = try ABIEncoder.encode(function: function, args: args, types: types)
-        return Data(bytes: bytes)
+        return Data( bytes)
     }
     
     /// Generates the transaction for calling a function with a set of inputs.

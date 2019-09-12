@@ -92,7 +92,7 @@ class RLPTests: XCTestCase {
     }
     
     func testEncodeBigUInt() {
-        let input = BigUInt("9223372036854775807")!
+        let input = BigUInt("9223372036854775807")
         let encoded = RLP.encode(input)!
         XCTAssertEqual(encoded.hexString, "0x887fffffffffffffff")
     }
@@ -125,7 +125,7 @@ class RLPTests: XCTestCase {
         ]
         
         let encoded = RLP.encode(input)!
-        let expected = Data(bytes: [0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
+        let expected = Data( [0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
         
         XCTAssertEqual(expected, encoded)
     }
