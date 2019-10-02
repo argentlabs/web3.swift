@@ -50,9 +50,9 @@ class KeyUtil {
     }
     
     static func generateAddress(from publicKey: Data) -> String {
-        let hash = publicKey.keccak256
+        let hash = publicKey.web3.keccak256
         let address = hash.subdata(in: 12..<hash.count)
-        return address.hexString
+        return address.web3.hexString
     }
     
     static func sign(message: Data, with privateKey: Data, hashing: Bool) throws -> Data {
@@ -61,7 +61,7 @@ class KeyUtil {
             throw KeyUtilError.invalidContext
         }
 
-        let msg = ((hashing ? message.keccak256 : message) as NSData).bytes.assumingMemoryBound(to: UInt8.self)
+        let msg = ((hashing ? message.web3.keccak256 : message) as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         let privateKeyPtr = (privateKey as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         let signaturePtr = UnsafeMutablePointer<secp256k1_ecdsa_recoverable_signature>.allocate(capacity: 1)
         guard secp256k1_ecdsa_sign_recoverable(ctx, signaturePtr, msg, privateKeyPtr, nil, nil) == 1 else {

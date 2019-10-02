@@ -46,13 +46,13 @@ public class ABIFunctionEncoder {
     }
     
     public func encode(_ value: Data) throws {
-        let strValue = String(bytes: value.bytes)
+        let strValue = String(bytes: value.web3.bytes)
         guard let type = ABIRawType(type: Data.self) else { throw ABIError.invalidType }
         return try self.encode(type: type, value: strValue)
     }
     
     public func encode(_ value: Data, size: ABIFixedSizeDataType.Type) throws {
-        let strValue = String(bytes: value.bytes)
+        let strValue = String(bytes: value.web3.bytes)
         guard let type = ABIRawType(type: size) else { throw ABIError.invalidType }
         return try self.encode(type: type, value: strValue)
     }

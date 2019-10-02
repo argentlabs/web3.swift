@@ -22,13 +22,13 @@ class ERC165Tests: XCTestCase {
     }
     
     func test_InterfaceIDMatch() {
-        XCTAssertEqual(ERC165Functions.interfaceId.hexString, "0x01ffc9a7")
+        XCTAssertEqual(ERC165Functions.interfaceId.web3.hexString, "0x01ffc9a7")
     }
     
     func test_GivenInterfaceffff_returnsNotSupported() {
         let expect = expectation(description: "Supports own interface")
         erc165.supportsInterface(contract: address,
-                                 id: "0xffffffff".hexData!) { (error, supported) in
+                                 id: "0xffffffff".web3.hexData!) { (error, supported) in
             XCTAssertNil(error)
             XCTAssertEqual(supported, false)
             expect.fulfill()

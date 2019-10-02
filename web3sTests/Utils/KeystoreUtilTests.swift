@@ -21,9 +21,9 @@ class KeystoreUtilTests: XCTestCase {
     
     func testKeystoreEncode() {
         let password = "testpassword"
-        let salt = "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd".hexData!
-        let iv = "6087dab2f9fdbbfaddc31a909735c1e6".hexData!
-        let privateKey = "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d".hexData!
+        let salt = "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd".web3.hexData!
+        let iv = "6087dab2f9fdbbfaddc31a909735c1e6".web3.hexData!
+        let privateKey = "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d".web3.hexData!
 
         let encryptedData = try! KeystoreUtil.encode(privateKey: privateKey, password: password, salt: salt, iv: iv)
         let encryptedFile = try! JSONDecoder().decode(KeystoreFile.self, from: encryptedData)
@@ -46,7 +46,7 @@ class KeystoreUtilTests: XCTestCase {
         
         let privateKeyData = try! KeystoreUtil.decode(data: jsonData, password: "testpassword")
         
-        XCTAssertEqual(privateKeyData.hexString.noHexPrefix, "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d")
+        XCTAssertEqual(privateKeyData.web3.hexString.web3.noHexPrefix, "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d")
     }
     
 }

@@ -31,7 +31,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     public private(set) var hash: Data?
     var chainId: Int? {
         didSet {
-            self.hash = self.raw?.keccak256
+            self.hash = self.raw?.web3.keccak256
         }
     }
     
@@ -46,7 +46,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.chainId = chainId
         self.gas = nil
         self.blockNumber = nil
-        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
+        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.web3.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
         self.hash = RLP.encode(txArray)
     }
     
@@ -75,7 +75,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     }
     
     public var raw: Data? {
-        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
+        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.web3.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
 
         return RLP.encode(txArray)
     }
@@ -113,7 +113,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         self.gas = decodeHexUInt(.gas)
         self.nonce = decodeHexInt(.nonce)
         self.blockNumber = try? container.decode(EthereumBlock.self, forKey: .blockNumber)
-        self.hash = (try? container.decode(String.self, forKey: .hash))?.hexData
+        self.hash = (try? container.decode(String.self, forKey: .hash))?.web3.hexData
         self.chainId = nil
     }
     
@@ -122,13 +122,13 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
         try container.encode(to, forKey: .to)
         try? container.encode(from, forKey: .from)
         try? container.encode(data, forKey: .data)
-        try? container.encode(value?.hexString, forKey: .value)
-        try? container.encode(gasPrice?.hexString, forKey: .gasPrice)
-        try? container.encode(gasLimit?.hexString, forKey: .gasLimit)
-        try? container.encode(gas?.hexString, forKey: .gas)
-        try? container.encode(nonce?.hexString, forKey: .nonce)
+        try? container.encode(value?.web3.hexString, forKey: .value)
+        try? container.encode(gasPrice?.web3.hexString, forKey: .gasPrice)
+        try? container.encode(gasLimit?.web3.hexString, forKey: .gasLimit)
+        try? container.encode(gas?.web3.hexString, forKey: .gas)
+        try? container.encode(nonce?.web3.hexString, forKey: .nonce)
         try? container.encode(blockNumber, forKey: .blockNumber)
-        try? container.encode(hash?.hexString, forKey: .hash)
+        try? container.encode(hash?.web3.hexString, forKey: .hash)
     }
 }
 
@@ -141,17 +141,17 @@ struct SignedTransaction {
     init(transaction: EthereumTransaction, v: Int, r: Data, s: Data) {
         self.transaction = transaction
         self.v = v
-        self.r = r.strippingZeroesFromBytes
-        self.s = s.strippingZeroesFromBytes
+        self.r = r.web3.strippingZeroesFromBytes
+        self.s = s.web3.strippingZeroesFromBytes
     }
     
     var raw: Data? {
-        let txArray: [Any?] = [transaction.nonce, transaction.gasPrice, transaction.gasLimit, transaction.to.value.noHexPrefix, transaction.value, transaction.data, self.v, self.r, self.s]
+        let txArray: [Any?] = [transaction.nonce, transaction.gasPrice, transaction.gasLimit, transaction.to.value.web3.noHexPrefix, transaction.value, transaction.data, self.v, self.r, self.s]
 
         return RLP.encode(txArray)
     }
     
     var hash: Data? {
-        return raw?.keccak256
+        return raw?.web3.keccak256
     }
 }

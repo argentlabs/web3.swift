@@ -27,7 +27,7 @@ extension ABIDecoder {
     }
     
     public static func decode(_ data: String, type: String) throws -> Any {
-        guard let bytes = data.bytesFromHex else { throw ABIError.invalidValue }
+        guard let bytes = data.web3.bytesFromHex else { throw ABIError.invalidValue }
         guard let type = ABIRawType(rawValue: type) else { throw ABIError.invalidType }
         
         return try decode(bytes, forType: type, offset: 0)

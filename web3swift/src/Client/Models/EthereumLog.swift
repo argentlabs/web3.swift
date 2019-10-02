@@ -67,11 +67,11 @@ extension EthereumLog: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.removed, forKey: .removed)
-        if let bytes = self.logIndex?.bytes {
-            try? container.encode(String(bytes: bytes).withHexPrefix, forKey: .logIndex)
+        if let bytes = self.logIndex?.web3.bytes {
+            try? container.encode(String(bytes: bytes).web3.withHexPrefix, forKey: .logIndex)
         }
-        if let bytes = self.transactionIndex?.bytes {
-            try? container.encode(String(bytes: bytes).withHexPrefix, forKey: .transactionIndex)
+        if let bytes = self.transactionIndex?.web3.bytes {
+            try? container.encode(String(bytes: bytes).web3.withHexPrefix, forKey: .transactionIndex)
         }
         try? container.encode(self.transactionHash, forKey: .transactionHash)
         try? container.encode(self.blockHash, forKey: .blockHash)

@@ -23,7 +23,7 @@ public enum EthereumBlock: Hashable {
         case .Pending:
             return "pending"
         case .Number(let int):
-            return int.hexString
+            return int.web3.hexString
         }
     }
     

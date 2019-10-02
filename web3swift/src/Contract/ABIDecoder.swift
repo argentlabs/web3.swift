@@ -25,7 +25,7 @@ public class ABIDecoder {
             if data == "0x" {
                 type.isArray ? result.append([]) : result.append([""])
             } else {
-                guard let bytes = data.bytesFromHex else { throw ABIError.invalidValue }
+                guard let bytes = data.web3.bytesFromHex else { throw ABIError.invalidValue }
                 let decoded = try decode(bytes, forType: type, offset: offset)
                 result.append(decoded)
             }
@@ -46,7 +46,7 @@ public class ABIDecoder {
             guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first, let newOffset = Int(hex: offsetHex) else {
                 throw ABIError.invalidValue
             }
-            guard let sizeHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first, let bint = BigInt(hex: sizeHex.noHexPrefix) else {
+            guard let sizeHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first, let bint = BigInt(hex: sizeHex.web3.noHexPrefix) else {
                 throw ABIError.invalidValue
             }
             let size = Int(bint)
@@ -65,7 +65,7 @@ public class ABIDecoder {
             guard data.count > endIndex else { throw ABIError.invalidValue }
             let buf = Data(bytes: Array(data[startIndex...endIndex]))
             let bint = BigInt(twosComplement: buf)
-            return [String(hexFromBytes: bint.bytes)]
+            return [String(hexFromBytes: bint.web3.bytes)]
         case .FixedUInt(_):
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31

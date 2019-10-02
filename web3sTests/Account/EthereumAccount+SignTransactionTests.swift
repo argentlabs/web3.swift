@@ -35,9 +35,9 @@ class EthereumAccount_SignTests: XCTestCase {
         let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
         let signed = try! account.sign(tx)
         
-        let v = signed.v.hexString
-        let r = signed.r.hexString
-        let s = signed.s.hexString
+        let v = signed.v.web3.hexString
+        let r = signed.r.web3.hexString
+        let s = signed.s.web3.hexString
         
         XCTAssertEqual(v, "0x25")
         XCTAssertEqual(r, "0x28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276")
@@ -64,8 +64,8 @@ class EthereumAccount_SignTests: XCTestCase {
         let tx = EthereumTransaction(from: nil, to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainId)
         let signed = SignedTransaction(transaction: tx, v: v, r: r, s: s)
         
-        let raw = signed.raw!.hexString
-        let hash = signed.hash!.hexString
+        let raw = signed.raw!.web3.hexString
+        let hash = signed.hash!.web3.hexString
         
         XCTAssertEqual(raw, "0xf864808504a817c800825208943535353535353535353535353535353535353535808025a0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116da0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d")
         XCTAssertEqual(hash, "0xb1e2188bc490908a78184e4818dca53684167507417fdb4c09c2d64d32a9896a")

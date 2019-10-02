@@ -21,9 +21,9 @@ class HexExtensionsTests: XCTestCase {
     }
     
     func testIntToHexString() {
-        XCTAssertEqual(0.hexString, "0x0")
-        XCTAssertEqual(8.hexString, "0x8")
-        XCTAssertEqual(453504.hexString, "0x6eb80")
+        XCTAssertEqual(0.web3.hexString, "0x0")
+        XCTAssertEqual(8.web3.hexString, "0x8")
+        XCTAssertEqual(453504.web3.hexString, "0x6eb80")
     }
     
     func testIntFromHexString() {
@@ -51,20 +51,20 @@ class HexExtensionsTests: XCTestCase {
     
     func testDataToHexString() {
         let string = "0x68656c6c6f20776f726c64"
-        let data = string.hexData!
-        let dataToHex = data.hexString
+        let data = string.web3.hexData!
+        let dataToHex = data.web3.hexString
         XCTAssertEqual(dataToHex, string)
     }
     
     func testDataToHexStringFromBytes() {
         let data = Data(bytes: [43, 111])
-        let hexString = data.hexString
+        let hexString = data.web3.hexString
         XCTAssertEqual(hexString, "0x2b6f")
     }
     
     func testDataToHexStringRandom() {
         let data = Data.randomOfLength(8)!
-        XCTAssertEqual(data.hexString.count, 18)
+        XCTAssertEqual(data.web3.hexString.count, 18)
     }
     
     func testDataFromHexString() {
@@ -81,23 +81,23 @@ class HexExtensionsTests: XCTestCase {
     
     func testNoHexPrefixWith() {
         let string = "0x427131"
-        XCTAssertEqual(string.noHexPrefix, "427131")
+        XCTAssertEqual(string.web3.noHexPrefix, "427131")
     }
     
     func testNoHexPrefixWithout() {
         let string = "427131"
-        XCTAssertEqual(string.noHexPrefix, string)
+        XCTAssertEqual(string.web3.noHexPrefix, string)
     }
     
     func testHexStringToData() {
         let hexString = "2b6f"
-        let data = hexString.hexData
+        let data = hexString.web3.hexData
         XCTAssertEqual(data, Data(bytes: [43, 111]))
     }
     
     func testHexStringToDataPrefix() {
         let hexString = "0x2b6f"
-        let data = hexString.hexData
+        let data = hexString.web3.hexData
         XCTAssertEqual(data, Data(bytes: [43, 111]))
     }
     
@@ -108,7 +108,7 @@ class HexExtensionsTests: XCTestCase {
     
     func testHexStringToUTF8() {
         let hex = "0x68656c6c6f20776f726c64"
-        XCTAssertEqual(hex.stringValue, "hello world")
+        XCTAssertEqual(hex.web3.stringValue, "hello world")
     }
 }
 
