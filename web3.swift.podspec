@@ -22,6 +22,6 @@ Pod::Spec.new do |s|
   # Do not include the C libs in export
   s.public_header_files = 'web3swift/web3swift.h'
 
-  s.dependency = 'BigInt', { :git => 'https://github.com/attaswift/BigInt', :tag => 'v5.0.0' }
+  s.dependency = 'BigInt', '~> 4.0.0'
 
 end
