@@ -60,14 +60,14 @@ struct RLP {
         let data = buint.serialize()
         
         let lastIndex = data.count - 1
-        let firstIndex = data.index(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = data.firstIndex(where: {$0 != 0x00}) ?? lastIndex
         if lastIndex == -1 {
-            return Data(bytes: [0x80])
+            return Data( [0x80])
         }
         let subdata = data.subdata(in: firstIndex..<lastIndex+1)
         
         if subdata.count == 1 && subdata[0] == 0x00 {
-            return Data(bytes: [0x80])
+            return Data( [0x80])
         }
         
         return encodeData(data.subdata(in: firstIndex..<lastIndex+1))
@@ -126,7 +126,7 @@ struct RLP {
                 break
             }
         }
-        return Data(bytes: bytes.reversed())
+        return Data( bytes.reversed())
     }
     
 }

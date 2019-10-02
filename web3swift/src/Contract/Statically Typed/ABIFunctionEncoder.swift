@@ -94,7 +94,7 @@ public class ABIFunctionEncoder {
         let sig = try ABIEncoder.signature(name: name, types: types)
         let methodId = Array(sig.prefix(4))
         let allBytes = methodId + head + tail
-        return Data(bytes: allBytes)
+        return Data( allBytes)
     }
     
 }

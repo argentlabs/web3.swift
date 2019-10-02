@@ -37,7 +37,7 @@ public extension ABIFunction {
                 return completion(EthereumClientError.unexpectedReturnValue, nil)
             }
             
-            guard let response = (try? T(data: res)) as? T else {
+            guard let response = (try? T(data: res)) else {
                 return completion(EthereumClientError.decodeIssue, nil)
             }
             
@@ -125,7 +125,7 @@ public extension EthereumClient {
                         return nil
                 }
                 
-                guard let eventOpt = try? eventType.init(topics: parsedTopics.flatMap { $0 }, data: data, log: log), let event = eventOpt else {
+                guard let eventOpt = ((try? eventType.init(topics: parsedTopics.flatMap { $0 }, data: data, log: log)) as ABIEvent??), let event = eventOpt else {
                     return nil
                 }
 

@@ -37,7 +37,7 @@ class ABIFuncionEncoderTests: XCTestCase {
     }
     
     func testGivenNonEmptyData_ThenEncodesCorrectly() {
-        try! encoder.encode(Data(bytes: "hi".bytes))
+        try! encoder.encode(Data("hi".bytes))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.bytes), "0x2f570a23000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000026869000000000000000000000000000000000000000000000000000000000000")
     }

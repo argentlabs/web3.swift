@@ -14,7 +14,7 @@ extension BigUInt {
         let data = self.magnitude.serialize()
         let bytes = data.bytes
         let lastIndex = bytes.count - 1
-        let firstIndex = bytes.index(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
         
         if lastIndex < 0 {
             return Array([0])
@@ -40,7 +40,7 @@ extension BigInt {
         
         let bytes = data.bytes
         let lastIndex = bytes.count - 1
-        let firstIndex = bytes.index(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
         
         if lastIndex < 0 {
             return Array([0])
@@ -70,7 +70,7 @@ extension Data {
         while bytes.first == 0 {
             bytes.removeFirst()
         }
-        return Data.init(bytes: bytes)
+        return Data.init(bytes)
     }
     
     public var bytes4: Data {
@@ -82,7 +82,7 @@ extension Data {
             return lhsByte ^ rhsByte
         }
         
-        return Data(bytes: bytes)
+        return Data( bytes)
     }
 }
 

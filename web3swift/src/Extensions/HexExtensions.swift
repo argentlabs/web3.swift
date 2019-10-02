@@ -77,7 +77,7 @@ extension String {
     public var hexData: Data? {
         let noHexPrefix = self.noHexPrefix
         if let bytes = try? HexUtil.byteArray(fromHex: noHexPrefix) {
-            return Data(bytes: bytes)
+            return Data( bytes)
         }
         
         return nil
