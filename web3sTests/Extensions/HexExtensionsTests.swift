@@ -57,7 +57,7 @@ class HexExtensionsTests: XCTestCase {
     }
     
     func testDataToHexStringFromBytes() {
-        let data = Data(bytes: [43, 111])
+        let data = Data([43, 111])
         let hexString = data.web3.hexString
         XCTAssertEqual(hexString, "0x2b6f")
     }
@@ -92,13 +92,13 @@ class HexExtensionsTests: XCTestCase {
     func testHexStringToData() {
         let hexString = "2b6f"
         let data = hexString.web3.hexData
-        XCTAssertEqual(data, Data(bytes: [43, 111]))
+        XCTAssertEqual(data, Data( [43, 111]))
     }
     
     func testHexStringToDataPrefix() {
         let hexString = "0x2b6f"
         let data = hexString.web3.hexData
-        XCTAssertEqual(data, Data(bytes: [43, 111]))
+        XCTAssertEqual(data, Data( [43, 111]))
     }
     
     func testHexStringFromBytes() {

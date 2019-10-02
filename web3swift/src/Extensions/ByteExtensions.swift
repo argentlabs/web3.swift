@@ -14,7 +14,7 @@ public extension Web3Extensions where Base == BigUInt {
         let data = base.magnitude.serialize()
         let bytes = data.web3.bytes
         let lastIndex = bytes.count - 1
-        let firstIndex = bytes.index(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
         
         if lastIndex < 0 {
             return Array([0])
@@ -50,7 +50,7 @@ public extension Web3Extensions where Base == BigInt {
         
         let bytes = data.web3.bytes
         let lastIndex = bytes.count - 1
-        let firstIndex = bytes.index(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
         
         if lastIndex < 0 {
             return Array([0])
@@ -66,7 +66,7 @@ public extension Data {
             return lhsByte ^ rhsByte
         }
         
-        return Data(bytes: bytes)
+        return Data(bytes)
     }
 }
 
@@ -82,7 +82,7 @@ public extension Web3Extensions where Base == Data {
         while bytes.first == 0 {
             bytes.removeFirst()
         }
-        return Data.init(bytes: bytes)
+        return Data.init(bytes)
     }
     
     var bytes4: Data {
@@ -97,11 +97,11 @@ public extension String {
 }
 
 public extension Web3Extensions where Base == String {
-    public var bytes: [UInt8] {
+    var bytes: [UInt8] {
         return [UInt8](base.utf8)
     }
     
-    public var bytesFromHex: [UInt8]? {
+    var bytesFromHex: [UInt8]? {
         let hex = self.noHexPrefix
         do {
             let byteArray = try HexUtil.byteArray(fromHex: hex)

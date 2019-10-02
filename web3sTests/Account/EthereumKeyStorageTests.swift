@@ -26,7 +26,7 @@ class EthereumKeyStorageTests: XCTestCase {
         do {
             try keyStorage.storePrivateKey(key: randomData)
         } catch {
-            XCTFail()
+            XCTFail("Failed to save private key. Ensure key is valid in TestConfig.swift")
         }
     }
     
@@ -39,7 +39,7 @@ class EthereumKeyStorageTests: XCTestCase {
             let storedData = try keyStorage.loadPrivateKey()
             XCTAssertEqual(randomData, storedData)
         } catch {
-            XCTFail()
+            XCTFail("Failed to save private key. Ensure key is valid in TestConfig.swift")
         }
     }
 

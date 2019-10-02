@@ -63,7 +63,7 @@ public class ABIDecoder {
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
             guard data.count > endIndex else { throw ABIError.invalidValue }
-            let buf = Data(bytes: Array(data[startIndex...endIndex]))
+            let buf = Data( Array(data[startIndex...endIndex]))
             let bint = BigInt(twosComplement: buf)
             return [String(hexFromBytes: bint.web3.bytes)]
         case .FixedUInt(_):

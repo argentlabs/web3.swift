@@ -36,7 +36,7 @@ class ByteExtensionsTests: XCTestCase {
     
     func testBytesFromData() {
         let bytes: [UInt8] = [255, 0, 123, 64]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
         XCTAssertEqual(data.web3.bytes, bytes)
     }
     

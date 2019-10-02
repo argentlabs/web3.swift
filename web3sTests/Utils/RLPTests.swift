@@ -29,7 +29,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeString() {
         let input = "dog"
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 4)
         
@@ -43,7 +43,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeLongString() {
         let input = "zoo255zoo255zzzzzzzzzzzzssssssssssssssssssssssssssssssssssssssssssssss"
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 72)
         
@@ -56,7 +56,7 @@ class RLPTests: XCTestCase {
 
     func testEncodeList() {
         let input = ["dog", "god", "cat"]
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 13)
         
@@ -68,7 +68,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeInt() {
         let input = 15
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 1)
         XCTAssertEqual(encoded[0], 15)
@@ -76,7 +76,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeLongInt() {
         let input = 1024
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 3)
         XCTAssertEqual(encoded[0], 130)
@@ -92,7 +92,7 @@ class RLPTests: XCTestCase {
     }
     
     func testEncodeBigUInt() {
-        let input = BigUInt("9223372036854775807")!
+        let input = BigUInt("9223372036854775807")
         let encoded = RLP.encode(input)!
         XCTAssertEqual(encoded.web3.hexString, "0x887fffffffffffffff")
     }
@@ -125,7 +125,7 @@ class RLPTests: XCTestCase {
         ]
         
         let encoded = RLP.encode(input)!
-        let expected = Data(bytes: [0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
+        let expected = Data( [0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
         
         XCTAssertEqual(expected, encoded)
     }
