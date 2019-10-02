@@ -118,8 +118,8 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         var node = Data.init(count: 32)
         let labels = name.components(separatedBy: ".")
         for label in labels.reversed() {
-            node.append(label.keccak256)
-            node = node.keccak256
+            node.append(label.web3.keccak256)
+            node = node.web3.keccak256
         }
         return node.hexString
     }

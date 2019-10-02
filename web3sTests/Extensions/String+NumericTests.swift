@@ -20,16 +20,16 @@ class String_NumericTests: XCTestCase {
     }
     
     func testStringNumeric() {
-        XCTAssertTrue("493043".isNumeric)
-        XCTAssertTrue("12".isNumeric)
-        XCTAssertTrue("0".isNumeric)
-        XCTAssertTrue("98420342842".isNumeric)
-        XCTAssertTrue("493204385594385034583409583490583".isNumeric)
+        XCTAssertTrue("493043".web3.isNumeric)
+        XCTAssertTrue("12".web3.isNumeric)
+        XCTAssertTrue("0".web3.isNumeric)
+        XCTAssertTrue("98420342842".web3.isNumeric)
+        XCTAssertTrue("493204385594385034583409583490583".web3.isNumeric)
         
-        XCTAssertFalse("0x00".isNumeric)
-        XCTAssertFalse("hello world".isNumeric)
-        XCTAssertFalse("!9043".isNumeric)
-        XCTAssertFalse("#42044".isNumeric)
+        XCTAssertFalse("0x00".web3.isNumeric)
+        XCTAssertFalse("hello world".web3.isNumeric)
+        XCTAssertFalse("!9043".web3.isNumeric)
+        XCTAssertFalse("#42044".web3.isNumeric)
     }
     
 }

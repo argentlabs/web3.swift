@@ -56,7 +56,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
         // compute mac
         let macKey = derivedKey.subdata(in: 16..<32)
         let concat = macKey + ciphertext
-        let mac = concat.keccak256
+        let mac = concat.web3.keccak256
         
         // create keystore
         let crypto = KeystoreFileCrypto(
@@ -101,7 +101,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
         // verify mac
         let macKey = derivedKey.subdata(in: 16..<32)
         let concat = macKey + ciphertext
-        let mac = concat.keccak256
+        let mac = concat.web3.keccak256
         guard mac.hexString.noHexPrefix == keystore.crypto.mac else {
             throw KeystoreUtilError.corruptedKeystore
         }

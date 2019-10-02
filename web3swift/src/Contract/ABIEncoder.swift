@@ -19,7 +19,7 @@ public class ABIEncoder {
         
         switch type {
         case .FixedUInt(_):
-            guard value.isNumeric, let int = BigInt(value) else {
+            guard value.web3.isNumeric, let int = BigInt(value) else {
                 throw ABIError.invalidType
             }
             let bytes = int.bytes // should be <= 32 bytes
@@ -123,7 +123,7 @@ public class ABIEncoder {
         let typeNames = types.map { $0.rawValue }
         let signature = name + "(" + typeNames.joined(separator: ",") + ")"
         guard let data = signature.data(using: .utf8) else { throw ABIError.invalidSignature }
-        return data.keccak256.bytes
+        return data.web3.keccak256.bytes
     }
 }
 

@@ -29,7 +29,7 @@ public class ERC165 {
 
 public enum ERC165Functions {
     public static var interfaceId: Data {
-        return "supportsInterface(bytes4)".keccak256.bytes4
+        return "supportsInterface(bytes4)".web3.keccak256.bytes4
     }
     
     struct supportsInterface: ABIFunction {

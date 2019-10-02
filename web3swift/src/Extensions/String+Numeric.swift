@@ -8,8 +8,8 @@
 
 import Foundation
 
-extension String {
+extension Web3Extensions where Base == String {
     var isNumeric: Bool {
-        return !self.isEmpty && self.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil
+        return !self.base.isEmpty && self.base.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil
     }
 }

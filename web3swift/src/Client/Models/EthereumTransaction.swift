@@ -31,7 +31,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
     public private(set) var hash: Data?
     var chainId: Int? {
         didSet {
-            self.hash = self.raw?.keccak256
+            self.hash = self.raw?.web3.keccak256
         }
     }
     
@@ -152,6 +152,6 @@ struct SignedTransaction {
     }
     
     var hash: Data? {
-        return raw?.keccak256
+        return raw?.web3.keccak256
     }
 }
