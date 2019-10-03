@@ -72,9 +72,7 @@ public extension Data {
 
 public extension Web3Extensions where Base == Data {
     var bytes: [UInt8] {
-        var sigBytes = [UInt8](repeating: 0, count: base.count)
-        base.copyBytes(to: &sigBytes, count: base.count)
-        return sigBytes
+        return Array(base)
     }
     
     var strippingZeroesFromBytes: Data {
