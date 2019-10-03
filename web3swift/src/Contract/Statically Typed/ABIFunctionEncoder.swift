@@ -11,8 +11,6 @@ import BigInt
 
 public class ABIFunctionEncoder {
     private let name: String
-    private var head = [UInt8]()
-    private var tail = [UInt8]()
     private var types: [ABIRawType] = []
     
     public func encode(_ value: String) throws {
@@ -72,29 +70,54 @@ public class ABIFunctionEncoder {
         return try self.encode(type: type, value: String(hexFromBytes: bytes), size: value.count)
     }
 
+    private struct EncodedValue {
+        let encoded: [UInt8]
+        let isDynamic: Bool
+        let staticLength: Int
+    }
+    private var encodedValues = [EncodedValue]()
     private func encode(type: ABIRawType, value: String, size: Int = 1) throws {
         let result = try ABIEncoder.encode(value, forType: type, size: size)
-
+        
+        let staticLength: Int
         if type.isDynamic {
-            let pos = 32 + self.types.count*32 + tail.count
-            head += try ABIEncoder.encode(String(pos), forType: ABIRawType.FixedInt(256))
-            tail += result
+            staticLength = 32
         } else {
-            head += result
+            staticLength = 32 * size
         }
         
-        self.types.append(type)
+        encodedValues.append(EncodedValue(encoded: result, isDynamic: type.isDynamic, staticLength: staticLength))
+        types.append(type)
     }
     
     init(_ name: String) {
         self.name = name
     }
     
+    private func calculateData() -> [UInt8] {
+        var head = [UInt8]()
+        var tail = [UInt8]()
+        
+        let offset = encodedValues.map { $0.staticLength }.reduce(0, +)
+        
+        encodedValues.forEach {
+            if $0.isDynamic {
+                let position = offset + (tail.count)
+                head += try! ABIEncoder.encode(String(position), forType: ABIRawType.FixedInt(256))
+                tail += $0.encoded
+            } else {
+                head += $0.encoded
+            }
+        }
+        
+        return head + tail
+    }
+    
     func encoded() throws -> Data {
         let sig = try ABIEncoder.signature(name: name, types: types)
         let methodId = Array(sig.prefix(4))
-        let allBytes = methodId + head + tail
-        return Data( allBytes)
+        let allBytes = methodId + calculateData()
+        return Data(allBytes)
     }
     
 }
