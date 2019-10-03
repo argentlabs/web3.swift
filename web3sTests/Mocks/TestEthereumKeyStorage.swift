@@ -20,6 +20,6 @@ class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
     }
     
     func loadPrivateKey() throws -> Data {
-        return privateKey.hexData!
+        return privateKey.web3.hexData!
     }
 }

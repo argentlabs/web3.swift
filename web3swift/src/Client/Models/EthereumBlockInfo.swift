@@ -45,7 +45,7 @@ extension EthereumBlockInfo: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         try container.encode(number, forKey: .number)
-        try container.encode(Int(timestamp.timeIntervalSince1970).hexString, forKey: .timestamp)
+        try container.encode(Int(timestamp.timeIntervalSince1970).web3.hexString, forKey: .timestamp)
         try container.encode(transactions, forKey: .transactions)
     }
 }

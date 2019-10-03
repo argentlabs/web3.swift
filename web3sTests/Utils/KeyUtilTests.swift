@@ -27,20 +27,20 @@ class KeyUtilTests: XCTestCase {
     
     func testPublicKeyFromPrivateKeyGeneration() {
         let privateKeyHex = "77e15a8064e0a080fcf845694e0e9eaa3dea29659738f7aa2c8e3b26b48d9d7f"
-        guard let privateKey = privateKeyHex.hexData else {
+        guard let privateKey = privateKeyHex.web3.hexData else {
             XCTFail("Private key data incorrect")
             return
         }
         
         let publicKey = try! KeyUtil.generatePublicKey(from: privateKey)
-        let publicKeyHex = publicKey.hexString
+        let publicKeyHex = publicKey.web3.hexString
         
         XCTAssertEqual(publicKeyHex, "0x5544fbcbda6327d51982e9778615010423502564348d72f8adf96aeb0801c4988aea911f7080518b3a5520465f81358126f0d5120e6e1af858f653618a9c297b")
     }
     
     func testAddressFromPublicKeyGeneration() {        
         let privateKeyHex = "77e15a8064e0a080fcf845694e0e9eaa3dea29659738f7aa2c8e3b26b48d9d7f"
-        guard let privateKey = privateKeyHex.hexData else {
+        guard let privateKey = privateKeyHex.web3.hexData else {
             XCTFail("Private key data incorrect")
             return
         }

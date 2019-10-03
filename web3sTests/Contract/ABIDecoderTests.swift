@@ -57,7 +57,7 @@ class ABIDecoderTests: XCTestCase {
     func testDecodeString() {
         do {
             let decoded = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000147665726f6e696b612e617267656e742e74657374000000000000000000000000", types: ["string"]) as! [String]
-            XCTAssertEqual(decoded[0].stringValue, "veronika.argent.test")
+            XCTAssertEqual(decoded[0].web3.stringValue, "veronika.argent.test")
         } catch let error {
             print(error.localizedDescription)
             XCTFail()

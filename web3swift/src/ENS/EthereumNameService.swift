@@ -37,7 +37,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             return completion(EthereumNameServiceError.noNetwork, nil)
         }
         
-        let ensReverse = address.value.noHexPrefix + ".addr.reverse"
+        let ensReverse = address.value.web3.noHexPrefix + ".addr.reverse"
         guard let regContract = ENSRegistryContract(chainId: network.intValue, registryAddress: registryAddress), let registryTransaction = try? regContract.resolver(name: ensReverse) else {
             return completion(EthereumNameServiceError.contractIssue, nil)
         }
@@ -52,7 +52,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             }
             
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
-            let resolverAddress = EthereumAddress(String(resolverData[idx...]).withHexPrefix)
+            let resolverAddress = EthereumAddress(String(resolverData[idx...]).web3.withHexPrefix)
             let nameHash = EthereumNameService.nameHash(name: ensReverse)
             
             guard let resContract = ENSResolverContract(chainId: network.intValue, address: resolverAddress), let addressTransaction = try? resContract.name(namehash: nameHash) else {
@@ -64,7 +64,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                     return completion(EthereumNameServiceError.ensUnknown, nil)
                 }
                 if let ensHex = (try? ABIDecoder.decodeData(data, types: ["string"])[0]) as? String {
-                    completion(nil, ensHex.stringValue)
+                    completion(nil, ensHex.web3.stringValue)
                 } else {
                     completion(EthereumNameServiceError.decodeIssue, nil)
                 }
@@ -93,7 +93,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             }
             
             let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
-            let resolverAddress = EthereumAddress(String(resolverData[idx...]).withHexPrefix)
+            let resolverAddress = EthereumAddress(String(resolverData[idx...]).web3.withHexPrefix)
             
             guard let resContract = ENSResolverContract(chainId: network.intValue, address: resolverAddress), let addressTransaction = try? resContract.address(name: ens) else {
                 return completion(EthereumNameServiceError.contractIssue, nil)
@@ -118,10 +118,10 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         var node = Data.init(count: 32)
         let labels = name.components(separatedBy: ".")
         for label in labels.reversed() {
-            node.append(label.keccak256)
-            node = node.keccak256
+            node.append(label.web3.keccak256)
+            node = node.web3.keccak256
         }
-        return node.hexString
+        return node.web3.hexString
     }
     
 }
