@@ -79,29 +79,24 @@ class KeyDerivator {
     
     private func pbkdf2(hash :CCPBKDFAlgorithm, password: String, salt: Data, keyByteCount: Int, rounds: Int) -> Data? {
         guard let passwordData = password.data(using:String.Encoding.utf8) else { return nil }
-        var derivedKeyData = Data(repeating:0, count:keyByteCount)
-        var mutableDerivedKeyData = derivedKeyData
-        let derivationStatus = mutableDerivedKeyData.withUnsafeMutableBytes {derivedKeyBytes in
-            salt.withUnsafeBytes { saltBytes in
-                
-                CCKeyDerivationPBKDF(
-                    CCPBKDFAlgorithm(kCCPBKDF2),
-                    password, passwordData.count,
-                    saltBytes, salt.count,
-                    hash,
-                    UInt32(rounds),
-                    derivedKeyBytes, derivedKeyData.count)
-            }
-        }
-        
-        derivedKeyData = mutableDerivedKeyData
-        
-        if (derivationStatus != 0) {
+        var derivedKeyData = [UInt8](repeating: 0, count: keyByteCount)
+        var saltData = salt.web3.bytes
+        let derivationStatus = CCKeyDerivationPBKDF(
+            CCPBKDFAlgorithm(kCCPBKDF2),
+            password,
+            passwordData.count,
+            &saltData,
+            saltData.count,
+            hash,
+            UInt32(rounds),
+            &derivedKeyData,
+            derivedKeyData.count)
+
+        if derivationStatus != 0 {
             print("Error: \(derivationStatus)")
             return nil;
         }
-        
-        return derivedKeyData
+        return Data(derivedKeyData)
     }
     
 }
