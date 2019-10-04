@@ -10,5 +10,7 @@ target 'web3swift' do
   
   target 'web3swiftTests' do
     inherit! :search_paths
+
+    all_pods
   end
 end
