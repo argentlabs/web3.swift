@@ -168,10 +168,23 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testEthGetLogs() {
-        let expectation = XCTestExpectation(description: "send raw transaction")
+    func testSimpleEthGetLogs() {
+        let expectation = XCTestExpectation(description: "get logs")
         
-        client?.eth_getLogs(addresses: ["0x23d0a442580c01e420270fba6ca836a8b2353acb"], topics: nil, fromBlock: EthereumBlock.Number(0), toBlock: .Latest, completion: { (error, logs) in
+        client?.eth_getLogs(addresses: ["0x23d0a442580c01e420270fba6ca836a8b2353acb"], topics: nil, fromBlock: .Earliest, toBlock: .Latest, completion: { (error, logs) in
+            XCTAssertNotNil(logs, "Logs not available \(error?.localizedDescription ?? "no error")")
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testOrTopicsEthGetLogs() {
+        let expectation = XCTestExpectation(description: "get logs")
+
+        // Deposit/Withdrawal event to specific address
+        client?.eth_getLogs(addresses: nil, orTopics: [["0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c", "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65"], ["0x000000000000000000000000655ef694b98e55977a93259cb3b708560869a8f3"]], fromBlock: .Number(6540313), toBlock: .Number(6540397), completion: { (error, logs) in
+            XCTAssertEqual(logs?.count, 2)
             XCTAssertNotNil(logs, "Logs not available \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
