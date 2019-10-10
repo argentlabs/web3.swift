@@ -25,6 +25,7 @@ public protocol EthereumClientProtocol {
     func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
     func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
+    func eth_getLogs(addresses: [String]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
 }
 
@@ -284,6 +285,25 @@ public class EthereumClient: EthereumClientProtocol {
             }
         }
         
+    }
+    
+    public func eth_getLogs(addresses: [String]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+        struct CallParams: Encodable {
+            let fromBlock: String
+            let toBlock: String
+            let address: [String]?
+            let topics: [[String]?]?
+        }
+        
+        let params = CallParams(fromBlock: fromBlock.stringValue, toBlock: toBlock.stringValue, address: addresses, topics: orTopics)
+        
+        EthereumRPC.execute(session: session, url: url, method: "eth_getLogs", params: [params], receive: [EthereumLog].self) { (error, response) in
+            if let log = response as? [EthereumLog] {
+                completion(nil, log)
+            } else {
+                completion(EthereumClientError.unexpectedReturnValue, nil)
+            }
+        }
     }
     
     public func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void)) {
