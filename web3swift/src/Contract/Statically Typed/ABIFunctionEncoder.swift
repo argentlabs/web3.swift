@@ -9,9 +9,25 @@
 import Foundation
 import BigInt
 
+extension ABIFunction {
+    func decode(_ data: Data, expectedTypes: [ABIType.Type]) throws -> [ABIType] {
+        let encoder = ABIFunctionEncoder(Self.name)
+        try encode(to: encoder)
+        let rawTypes = encoder.types
+        let methodId = String(hexFromBytes: try ABIEncoder.methodId(name: Self.name, types: rawTypes))
+        var raw = data.web3.hexString
+        
+        guard raw.hasPrefix(methodId) else {
+            throw ABIError.invalidSignature
+        }
+        raw = raw.replacingOccurrences(of: methodId, with: "")
+        return try ABIDecoder.decodeData(raw, types: expectedTypes)
+    }
+}
+
 public class ABIFunctionEncoder {
     private let name: String
-    private var types: [ABIRawType] = []
+    private (set) var types: [ABIRawType] = []
     
     public func encode(_ value: String) throws {
         let strValue = value
@@ -90,7 +106,7 @@ public class ABIFunctionEncoder {
         types.append(type)
     }
     
-    init(_ name: String) {
+    public init(_ name: String) {
         self.name = name
     }
     
@@ -114,8 +130,7 @@ public class ABIFunctionEncoder {
     }
     
     func encoded() throws -> Data {
-        let sig = try ABIEncoder.signature(name: name, types: types)
-        let methodId = Array(sig.prefix(4))
+        let methodId = try ABIEncoder.methodId(name: name, types: types)
         let allBytes = methodId + calculateData()
         return Data(allBytes)
     }
