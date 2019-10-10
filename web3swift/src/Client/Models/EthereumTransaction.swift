@@ -18,7 +18,7 @@ public protocol EthereumTransactionProtocol {
     var hash: Data? { get }
 }
 
-public struct EthereumTransaction: EthereumTransactionProtocol, Codable {
+public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codable {
     public let from: EthereumAddress?
     public let to: EthereumAddress
     public let value: BigUInt?
