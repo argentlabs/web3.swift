@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 
 extension ABIFunction {
-    func decode(_ data: Data, expectedTypes: [ABIType.Type]) throws -> [ABIType] {
+    public func decode(_ data: Data, expectedTypes: [ABIType.Type]) throws -> [ABIType] {
         let encoder = ABIFunctionEncoder(Self.name)
         try encode(to: encoder)
         let rawTypes = encoder.types
