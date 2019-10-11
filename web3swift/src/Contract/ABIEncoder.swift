@@ -125,6 +125,11 @@ public class ABIEncoder {
         guard let data = signature.data(using: .utf8) else { throw ABIError.invalidSignature }
         return data.web3.keccak256.web3.bytes
     }
+    
+    static func methodId(name: String, types: [ABIRawType]) throws -> [UInt8] {
+        let signature = try Self.signature(name: name, types: types)
+        return Array(signature.prefix(4))
+    }
 }
 
 

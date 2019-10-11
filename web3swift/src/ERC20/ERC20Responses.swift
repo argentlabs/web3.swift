@@ -10,39 +10,39 @@ import Foundation
 import BigInt
 
 enum ERC20Responses {
-    struct nameResponse: ABIResponse {
-        static var types: [ABIType.Type] = [ String.self ]
-        let value: String
+    public struct nameResponse: ABIResponse {
+        public static var types: [ABIType.Type] = [ String.self ]
+        public let value: String
         
-        init?(values: [ABIType]) throws {
+        public init?(values: [ABIType]) throws {
             self.value = try values[0].decoded()
         }
     }
     
-    struct symbolResponse: ABIResponse {
-        static var types: [ABIType.Type] = [ String.self ]
-        let value: String
+    public struct symbolResponse: ABIResponse {
+        public static var types: [ABIType.Type] = [ String.self ]
+        public let value: String
         
-        init?(values: [ABIType]) throws {
+        public init?(values: [ABIType]) throws {
             self.value = try values[0].decoded()
         }
     }
     
-    struct decimalsResponse: ABIResponse {
-        static var types: [ABIType.Type] = [ BigUInt.self ]
-        let value: BigUInt
+    public struct decimalsResponse: ABIResponse {
+        public static var types: [ABIType.Type] = [ BigUInt.self ]
+        public let value: BigUInt
         
-        init?(values: [ABIType]) throws {
+        public init?(values: [ABIType]) throws {
             self.value = try values[0].decoded()
         }
     }
     
     
-    struct balanceResponse: ABIResponse {
-        static var types: [ABIType.Type] = [ BigUInt.self ]
-        let value: BigUInt
+    public struct balanceResponse: ABIResponse {
+        public static var types: [ABIType.Type] = [ BigUInt.self ]
+        public let value: BigUInt
         
-        init?(values: [ABIType]) throws {
+        public init?(values: [ABIType]) throws {
             self.value = try values[0].decoded()
         }
     }
