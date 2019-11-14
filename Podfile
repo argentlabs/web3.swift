@@ -1,5 +1,5 @@
 def all_pods
-  pod 'BigInt', '3.1.0'
+  pod 'BigInt', '4.0.0'
 end
 
 target 'web3swift' do
@@ -10,5 +10,7 @@ target 'web3swift' do
   
   target 'web3swiftTests' do
     inherit! :search_paths
+
+    all_pods
   end
 end

@@ -45,7 +45,7 @@ class TransactionTests: XCTestCase {
                                               gasLimit: 400000,
                                               chainId: 3)
 
-        XCTAssertEqual(transaction.hash?.hexString, "0xec010a83061a80a01639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde71748080038080")
+        XCTAssertEqual(transaction.hash?.web3.hexString, "0xec010a83061a80a01639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde71748080038080")
     }
     
     func test_GivenLocalTransaction_WhenTransactionWithoutChainID_HashIsNil() {
@@ -55,7 +55,7 @@ class TransactionTests: XCTestCase {
     func test_GivenTransactionWithoutChainID_WhenChainIDIsSet_HashIsCorrect() {
         var withChainId = withoutChainID
         withChainId.chainId = 3
-        XCTAssertEqual(withChainId.hash?.hexString, "0x91f25d392d2b9cb70acdd14bcaa08b596b16661e26fbf2fa8a05f68edf19fcea")
+        XCTAssertEqual(withChainId.hash?.web3.hexString, "0x91f25d392d2b9cb70acdd14bcaa08b596b16661e26fbf2fa8a05f68edf19fcea")
     }
 }
 

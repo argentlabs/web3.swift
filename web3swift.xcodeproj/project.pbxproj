@@ -59,8 +59,10 @@
 		3CF37CEB20372CA10030520E /* KeyDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CEA20372CA10030520E /* KeyDerivationTests.swift */; };
 		3CF37CF520373E320030520E /* Data+RandomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CF420373E320030520E /* Data+RandomTests.swift */; };
 		3CF37CF7203744400030520E /* KeystoreUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CF6203744400030520E /* KeystoreUtilTests.swift */; };
+		47127E89234F88F600C02C34 /* ABIFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47127E87234F881200C02C34 /* ABIFunctionTests.swift */; };
 		473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D9B8820F6297D00FD04BB /* TransactionTests.swift */; };
 		473E682F20CE7F80006D11AF /* EthereumBlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */; };
+		475E53E92344A4110071BF8B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475E53E82344A4110071BF8B /* Extensions.swift */; };
 		47ADCD9221AE9CA3006DE71F /* ABIFunctionEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */; };
 		47F2EA9B2284896A007063C2 /* ERC721Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EA992284894A007063C2 /* ERC721Tests.swift */; };
 		47F2EAA622848B5D007063C2 /* ERC721.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAA522848B5D007063C2 /* ERC721.swift */; };
@@ -198,8 +200,10 @@
 		3CF37CF420373E320030520E /* Data+RandomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+RandomTests.swift"; sourceTree = "<group>"; };
 		3CF37CF6203744400030520E /* KeystoreUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystoreUtilTests.swift; sourceTree = "<group>"; };
 		45FF08D408285DBA7FF4564A /* Pods-web3sTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3sTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3sTests/Pods-web3sTests.release.xcconfig"; sourceTree = "<group>"; };
+		47127E87234F881200C02C34 /* ABIFunctionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIFunctionTests.swift; sourceTree = "<group>"; };
 		473D9B8820F6297D00FD04BB /* TransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTests.swift; sourceTree = "<group>"; };
 		473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBlockInfo.swift; sourceTree = "<group>"; };
+		475E53E82344A4110071BF8B /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIFunctionEncoderTests.swift; sourceTree = "<group>"; };
 		47F2EA992284894A007063C2 /* ERC721Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721Tests.swift; sourceTree = "<group>"; };
 		47F2EAA522848B5D007063C2 /* ERC721.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721.swift; sourceTree = "<group>"; };
@@ -613,6 +617,7 @@
 				C9A78E502058498800CF8316 /* ABIEncoderTests.swift */,
 				C91A7E87206120EA0074D3B4 /* ABIDecoderTests.swift */,
 				47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */,
+				47127E87234F881200C02C34 /* ABIFunctionTests.swift */,
 			);
 			path = Contract;
 			sourceTree = "<group>";
@@ -669,6 +674,7 @@
 				C9A78E66205878AE00CF8316 /* KeccakExtensions.swift */,
 				C9A78E68205878B900CF8316 /* Data+Random.swift */,
 				C9A78E58205851D700CF8316 /* String+Numeric.swift */,
+				475E53E82344A4110071BF8B /* Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -801,7 +807,7 @@
 				3CF37C31203437D70030520E /* Sources */,
 				3CF37C32203437D70030520E /* Frameworks */,
 				3CF37C33203437D70030520E /* Resources */,
-				E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */,
+				A6303754DBACDB84D7B01396 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -825,11 +831,12 @@
 				TargetAttributes = {
 					3CF37C2B203437D70030520E = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 0920;
+						LastSwiftMigration = 1100;
 						ProvisioningStyle = Manual;
 					};
 					3CF37C34203437D70030520E = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1100;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -907,24 +914,22 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E8847751458FAFDA423AAC9A /* [CP] Embed Pods Frameworks */ = {
+		A6303754DBACDB84D7B01396 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
-				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -954,6 +959,7 @@
 				C927FD57204EAD6E005922DC /* EthereumKeyStorage.swift in Sources */,
 				C9D43D25207CED1D00685FB6 /* ABIDecoder+Static.swift in Sources */,
 				C9A78E5F2058735500CF8316 /* EthereumJSONContract.swift in Sources */,
+				475E53E92344A4110071BF8B /* Extensions.swift in Sources */,
 				C9F836C1207B932E004F45A9 /* ABIFunction.swift in Sources */,
 				C91A7E82205C1F1B0074D3B4 /* ABIDecoder.swift in Sources */,
 				3CF37CC22036CF6C0030520E /* KeystoreUtil.swift in Sources */,
@@ -1020,6 +1026,7 @@
 				473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */,
 				47ADCD9221AE9CA3006DE71F /* ABIFunctionEncoderTests.swift in Sources */,
 				C9A78E652058787300CF8316 /* ENSTests.swift in Sources */,
+				47127E89234F88F600C02C34 /* ABIFunctionTests.swift in Sources */,
 				C91A7E8E206144CC0074D3B4 /* TestConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1176,7 +1183,7 @@
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(SRCROOT)/web3swift/lib/**";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1204,7 +1211,7 @@
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(SRCROOT)/web3swift/lib/**";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(SRCROOT)/web3swift/lib/**";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1220,7 +1227,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = web3.swift.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1236,7 +1243,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = web3.swift.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

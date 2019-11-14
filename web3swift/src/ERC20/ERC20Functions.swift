@@ -9,48 +9,156 @@
 import Foundation
 import BigInt
 
-enum ERC20Functions {
-    struct name: ABIFunction {
-        static let name = "name"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+public enum ERC20Functions {
+    public struct name: ABIFunction {
+        public static let name = "name"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil) {
+            self.contract = contract
+            self.from = from
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
         }
     }
     
-    struct symbol: ABIFunction {
-        static let name = "symbol"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct symbol: ABIFunction {
+        public static let name = "symbol"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws { }
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil) {
+            self.contract = contract
+            self.from = from
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws { }
     }
     
-    struct decimals: ABIFunction {
-        static let name = "decimals"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct decimals: ABIFunction {
+        public static let name = "decimals"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws { }
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil) {
+            self.contract = contract
+            self.from = from
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws { }
     }
     
-    struct balanceOf: ABIFunction {
-        static let name = "balanceOf"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let account: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct balanceOf: ABIFunction {
+        public static let name = "balanceOf"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let account: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    account: EthereumAddress) {
+            self.contract = contract
+            self.from = from
+            self.account = account
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
             try encoder.encode(account)
+        }
+    }
+    
+    public struct approve: ABIFunction {
+        public static let name = "approve"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
+        
+        public let spender: EthereumAddress
+        public let value: BigUInt
+        
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    spender: EthereumAddress,
+                    value: BigUInt) {
+            self.contract = contract
+            self.from = from
+            self.spender = spender
+            self.value = value
+        }
+
+        public func encode(to encoder: ABIFunctionEncoder) throws {
+            try encoder.encode(spender)
+            try encoder.encode(value)
+        }
+    }
+    
+    public struct transfer: ABIFunction {
+        public static let name = "transfer"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
+        
+        public let to: EthereumAddress
+        public let value: BigUInt
+        
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    to: EthereumAddress,
+                    value: BigUInt) {
+            self.contract = contract
+            self.from = from
+            self.to = to
+            self.value = value
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
+            try encoder.encode(to)
+            try encoder.encode(value)
+        }
+    }
+    
+    public struct transferFrom: ABIFunction {
+        public static let name = "transferFrom"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
+        
+        public let sender: EthereumAddress
+        public let to: EthereumAddress
+        public let value: BigUInt
+        
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    sender: EthereumAddress,
+                    to: EthereumAddress,
+                    value: BigUInt) {
+            self.contract = contract
+            self.from = from
+            self.sender = sender
+            self.to = to
+            self.value = value
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
+            try encoder.encode(sender)
+            try encoder.encode(to)
+            try encoder.encode(value)
         }
     }
 }

@@ -56,16 +56,16 @@ class KeystoreUtil: KeystoreUtilProtocol {
         // compute mac
         let macKey = derivedKey.subdata(in: 16..<32)
         let concat = macKey + ciphertext
-        let mac = concat.keccak256
+        let mac = concat.web3.keccak256
         
         // create keystore
         let crypto = KeystoreFileCrypto(
             cipher: "aes-128-ctr",
-            cipherparams: KeystoreFileCryptoCipherParams(iv: iv.hexString.noHexPrefix),
-            ciphertext: ciphertext.hexString.noHexPrefix,
+            cipherparams: KeystoreFileCryptoCipherParams(iv: iv.web3.hexString.web3.noHexPrefix),
+            ciphertext: ciphertext.web3.hexString.web3.noHexPrefix,
             kdf: keyDerivator.algorithm.function(),
-            kdfparams: KeystoreFileCryptoKdfParams(c: self.dkround, dklen: self.dklen, prf: keyDerivator.algorithm.hash(), salt: salt.hexString.noHexPrefix),
-            mac: mac.hexString.noHexPrefix)
+            kdfparams: KeystoreFileCryptoKdfParams(c: self.dkround, dklen: self.dklen, prf: keyDerivator.algorithm.hash(), salt: salt.web3.hexString.web3.noHexPrefix),
+            mac: mac.web3.hexString.web3.noHexPrefix)
         
         let keystore = KeystoreFile(crypto: crypto, address: address, version: 3)
         
@@ -101,14 +101,14 @@ class KeystoreUtil: KeystoreUtilProtocol {
         // verify mac
         let macKey = derivedKey.subdata(in: 16..<32)
         let concat = macKey + ciphertext
-        let mac = concat.keccak256
-        guard mac.hexString.noHexPrefix == keystore.crypto.mac else {
+        let mac = concat.web3.keccak256
+        guard mac.web3.hexString.web3.noHexPrefix == keystore.crypto.mac else {
             throw KeystoreUtilError.corruptedKeystore
         }
         
         // decrypt ciphertext with encryption key
         let encKey = derivedKey.subdata(in: 0..<16)
-        let iv = keystore.crypto.cipherparams.iv.hexData
+        let iv = keystore.crypto.cipherparams.iv.web3.hexData
         let decryptor = Aes128Util(key: encKey, iv: iv)
         let privateKey = decryptor.xcrypt(input: ciphertext)
         

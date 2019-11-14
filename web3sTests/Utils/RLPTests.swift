@@ -24,12 +24,12 @@ class RLPTests: XCTestCase {
         let input = ""
         let encoded = RLP.encode(input)!
         
-        XCTAssertTrue(encoded.hexString == "0x80")
+        XCTAssertTrue(encoded.web3.hexString == "0x80")
     }
     
     func testEncodeString() {
         let input = "dog"
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 4)
         
@@ -38,12 +38,12 @@ class RLPTests: XCTestCase {
         XCTAssertEqual(encoded[2], 111)
         XCTAssertEqual(encoded[3], 103)
         
-        XCTAssertTrue(encoded.hexString == "0x83646f67")
+        XCTAssertTrue(encoded.web3.hexString == "0x83646f67")
     }
     
     func testEncodeLongString() {
         let input = "zoo255zoo255zzzzzzzzzzzzssssssssssssssssssssssssssssssssssssssssssssss"
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 72)
         
@@ -56,7 +56,7 @@ class RLPTests: XCTestCase {
 
     func testEncodeList() {
         let input = ["dog", "god", "cat"]
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 13)
         
@@ -68,7 +68,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeInt() {
         let input = 15
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 1)
         XCTAssertEqual(encoded[0], 15)
@@ -76,7 +76,7 @@ class RLPTests: XCTestCase {
     
     func testEncodeLongInt() {
         let input = 1024
-        var encoded = RLP.encode(input)!
+        let encoded = RLP.encode(input)!
         
         XCTAssertEqual(encoded.count, 3)
         XCTAssertEqual(encoded[0], 130)
@@ -88,25 +88,25 @@ class RLPTests: XCTestCase {
     func testEncodeEther() {
         let input = BigInt(42000000000)
         let encoded = RLP.encode(input)!
-        XCTAssertEqual(encoded.hexString, "0x8509c7652400")
+        XCTAssertEqual(encoded.web3.hexString, "0x8509c7652400")
     }
     
     func testEncodeBigUInt() {
-        let input = BigUInt("9223372036854775807")!
+        let input = BigUInt("9223372036854775807")
         let encoded = RLP.encode(input)!
-        XCTAssertEqual(encoded.hexString, "0x887fffffffffffffff")
+        XCTAssertEqual(encoded.web3.hexString, "0x887fffffffffffffff")
     }
     
     func testEncodeZero() {
         let input = 0
         let encoded = RLP.encode(input)!
-        XCTAssertEqual(encoded.hexString, "0x80")
+        XCTAssertEqual(encoded.web3.hexString, "0x80")
     }
     
     func testEncodeEncodedZero() {
         let input = "0x00"
         let encoded = RLP.encode(input)!
-        XCTAssertEqual(encoded.hexString, "0x00")
+        XCTAssertEqual(encoded.web3.hexString, "0x00")
     }
     
     func testEncodeNestedList() {
@@ -125,7 +125,7 @@ class RLPTests: XCTestCase {
         ]
         
         let encoded = RLP.encode(input)!
-        let expected = Data(bytes: [0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
+        let expected = Data( [0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
         
         XCTAssertEqual(expected, encoded)
     }
@@ -146,7 +146,7 @@ class RLPTests: XCTestCase {
             let encoded = RLP.encode(input)!
             let expected = output.lowercased()
             
-            XCTAssertEqual(expected, encoded.hexString.noHexPrefix, "\(key) failed for \(input)")
+            XCTAssertEqual(expected, encoded.web3.hexString.web3.noHexPrefix, "\(key) failed for \(input)")
         })
     }
     

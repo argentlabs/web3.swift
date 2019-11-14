@@ -38,7 +38,7 @@ extension ABIDecoder {
     }
     
     public static func decode(_ data: ParsedABIEntry, to: String.Type) throws -> String {
-        return data.stringValue
+        return data.web3.stringValue
     }
     
     public static func decode(_ data: ParsedABIEntry, to: Bool.Type) throws -> Bool {

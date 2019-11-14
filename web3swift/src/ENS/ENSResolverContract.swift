@@ -29,7 +29,7 @@ class ENSResolverContract: EthereumJSONContract {
     }
     
     func name(address: String) throws -> EthereumTransaction {
-        let ens = address.noHexPrefix + ".addr.reverse"
+        let ens = address.web3.noHexPrefix + ".addr.reverse"
         let namehash = EthereumNameService.nameHash(name: ens)
         return try self.name(namehash: namehash)
     }
