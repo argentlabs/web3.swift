@@ -45,8 +45,76 @@ client.eth_getPrice { (error, currentPrice) in
 }
 ```
 
-For more advanced use, you will find support for smart contract parsing. This can be from an ABI JSON definition (e.g. ENS), or by creating strictly typed functions and responses (e.g. ERC20 and ERC721).
+### Smart contracts: Static types
 
+Given a smart contract function ABI like ERC20 `transfer`:
+```
+function transfer(address recipient, uint256 amount) public returns (bool)
+```
+
+then you can define an `ABIFunction` with corresponding encodable Swift types like so:
+```
+public struct transfer: ABIFunction {
+        public static let name = "transfer"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
+
+        public let to: EthereumAddress
+        public let value: BigUInt
+
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    to: EthereumAddress,
+                    value: BigUInt) {
+            self.contract = contract
+            self.from = from
+            self.to = to
+            self.value = value
+        }
+
+        public func encode(to encoder: ABIFunctionEncoder) throws {
+            try encoder.encode(to)
+            try encoder.encode(value)
+        }
+    }
+```
+
+This function can be used to generate contract call transactions to send with the client:
+```
+let function = transfer(contract: EthereumAddress("0xtokenaddress"), from: EthereumAddress("0xfrom"), to: EthereumAddress("0xto"), value: 100)
+let transaction = try function.transaction()
+
+client.eth_sendRawTransaction(transacton, withAccount: account) { (error, txHash) in
+    print("TX Hash: \(txHash)")
+}
+```
+
+### Data types
+
+The library provides some types and helpers to make interacting with web3 and Ethereum easier.
+
+- `EthereumAddress`: For representation of addresses, including checksum support.
+- `BigInt` and `BigUInt`: Using [BigInt](https://github.com/attaswift/BigInt) library
+- `EthereumBlock`: Represents the block, either number of RPC-specific defintions like 'Earliest' or 'Latest'
+- `EthereumTransaction`: Wraps a transaction. Encoders and decoders can work with it to generate proper `data` fields.
+
+
+### ERC20
+
+We support querying ERC20 token data via the `ERC20` struct. Calls allow to:
+- Get the token symbol, name, and decimals
+- Get a token balance
+- Retrieve `Transfer` events
+
+### ERC721
+
+We support querying ERC721 token data via the `ERC721` struct. Including:
+- Get the token symbol, name, and decimals
+- Get a token balance
+- Retrieve `Transfer` events
+- Decode standard JSON for NFT metadata. Please be aware some smart contracts are not 100% compliant with standard.
 
 ### Running Tests
 
