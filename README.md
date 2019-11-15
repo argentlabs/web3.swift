@@ -100,6 +100,21 @@ The library provides some types and helpers to make interacting with web3 and Et
 - `EthereumBlock`: Represents the block, either number of RPC-specific defintions like 'Earliest' or 'Latest'
 - `EthereumTransaction`: Wraps a transaction. Encoders and decoders can work with it to generate proper `data` fields.
 
+#### Conversion from and to Foundation types
+
+All extensions are namespaced under '<type>'.web3. So for example, to convert an `Int` to a hex string:
+    
+```
+let gwei = 100
+let hexgwei = gwei.web3.hexString
+```
+
+Supported conversions:
+- Convert from hex byte string ("0xabc") to `Data`
+- Convert from hex byte string ("0xabc") to `Int`
+- Convert from hex byte string ("0xabc") to `BigUInt`
+- Convert `String`, `Int`, `BigUInt`, `Data` to a hex byte string ("0xabc")
+- Add or remove hex prefixes when working with `String`
 
 ### ERC20
 
