@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'web3.swift'
-  s.version = '0.3.0'
+  s.version = '0.3.1'
   s.license = 'MIT'
   s.summary = 'Ethereum API for Swift'
   s.homepage = 'https://github.com/argentlabs/web3.swift'
@@ -22,6 +22,6 @@ Pod::Spec.new do |s|
   # Do not include the C libs in export
   s.public_header_files = 'web3swift/web3swift.h'
 
-  s.dependency 'BigInt', '~> 4.0.0'
+  s.dependency 'BigInt', '~> 5.0.0'
 
 end
