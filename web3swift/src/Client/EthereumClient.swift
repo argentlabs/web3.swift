@@ -39,28 +39,12 @@ public enum EthereumClientError: Error {
 
 public class EthereumClient: EthereumClientProtocol {
     public let url: URL
-    private let sessionConfig: URLSessionConfiguration
     private var retreivedNetwork: EthereumNetwork?
-
-    private lazy var networkQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "web3swift.client.networkQueue"
-        queue.qualityOfService = .background
-        queue.maxConcurrentOperationCount = 4
-        return queue
-    }()
     
-    private lazy var concurrentQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "web3swift.client.rawTxQueue"
-        queue.qualityOfService = .background
-        queue.maxConcurrentOperationCount = 1
-        return queue
-    }()
+    private let networkQueue: OperationQueue
+    private let concurrentQueue: OperationQueue
     
-    public lazy var session: URLSession = {
-        return URLSession(configuration: self.sessionConfig, delegate: nil, delegateQueue: self.networkQueue)
-    }()
+    public let session: URLSession
     
     public var network: EthereumNetwork? {
         if let _ = self.retreivedNetwork {
@@ -85,7 +69,19 @@ public class EthereumClient: EthereumClientProtocol {
     
     required public init(url: URL, sessionConfig: URLSessionConfiguration) {
         self.url = url
-        self.sessionConfig = sessionConfig
+        let networkQueue = OperationQueue()
+        networkQueue.name = "web3swift.client.networkQueue"
+        networkQueue.qualityOfService = .background
+        networkQueue.maxConcurrentOperationCount = 4
+        self.networkQueue = networkQueue
+        
+        let txQueue = OperationQueue()
+        txQueue.name = "web3swift.client.rawTxQueue"
+        txQueue.qualityOfService = .background
+        txQueue.maxConcurrentOperationCount = 1
+        self.concurrentQueue = txQueue
+        
+        self.session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: networkQueue)
     }
     
     required public convenience init(url: URL) {
