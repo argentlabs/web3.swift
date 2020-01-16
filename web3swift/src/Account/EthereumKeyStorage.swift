@@ -20,6 +20,8 @@ public enum EthereumKeyStorageError: Error {
 }
 
 public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
+    public init() {}
+    
     private var localPath: String? {
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             return url.appendingPathComponent("EthereumKey").path
