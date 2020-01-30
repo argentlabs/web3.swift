@@ -33,7 +33,7 @@ let account = try? EthereumAccount.create(keyStorage: keyStorage, keystorePasswo
 Create an instance of `EthereumClient`. This will then provide you access to a set of functions for interacting with the Blockchain.
 
 ```
-guard let clientUrl = URL("https://an-infura-or-similar-url.com/123") else { return }
+guard let clientUrl = URL(string: "https://an-infura-or-similar-url.com/123") else { return }
 let client = EthereumClient(url: clientUrl)
 ```
 
