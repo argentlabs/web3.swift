@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'web3.swift'
-  s.version = '0.3.3'
+  s.version = '0.3.4'
   s.license = 'MIT'
   s.summary = 'Ethereum API for Swift'
   s.homepage = 'https://github.com/argentlabs/web3.swift'
