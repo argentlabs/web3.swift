@@ -36,8 +36,7 @@ enum ERC20Responses {
             self.value = try values[0].decoded()
         }
     }
-    
-    
+
     public struct balanceResponse: ABIResponse {
         public static var types: [ABIType.Type] = [ BigUInt.self ]
         public let value: BigUInt
