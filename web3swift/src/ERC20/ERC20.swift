@@ -44,6 +44,13 @@ public class ERC20 {
         }
     }
     
+    public func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completion: @escaping((Error?, BigUInt?) -> Void)) {
+        let function = ERC20Functions.allowance(contract: tokenContract, owner: address, spender: spender)
+        function.call(withClient: self.client, responseType: ERC20Responses.balanceResponse.self) { (error, balanceResponse) in
+            return completion(error, balanceResponse?.value)
+        }
+    }
+    
     public func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void)) {
         
         guard let addressType = ABIRawType(type: EthereumAddress.self), let result = try? ABIEncoder.encode(recipient.value, forType: addressType), let sig = try? ERC20Events.Transfer.signature() else {
