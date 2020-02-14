@@ -40,7 +40,7 @@ let client = EthereumClient(url: clientUrl)
 You can then interact with the client methods, such as to get the current gas price:
 
 ```
-client.eth_getPrice { (error, currentPrice) in
+client.eth_gasPrice { (error, currentPrice) in
     print("The current gas price is \(currentPrice)")
 }
 ```
