@@ -59,6 +59,22 @@ public enum ERC20Functions {
         public func encode(to encoder: ABIFunctionEncoder) throws { }
     }
     
+    public struct totalSupply: ABIFunction {
+        public static let name = "totalSupply"
+        public let gasPrice: BigUInt? = nil
+        public let gasLimit: BigUInt? = nil
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
+        
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil) {
+            self.contract = contract
+            self.from = from
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws { }
+    }
+    
     public struct balanceOf: ABIFunction {
         public static let name = "balanceOf"
         public let gasPrice: BigUInt? = nil

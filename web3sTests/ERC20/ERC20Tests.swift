@@ -65,6 +65,16 @@ class ERC20Tests: XCTestCase {
         waitForExpectations(timeout: 10)
     }
     
+    func testTotalSupply() {
+        let expect = expectation(description: "Get total supply")
+        erc20?.totalSupply(tokenContract: EthereumAddress("0x820e5885a15234258cdb40c5911884232c70f3b5") /* Fixed Supply Token */, completion: { (error, totalSupply) in
+            XCTAssertNil(error)
+            XCTAssertEqual(totalSupply, BigUInt(1_000_000_000).web3.toWei)
+            expect.fulfill()
+        })
+        waitForExpectations(timeout: 10)
+    }
+    
     func testTransferRawEvent() {
         let expect = expectation(description: "Get transfer event")
         
@@ -84,6 +94,50 @@ class ERC20Tests: XCTestCase {
         
         erc20?.transferEventsTo(recipient: EthereumAddress("0x72e3b687805ef66bf2a1e6d9f03faf8b33f0267a"), fromBlock: .Earliest, toBlock: .Latest, completion: { (error, events) in
             XCTAssert(events!.count > 0)
+            expect.fulfill()
+        })
+        
+        waitForExpectations(timeout: 10)
+    }
+    
+    func testApprovalEventsForSpender() {
+        let expect = expectation(description: "Get approval events for a specific spender")
+
+        erc20?.approvalEvents(owner: nil, spender: EthereumAddress("0x1533a22e8a22366c5516d317af5663e1ca769fe7"), fromBlock: EthereumBlock(rawValue: 4612800), toBlock: EthereumBlock(rawValue: 4613000), completion: { (error, events) in
+            XCTAssert(events!.count > 0)
+            expect.fulfill()
+        })
+        
+        waitForExpectations(timeout: 10)
+    }
+    
+    func testApprovalEventsForOwner() {
+        let expect = expectation(description: "Get approval events for a specific owner")
+
+        erc20?.approvalEvents(owner: EthereumAddress("0xb5505ae3835fa24c2b3a62a58cea27e4d62b4195"), spender: nil, fromBlock: EthereumBlock(rawValue: 4612800), toBlock: EthereumBlock(rawValue: 4613000), completion: { (error, events) in
+            XCTAssert(events!.count == 4)
+            expect.fulfill()
+        })
+        
+        waitForExpectations(timeout: 10)
+    }
+    
+    func testApprovalEventsForOwnerAndSpender() {
+        let expect = expectation(description: "Get approval events for a specific owner & spender")
+        
+        erc20?.approvalEvents(owner: EthereumAddress("0xb5505ae3835fa24c2b3a62a58cea27e4d62b4195"), spender: EthereumAddress("0x502e2806f64bf676601f4f5810b02e2331f14037"), fromBlock: EthereumBlock(rawValue: 4612800), toBlock: EthereumBlock(rawValue: 4613000), completion: { (error, events) in
+            XCTAssert(events!.count == 2)
+            expect.fulfill()
+        })
+        
+        waitForExpectations(timeout: 10)
+    }
+    
+    func testApprovalEventsAll() {
+        let expect = expectation(description: "Get all approval events")
+        
+        erc20?.approvalEvents(owner: nil, spender: nil, fromBlock: EthereumBlock(rawValue: 4612800), toBlock: EthereumBlock(rawValue: 4613000), completion: { (error, events) in
+            XCTAssert(events!.count == 29)
             expect.fulfill()
         })
         

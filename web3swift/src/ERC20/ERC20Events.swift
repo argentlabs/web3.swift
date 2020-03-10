@@ -30,4 +30,25 @@ public enum ERC20Events {
             self.value = try data[0].decoded()
         }
     }
+    
+    public struct Approval: ABIEvent {
+        public static let name = "Approval"
+        public static let types: [ABIType.Type] = [ EthereumAddress.self , EthereumAddress.self , BigUInt.self]
+        public static let typesIndexed = [true, true, false]
+        public let log: EthereumLog
+        
+        public let owner: EthereumAddress
+        public let spender: EthereumAddress
+        public let value: BigUInt
+        
+        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+            try Approval.checkParameters(topics, data)
+            self.log = log
+            
+            self.owner = try topics[0].decoded()
+            self.spender = try topics[1].decoded()
+            
+            self.value = try data[0].decoded()
+        }
+    }
 }
