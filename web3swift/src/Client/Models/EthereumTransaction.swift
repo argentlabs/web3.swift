@@ -21,7 +21,7 @@ public protocol EthereumTransactionProtocol {
 public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codable {
     public let from: EthereumAddress?
     public let to: EthereumAddress
-    public let value: BigUInt?
+    public var value: BigUInt?
     public let data: Data?
     public var nonce: Int?
     public let gasPrice: BigUInt?
