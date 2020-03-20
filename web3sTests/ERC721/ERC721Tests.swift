@@ -10,7 +10,7 @@ import XCTest
 import BigInt
 @testable import web3swift
 
-let tokenOwner = EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793")
+let tokenOwner = EthereumAddress("0x69F84b91E7107206E841748C2B52294A1176D45e")
 let nonOwner = EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56792")
 let nftImageURL = URL(string: "https://ipfs.io/ipfs/QmUDJMmiJEsueLbr6jxh7vhSSFAvjfYTLC64hgkQm1vH2C/graph.svg")!
 let nftURL = URL(string: "https://ipfs.io/ipfs/QmUtKP7LnZnL2pWw2ERvNDndP9v5EPoJH7g566XNdgoRfE")!
@@ -31,7 +31,7 @@ class ERC721Tests: XCTestCase {
         let expect = expectation(description: "BalanceOf")
         erc721.balanceOf(contract: address, address: tokenOwner) { (error, balance) in
             XCTAssertNil(error)
-            XCTAssertEqual(balance, BigUInt(1))
+            XCTAssertEqual(balance, BigUInt(3))
             expect.fulfill()
         }
         
@@ -76,11 +76,11 @@ class ERC721Tests: XCTestCase {
         
         erc721.transferEventsTo(recipient: tokenOwner,
                                 fromBlock: .Number(
-                                    5551315),
+                                    6948276),
                                 toBlock: .Number(
-                                    5551315),
+                                    6948276),
                                 completion: { (error, events) in
-            XCTAssertEqual(events?.first?.from, EthereumAddress.zero)
+            XCTAssertEqual(events?.first?.from, EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793"))
             XCTAssertEqual(events?.first?.to, tokenOwner)
             XCTAssertEqual(events?.first?.tokenId, 23)
             expect.fulfill()
@@ -195,7 +195,7 @@ class ERC721EnumerableTests: XCTestCase {
     
     func test_GivenAddressWithNFT_returnsTokenOfOwnerByIndex() {
         let expect = expectation(description: "tokenByIndex")
-        erc721.tokenOfOwnerByIndex(contract: address, owner: tokenOwner, index: 0) { error, tokenID in
+        erc721.tokenOfOwnerByIndex(contract: address, owner: tokenOwner, index: 2) { error, tokenID in
             XCTAssertNil(error)
             XCTAssertEqual(tokenID, 23)
             expect.fulfill()
