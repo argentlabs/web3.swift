@@ -129,7 +129,7 @@ public class ABIFunctionEncoder {
         return head + tail
     }
     
-    func encoded() throws -> Data {
+    public func encoded() throws -> Data {
         let methodId = try ABIEncoder.methodId(name: name, types: types)
         let allBytes = methodId + calculateData()
         return Data(allBytes)
