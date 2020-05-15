@@ -14,28 +14,54 @@ public enum ERC721Functions {
         return "0x80ac58cd".web3.hexData!
     }
     
-    struct balanceOf: ABIFunction {
-        static let name = "balanceOf"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
-        let owner: EthereumAddress
+    public struct balanceOf: ABIFunction {
+        public static let name = "balanceOf"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public let owner: EthereumAddress
+        
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    owner: EthereumAddress,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.owner = owner
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
             try encoder.encode(owner)
         }
     }
     
-    struct ownerOf: ABIFunction {
-        static let name = "ownerOf"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
-        let tokenId: BigUInt
+    public struct ownerOf: ABIFunction {
+        public static let name = "ownerOf"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public let tokenId: BigUInt
+        
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    tokenId: BigUInt,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.tokenId = tokenId
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
             try encoder.encode(tokenId)
         }
     }
@@ -48,36 +74,68 @@ public enum ERC721MetadataFunctions {
             "tokenURI(uint256)".web3.keccak256.web3.bytes4
     }
     
-    struct name: ABIFunction {
-        static let name = "name"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct name: ABIFunction {
+        public static let name = "name"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws { }
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws { }
     }
     
-    struct symbol: ABIFunction {
-        static let name = "symbol"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct symbol: ABIFunction {
+        public static let name = "symbol"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws { }
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws { }
     }
  
-    struct tokenURI: ABIFunction {
-        static let name = "tokenURI"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct tokenURI: ABIFunction {
+        public static let name = "tokenURI"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        let tokenID: BigUInt
+        public let tokenID: BigUInt
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    tokenID: BigUInt,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.tokenID = tokenID
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
             try encoder.encode(tokenID)
         }
     }
@@ -90,41 +148,77 @@ public enum ERC721EnumerableFunctions {
             "tokenOfOwnerByIndex(address,uint256)".web3.keccak256.web3.bytes4
     }
 
-    struct totalSupply: ABIFunction {
-        static let name = "totalSupply"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct totalSupply: ABIFunction {
+        public static let name = "totalSupply"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        func encode(to encoder: ABIFunctionEncoder) throws { }
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws { }
     }
     
-    struct tokenByIndex: ABIFunction {
-        static let name = "tokenByIndex"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct tokenByIndex: ABIFunction {
+        public static let name = "tokenByIndex"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        let index: BigUInt
+        public let index: BigUInt
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    index: BigUInt,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.index = index
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
             try encoder.encode(index)
         }
     }
     
-    struct tokenOfOwnerByIndex: ABIFunction {
-        static let name = "tokenOfOwnerByIndex"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+    public struct tokenOfOwnerByIndex: ABIFunction {
+        public static let name = "tokenOfOwnerByIndex"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
-        let address: EthereumAddress
-        let index: BigUInt
+        public let address: EthereumAddress
+        public let index: BigUInt
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    address: EthereumAddress,
+                    index: BigUInt,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.address = address
+            self.index = index
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
             try encoder.encode(address)
             try encoder.encode(index)
         }
