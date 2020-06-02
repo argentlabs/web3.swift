@@ -27,7 +27,6 @@ extension ABIEvent {
         let unindexedCount = Self.typesIndexed.filter { $0 == false }.count
         
         guard Self.typesIndexed.count == Self.types.count, topics.count == indexedCount, data.count == unindexedCount else {
-            print("Incorrect param count")
             throw ABIError.incorrectParameterCount
         }
     }
