@@ -82,6 +82,16 @@ public class ABIFunctionEncoder {
         guard let type = ABIRawType(type: [EthereumAddress].self) else {
             throw ABIError.invalidType
         }
+        
+        let bytes = try value.flatMap { try ABIEncoder.encode($0) }
+        return try self.encode(type: type, value: String(hexFromBytes: bytes), size: value.count)
+    }
+    
+    public func encode(_ value: [BigUInt]) throws {
+        guard let type = ABIRawType(type: [BigUInt].self) else {
+            throw ABIError.invalidType
+        }
+        
         let bytes = try value.flatMap { try ABIEncoder.encode($0) }
         return try self.encode(type: type, value: String(hexFromBytes: bytes), size: value.count)
     }

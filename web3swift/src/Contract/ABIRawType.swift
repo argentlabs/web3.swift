@@ -64,6 +64,15 @@ extension ABIRawType: RawRepresentable {
         }
     }
     
+    var isPaddedInDynamic: Bool {
+        switch self {
+        case .FixedUInt, .FixedInt:
+            return true
+        default:
+            return false
+        }
+    }
+    
     var size: Int {
         switch self {
         case .FixedBool:

@@ -173,6 +173,18 @@ class ABIDecoderTests: XCTestCase {
         }
     }
     
+    func test_GivenDynamicArrayOfUint_ThenDecodesCorrectly() {
+        do {
+            let values = [BigUInt(1),BigUInt(2),BigUInt(3)]
+            
+            let value = try ABIDecoder.decodeData("0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003", types: [[BigUInt].self])
+            XCTAssertEqual(try value[0].decoded(), values)
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
     func test_GivenExpectingBigInt_WhenEmptyDataMarker_ThenDecodeFails() {
         do {
             let value = try ABIDecoder.decodeData("0x", types: [BigInt.self])
