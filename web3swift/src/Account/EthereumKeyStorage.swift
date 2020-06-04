@@ -23,7 +23,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     public init() {}
     
     private var localPath: String? {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        if let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
             return url.appendingPathComponent("EthereumKey").path
         }
         return nil
