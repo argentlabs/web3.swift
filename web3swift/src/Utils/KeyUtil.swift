@@ -28,6 +28,11 @@ class KeyUtil {
             throw KeyUtilError.invalidContext
         }
         
+        defer {
+            secp256k1_context_destroy(ctx)
+        }
+        
+        
         let privateKeyPtr = (privateKey as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         guard secp256k1_ec_seckey_verify(ctx, privateKeyPtr) == 1 else {
             print("Failed to generate a public key: private key is not valid.")
@@ -59,6 +64,10 @@ class KeyUtil {
         guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
             print("Failed to sign message: invalid context.")
             throw KeyUtilError.invalidContext
+        }
+        
+        defer {
+            secp256k1_context_destroy(ctx)
         }
 
         let msg = ((hashing ? message.web3.keccak256 : message) as NSData).bytes.assumingMemoryBound(to: UInt8.self)

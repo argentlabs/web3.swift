@@ -196,6 +196,10 @@ extension ABIRawType {
             self = ABIRawType.FixedBytes(fixed.fixedSize)
         case is Array<EthereumAddress>.Type:
             self = ABIRawType.DynamicArray(.FixedAddress)
+        case is Array<BigUInt>.Type:
+            self = ABIRawType.DynamicArray(.FixedUInt(256))
+        case is Array<BigInt>.Type:
+            self = ABIRawType.DynamicArray(.FixedInt(256))
         default:
             return nil
         }

@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 
 public class ERC165 {
-    let client: EthereumClient
+    public let client: EthereumClient
     public init(client: EthereumClient) {
         self.client = client
     }
@@ -33,15 +33,27 @@ public enum ERC165Functions {
     }
     
     struct supportsInterface: ABIFunction {
-        static let name = "supportsInterface"
-        let gasPrice: BigUInt? = nil
-        let gasLimit: BigUInt? = nil
-        var contract: EthereumAddress
-        let from: EthereumAddress? = nil
+        public static let name = "supportsInterface"
+        public let gasPrice: BigUInt?
+        public let gasLimit: BigUInt?
+        public var contract: EthereumAddress
+        public let from: EthereumAddress?
         
         let interfaceId: Data
         
-        func encode(to encoder: ABIFunctionEncoder) throws {
+        public init(contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    interfaceId: Data,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil) {
+            self.contract = contract
+            self.from = from
+            self.interfaceId = interfaceId
+            self.gasPrice = gasPrice
+            self.gasLimit = gasLimit
+        }
+        
+        public func encode(to encoder: ABIFunctionEncoder) throws {
             assert(interfaceId.count == 4, "Interface data should contain exactly 4 bytes")
             try encoder.encode(interfaceId, size: Data4.self)
         }
@@ -49,11 +61,11 @@ public enum ERC165Functions {
 }
 
 public enum ERC165Responses {
-    struct supportsInterfaceResponse: ABIResponse {
-        static var types: [ABIType.Type] = [ Bool.self ]
-        let supported: Bool
+    public struct supportsInterfaceResponse: ABIResponse {
+        public static var types: [ABIType.Type] = [ Bool.self ]
+        public let supported: Bool
         
-        init?(values: [ABIType]) throws {
+        public init?(values: [ABIType]) throws {
             self.supported = try values[0].decoded()
         }
     }
