@@ -98,6 +98,14 @@ extension ABIDecoder {
         return data.map { EthereumAddress($0) }
     }
     
+    public static func decode(_ data: [ParsedABIEntry], to: [BigUInt].Type) throws -> [BigUInt] {
+        return data.compactMap(BigUInt.init(hex:))
+    }
+    
+    public static func decode(_ data: [ParsedABIEntry], to: [BigInt].Type) throws -> [BigInt] {
+        return data.compactMap(BigInt.init(hex:))
+    }
+    
     public static func decode(_ data: ParsedABIEntry, to: URL.Type) throws -> URL {
         guard let string = try? ABIDecoder.decode(data, to: String.self) else {
             throw ABIError.invalidValue
@@ -148,6 +156,10 @@ extension ABIRawType {
                 return try ABIDecoder.decode(first, to: Data.self)
             case is Array<EthereumAddress>.Type:
                 return try ABIDecoder.decode(data, to: [EthereumAddress].self)
+            case is Array<BigUInt>.Type:
+                return try ABIDecoder.decode(data, to: [BigUInt].self)
+            case is Array<BigInt>.Type:
+                return try ABIDecoder.decode(data, to: [BigInt].self)
             default:
                 throw ABIError.invalidValue
             }
