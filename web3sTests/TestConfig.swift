@@ -10,7 +10,7 @@ import Foundation
 
 struct TestConfig {
     // This is the proxy URL for connecting to the Blockchain. For testing we usually use the Ropsten network on Infura
-    static let clientUrl = "https://ropsten.infura.io/MY_INFURA_URL"
+    static let clientUrl = "https://ropsten.infura.io/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
     
     // A private key with some Ether, so that we can test sending transactions (pay for gas)
     static let privateKey = "0xdeadbeef"
