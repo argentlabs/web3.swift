@@ -105,7 +105,7 @@ The library provides some types and helpers to make interacting with web3 and Et
 #### Conversion from and to Foundation types
 
 All extensions are namespaced under '<type>'.web3. So for example, to convert an `Int` to a hex string:
-    
+
 ```
 let gwei = 100
 let hexgwei = gwei.web3.hexString
@@ -142,9 +142,9 @@ The tests will all pass when running against Ropsten. You will need to provide a
 We built web3.swift to be as lightweight as possible. However, given the cryptographic nature of Ethereum, there's a couple of reliable C libraries you will find packaged with this framework:
 
 - [keccac-tiny](https://github.com/coruus/keccak-tiny): An implementation of the FIPS-202-defined SHA-3 and SHAKE functions in 120 cloc (156 lines).
-- [secp256k1](https://github.com/bakkenbaeck/EtherealCereal): For EC operations on curve secp256k1.
 - [Tiny AES](https://github.com/kokke/tiny-AES-c):  A small and portable implementation of the AES ECB, CTR and CBC encryption algorithms.
 
+The library depends on [secp256k1](https://github.com/bitcoin-core/secp256k1) through this [package](https://cocoapods.org/pods/secp256k1.swift).
 We also use Apple's own CommonCrypto (via [this](https://github.com/sergejp/CommonCrypto) method) and [BigInt](https://github.com/attaswift/BigInt) via CocoaPod dependency.
 
 ## Todos

@@ -1,5 +1,6 @@
 def all_pods
   pod 'BigInt', '5.0.0'
+  pod 'secp256k1.swift', '~> 0.1'
 end
 
 target 'web3swift' do

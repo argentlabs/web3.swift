@@ -23,5 +23,6 @@ Pod::Spec.new do |s|
   s.public_header_files = 'web3swift/web3swift.h'
 
   s.dependency 'BigInt', '~> 5.0.0'
+  s.dependency 'secp256k1.swift', '~> 0.1'
 
 end
