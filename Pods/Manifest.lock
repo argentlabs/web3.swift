@@ -1,16 +1,20 @@
 PODS:
   - BigInt (5.0.0)
+  - secp256k1.swift (0.1.4)
 
 DEPENDENCIES:
   - BigInt (= 5.0.0)
+  - secp256k1.swift (~> 0.1)
 
 SPEC REPOS:
   trunk:
     - BigInt
+    - secp256k1.swift
 
 SPEC CHECKSUMS:
   BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
+  secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
 
-PODFILE CHECKSUM: 89803c15a6e55de959351cc32e42f9f5470ae05d
+PODFILE CHECKSUM: 567ff28c088c032107ba06847accf58823d2472e
 
 COCOAPODS: 1.8.4
