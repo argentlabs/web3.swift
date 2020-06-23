@@ -11,6 +11,13 @@ import BigInt
 
 public class ABIEncoder {
     
+    static func encode(_ value: Data,
+                       forType type: ABIRawType,
+                       padded: Bool = true,
+                       size: Int = 1) throws -> [UInt8] {
+        try encode(value.web3.hexString, forType: type, padded: padded, size: size)
+    }
+    
     static func encode(_ value: String,
                        forType type: ABIRawType,
                        padded: Bool = true,
@@ -19,8 +26,8 @@ public class ABIEncoder {
         
         switch type {
         case .FixedUInt(_):
-            guard value.web3.isNumeric, let int = BigInt(value) else {
-                throw ABIError.invalidType
+            guard let int = value.web3.isNumeric ? BigUInt(value) : BigUInt(hex: value) else {
+                throw ABIError.invalidValue
             }
             let bytes = int.web3.bytes // should be <= 32 bytes
             guard bytes.count <= 32 else {
@@ -32,7 +39,7 @@ public class ABIEncoder {
                 encoded = bytes
             }
         case .FixedInt(_):
-            guard Double(value) != nil, let int = BigInt(value) else {
+            guard let int = value.web3.isNumeric ? BigInt(value) : BigInt(hex: value) else {
                 throw ABIError.invalidType
             }
             

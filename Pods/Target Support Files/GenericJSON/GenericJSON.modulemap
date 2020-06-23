@@ -1,0 +1,6 @@
+framework module GenericJSON {
+  umbrella header "GenericJSON-umbrella.h"
+
+  export *
+  module * { export * }
+}
