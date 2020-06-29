@@ -10,7 +10,7 @@ import XCTest
 @testable import web3swift
 import BigInt
 
-class EthereumAccount_SignTests: XCTestCase {
+class EthereumAccount_SignTransactionTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
