@@ -23,6 +23,20 @@ public struct TypedData: Codable, Equatable {
     public let message: JSON
 }
 
+extension TypedData: CustomStringConvertible {
+    public var description: String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        guard
+            let encoded = try? encoder.encode(message),
+            let string = String(data: encoded, encoding: .utf8) else {
+                return ""
+        }
+        
+        return string
+    }
+}
+
 extension TypedData {
     public var typeHash: Data { encodeType(primaryType: primaryType).web3.keccak256 }
 
