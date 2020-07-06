@@ -1,6 +1,0 @@
-module secp256k1 [system][extern_c] {
-    header "include/secp256k1.h"
-    header "include/secp256k1_recovery.h"
-    //header "modules/recovery/main_impl.h"
-    export *
-}

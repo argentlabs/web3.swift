@@ -16,36 +16,6 @@
 		3CF37C3D203437D70030520E /* web3swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C2F203437D70030520E /* web3swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3CF37C5F20343BA60030520E /* keccak-tiny.c in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37C5B20343BA60030520E /* keccak-tiny.c */; };
 		3CF37C6020343BA60030520E /* keccak-tiny.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C5C20343BA60030520E /* keccak-tiny.h */; };
-		3CF37C90203449D90030520E /* ecdsa.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C6D203449D90030520E /* ecdsa.h */; };
-		3CF37C91203449D90030520E /* ecdsa_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C6E203449D90030520E /* ecdsa_impl.h */; };
-		3CF37C92203449DA0030520E /* eckey.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C6F203449D90030520E /* eckey.h */; };
-		3CF37C93203449DA0030520E /* eckey_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C70203449D90030520E /* eckey_impl.h */; };
-		3CF37C94203449DA0030520E /* ecmult.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C71203449D90030520E /* ecmult.h */; };
-		3CF37C95203449DA0030520E /* ecmult_const.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C72203449D90030520E /* ecmult_const.h */; };
-		3CF37C96203449DA0030520E /* ecmult_const_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C73203449D90030520E /* ecmult_const_impl.h */; };
-		3CF37C97203449DA0030520E /* ecmult_gen.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C74203449D90030520E /* ecmult_gen.h */; };
-		3CF37C98203449DA0030520E /* ecmult_gen_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C75203449D90030520E /* ecmult_gen_impl.h */; };
-		3CF37C99203449DA0030520E /* ecmult_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C76203449D90030520E /* ecmult_impl.h */; };
-		3CF37C9A203449DA0030520E /* field.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C77203449D90030520E /* field.h */; };
-		3CF37C9B203449DA0030520E /* field_10x26.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C78203449D90030520E /* field_10x26.h */; };
-		3CF37C9C203449DA0030520E /* field_10x26_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C79203449D90030520E /* field_10x26_impl.h */; };
-		3CF37C9D203449DA0030520E /* field_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C7A203449D90030520E /* field_impl.h */; };
-		3CF37C9E203449DA0030520E /* group.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C7B203449D90030520E /* group.h */; };
-		3CF37C9F203449DA0030520E /* group_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C7C203449D90030520E /* group_impl.h */; };
-		3CF37CA0203449DA0030520E /* hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C7D203449D90030520E /* hash.h */; };
-		3CF37CA1203449DA0030520E /* hash_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C7E203449D90030520E /* hash_impl.h */; };
-		3CF37CA2203449DA0030520E /* secp256k1.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C80203449D90030520E /* secp256k1.h */; };
-		3CF37CA3203449DA0030520E /* secp256k1_ecdh.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C81203449D90030520E /* secp256k1_ecdh.h */; };
-		3CF37CA4203449DA0030520E /* secp256k1_recovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C82203449D90030520E /* secp256k1_recovery.h */; };
-		3CF37CA7203449DA0030520E /* libsecp256k1-config.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C85203449D90030520E /* libsecp256k1-config.h */; };
-		3CF37CA8203449DA0030520E /* main_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C88203449D90030520E /* main_impl.h */; };
-		3CF37CA9203449DA0030520E /* num.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C89203449D90030520E /* num.h */; };
-		3CF37CAA203449DA0030520E /* scalar.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C8A203449D90030520E /* scalar.h */; };
-		3CF37CAB203449DA0030520E /* scalar_8x32.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C8B203449D90030520E /* scalar_8x32.h */; };
-		3CF37CAC203449DA0030520E /* scalar_8x32_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C8C203449D90030520E /* scalar_8x32_impl.h */; };
-		3CF37CAD203449DA0030520E /* scalar_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C8D203449D90030520E /* scalar_impl.h */; };
-		3CF37CAE203449DA0030520E /* secp256k1.c in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37C8E203449D90030520E /* secp256k1.c */; };
-		3CF37CAF203449DA0030520E /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CF37C8F203449D90030520E /* util.h */; };
 		3CF37CB4203453D80030520E /* KeyUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CB3203453D80030520E /* KeyUtil.swift */; };
 		3CF37CB62034542F0030520E /* KeyUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CB52034542F0030520E /* KeyUtilTests.swift */; };
 		3CF37CBE2035A8240030520E /* EthereumAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CBD2035A8240030520E /* EthereumAccount.swift */; };
@@ -59,10 +29,13 @@
 		3CF37CEB20372CA10030520E /* KeyDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CEA20372CA10030520E /* KeyDerivationTests.swift */; };
 		3CF37CF520373E320030520E /* Data+RandomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CF420373E320030520E /* Data+RandomTests.swift */; };
 		3CF37CF7203744400030520E /* KeystoreUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF37CF6203744400030520E /* KeystoreUtilTests.swift */; };
+		470A0F99249D0BF1003F5390 /* EthereumAccount+SignTypedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470A0F97249D0B81003F5390 /* EthereumAccount+SignTypedTests.swift */; };
 		47127E89234F88F600C02C34 /* ABIFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47127E87234F881200C02C34 /* ABIFunctionTests.swift */; };
 		473D9B8A20F629C500FD04BB /* TransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D9B8820F6297D00FD04BB /* TransactionTests.swift */; };
 		473E682F20CE7F80006D11AF /* EthereumBlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */; };
 		475E53E92344A4110071BF8B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475E53E82344A4110071BF8B /* Extensions.swift */; };
+		4782260D24A24F3600661EE6 /* cryptofights_712.json in Resources */ = {isa = PBXBuildFile; fileRef = 4782260C24A24F3600661EE6 /* cryptofights_712.json */; };
+		478E08CE249D16CE000810B0 /* TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478E08CD249D16CE000810B0 /* TypedData.swift */; };
 		47ADCD9221AE9CA3006DE71F /* ABIFunctionEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */; };
 		47F2EA9B2284896A007063C2 /* ERC721Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EA992284894A007063C2 /* ERC721Tests.swift */; };
 		47F2EAA622848B5D007063C2 /* ERC721.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAA522848B5D007063C2 /* ERC721.swift */; };
@@ -154,37 +127,6 @@
 		3CF37C5B20343BA60030520E /* keccak-tiny.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "keccak-tiny.c"; sourceTree = "<group>"; };
 		3CF37C5C20343BA60030520E /* keccak-tiny.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "keccak-tiny.h"; sourceTree = "<group>"; };
 		3CF37C5D20343BA60030520E /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.map; sourceTree = "<group>"; };
-		3CF37C6D203449D90030520E /* ecdsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecdsa.h; sourceTree = "<group>"; };
-		3CF37C6E203449D90030520E /* ecdsa_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecdsa_impl.h; sourceTree = "<group>"; };
-		3CF37C6F203449D90030520E /* eckey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eckey.h; sourceTree = "<group>"; };
-		3CF37C70203449D90030520E /* eckey_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eckey_impl.h; sourceTree = "<group>"; };
-		3CF37C71203449D90030520E /* ecmult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecmult.h; sourceTree = "<group>"; };
-		3CF37C72203449D90030520E /* ecmult_const.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecmult_const.h; sourceTree = "<group>"; };
-		3CF37C73203449D90030520E /* ecmult_const_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecmult_const_impl.h; sourceTree = "<group>"; };
-		3CF37C74203449D90030520E /* ecmult_gen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecmult_gen.h; sourceTree = "<group>"; };
-		3CF37C75203449D90030520E /* ecmult_gen_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecmult_gen_impl.h; sourceTree = "<group>"; };
-		3CF37C76203449D90030520E /* ecmult_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecmult_impl.h; sourceTree = "<group>"; };
-		3CF37C77203449D90030520E /* field.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = field.h; sourceTree = "<group>"; };
-		3CF37C78203449D90030520E /* field_10x26.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = field_10x26.h; sourceTree = "<group>"; };
-		3CF37C79203449D90030520E /* field_10x26_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = field_10x26_impl.h; sourceTree = "<group>"; };
-		3CF37C7A203449D90030520E /* field_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = field_impl.h; sourceTree = "<group>"; };
-		3CF37C7B203449D90030520E /* group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = group.h; sourceTree = "<group>"; };
-		3CF37C7C203449D90030520E /* group_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = group_impl.h; sourceTree = "<group>"; };
-		3CF37C7D203449D90030520E /* hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; };
-		3CF37C7E203449D90030520E /* hash_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash_impl.h; sourceTree = "<group>"; };
-		3CF37C80203449D90030520E /* secp256k1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secp256k1.h; sourceTree = "<group>"; };
-		3CF37C81203449D90030520E /* secp256k1_ecdh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secp256k1_ecdh.h; sourceTree = "<group>"; };
-		3CF37C82203449D90030520E /* secp256k1_recovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secp256k1_recovery.h; sourceTree = "<group>"; };
-		3CF37C85203449D90030520E /* libsecp256k1-config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libsecp256k1-config.h"; sourceTree = "<group>"; };
-		3CF37C88203449D90030520E /* main_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main_impl.h; sourceTree = "<group>"; };
-		3CF37C89203449D90030520E /* num.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = num.h; sourceTree = "<group>"; };
-		3CF37C8A203449D90030520E /* scalar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scalar.h; sourceTree = "<group>"; };
-		3CF37C8B203449D90030520E /* scalar_8x32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scalar_8x32.h; sourceTree = "<group>"; };
-		3CF37C8C203449D90030520E /* scalar_8x32_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scalar_8x32_impl.h; sourceTree = "<group>"; };
-		3CF37C8D203449D90030520E /* scalar_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scalar_impl.h; sourceTree = "<group>"; };
-		3CF37C8E203449D90030520E /* secp256k1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = secp256k1.c; sourceTree = "<group>"; };
-		3CF37C8F203449D90030520E /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		3CF37CB020344A080030520E /* module.map */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.map; sourceTree = "<group>"; };
 		3CF37CB3203453D80030520E /* KeyUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtil.swift; sourceTree = "<group>"; };
 		3CF37CB52034542F0030520E /* KeyUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtilTests.swift; sourceTree = "<group>"; };
 		3CF37CBD2035A8240030520E /* EthereumAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAccount.swift; sourceTree = "<group>"; };
@@ -200,10 +142,13 @@
 		3CF37CF420373E320030520E /* Data+RandomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+RandomTests.swift"; sourceTree = "<group>"; };
 		3CF37CF6203744400030520E /* KeystoreUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystoreUtilTests.swift; sourceTree = "<group>"; };
 		45FF08D408285DBA7FF4564A /* Pods-web3sTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3sTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3sTests/Pods-web3sTests.release.xcconfig"; sourceTree = "<group>"; };
+		470A0F97249D0B81003F5390 /* EthereumAccount+SignTypedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EthereumAccount+SignTypedTests.swift"; sourceTree = "<group>"; };
 		47127E87234F881200C02C34 /* ABIFunctionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIFunctionTests.swift; sourceTree = "<group>"; };
 		473D9B8820F6297D00FD04BB /* TransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTests.swift; sourceTree = "<group>"; };
 		473E682E20CE7F80006D11AF /* EthereumBlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBlockInfo.swift; sourceTree = "<group>"; };
 		475E53E82344A4110071BF8B /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		4782260C24A24F3600661EE6 /* cryptofights_712.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cryptofights_712.json; sourceTree = "<group>"; };
+		478E08CD249D16CE000810B0 /* TypedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedData.swift; sourceTree = "<group>"; };
 		47ADCD9021AE9B8E006DE71F /* ABIFunctionEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIFunctionEncoderTests.swift; sourceTree = "<group>"; };
 		47F2EA992284894A007063C2 /* ERC721Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721Tests.swift; sourceTree = "<group>"; };
 		47F2EAA522848B5D007063C2 /* ERC721.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC721.swift; sourceTree = "<group>"; };
@@ -386,7 +331,6 @@
 			isa = PBXGroup;
 			children = (
 				3CF37CD8203704050030520E /* aes */,
-				3CF37C6C203449D90030520E /* secp256k1 */,
 				3CF37C5920343BA60030520E /* keccak-tiny */,
 			);
 			path = lib;
@@ -427,70 +371,9 @@
 				C9A78E402057F04800CF8316 /* HexUtil.swift */,
 				3CF37CB3203453D80030520E /* KeyUtil.swift */,
 				3CF37CDE203704490030520E /* AesUtil.swift */,
+				478E08CD249D16CE000810B0 /* TypedData.swift */,
 			);
 			path = Utils;
-			sourceTree = "<group>";
-		};
-		3CF37C6C203449D90030520E /* secp256k1 */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37C6D203449D90030520E /* ecdsa.h */,
-				3CF37C6E203449D90030520E /* ecdsa_impl.h */,
-				3CF37C6F203449D90030520E /* eckey.h */,
-				3CF37C70203449D90030520E /* eckey_impl.h */,
-				3CF37C71203449D90030520E /* ecmult.h */,
-				3CF37C72203449D90030520E /* ecmult_const.h */,
-				3CF37C73203449D90030520E /* ecmult_const_impl.h */,
-				3CF37C74203449D90030520E /* ecmult_gen.h */,
-				3CF37C75203449D90030520E /* ecmult_gen_impl.h */,
-				3CF37C76203449D90030520E /* ecmult_impl.h */,
-				3CF37C77203449D90030520E /* field.h */,
-				3CF37C78203449D90030520E /* field_10x26.h */,
-				3CF37C79203449D90030520E /* field_10x26_impl.h */,
-				3CF37C7A203449D90030520E /* field_impl.h */,
-				3CF37C7B203449D90030520E /* group.h */,
-				3CF37C7C203449D90030520E /* group_impl.h */,
-				3CF37C7D203449D90030520E /* hash.h */,
-				3CF37C7E203449D90030520E /* hash_impl.h */,
-				3CF37C7F203449D90030520E /* include */,
-				3CF37C85203449D90030520E /* libsecp256k1-config.h */,
-				3CF37C86203449D90030520E /* modules */,
-				3CF37C89203449D90030520E /* num.h */,
-				3CF37C8A203449D90030520E /* scalar.h */,
-				3CF37C8B203449D90030520E /* scalar_8x32.h */,
-				3CF37C8C203449D90030520E /* scalar_8x32_impl.h */,
-				3CF37C8D203449D90030520E /* scalar_impl.h */,
-				3CF37C8E203449D90030520E /* secp256k1.c */,
-				3CF37C8F203449D90030520E /* util.h */,
-				3CF37CB020344A080030520E /* module.map */,
-			);
-			path = secp256k1;
-			sourceTree = "<group>";
-		};
-		3CF37C7F203449D90030520E /* include */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37C80203449D90030520E /* secp256k1.h */,
-				3CF37C81203449D90030520E /* secp256k1_ecdh.h */,
-				3CF37C82203449D90030520E /* secp256k1_recovery.h */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		3CF37C86203449D90030520E /* modules */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37C87203449D90030520E /* recovery */,
-			);
-			path = modules;
-			sourceTree = "<group>";
-		};
-		3CF37C87203449D90030520E /* recovery */ = {
-			isa = PBXGroup;
-			children = (
-				3CF37C88203449D90030520E /* main_impl.h */,
-			);
-			path = recovery;
 			sourceTree = "<group>";
 		};
 		3CF37CB92035A6820030520E /* Account */ = {
@@ -595,9 +478,11 @@
 		C9236B912052FD1600CE5557 /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				4782260C24A24F3600661EE6 /* cryptofights_712.json */,
 				C9236BA22057CE6F00CE5557 /* EthereumAccountTests.swift */,
 				C9236BA42057CE7B00CE5557 /* EthereumAccount+SignTransactionTests.swift */,
 				C9A78E4320581D3000CF8316 /* EthereumKeyStorageTests.swift */,
+				470A0F97249D0B81003F5390 /* EthereumAccount+SignTypedTests.swift */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -743,37 +628,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CF37C3D203437D70030520E /* web3swift.h in Headers */,
-				3CF37C9A203449DA0030520E /* field.h in Headers */,
-				3CF37C94203449DA0030520E /* ecmult.h in Headers */,
-				3CF37CAB203449DA0030520E /* scalar_8x32.h in Headers */,
-				3CF37C97203449DA0030520E /* ecmult_gen.h in Headers */,
-				3CF37C90203449D90030520E /* ecdsa.h in Headers */,
-				3CF37C96203449DA0030520E /* ecmult_const_impl.h in Headers */,
-				3CF37CA3203449DA0030520E /* secp256k1_ecdh.h in Headers */,
-				3CF37CAC203449DA0030520E /* scalar_8x32_impl.h in Headers */,
 				3CF37C6020343BA60030520E /* keccak-tiny.h in Headers */,
-				3CF37CA4203449DA0030520E /* secp256k1_recovery.h in Headers */,
-				3CF37C9F203449DA0030520E /* group_impl.h in Headers */,
-				3CF37C93203449DA0030520E /* eckey_impl.h in Headers */,
-				3CF37C9D203449DA0030520E /* field_impl.h in Headers */,
-				3CF37CAA203449DA0030520E /* scalar.h in Headers */,
-				3CF37C98203449DA0030520E /* ecmult_gen_impl.h in Headers */,
-				3CF37CA1203449DA0030520E /* hash_impl.h in Headers */,
-				3CF37C95203449DA0030520E /* ecmult_const.h in Headers */,
-				3CF37CA9203449DA0030520E /* num.h in Headers */,
-				3CF37C9C203449DA0030520E /* field_10x26_impl.h in Headers */,
 				3CF37CDC203704050030520E /* aes.h in Headers */,
-				3CF37C92203449DA0030520E /* eckey.h in Headers */,
-				3CF37C9E203449DA0030520E /* group.h in Headers */,
-				3CF37C9B203449DA0030520E /* field_10x26.h in Headers */,
-				3CF37C99203449DA0030520E /* ecmult_impl.h in Headers */,
-				3CF37CA8203449DA0030520E /* main_impl.h in Headers */,
-				3CF37CAF203449DA0030520E /* util.h in Headers */,
-				3CF37CA7203449DA0030520E /* libsecp256k1-config.h in Headers */,
-				3CF37CA0203449DA0030520E /* hash.h in Headers */,
-				3CF37C91203449D90030520E /* ecdsa_impl.h in Headers */,
-				3CF37CAD203449DA0030520E /* scalar_impl.h in Headers */,
-				3CF37CA2203449DA0030520E /* secp256k1.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -871,6 +727,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4782260D24A24F3600661EE6 /* cryptofights_712.json in Resources */,
 				3C8D94FB204024F200D0D5D7 /* rlptests.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -922,10 +779,14 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
+				"${BUILT_PRODUCTS_DIR}/GenericJSON/GenericJSON.framework",
+				"${BUILT_PRODUCTS_DIR}/secp256k1.swift/secp256k1.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GenericJSON.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/secp256k1.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -939,7 +800,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3CF37CAE203449DA0030520E /* secp256k1.c in Sources */,
 				C9A78E69205878B900CF8316 /* Data+Random.swift in Sources */,
 				C927FD59204EB1F4005922DC /* JSONRPC.swift in Sources */,
 				C9A78E67205878AE00CF8316 /* KeccakExtensions.swift in Sources */,
@@ -987,6 +847,7 @@
 				C9F836C3207B9365004F45A9 /* ABIFunctionEncoder.swift in Sources */,
 				C9A78E5B205855B300CF8316 /* ByteExtensions.swift in Sources */,
 				C9D43D2D207D0DB800685FB6 /* ABIEncoder+Static.swift in Sources */,
+				478E08CE249D16CE000810B0 /* TypedData.swift in Sources */,
 				C9D43D29207CED3A00685FB6 /* ABIDecoder+JSON.swift in Sources */,
 				C9D43D27207CED2B00685FB6 /* ABIRawType+JSON.swift in Sources */,
 				C9A78E5D205871E500CF8316 /* ENSContracts.swift in Sources */,
@@ -1001,6 +862,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				470A0F99249D0BF1003F5390 /* EthereumAccount+SignTypedTests.swift in Sources */,
 				C9A78E4420581D3000CF8316 /* EthereumKeyStorageTests.swift in Sources */,
 				C91A7E88206120EA0074D3B4 /* ABIDecoderTests.swift in Sources */,
 				C9A78E6B2059405D00CF8316 /* HexExtensionsTests.swift in Sources */,
