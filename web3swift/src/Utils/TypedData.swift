@@ -107,8 +107,13 @@ extension TypedData {
         }
         
         switch abiType {
-        case .DynamicString, .DynamicBytes:
+        case .DynamicString:
             guard let value = data.stringValue?.web3.keccak256 else {
+                throw ABIError.invalidValue
+            }
+            return try ABIEncoder.encode(value, forType: .FixedBytes(32))
+        case .DynamicBytes:
+            guard let value = data.stringValue.flatMap(Data.init(hex:))?.web3.keccak256 else {
                 throw ABIError.invalidValue
             }
             return try ABIEncoder.encode(value, forType: .FixedBytes(32))
