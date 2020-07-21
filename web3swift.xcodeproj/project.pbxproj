@@ -371,7 +371,6 @@
 				C9A78E402057F04800CF8316 /* HexUtil.swift */,
 				3CF37CB3203453D80030520E /* KeyUtil.swift */,
 				3CF37CDE203704490030520E /* AesUtil.swift */,
-				478E08CD249D16CE000810B0 /* TypedData.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -382,6 +381,7 @@
 				3CF37CBD2035A8240030520E /* EthereumAccount.swift */,
 				C9236B8C2052E51100CE5557 /* EthereumAccount+SignTransaction.swift */,
 				C927FD56204EAD6D005922DC /* EthereumKeyStorage.swift */,
+				478E08CD249D16CE000810B0 /* TypedData.swift */,
 			);
 			path = Account;
 			sourceTree = "<group>";
