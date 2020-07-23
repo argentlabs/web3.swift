@@ -320,7 +320,7 @@ class EthereumClientTests: XCTestCase {
     func testGivenContractFilter_WhenMatchingSingleTransferEvents_OnlyMatchingSourceEventReturned() {
         let expectation = XCTestExpectation(description: "get events")
         
-        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        let to = try! ABIEncoder.encodeRaw("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
         let filters = [
             EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
         ]
@@ -360,5 +360,44 @@ class EthereumClientTests: XCTestCase {
         }
         
         wait(for: [expectation], timeout: timeout)
+    }
+    
+    func test_GivenDynamicArrayResponse_ThenCallReceivesData() {
+        let expect = expectation(description: "call")
+        
+        let function = GetGuardians(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"))
+        function.call(withClient: self.client!,
+                      responseType: GetGuardians.Response.self) { (error, response) in
+                        XCTAssertNil(error)
+                        XCTAssertEqual(response?.guardians, [EthereumAddress("0x44fe11c90d2bcbc8267a0e56d55235ddc2b96c4f")])
+                        expect.fulfill()
+        }
+        
+        waitForExpectations(timeout: 10)
+    }
+}
+
+struct GetGuardians: ABIFunction {
+    static let name = "getGuardians"
+    let contract = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
+    let from: EthereumAddress? = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
+    let gasPrice: BigUInt? = nil
+    let gasLimit: BigUInt? = nil
+    
+    struct Response: ABIResponse {
+        static var types: [ABIType.Type] = [[EthereumAddress].self]
+        let guardians: [EthereumAddress]
+        
+        init?(values: [ABIType]) throws {
+            self.guardians = try values[0].decoded()
+            
+        }
+    }
+    
+    let wallet: EthereumAddress
+    
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(wallet)
+        
     }
 }

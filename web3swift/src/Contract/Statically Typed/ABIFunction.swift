@@ -19,17 +19,7 @@ public protocol ABIFunction {
     func transaction() throws -> EthereumTransaction
 }
 
-public protocol ABIResponse {
-    static var types: [ABIType.Type] { get }
-    init?(values: [ABIType]) throws
-}
-
-public extension ABIResponse {
-    init?(data: String) throws {
-        let decoded = try ABIDecoder.decodeData(data, types: Self.types)
-        try self.init(values: decoded)
-    }
-}
+public protocol ABIResponse: ABITupleDecodable {}
 
 extension ABIFunction {
     public func transaction() throws -> EthereumTransaction {

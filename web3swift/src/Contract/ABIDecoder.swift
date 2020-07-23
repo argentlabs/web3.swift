@@ -72,9 +72,9 @@ public class ABIDecoder {
             guard data.count > endIndex else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[startIndex...endIndex])) // Do not use BInt because address is treated as uint160 and BInt is based on 64 bits (160/64 = 2.5)
             return [hex]
-        case .FixedBytes(_):
-            let startIndex = offset + 32 - type.size
-            let endIndex = offset + 31
+        case .FixedBytes(let size):
+            let startIndex = offset
+            let endIndex = offset + size - 1
             guard data.count > endIndex else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[startIndex...endIndex]))
             return [hex]
@@ -104,6 +104,8 @@ public class ABIDecoder {
             
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)
             return result
+        case .Tuple:
+            throw ABIError.notCurrentlySupported
         }
     }
     

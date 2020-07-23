@@ -32,7 +32,7 @@ extension ABIEvent {
     }
     
     public static func signature() throws -> String {
-        let sig = try ABIEncoder.signature(name: Self.name, types: Self.types)
+        let sig = try ABIFunctionEncoder.signature(name: Self.name, types: Self.types)
         return String(bytes: sig)
     }
 }

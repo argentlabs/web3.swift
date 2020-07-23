@@ -11,38 +11,45 @@ import BigInt
 
 extension ABIEncoder {
     public static func encode(_ value: ABIType,
-                              staticSize: ABIFixedSizeDataType.Type? = nil) throws -> EncodedValue {
-        guard let type = ABIRawType(type: type(of: value)) else {
-            throw ABIError.invalidType
-        }
+                              staticSize: Int? = nil) throws -> EncodedValue {
+        let type = Swift.type(of: value).rawType
         switch value {
         case let value as String:
-            return try ABIEncoder.encode(value, forType: type)
+            return try ABIEncoder.encodeRaw(value, forType: type)
         case let value as Bool:
-            return try ABIEncoder.encode(value ? "true" : "false", forType: type)
+            return try ABIEncoder.encodeRaw(value ? "true" : "false", forType: type)
         case let value as EthereumAddress:
-            return try ABIEncoder.encode(value.value, forType: type)
+            return try ABIEncoder.encodeRaw(value.value, forType: type)
         case let value as BigInt:
-            return try ABIEncoder.encode(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type)
         case let value as BigUInt:
-            return try ABIEncoder.encode(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type)
         case let data as Data:
-            if let staticSize = staticSize.flatMap(ABIRawType.init(type:)) {
-                return try ABIEncoder.encode(String(bytes: data.web3.bytes), forType: staticSize, size: staticSize.size)
+            if let staticSize = staticSize {
+                return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: .FixedBytes(staticSize))
             } else {
-                return try ABIEncoder.encode(String(bytes: data.web3.bytes), forType: type)
+                return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: type)
             }
-        case let values as [ABIType]:
-            let encoded = try values.map { try ABIEncoder.encode($0, staticSize: staticSize) }
-            let raw = encoded.flatMap(\.encoded)
-            return try ABIEncoder.encode(String(hexFromBytes: raw), forType: type, size: values.count)
+        
+        case let value as ABITuple:
+            let sizeToEncode = type.isDynamic && value.encodableValues.count > 1 ? value.encodableValues.count : nil
+            return try ABIEncoder.encodeContainer(elements: value.encodableValues.map { (value: $0, size: nil)}, isDynamic: type.isDynamic, size: sizeToEncode)
         default:
-            fatalError("Type not supported")
+            throw ABIError.notCurrentlySupported
         }
     }
+    
+    public static func encode<T: ABIType>(_ values: [T],
+                              staticSize: Int? = nil) throws -> EncodedValue {
+        return try ABIEncoder.encodeContainer(elements: values.map { (value: $0, size: nil) }, isDynamic: staticSize == nil, size: values.count)
+    }
+    
+    private typealias ValueAndSize = (value: ABIType, size: Int?)
+    private static func encodeContainer(elements: [ValueAndSize], isDynamic: Bool, size: Int?) throws -> EncodedValue {
+        let values: [EncodedValue] = try elements.map {
+            try ABIEncoder.encode($0.value, staticSize: $0.size)
+        }
 
-    static func signature(name: String, types: [ABIType.Type]) throws -> [UInt8] {
-        let rawTypes = types.map { ABIRawType(type: $0) }.compactMap { $0 }
-        return try signature(name: name, types: rawTypes)
+        return .container(values: values, isDynamic: isDynamic, size: size)
     }
 }

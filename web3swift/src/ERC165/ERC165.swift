@@ -55,7 +55,7 @@ public enum ERC165Functions {
         
         public func encode(to encoder: ABIFunctionEncoder) throws {
             assert(interfaceId.count == 4, "Interface data should contain exactly 4 bytes")
-            try encoder.encode(interfaceId, size: Data4.self)
+            try encoder.encode(interfaceId, staticSize: 4)
         }
     }
 }

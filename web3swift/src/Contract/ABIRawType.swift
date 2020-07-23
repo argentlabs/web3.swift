@@ -17,7 +17,7 @@ public enum ABIError: Error {
     case notCurrentlySupported
 }
 
-enum ABIRawType {
+public enum ABIRawType {
     case FixedUInt(Int)
     case FixedInt(Int)
     case FixedAddress
@@ -27,10 +27,11 @@ enum ABIRawType {
     case DynamicString
     indirect case FixedArray(ABIRawType, Int)
     indirect case DynamicArray(ABIRawType)
+    indirect case Tuple([ABIRawType])
 }
 
 extension ABIRawType: RawRepresentable {
-    init?(rawValue: String) {
+    public init?(rawValue: String) {
         // Specific match
         if rawValue == "uint" {
             self = ABIRawType.FixedUInt(256)
@@ -89,7 +90,7 @@ extension ABIRawType: RawRepresentable {
         return nil
     }
     
-    var rawValue: String {
+    public var rawValue: String {
         switch self {
         case .FixedUInt(let size): return "uint\(size)"
         case .FixedInt(let size): return "int\(size)"
@@ -100,6 +101,7 @@ extension ABIRawType: RawRepresentable {
         case .DynamicString: return "string"
         case .FixedArray(let type, let size): return "\(type.rawValue)[\(size)]"
         case .DynamicArray(let type): return "\(type.rawValue)[]"
+        case .Tuple(let types): return "(\(types.map(\.rawValue).joined(separator: ",")))"
         }
     }
     
@@ -107,6 +109,8 @@ extension ABIRawType: RawRepresentable {
         switch self {
         case .DynamicBytes, .DynamicString, .DynamicArray(_):
             return true
+        case .Tuple(let types):
+            return types.filter(\.isDynamic).count > 0
         default:
             return false
         }

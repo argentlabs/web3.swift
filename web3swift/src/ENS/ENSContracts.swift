@@ -47,7 +47,7 @@ enum ENSContracts {
             }
             
             public func encode(to encoder: ABIFunctionEncoder) throws {
-                try encoder.encode(_node, size: Data32.self)
+                try encoder.encode(_node, staticSize: 32)
             }
         }
         
@@ -73,7 +73,7 @@ enum ENSContracts {
             }
             
             public func encode(to encoder: ABIFunctionEncoder) throws {
-                try encoder.encode(_node, size: Data32.self)
+                try encoder.encode(_node, staticSize: 32)
             }
         }
     }
@@ -101,7 +101,7 @@ enum ENSContracts {
             }
             
             public func encode(to encoder: ABIFunctionEncoder) throws {
-                try encoder.encode(_node, size: Data32.self)
+                try encoder.encode(_node, staticSize: 32)
             }
         }
         
@@ -127,7 +127,7 @@ enum ENSContracts {
             }
             
             public func encode(to encoder: ABIFunctionEncoder) throws {
-                try encoder.encode(_node, size: Data32.self)
+                try encoder.encode(_node, staticSize: 32)
             }
         }
     }

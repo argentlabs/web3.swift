@@ -14,7 +14,7 @@ extension ABIFunction {
         let encoder = ABIFunctionEncoder(Self.name)
         try encode(to: encoder)
         let rawTypes = encoder.types
-        let methodId = String(hexFromBytes: try ABIEncoder.methodId(name: Self.name, types: rawTypes))
+        let methodId = String(hexFromBytes: try ABIFunctionEncoder.methodId(name: Self.name, types: rawTypes))
         var raw = data.web3.hexString
         
         guard raw.hasPrefix(methodId) else {
@@ -29,43 +29,52 @@ public class ABIFunctionEncoder {
     private let name: String
     private (set) var types: [ABIRawType] = []
     
-    public func encode(_ value: ABIType, size staticSize: ABIFixedSizeDataType.Type? = nil) throws {
-        guard let rawType = staticSize.flatMap(ABIRawType.init(type:)) ?? ABIRawType(type: type(of: value)) else {
-            throw ABIError.invalidValue
-        }
+    public func encode(_ value: ABIType, staticSize: Int? = nil) throws {
+        let rawType = type(of: value).rawType
+        let encoded = try ABIEncoder.encode(value, staticSize: staticSize)
         
-        encodedValues.append(try ABIEncoder.encode(value, staticSize: staticSize))
-        types.append(rawType)
+        encodedValues.append(encoded)
+        switch (staticSize, rawType) {
+        case (let size?, .DynamicBytes):
+            types.append(.FixedBytes(size))
+        default:
+            types.append(rawType)
+        }
     }
-
+    
+    public func encode<T: ABIType>(_ values: [T], staticSize: Int? = nil) throws {
+        let encoded = try ABIEncoder.encode(values, staticSize: staticSize)
+        encodedValues.append(encoded)
+        types.append(.DynamicArray(T.rawType))
+    }
+    
     private var encodedValues = [ABIEncoder.EncodedValue]()
 
     public init(_ name: String) {
         self.name = name
     }
     
-    private func calculateData() -> [UInt8] {
-        var head = [UInt8]()
-        var tail = [UInt8]()
-        
-        let offset = encodedValues.map { $0.staticLength }.reduce(0, +)
-        
-        encodedValues.forEach {
-            if $0.isDynamic {
-                let position = offset + (tail.count)
-                head += try! ABIEncoder.encode(String(position), forType: ABIRawType.FixedInt(256)).encoded
-                tail += $0.encoded
-            } else {
-                head += $0.encoded
-            }
-        }
-        
-        return head + tail
-    }
-    
     public func encoded() throws -> Data {
-        let methodId = try ABIEncoder.methodId(name: name, types: types)
-        let allBytes = methodId + calculateData()
+        let methodId = try Self.methodId(name: name, types: types)
+        let allBytes = methodId + (try encodedValues.encoded(isDynamic: false))
         return Data(allBytes)
     }
+    
+    static func signature(name: String, types: [ABIRawType]) throws -> [UInt8] {
+        let typeNames = types.map { $0.rawValue }
+        let signature = name + "(" + typeNames.joined(separator: ",") + ")"
+        guard let data = signature.data(using: .utf8) else { throw ABIError.invalidSignature }
+        return data.web3.keccak256.web3.bytes
+    }
+    
+    static func signature(name: String, types: [ABIType.Type]) throws -> [UInt8] {
+        let rawTypes = types.map { $0.rawType }
+        return try signature(name: name, types: rawTypes)
+    }
+    
+    static func methodId(name: String, types: [ABIRawType]) throws -> [UInt8] {
+        let signature = try Self.signature(name: name, types: types)
+        return Array(signature.prefix(4))
+    }
+
 }

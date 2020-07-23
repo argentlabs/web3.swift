@@ -10,7 +10,7 @@ import XCTest
 import BigInt
 @testable import web3swift
 
-class ABIFuncionEncoderTests: XCTestCase {
+class ABIFunctionEncoderTests: XCTestCase {
     var encoder: ABIFunctionEncoder!
     
     override func setUp() {
@@ -42,6 +42,12 @@ class ABIFuncionEncoderTests: XCTestCase {
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x2f570a23000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000026869000000000000000000000000000000000000000000000000000000000000")
     }
     
+    func testGivenStaticSizeData4_ThenEncodesCorrectly() {
+        try! encoder.encode(Data(hex: "0xffffffff")!, staticSize: 4)
+        let encoded = try! encoder.encoded()
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xda67eb8affffffff00000000000000000000000000000000000000000000000000000000")
+    }
+    
     func testGivenEmptyArrayOfAddressses_ThenEncodesCorrectly() {
         try! encoder.encode([EthereumAddress]())
         let encoded = try! encoder.encoded()
@@ -58,7 +64,7 @@ class ABIFuncionEncoderTests: XCTestCase {
 
         try! encoder.encode(addresses)
         let encoded = try! encoder.encoded()
-        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xd57498ea0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000026fc876db425b44bf6c377a7beef65e9ebad0ec300000000000000000000000025a01a05c188dacbcf1d61af55d4a5b4021f7eed000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000008c2dc702371d73febc50c6e6ced100bf9dbcb029000000000000000000000000007eedb5044ed5512ed7b9f8b42fe3113452491e0000000000000000000000000000000000000000000000000000000000000000")
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xd57498ea0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000500000000000000000000000026fc876db425b44bf6c377a7beef65e9ebad0ec300000000000000000000000025a01a05c188dacbcf1d61af55d4a5b4021f7eed000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000008c2dc702371d73febc50c6e6ced100bf9dbcb029000000000000000000000000007eedb5044ed5512ed7b9f8b42fe3113452491e")
     }
     
     func testGivenMultiBytes_ThenEncodesCorrectly() {
@@ -77,8 +83,108 @@ class ABIFuncionEncoderTests: XCTestCase {
 
         try! encoder.encode(values)
         let encoded = try! encoder.encoded()
-        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xca160684000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000000")
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xca16068400000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003")
     }
+    
+    func testGivenArrayOfStrings_ThenEncodesCorrectly() {
+        let values = ["abc"]
+        
+        do {
+            try encoder.encode(values)
+            XCTAssertEqual(try encoder.encoded().web3.hexString, "0xe21b90eb00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000036162630000000000000000000000000000000000000000000000000000000000")
+        } catch {
+            XCTFail()
+        }
+    }
+    
+    func testGivenSimpleTuple_ThenEncodesCorrectly() {
+        let tuple = SimpleTuple(address: EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793"), amount: BigUInt(30))
+        
+        do {
+            try encoder.encode(tuple)
+            XCTAssertEqual(try encoder.encoded().web3.hexString,"0xba71720c00000000000000000000000064d0ea4fc60f27e74f1a70aa6f39d403bbe56793000000000000000000000000000000000000000000000000000000000000001e")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testGivenDynamicContentTuple_ThenEncodesCorrectly() {
+        let tuple = DynamicContentTuple(message: "abc")
+        
+        do {
+            try encoder.encode(tuple)
+            XCTAssertEqual(try encoder.encoded().web3.hexString,"0xd6c9f12a0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000036162630000000000000000000000000000000000000000000000000000000000")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testGivenTupleAndArgument_ThenEncodesCorrectly() {
+        let tuple = DynamicContentTuple(message: "abc")
+        
+        do {
+            try encoder.encode(tuple)
+            try encoder.encode(BigUInt(1))
+            XCTAssertEqual(try encoder.encoded().web3.hexString,
+            "0x969569a200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000036162630000000000000000000000000000000000000000000000000000000000")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func testGivenArrayOfTuples_ThenEncodesCorrectly() {
+        let tuples = [
+            SimpleTuple(address: EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"), amount: 30),
+            SimpleTuple(address: EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"), amount: 120)]
+        
+        do {
+            try encoder.encode(tuples)
+            XCTAssertEqual(try encoder.encoded().web3.hexString,
+            "0xae4f5efa0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000064d0ea4fc60f27e74f1a70aa6f39d403bbe56793000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000003c1bd6b420448cf16a389c8b0115ccb3660bb8540000000000000000000000000000000000000000000000000000000000000078")
+        } catch let error {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+}
+
+fileprivate struct SimpleTuple: ABITuple {
+    static var types: [ABIType.Type] { [EthereumAddress.self, BigUInt.self] }
+    
+    var address: EthereumAddress
+    var amount: BigUInt
+    
+    init(address: EthereumAddress,
+         amount: BigUInt) {
+        self.address = address
+        self.amount = amount
+    }
+    
+    init?(values: [ABIType]) throws {
+        self.address = try values[0].decoded()
+        self.amount = try values[1].decoded()
+    }
+    
+    var encodableValues: [ABIType] { [address, amount] }
+}
+
+fileprivate struct DynamicContentTuple: ABITuple {
+    static var types: [ABIType.Type] { [String.self] }
+    
+    var message: String
+    
+    init(message: String) {
+        self.message = message
+    }
+    
+    init?(values: [ABIType]) throws {
+        self.message = try values[0].decoded()
+    }
+    
+    var encodableValues: [ABIType] { [message] }
 }
 
 fileprivate struct RelayerExecute: ABIFunction {

@@ -53,7 +53,7 @@ public class ERC20 {
     
     public func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void)) {
         
-        guard let result = try? ABIEncoder.encode(recipient).encoded, let sig = try? ERC20Events.Transfer.signature() else {
+        guard let result = try? ABIEncoder.encode(recipient).bytes, let sig = try? ERC20Events.Transfer.signature() else {
             completion(EthereumSignerError.unknownError, nil)
             return
         }

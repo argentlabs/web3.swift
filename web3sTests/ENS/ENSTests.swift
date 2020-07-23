@@ -33,7 +33,12 @@ class ENSTests: XCTestCase {
             let tx = try function.transaction()
             
             client?.eth_call(tx, block: .Latest, completion: { (error, dataStr) in
-                let owner = String(dataStr![dataStr!.index(dataStr!.endIndex, offsetBy: -40)...])
+                guard let dataStr = dataStr else {
+                    XCTFail()
+                    expect.fulfill()
+                    return
+                }
+                let owner = String(dataStr[dataStr.index(dataStr.endIndex, offsetBy: -40)...])
                 XCTAssertEqual(owner.web3.noHexPrefix,"09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1")
                 expect.fulfill()
             })

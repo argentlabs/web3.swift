@@ -9,7 +9,12 @@
 import Foundation
 import BigInt
 
-public protocol ABIType { }
+public protocol ABIType {
+    static var rawType: ABIRawType { get }
+    
+    typealias ParserFunction = ([String]) throws -> ABIType
+    static var parser: ParserFunction { get }
+}
 
 extension ABIType {
     public func decoded<T: ABIType>() throws -> T {
@@ -20,188 +25,386 @@ extension ABIType {
     }
 }
 
-extension String: ABIType { }
-extension Bool: ABIType { }
-extension EthereumAddress: ABIType { }
-extension BigInt: ABIType { }
-extension BigUInt: ABIType { }
-extension Data: ABIType { }
-// TODO (U)Double. Function. Fixed size array. Other Int sizes
-extension Array: ABIType { }
-extension UInt8: ABIType { }
-extension UInt16: ABIType { }
-extension UInt32: ABIType { }
-extension UInt64: ABIType { }
-extension URL : ABIType { }
-
-public protocol ABIFixedSizeDataType: ABIType {
-    static var fixedSize: Int { get }
-}
-
-public struct Data1: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 1
-}
-
-public struct Data2: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 2
-}
-
-public struct Data3: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 3
-}
-
-public struct Data4: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 4
-}
-
-public struct Data5: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 5
-}
-
-public struct Data6: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 6
-}
-
-public struct Data7: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 7
-}
-
-public struct Data8: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 8
-}
-
-public struct Data9: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 9
-}
-
-public struct Data10: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 10
-}
-
-public struct Data11: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 11
-}
-
-public struct Data12: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 12
-}
-
-public struct Data13: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 13
-}
-
-public struct Data14: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 14
-}
-
-public struct Data15: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 15
-}
-
-public struct Data16: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 16
-}
-
-public struct Data17: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 17
-}
-
-public struct Data18: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 18
-}
-
-public struct Data19: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 19
-}
-
-public struct Data20: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 20
-}
-
-public struct Data21: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 21
-}
-
-public struct Data22: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 22
-}
-
-public struct Data23: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 23
-}
-
-public struct Data24: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 24
-}
-
-public struct Data25: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 25
-}
-
-public struct Data26: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 26
-}
-
-public struct Data27: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 27
-}
-
-public struct Data28: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 28
-}
-
-public struct Data29: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 29
-}
-
-public struct Data30: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 30
-}
-
-public struct Data31: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 31
-}
-
-public struct Data32: ABIFixedSizeDataType {
-    public static let fixedSize: Int = 32
-}
-
-extension ABIRawType {
-    init?(type: ABIType.Type) {
-        switch type {
-        case is String.Type:
-            self = ABIRawType.DynamicString
-        case is Bool.Type:
-            self = ABIRawType.FixedBool
-        case is EthereumAddress.Type:
-            self = ABIRawType.FixedAddress
-        case is BigInt.Type:
-            self = ABIRawType.FixedInt(256)
-        case is BigUInt.Type:
-            self = ABIRawType.FixedUInt(256)
-        case is UInt8.Type:
-            self = ABIRawType.FixedUInt(8)
-        case is UInt16.Type:
-            self = ABIRawType.FixedUInt(16)
-        case is UInt32.Type:
-            self = ABIRawType.FixedUInt(32)
-        case is UInt64.Type:
-            self = ABIRawType.FixedUInt(64)
-        case is URL.Type:
-            self = ABIRawType.DynamicString
-        case is Data.Type:
-            self = ABIRawType.DynamicBytes
-        case is ABIFixedSizeDataType.Type:
-            guard let fixed = type as? ABIFixedSizeDataType.Type else { return nil }
-            self = ABIRawType.FixedBytes(fixed.fixedSize)
-        case is Array<EthereumAddress>.Type:
-            self = ABIRawType.DynamicArray(.FixedAddress)
-        case is Array<BigUInt>.Type:
-            self = ABIRawType.DynamicArray(.FixedUInt(256))
-        case is Array<BigInt>.Type:
-            self = ABIRawType.DynamicArray(.FixedInt(256))
-        default:
-            return nil
+extension String: ABIType {
+    public static var rawType: ABIRawType { .DynamicString }
+    
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: String.self)
         }
     }
+}
+
+extension Bool: ABIType {
+    public static var rawType: ABIRawType { .FixedBool }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: Bool.self)
+        }
+    }
+}
+
+extension EthereumAddress: ABIType {
+    public static var rawType: ABIRawType { .FixedAddress }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: EthereumAddress.self)
+        }
+      }
+}
+extension BigInt: ABIType {
+    public static var rawType: ABIRawType { .FixedInt(256) }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: BigInt.self)
+        }
+    }
+}
+
+extension BigUInt: ABIType {
+    public static var rawType: ABIRawType { .FixedUInt(256) }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: BigUInt.self)
+        }
+    }
+}
+
+extension UInt8: ABIType {
+    public static var rawType: ABIRawType {
+    .FixedUInt(8) }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: UInt8.self)
+        }
+    }
+}
+
+extension UInt16: ABIType {
+    public static var rawType: ABIRawType { .FixedUInt(16) }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: UInt16.self)
+        }
+    }
+}
+
+extension UInt32: ABIType {
+    public static var rawType: ABIRawType { .FixedUInt(32) }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: UInt32.self)
+        }
+    }
+}
+
+extension UInt64: ABIType {
+    public static var rawType: ABIRawType { .FixedUInt(64) }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: UInt64.self)
+        }
+    }
+}
+
+extension URL : ABIType {
+    public static var rawType: ABIRawType { .DynamicBytes }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: URL.self)
+        }
+    }
+}
+
+extension ABITuple {
+    public static var rawType: ABIRawType {
+        .Tuple(Self.types.map { $0.rawType })
+    }
+    public static var parser: ParserFunction {
+        return { data in
+            let first = data.first ?? ""
+            return try ABIDecoder.decode(first, to: String.self)
+        }
+    }
+}
+
+// TODO Fixed size array. Other Int sizes
+
+fileprivate let DataParser: ABIType.ParserFunction = { data in
+    let first = data.first ?? ""
+    return try ABIDecoder.decode(first, to: Data.self)
+}
+
+extension Data: ABIType {
+    public static var rawType: ABIRawType { .DynamicBytes }
+    public static var parser: ParserFunction = DataParser
+}
+
+// When decoding it's easier to specify a type, instead of type + static size
+public protocol ABIStaticSizeDataType: ABIType {}
+
+public struct Data1: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(1)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data2: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(2)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data3: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(3)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data4: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(4)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data5: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(5)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data6: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(6)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data7: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(7)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data8: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(8)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data9: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(9)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data10: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(10)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data11: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(11)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data12: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(12)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data13: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(13)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data14: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(14)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data15: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(15)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data16: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(16)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data17: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(17)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data18: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(18)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data19: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(19)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data20: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(20)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data21: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(21)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data22: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(22)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data23: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(23)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data24: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(24)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data25: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(25)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data26: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(26)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data27: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(27)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data28: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(28)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data29: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(29)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data30: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(30)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data31: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(31)
+    }
+    
+    public static var parser: ParserFunction = DataParser
+}
+
+public struct Data32: ABIStaticSizeDataType {
+    public static var rawType: ABIRawType {
+        .FixedBytes(32)
+    }
+    
+    public static var parser: ParserFunction = DataParser
 }
