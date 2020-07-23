@@ -26,7 +26,7 @@ extension EthereumAddress: ABIType { }
 extension BigInt: ABIType { }
 extension BigUInt: ABIType { }
 extension Data: ABIType { }
-// TODO (U)Double. Function. Array. Other Int sizes
+// TODO (U)Double. Function. Fixed size array. Other Int sizes
 extension Array: ABIType { }
 extension UInt8: ABIType { }
 extension UInt16: ABIType { }

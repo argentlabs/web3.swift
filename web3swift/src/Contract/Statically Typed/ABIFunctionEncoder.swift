@@ -29,93 +29,17 @@ public class ABIFunctionEncoder {
     private let name: String
     private (set) var types: [ABIRawType] = []
     
-    public func encode(_ value: String) throws {
-        let strValue = value
-        guard let type = ABIRawType(type: String.self) else { throw ABIError.invalidType }
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: Bool) throws {
-        let strValue = value ? "true" : "false"
-        guard let type = ABIRawType(type: Bool.self) else { throw ABIError.invalidType }
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: EthereumAddress) throws {
-        let strValue = value.value
-        guard let type = ABIRawType(type: EthereumAddress.self) else { throw ABIError.invalidType }
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: BigInt) throws {
-        let strValue = String(value)
-        guard let type = ABIRawType(type: BigInt.self) else { throw ABIError.invalidType }
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: BigUInt) throws {
-        let strValue = String(value)
-        guard let type = ABIRawType(type: BigUInt.self) else { throw ABIError.invalidType }
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: Data) throws {
-        let strValue = String(bytes: value.web3.bytes)
-        guard let type = ABIRawType(type: Data.self) else { throw ABIError.invalidType }
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: Data, size: ABIFixedSizeDataType.Type) throws {
-        let strValue = String(bytes: value.web3.bytes)
-        guard let type = ABIRawType(type: size) else { throw ABIError.invalidType }
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: [Data], size: ABIFixedSizeDataType.Type) throws {
-        let strValue = String(bytes: value.flatMap { $0 })
-        guard let containedType = ABIRawType(type: size) else { throw ABIError.invalidType }
-        let type: ABIRawType = .DynamicArray(containedType)
-        return try self.encode(type: type, value: strValue)
-    }
-    
-    public func encode(_ value: [EthereumAddress]) throws {
-        guard let type = ABIRawType(type: [EthereumAddress].self) else {
-            throw ABIError.invalidType
+    public func encode(_ value: ABIType, size staticSize: ABIFixedSizeDataType.Type? = nil) throws {
+        guard let rawType = staticSize.flatMap(ABIRawType.init(type:)) ?? ABIRawType(type: type(of: value)) else {
+            throw ABIError.invalidValue
         }
         
-        let bytes = try value.flatMap { try ABIEncoder.encode($0) }
-        return try self.encode(type: type, value: String(hexFromBytes: bytes), size: value.count)
-    }
-    
-    public func encode(_ value: [BigUInt]) throws {
-        guard let type = ABIRawType(type: [BigUInt].self) else {
-            throw ABIError.invalidType
-        }
-        
-        let bytes = try value.flatMap { try ABIEncoder.encode($0) }
-        return try self.encode(type: type, value: String(hexFromBytes: bytes), size: value.count)
+        encodedValues.append(try ABIEncoder.encode(value, staticSize: staticSize))
+        types.append(rawType)
     }
 
-    private struct EncodedValue {
-        let encoded: [UInt8]
-        let isDynamic: Bool
-        let staticLength: Int
-    }
-    private var encodedValues = [EncodedValue]()
-    private func encode(type: ABIRawType, value: String, size: Int = 1) throws {
-        let result = try ABIEncoder.encode(value, forType: type, size: size)
-        
-        let staticLength: Int
-        if type.isDynamic {
-            staticLength = 32
-        } else {
-            staticLength = 32 * size
-        }
-        
-        encodedValues.append(EncodedValue(encoded: result, isDynamic: type.isDynamic, staticLength: staticLength))
-        types.append(type)
-    }
-    
+    private var encodedValues = [ABIEncoder.EncodedValue]()
+
     public init(_ name: String) {
         self.name = name
     }
@@ -129,7 +53,7 @@ public class ABIFunctionEncoder {
         encodedValues.forEach {
             if $0.isDynamic {
                 let position = offset + (tail.count)
-                head += try! ABIEncoder.encode(String(position), forType: ABIRawType.FixedInt(256))
+                head += try! ABIEncoder.encode(String(position), forType: ABIRawType.FixedInt(256)).encoded
                 tail += $0.encoded
             } else {
                 head += $0.encoded
@@ -144,5 +68,4 @@ public class ABIFunctionEncoder {
         let allBytes = methodId + calculateData()
         return Data(allBytes)
     }
-    
 }

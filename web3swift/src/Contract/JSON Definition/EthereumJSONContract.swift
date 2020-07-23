@@ -101,7 +101,7 @@ open class EthereumJSONContract: EthereumJSONContractProtocol {
                 guard let type = ABIRawType(rawValue: types[index]) else {
                     throw ABIError.invalidType
                 }
-                let result = try ABIEncoder.encode(arg, forType: type)
+                let result = try ABIEncoder.encode(arg, forType: type).encoded
                 topics.insert(String(hexFromBytes: result), at: index + 1)
             } else {
                 topics.insert(nil, at: index + 1)

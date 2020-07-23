@@ -27,7 +27,6 @@ enum ABIRawType {
     case DynamicString
     indirect case FixedArray(ABIRawType, Int)
     indirect case DynamicArray(ABIRawType)
-    // TODO Function. Fixed. UFixed.
 }
 
 extension ABIRawType: RawRepresentable {

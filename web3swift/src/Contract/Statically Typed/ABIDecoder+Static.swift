@@ -15,7 +15,7 @@ extension ABIDecoder {
     public typealias ABIEntry = [String]
     
     public static func decodeData(_ data: RawABI, types: [ABIType.Type], asArray: Bool = false) throws -> [ABIType] {
-        let rawTypes = types.compactMap { ABIRawType(type: $0) }
+        let rawTypes = types.compactMap(ABIRawType.init(type:))
         guard rawTypes.count == types.count else {
             throw ABIError.incorrectParameterCount
         }

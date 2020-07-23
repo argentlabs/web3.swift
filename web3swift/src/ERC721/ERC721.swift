@@ -34,7 +34,7 @@ public class ERC721: ERC165 {
                                  fromBlock: EthereumBlock,
                                  toBlock: EthereumBlock,
                                  completion: @escaping((Error?, [ERC721Events.Transfer]?) -> Void)) {
-        guard let addressType = ABIRawType(type: EthereumAddress.self), let result = try? ABIEncoder.encode(recipient.value, forType: addressType), let sig = try? ERC721Events.Transfer.signature() else {
+        guard let result = try? ABIEncoder.encode(recipient).encoded, let sig = try? ERC721Events.Transfer.signature() else {
             completion(EthereumSignerError.unknownError, nil)
             return
         }

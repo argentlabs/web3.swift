@@ -68,9 +68,9 @@ class ERC20Tests: XCTestCase {
     func testTransferRawEvent() {
         let expect = expectation(description: "Get transfer event")
         
-        let result = try! ABIEncoder.encode("0x72e3b687805ef66bf2a1e6d9f03faf8b33f0267a", forType: ABIRawType(type: EthereumAddress.self)!)
+        let result = try! ABIEncoder.encode(EthereumAddress("0x72e3b687805ef66bf2a1e6d9f03faf8b33f0267a"))
         let sig = try! ERC20Events.Transfer.signature()
-        let topics = [ sig, String(hexFromBytes: result)]
+        let topics = [ sig, result.hexString]
     
         self.client?.getEvents(addresses: nil, topics: topics, fromBlock: .Earliest, toBlock: .Latest, eventTypes: [ERC20Events.Transfer.self], completion: { (error, events, unprocessed) in
             XCTAssert(events.count > 0)

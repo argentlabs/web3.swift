@@ -21,10 +21,10 @@ extension ABIEncoder {
                 throw ABIError.invalidType
             }
             
-            let result = try encode(value, forType: type)
+            let result = try encode(value, forType: type).encoded
             if type.isDynamic {
                 let pos = args.count*32 + tail.count
-                head += try encode(String(pos), forType: ABIRawType.FixedInt(256))
+                head += try encode(String(pos), forType: ABIRawType.FixedInt(256)).encoded
                 tail += result
             }
             else {

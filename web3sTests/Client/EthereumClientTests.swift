@@ -283,10 +283,10 @@ class EthereumClientTests: XCTestCase {
     func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned() {
         let expectation = XCTestExpectation(description: "get events")
         
-        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
-        
+        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
+            
         client?.getEvents(addresses: nil,
-                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
                           fromBlock: .Earliest,
                           toBlock: .Latest,
                           eventTypes: [ERC20Events.Transfer.self]) { (error, events, logs) in
@@ -302,10 +302,10 @@ class EthereumClientTests: XCTestCase {
     func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned() {
         let expectation = XCTestExpectation(description: "get events")
         
-        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
         
         client?.getEvents(addresses: nil,
-                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
                           fromBlock: .Earliest,
                           toBlock: .Latest,
                           eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self]) { (error, events, logs) in
@@ -327,7 +327,7 @@ class EthereumClientTests: XCTestCase {
         ]
         
         client?.getEvents(addresses: nil,
-                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
                           fromBlock: .Earliest,
                           toBlock: .Latest,
                           matching: filters) { (error, events, logs) in
@@ -343,14 +343,14 @@ class EthereumClientTests: XCTestCase {
     func testGivenContractFilter_WhenMatchingMultipleTransferEvents_OnlyMatchingSourceEventsReturned() {
         let expectation = XCTestExpectation(description: "get events")
         
-        let to = try! ABIEncoder.encode("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
         let filters = [
             EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")]),
             EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
         ]
         
         client?.getEvents(addresses: nil,
-                          topics: [try! ERC20Events.Transfer.signature(), nil, String(hexFromBytes: to), nil],
+                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
                           fromBlock: .Earliest,
                           toBlock: .Latest,
                           matching: filters) { (error, events, logs) in
