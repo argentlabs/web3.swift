@@ -7,13 +7,128 @@
 //
 
 import Foundation
+import BigInt
 
-struct ENSContracts {
+enum ENSContracts {
     static let RopstenAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
     static let MainnetAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
     
-    static let RegistryJson = "[{\"constant\":true,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"}],\"name\":\"resolver\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"}],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"},{\"name\":\"_label\",\"type\":\"bytes32\"},{\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"setSubnodeOwner\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"},{\"name\":\"_ttl\",\"type\":\"uint64\"}],\"name\":\"setTTL\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"}],\"name\":\"ttl\",\"outputs\":[{\"name\":\"\",\"type\":\"uint64\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"},{\"name\":\"_resolver\",\"type\":\"address\"}],\"name\":\"setResolver\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"},{\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"setOwner\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_node\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"_label\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"NewOwner\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_node\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_node\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"_resolver\",\"type\":\"address\"}],\"name\":\"NewResolver\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_node\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"_ttl\",\"type\":\"uint64\"}],\"name\":\"NewTTL\",\"type\":\"event\"}]"
+    static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
+        switch network {
+        case .Ropsten:
+            return ENSContracts.RopstenAddress
+        case .Mainnet:
+            return ENSContracts.MainnetAddress
+        default:
+            return nil
+        }
+    }
     
-    static let ResolverJson = "[{\"constant\":true,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"}],\"name\":\"addr\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"}],\"name\":\"name\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"},{\"name\":\"_name\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_node\",\"type\":\"bytes32\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"setAddr\",\"outputs\":[],\"payable\":false,\"type\":\"function\"}]"
+    enum ENSResolverFunctions {
+        struct addr: ABIFunction {
+            static let name = "addr"
+            let gasPrice: BigUInt?
+            let gasLimit: BigUInt?
+            var contract: EthereumAddress
+            let from: EthereumAddress?
+            
+            let _node: Data
+            
+            init(contract: EthereumAddress,
+                 from: EthereumAddress? = nil,
+                 gasPrice: BigUInt? = nil,
+                 gasLimit: BigUInt? = nil,
+                 _node: Data) {
+                self.contract = contract
+                self.from = from
+                self.gasPrice = gasPrice
+                self.gasLimit = gasLimit
+                self._node = _node
+            }
+            
+            public func encode(to encoder: ABIFunctionEncoder) throws {
+                try encoder.encode(_node, size: Data32.self)
+            }
+        }
+        
+        struct name: ABIFunction {
+            static let name = "name"
+            let gasPrice: BigUInt?
+            let gasLimit: BigUInt?
+            var contract: EthereumAddress
+            let from: EthereumAddress?
+            
+            let _node: Data
+            
+            init(contract: EthereumAddress,
+                 from: EthereumAddress? = nil,
+                 gasPrice: BigUInt? = nil,
+                 gasLimit: BigUInt? = nil,
+                 _node: Data) {
+                self.contract = contract
+                self.from = from
+                self.gasPrice = gasPrice
+                self.gasLimit = gasLimit
+                self._node = _node
+            }
+            
+            public func encode(to encoder: ABIFunctionEncoder) throws {
+                try encoder.encode(_node, size: Data32.self)
+            }
+        }
+    }
     
+    enum ENSRegistryFunctions {
+        struct resolver: ABIFunction {
+            static let name = "resolver"
+            let gasPrice: BigUInt?
+            let gasLimit: BigUInt?
+            var contract: EthereumAddress
+            let from: EthereumAddress?
+            
+            let _node: Data
+            
+            init(contract: EthereumAddress,
+                 from: EthereumAddress? = nil,
+                 gasPrice: BigUInt? = nil,
+                 gasLimit: BigUInt? = nil,
+                 _node: Data) {
+                self.contract = contract
+                self.from = from
+                self.gasPrice = gasPrice
+                self.gasLimit = gasLimit
+                self._node = _node
+            }
+            
+            public func encode(to encoder: ABIFunctionEncoder) throws {
+                try encoder.encode(_node, size: Data32.self)
+            }
+        }
+        
+        struct owner: ABIFunction {
+            static let name = "owner"
+            let gasPrice: BigUInt?
+            let gasLimit: BigUInt?
+            var contract: EthereumAddress
+            let from: EthereumAddress?
+            
+            let _node: Data
+            
+            init(contract: EthereumAddress,
+                 from: EthereumAddress? = nil,
+                 gasPrice: BigUInt? = nil,
+                 gasLimit: BigUInt? = nil,
+                 _node: Data) {
+                self.contract = contract
+                self.from = from
+                self.gasPrice = gasPrice
+                self.gasLimit = gasLimit
+                self._node = _node
+            }
+            
+            public func encode(to encoder: ABIFunctionEncoder) throws {
+                try encoder.encode(_node, size: Data32.self)
+            }
+        }
+    }
 }

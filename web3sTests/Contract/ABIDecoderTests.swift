@@ -22,8 +22,8 @@ class ABIDecoderTests: XCTestCase {
     
     func testDecodeUint32() {
         do {
-            let decoded = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002a", types: ["uint32"]) as! [String]
-            XCTAssertEqual(BigInt(hex: decoded[0]), 42)
+            let decoded = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002a", types: [BigInt.self]) as! [BigInt]
+            XCTAssertEqual(decoded[0], 42)
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
@@ -32,11 +32,8 @@ class ABIDecoderTests: XCTestCase {
     
     func testDecodeUint256Array() {
         do {
-            let decoded = try ABIDecoder.decodeData("0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003", types: ["uint256[]"]) as! [[String]]
-            let result = decoded[0].map {
-                return BigInt(hex: $0)!
-            }
-            XCTAssertEqual(result, [BigInt(1), BigInt(2), BigInt(3)])
+            let decoded = try ABIDecoder.decodeData("0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003", types: [[BigInt].self]) as! [[BigInt]]
+            XCTAssertEqual(decoded[0], [BigInt(1), BigInt(2), BigInt(3)])
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
@@ -45,8 +42,8 @@ class ABIDecoderTests: XCTestCase {
     
     func testDecodeAddress() {
         do {
-            let decoded = try ABIDecoder.decodeData("0x00000000000000000000000021397c1a1f4acd9132fe36df011610564b87e24b", types: ["address"]) as! [String]
-            XCTAssertEqual(decoded[0], "0x21397c1a1f4acd9132fe36df011610564b87e24b")
+            let decoded = try ABIDecoder.decodeData("0x00000000000000000000000021397c1a1f4acd9132fe36df011610564b87e24b", types: [EthereumAddress.self]) as! [EthereumAddress]
+            XCTAssertEqual(decoded[0], EthereumAddress("0x21397c1a1f4acd9132fe36df011610564b87e24b"))
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
@@ -56,7 +53,7 @@ class ABIDecoderTests: XCTestCase {
     
     func testDecodeString() {
         do {
-            let decoded = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000147665726f6e696b612e617267656e742e74657374000000000000000000000000", types: ["string"]) as! [String]
+            let decoded = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000147665726f6e696b612e617267656e742e74657374000000000000000000000000", types: [String.self]) as! [String]
             XCTAssertEqual(decoded[0].web3.stringValue, "veronika.argent.test")
         } catch let error {
             print(error.localizedDescription)
@@ -67,8 +64,9 @@ class ABIDecoderTests: XCTestCase {
     
     func testDecodeAddressArray() {
         do {
-            let decoded = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a77b0f3aae325cb2ec1bdb4a3548d816a83b8ca3", types: ["address[]"]) as! [[String]]
-            XCTAssertEqual(decoded[0], ["0x0000000000000000000000000000000000000000", "0xa77b0f3aae325cb2ec1bdb4a3548d816a83b8ca3"])
+            let decoded = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a77b0f3aae325cb2ec1bdb4a3548d816a83b8ca3", types: [[EthereumAddress].self])
+                let result = decoded as! [[EthereumAddress]]
+            XCTAssertEqual(result[0], [.zero, EthereumAddress("0xa77b0f3aae325cb2ec1bdb4a3548d816a83b8ca3")])
         } catch let error {
             print(error.localizedDescription)
             XCTFail()
