@@ -212,8 +212,7 @@ class EthereumClientTests: XCTestCase {
         
         client?.eth_getBlockByNumber(.Latest) { error, block in
             XCTAssertNil(error)
-            
-            XCTAssert((block?.transactions.count ?? 0) > 0);
+            XCTAssertNotNil(block?.number.intValue)
             expectation.fulfill()
         }
         
