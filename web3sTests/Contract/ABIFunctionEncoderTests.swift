@@ -149,6 +149,22 @@ class ABIFunctionEncoderTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    // See example: https://solidity.readthedocs.io/en/v0.6.11/abi-spec.html#use-of-dynamic-types
+    func test_ArrayOfArraysSample_ThenEncodesCorrectly() {
+        encoder = ABIFunctionEncoder("f")
+        
+        do {
+            try encoder.encode(BigUInt(hex: "0x123")!)
+            try encoder.encode(Array<UInt32>([0x456, 0x789]))
+            try encoder.encode("1234567890".data(using: .utf8)!, staticSize: 10)
+            try encoder.encode("Hello, world!".data(using: .utf8)!)
+            XCTAssertEqual(try encoder.encoded().web3.hexString,
+            "0x8be6524600000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000")
+        } catch {
+            XCTFail()
+        }
+    }
 }
 
 fileprivate struct SimpleTuple: ABITuple {

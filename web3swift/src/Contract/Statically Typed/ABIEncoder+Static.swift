@@ -24,6 +24,14 @@ extension ABIEncoder {
             return try ABIEncoder.encodeRaw(String(value), forType: type)
         case let value as BigUInt:
             return try ABIEncoder.encodeRaw(String(value), forType: type)
+        case let value as UInt8:
+            return try ABIEncoder.encodeRaw(String(value), forType: type)
+        case let value as UInt16:
+            return try ABIEncoder.encodeRaw(String(value), forType: type)
+        case let value as UInt32:
+            return try ABIEncoder.encodeRaw(String(value), forType: type)
+        case let value as UInt64:
+            return try ABIEncoder.encodeRaw(String(value), forType: type)
         case let data as Data:
             if let staticSize = staticSize {
                 return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: .FixedBytes(staticSize))

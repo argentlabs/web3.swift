@@ -138,7 +138,7 @@ extension ABITuple {
     }
 }
 
-// TODO Fixed size array. Other Int sizes
+// TODO: Other Int sizes
 
 fileprivate let DataParser: ABIType.ParserFunction = { data in
     let first = data.first ?? ""
