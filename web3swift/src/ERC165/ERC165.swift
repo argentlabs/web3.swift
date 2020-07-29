@@ -65,7 +65,7 @@ public enum ERC165Responses {
         public static var types: [ABIType.Type] = [ Bool.self ]
         public let supported: Bool
         
-        public init?(values: [ABIType]) throws {
+        public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.supported = try values[0].decoded()
         }
     }

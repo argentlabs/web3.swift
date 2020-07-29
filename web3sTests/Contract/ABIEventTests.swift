@@ -72,7 +72,7 @@ struct EnabledStaticCall: ABIEvent {
     let module: EthereumAddress
     let method: Data
 
-    init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+    init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
         try EnabledStaticCall.checkParameters(topics, data)
         self.log = log
 
@@ -91,7 +91,7 @@ struct UpgraderRegistered: ABIEvent {
     let upgrader: EthereumAddress
     let name: Data
     
-    init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+    init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
         try UpgraderRegistered.checkParameters(topics, data)
         self.log = log
         

@@ -20,7 +20,7 @@ struct TransferMatchingSignatureEvent: ABIEvent {
     public let to: EthereumAddress
     public let value: BigUInt
     
-    public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+    public init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
         try TransferMatchingSignatureEvent.checkParameters(topics, data)
         self.log = log
         
@@ -385,11 +385,11 @@ struct GetGuardians: ABIFunction {
     let gasLimit: BigUInt? = nil
     
     struct Response: ABIResponse {
-        static var types: [ABIType.Type] = [[EthereumAddress].self]
+        static var types: [ABIType.Type] = [ABIArray<EthereumAddress>.self]
         let guardians: [EthereumAddress]
         
-        init?(values: [ABIType]) throws {
-            self.guardians = try values[0].decoded()
+        init?(values: [ABIDecoder.DecodedValue]) throws {
+            self.guardians = try values[0].decodedArray()
             
         }
     }

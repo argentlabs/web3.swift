@@ -179,7 +179,7 @@ fileprivate struct SimpleTuple: ABITuple {
         self.amount = amount
     }
     
-    init?(values: [ABIType]) throws {
+    init?(values: [ABIDecoder.DecodedValue]) throws {
         self.address = try values[0].decoded()
         self.amount = try values[1].decoded()
     }
@@ -196,7 +196,7 @@ fileprivate struct DynamicContentTuple: ABITuple {
         self.message = message
     }
     
-    init?(values: [ABIType]) throws {
+    init?(values: [ABIDecoder.DecodedValue]) throws {
         self.message = try values[0].decoded()
     }
     
@@ -213,7 +213,7 @@ fileprivate struct RelayerExecute: ABIFunction {
     struct Response: ABIResponse {
         static var types: [ABIType.Type] = []
 
-        init?(values: [ABIType]) throws {
+        init?(values: [ABIDecoder.DecodedValue]) throws {
 
         }
     }

@@ -41,7 +41,7 @@ extension ABIEncoder {
         
         case let value as ABITuple:
             let sizeToEncode = type.isDynamic && value.encodableValues.count > 1 ? value.encodableValues.count : nil
-            return try ABIEncoder.encodeContainer(elements: value.encodableValues.map { (value: $0, size: nil)}, isDynamic: type.isDynamic, size: sizeToEncode)
+            return try ABIEncoder.encodeArray(elements: value.encodableValues.map { (value: $0, size: nil)}, isDynamic: type.isDynamic, size: sizeToEncode)
         default:
             throw ABIError.notCurrentlySupported
         }
@@ -49,11 +49,11 @@ extension ABIEncoder {
     
     public static func encode<T: ABIType>(_ values: [T],
                               staticSize: Int? = nil) throws -> EncodedValue {
-        return try ABIEncoder.encodeContainer(elements: values.map { (value: $0, size: nil) }, isDynamic: staticSize == nil, size: values.count)
+        return try ABIEncoder.encodeArray(elements: values.map { (value: $0, size: nil) }, isDynamic: staticSize == nil, size: values.count)
     }
     
     private typealias ValueAndSize = (value: ABIType, size: Int?)
-    private static func encodeContainer(elements: [ValueAndSize], isDynamic: Bool, size: Int?) throws -> EncodedValue {
+    private static func encodeArray(elements: [ValueAndSize], isDynamic: Bool, size: Int?) throws -> EncodedValue {
         let values: [EncodedValue] = try elements.map {
             try ABIEncoder.encode($0.value, staticSize: $0.size)
         }

@@ -16,15 +16,6 @@ public protocol ABIType {
     static var parser: ParserFunction { get }
 }
 
-extension ABIType {
-    public func decoded<T: ABIType>() throws -> T {
-        guard let decoded = self as? T else {
-            throw ABIError.invalidValue
-        }
-        return decoded
-    }
-}
-
 extension String: ABIType {
     public static var rawType: ABIRawType { .DynamicString }
     
@@ -407,4 +398,19 @@ public struct Data32: ABIStaticSizeDataType {
     }
     
     public static var parser: ParserFunction = DataParser
+}
+
+public struct ABIArray<T: ABIType>: ABIType {
+    let values: [T]
+    
+    public init(values: [T]) {
+        self.values = values
+    }
+    public static var rawType: ABIRawType {
+        .DynamicArray(T.rawType)
+    }
+    
+    public static var parser: ParserFunction {
+        return T.parser
+    }
 }

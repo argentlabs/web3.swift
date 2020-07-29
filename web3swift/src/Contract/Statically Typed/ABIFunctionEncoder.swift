@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 
 extension ABIFunction {
-    public func decode(_ data: Data, expectedTypes: [ABIType.Type]) throws -> [ABIType] {
+    public func decode(_ data: Data, expectedTypes: [ABIType.Type]) throws -> [ABIDecoder.DecodedValue] {
         let encoder = ABIFunctionEncoder(Self.name)
         try encode(to: encoder)
         let rawTypes = encoder.types
@@ -21,7 +21,15 @@ extension ABIFunction {
             throw ABIError.invalidSignature
         }
         raw = raw.replacingOccurrences(of: methodId, with: "")
-        return try ABIDecoder.decodeData(raw, types: expectedTypes)
+        let decoded = try ABIDecoder.decodeData(raw, types: expectedTypes)
+        let empty = decoded.flatMap { $0.entry.filter(\.isEmpty) }
+        guard
+            empty.count == 0,
+            decoded.count == expectedTypes.count else {
+            throw ABIError.invalidSignature
+        }
+        
+        return decoded
     }
 }
 

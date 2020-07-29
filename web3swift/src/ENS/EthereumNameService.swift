@@ -72,7 +72,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                 guard let data = data, data != "0x" else {
                     return completion(EthereumNameServiceError.ensUnknown, nil)
                 }
-                if let ensHex = (try? ABIDecoder.decodeData(data, types: [String.self]))?.first as? String {
+                if let ensHex: String = try? (try? ABIDecoder.decodeData(data, types: [String.self]))?.first?.decoded() {
                     completion(nil, ensHex)
                 } else {
                     completion(EthereumNameServiceError.decodeIssue, nil)
@@ -121,7 +121,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                     return completion(EthereumNameServiceError.ensUnknown, nil)
                 }
                 
-                if let ensAddress = (try? ABIDecoder.decodeData(data, types: [EthereumAddress.self]))?.first as? EthereumAddress {
+                if let ensAddress: EthereumAddress = try? (try? ABIDecoder.decodeData(data, types: [EthereumAddress.self]))?.first?.decoded() {
                     completion(nil, ensAddress)
                 } else {
                     completion(EthereumNameServiceError.decodeIssue, nil)
