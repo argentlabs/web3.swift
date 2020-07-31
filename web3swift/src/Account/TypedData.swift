@@ -62,8 +62,7 @@ extension TypedData {
 
     /// Object encoding as per EIP712
     public func encodeData(data: JSON, type: String) throws -> Data {
-        var encoded = [UInt8]()
-        encoded += try ABIEncoder.encode(encodeType(primaryType: type).web3.keccak256, forType: .FixedBytes(32))
+        var encoded = try ABIEncoder.encode(encodeType(primaryType: type).web3.keccak256, staticSize: 32).bytes
         
         guard let valueTypes = types[type] else {
             throw ABIError.invalidType
@@ -111,22 +110,22 @@ extension TypedData {
             guard let value = data.stringValue?.web3.keccak256 else {
                 throw ABIError.invalidValue
             }
-            return try ABIEncoder.encode(value, forType: .FixedBytes(32))
+            return try ABIEncoder.encodeRaw(value, forType: .FixedBytes(32)).bytes
         case .DynamicBytes:
             guard let value = data.stringValue.flatMap(Data.init(hex:))?.web3.keccak256 else {
                 throw ABIError.invalidValue
             }
-            return try ABIEncoder.encode(value, forType: .FixedBytes(32))
+            return try ABIEncoder.encodeRaw(value, forType: .FixedBytes(32)).bytes
         case .FixedAddress, .FixedBytes:
             guard let value = data.stringValue else {
                 throw ABIError.invalidValue
             }
-            return try ABIEncoder.encode(value, forType: abiType)
+            return try ABIEncoder.encodeRaw(value, forType: abiType).bytes
         case .FixedInt, .FixedUInt:
             if let value = data.stringValue {
-                return try ABIEncoder.encode(value, forType: abiType)
+                return try ABIEncoder.encodeRaw(value, forType: abiType).bytes
             } else if let value = data.doubleValue {
-                return try ABIEncoder.encode(BigUInt(value))
+                return try ABIEncoder.encode(BigUInt(value)).bytes
             } else {
                 throw ABIError.invalidValue
             }
@@ -135,7 +134,7 @@ extension TypedData {
                 throw ABIError.invalidValue
             }
             
-            return try ABIEncoder.encode(BigUInt(value ? 1 : 0))
+            return try ABIEncoder.encode(BigUInt(value ? 1 : 0)).bytes
         case .DynamicArray(let nested):
             guard let value = data.arrayValue else {
                 throw ABIError.invalidValue
@@ -154,6 +153,8 @@ extension TypedData {
             
             let encoded = try value.flatMap { try parseAtomicType($0, type: nested.rawValue) }
             return Data(encoded).web3.keccak256.web3.bytes
+        case .Tuple:
+            throw ABIError.invalidValue
         }
     }
 }

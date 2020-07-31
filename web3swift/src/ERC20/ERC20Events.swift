@@ -20,7 +20,7 @@ public enum ERC20Events {
         public let to: EthereumAddress
         public let value: BigUInt
         
-        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+        public init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
             try Transfer.checkParameters(topics, data)
             self.log = log
             

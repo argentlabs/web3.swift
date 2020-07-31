@@ -14,7 +14,7 @@ enum ERC20Responses {
         public static var types: [ABIType.Type] = [ String.self ]
         public let value: String
         
-        public init?(values: [ABIType]) throws {
+        public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.value = try values[0].decoded()
         }
     }
@@ -23,7 +23,7 @@ enum ERC20Responses {
         public static var types: [ABIType.Type] = [ String.self ]
         public let value: String
         
-        public init?(values: [ABIType]) throws {
+        public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.value = try values[0].decoded()
         }
     }
@@ -32,7 +32,7 @@ enum ERC20Responses {
         public static var types: [ABIType.Type] = [ BigUInt.self ]
         public let value: BigUInt
         
-        public init?(values: [ABIType]) throws {
+        public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.value = try values[0].decoded()
         }
     }
@@ -41,7 +41,7 @@ enum ERC20Responses {
         public static var types: [ABIType.Type] = [ BigUInt.self ]
         public let value: BigUInt
         
-        public init?(values: [ABIType]) throws {
+        public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.value = try values[0].decoded()
         }
     }
