@@ -143,8 +143,8 @@ We built web3.swift to be as lightweight as possible. However, given the cryptog
 
 - [keccac-tiny](https://github.com/coruus/keccak-tiny): An implementation of the FIPS-202-defined SHA-3 and SHAKE functions in 120 cloc (156 lines).
 - [Tiny AES](https://github.com/kokke/tiny-AES-c):  A small and portable implementation of the AES ECB, CTR and CBC encryption algorithms.
+- [secp256k1.swift](https://github.com/Boilertalk/secp256k1.swift)
 
-The library depends on [secp256k1](https://github.com/bitcoin-core/secp256k1) through this [package](https://cocoapods.org/pods/secp256k1.swift).
 We also use Apple's own CommonCrypto (via [this](https://github.com/sergejp/CommonCrypto) method) and [BigInt](https://github.com/attaswift/BigInt) via CocoaPod dependency.
 
 ## Todos
@@ -152,7 +152,6 @@ We also use Apple's own CommonCrypto (via [this](https://github.com/sergejp/Comm
 There are some features that have yet to be fully implemented! Not every RPC method is currently supported, and here's some other suggestions we would like to see in the future:
 
 
-- ABI encoding support for tuples
 - Batch support for JSONRPC interface
 - Use a Hex struct for values to be more explicit in expected types
 - Use [Truffle](https://github.com/trufflesuite/ganache-cli) for running tests
