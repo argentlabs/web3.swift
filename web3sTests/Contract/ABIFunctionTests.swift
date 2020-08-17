@@ -53,14 +53,24 @@ class ABIFunctionTests: XCTestCase {
     
     func test_GivenRawTxCallData_WhenPassingParam_ThenDecodesParamTransaction() {
         let data = Data(hex: "0x70a08231000000000000000000000000655ef694b98e55977a93259cb3b708560869a8f3")!
-        let decoded = try? oneParam.decode(data, expectedTypes: [EthereumAddress.self])
-        XCTAssertEqual((decoded?[0] as? EthereumAddress), EthereumAddress("0x655ef694b98e55977a93259cb3b708560869a8f3"))
+        
+        do {
+            let decoded = try oneParam.decode(data, expectedTypes: [EthereumAddress.self])
+            XCTAssertEqual(try decoded[0].decoded(), EthereumAddress("0x655ef694b98e55977a93259cb3b708560869a8f3"))
+        } catch {
+            XCTFail()
+        }
     }
     
-    func test_GivenRawTxCallData_WhenPassingWrongParam_ThenFailsDecodingOneParamTransaction() {
+    func test_GivenRawTxCallData_WhenPassingWrongParam_ThenFailsDecodingFirstParam() {
         let data = Data(hex: "0x70a08231000000000000000000000000655ef694b98e55977a93259cb3b708560869a8f3")!
-        let decoded = try? oneParam.decode(data, expectedTypes: [Bool.self])
-        XCTAssertNil(decoded)
+        do {
+            let decoded = try oneParam.decode(data, expectedTypes: [Bool.self])
+            let bool: Bool = try decoded[0].decoded()
+            print(bool)
+        } catch {
+            XCTAssertTrue(true)
+        }
     }
 }
 

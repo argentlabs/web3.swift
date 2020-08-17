@@ -20,7 +20,7 @@ public enum ERC721Events {
         public let to: EthereumAddress
         public let tokenId: BigUInt
         
-        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+        public init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
             try Transfer.checkParameters(topics, data)
             self.log = log
             
@@ -40,7 +40,7 @@ public enum ERC721Events {
         public let approved: EthereumAddress
         public let tokenId: BigUInt
         
-        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+        public init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
             try Approval.checkParameters(topics, data)
             self.log = log
             
@@ -60,7 +60,7 @@ public enum ERC721Events {
         public let `operator`: EthereumAddress
         public let approved: Bool
         
-        public init?(topics: [ABIType], data: [ABIType], log: EthereumLog) throws {
+        public init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
             try ApprovalForAll.checkParameters(topics, data)
             self.log = log
             

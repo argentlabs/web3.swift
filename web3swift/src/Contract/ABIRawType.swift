@@ -17,7 +17,7 @@ public enum ABIError: Error {
     case notCurrentlySupported
 }
 
-enum ABIRawType {
+public enum ABIRawType {
     case FixedUInt(Int)
     case FixedInt(Int)
     case FixedAddress
@@ -27,12 +27,70 @@ enum ABIRawType {
     case DynamicString
     indirect case FixedArray(ABIRawType, Int)
     indirect case DynamicArray(ABIRawType)
-    // TODO Function. Fixed. UFixed.
+    indirect case Tuple([ABIRawType])
 }
 
 extension ABIRawType: RawRepresentable {
+    public init?(rawValue: String) {
+        // Specific match
+        if rawValue == "uint" {
+            self = ABIRawType.FixedUInt(256)
+            return
+        } else if rawValue == "int" {
+            self = ABIRawType.FixedInt(256)
+            return
+        } else if rawValue == "address" {
+            self = ABIRawType.FixedAddress
+            return
+        } else if rawValue == "bool" {
+            self = ABIRawType.FixedBool
+            return
+        } else if rawValue == "bytes" {
+            self = ABIRawType.DynamicBytes
+            return
+        }  else if rawValue == "string" {
+            self = ABIRawType.DynamicString
+            return
+        }
+        
+        // Arrays
+        let components = rawValue.components(separatedBy: CharacterSet(charactersIn: "[]"))
+        if components.count == 3 && components[1].isEmpty {
+            if let arrayType = ABIRawType(rawValue: components[0]) {
+                self = ABIRawType.DynamicArray(arrayType)
+                return
+            }
+        } else if components.count == 3 && !components[1].isEmpty {
+            let num = String(components[1].filter { "0"..."9" ~= $0 })
+            guard let int = Int(num) else { return nil }
+            if let arrayType = ABIRawType(rawValue: components[0]) {
+                self = ABIRawType.FixedArray(arrayType, int)
+                return
+            }
+        }
+        
+        // Variable sizes
+        if rawValue.starts(with: "uint") {
+            let num = String(rawValue.filter { "0"..."9" ~= $0 })
+            guard let int = Int(num) else { return nil }
+            self = ABIRawType.FixedUInt(int)
+            return
+        } else if rawValue.starts(with: "int") {
+            let num = String(rawValue.filter { "0"..."9" ~= $0 })
+            guard let int = Int(num) else { return nil }
+            self = ABIRawType.FixedInt(int)
+            return
+        } else if rawValue.starts(with: "bytes") {
+            let num = String(rawValue.filter { "0"..."9" ~= $0 })
+            guard let int = Int(num) else { return nil }
+            self = ABIRawType.FixedBytes(int)
+            return
+        }
+        
+        return nil
+    }
     
-    var rawValue: String {
+    public var rawValue: String {
         switch self {
         case .FixedUInt(let size): return "uint\(size)"
         case .FixedInt(let size): return "int\(size)"
@@ -43,6 +101,7 @@ extension ABIRawType: RawRepresentable {
         case .DynamicString: return "string"
         case .FixedArray(let type, let size): return "\(type.rawValue)[\(size)]"
         case .DynamicArray(let type): return "\(type.rawValue)[]"
+        case .Tuple(let types): return "(\(types.map(\.rawValue).joined(separator: ",")))"
         }
     }
     
@@ -50,6 +109,8 @@ extension ABIRawType: RawRepresentable {
         switch self {
         case .DynamicBytes, .DynamicString, .DynamicArray(_):
             return true
+        case .Tuple(let types):
+            return types.filter(\.isDynamic).count > 0
         default:
             return false
         }

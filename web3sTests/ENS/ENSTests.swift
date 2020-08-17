@@ -10,9 +10,9 @@ import XCTest
 @testable import web3swift
 
 class ENSTests: XCTestCase {
-    var client: EthereumClient?
     var account: EthereumAccount?
-    
+    var client: EthereumClient!
+
     override func setUp() {
         super.setUp()
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
@@ -28,11 +28,17 @@ class ENSTests: XCTestCase {
         let expect = expectation(description: "Get the ENS owner")
         
         do {
-            let contract = ENSRegistryContract(chainId: EthereumNetwork.Ropsten.intValue, registryAddress: nil)
-            let tx = try contract?.owner(name: "test")
+            let function = ENSContracts.ENSRegistryFunctions.owner(contract: ENSContracts.RopstenAddress, _node: EthereumNameService.nameHash(name: "test").web3.hexData ?? Data())
             
-            client?.eth_call(tx!, block: .Latest, completion: { (error, dataStr) in
-                let owner = String(dataStr![dataStr!.index(dataStr!.endIndex, offsetBy: -40)...])
+            let tx = try function.transaction()
+            
+            client?.eth_call(tx, block: .Latest, completion: { (error, dataStr) in
+                guard let dataStr = dataStr else {
+                    XCTFail()
+                    expect.fulfill()
+                    return
+                }
+                let owner = String(dataStr[dataStr.index(dataStr.endIndex, offsetBy: -40)...])
                 XCTAssertEqual(owner.web3.noHexPrefix,"09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1")
                 expect.fulfill()
             })
@@ -88,7 +94,7 @@ class ENSTests: XCTestCase {
         
         let nameService = EthereumNameService(client: client!)
         nameService.resolve(ens: "julien.argent.test", completion: { (error, ens) in
-            XCTAssertEqual("0xb0b874220ff95d62a676f58d186c832b3e6529c8", ens)
+            XCTAssertEqual(EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c8"), ens)
             expect.fulfill()
         })
         
