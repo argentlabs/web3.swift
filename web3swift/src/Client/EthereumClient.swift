@@ -19,6 +19,7 @@ public protocol EthereumClientProtocol {
     func eth_blockNumber(completion: @escaping((EthereumClientError?, Int?) -> Void))
     func eth_getBalance(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_getCode(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
+    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_getTransactionCount(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
     func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void))
@@ -144,6 +145,64 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address, block.stringValue], receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)
+            } else {
+                completion(EthereumClientError.unexpectedReturnValue, nil)
+            }
+        }
+    }
+    
+    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
+        
+        struct CallParams: Encodable {
+            let from: String?
+            let to: String
+            let gas: String?
+            let gasPrice: String?
+            let value: String?
+            let data: String?
+            
+            enum TransactionCodingKeys: String, CodingKey {
+                case from
+                case to
+                case gas
+                case gasPrice
+                case value
+                case data
+            }
+            
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.unkeyedContainer()
+                var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
+                if let from = from {
+                    try nested.encode(from, forKey: .from)
+                }
+                try nested.encode(to, forKey: .to)
+                if let gas = gas {
+                    try nested.encode(gas, forKey: .gas)
+                }
+                if let gasPrice = gasPrice {
+                    try nested.encode(gasPrice, forKey: .gasPrice)
+                }
+                if let value = value {
+                    try nested.encode(value, forKey: .value)
+                }
+                if let data = data {
+                    try nested.encode(data, forKey: .data)
+                }
+            }
+        }
+        
+        let value: BigUInt?
+        if let txValue = transaction.value, txValue > .zero {
+            value = txValue
+        } else {
+            value = nil
+        }
+        
+        let params = CallParams(from: transaction.from?.value, to: transaction.to.value, gas: transaction.gasLimit?.web3.hexString, gasPrice: transaction.gasPrice?.web3.hexString, value: value?.web3.hexString, data: transaction.data?.web3.hexString)
+        EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
+            if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
+                completion(nil, gas)
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
             }
