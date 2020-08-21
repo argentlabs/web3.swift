@@ -23,6 +23,7 @@ public extension ABITupleDecodable {
 
 public protocol ABITupleEncodable {
     var encodableValues: [ABIType] { get }
+    func encode(to encoder: ABIFunctionEncoder) throws
 }
 
 public protocol ABITuple: ABIType, ABITupleEncodable, ABITupleDecodable {}

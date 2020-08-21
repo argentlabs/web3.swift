@@ -151,7 +151,7 @@ class ABIFunctionEncoderTests: XCTestCase {
     }
     
     // See example: https://solidity.readthedocs.io/en/v0.6.11/abi-spec.html#use-of-dynamic-types
-    func test_ArrayOfArraysSample_ThenEncodesCorrectly() {
+    func test_GivenArrayOfArraysSample_ThenEncodesCorrectly() {
         encoder = ABIFunctionEncoder("f")
         
         do {
@@ -161,6 +161,30 @@ class ABIFunctionEncoderTests: XCTestCase {
             try encoder.encode("Hello, world!".data(using: .utf8)!)
             XCTAssertEqual(try encoder.encoded().web3.hexString,
             "0x8be6524600000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000")
+        } catch {
+            XCTFail()
+        }
+    }
+    
+    func test_GivenArrayOfComplexTuples_WhenEncodesOneEntry_ThenEncodesCorrectly() {
+        do {
+            let tuple = ComplexTupleWithArray(address: EthereumAddress("0xdF136715f7bafD40881cFb16eAa5595C2562972b"), amount: 2, owners: [SimpleTuple(address: EthereumAddress("0xdF136715f7bafD40881cFb16eAa5595C2562972b"), amount: 100)])
+            
+            try encoder.encode([tuple])
+            XCTAssertEqual(try encoder.encoded().web3.hexString,
+                           "0x07e0fd75000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000df136715f7bafd40881cfb16eaa5595c2562972b000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000df136715f7bafd40881cfb16eaa5595c2562972b0000000000000000000000000000000000000000000000000000000000000064")
+        } catch {
+            XCTFail()
+        }
+    }
+    
+    func test_GivenArrayOfComplexTuples_WhenEncodesTwoEntries_ThenEncodesCorrectly() {
+        do {
+            let tuple1 = ComplexTupleWithArray(address: EthereumAddress("0xdF136715f7bafD40881cFb16eAa5595C2562972b"), amount: 2, owners: [SimpleTuple(address: EthereumAddress("0x4bf21a47b608841e974ff4147fd1a005da7fdf9b"), amount: 100)])
+            let tuple2 = ComplexTupleWithArray(address: EthereumAddress("0x69F84b91E7107206E841748C2B52294A1176D45e"), amount: 3, owners: [SimpleTuple(address: EthereumAddress("0xc07d381fFadB957e0FC9218AaBa88556f5C4BB7a"), amount: 200)])
+            try encoder.encode([tuple1, tuple2])
+            XCTAssertEqual(try encoder.encoded().web3.hexString,
+                           "0x07e0fd750000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000100000000000000000000000000df136715f7bafd40881cfb16eaa5595c2562972b0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000010000000000000000000000004bf21a47b608841e974ff4147fd1a005da7fdf9b000000000000000000000000000000000000000000000000000000000000006400000000000000000000000069f84b91e7107206e841748c2b52294a1176d45e000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c07d381ffadb957e0fc9218aaba88556f5c4bb7a00000000000000000000000000000000000000000000000000000000000000c8")
         } catch {
             XCTFail()
         }
@@ -184,6 +208,11 @@ fileprivate struct SimpleTuple: ABITuple {
         self.amount = try values[1].decoded()
     }
     
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(address)
+        try encoder.encode(amount)
+    }
+    
     var encodableValues: [ABIType] { [address, amount] }
 }
 
@@ -200,7 +229,41 @@ fileprivate struct DynamicContentTuple: ABITuple {
         self.message = try values[0].decoded()
     }
     
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(message)
+    }
+    
     var encodableValues: [ABIType] { [message] }
+}
+
+fileprivate struct ComplexTupleWithArray: ABITuple {
+    static var types: [ABIType.Type] { [EthereumAddress.self, BigUInt.self, ABIArray<SimpleTuple>.self] }
+    
+    var address: EthereumAddress
+    var amount: BigUInt
+    var owners: [SimpleTuple]
+    
+    init(address: EthereumAddress,
+         amount: BigUInt,
+         owners: [SimpleTuple]) {
+        self.address = address
+        self.amount = amount
+        self.owners = owners
+    }
+    
+    init?(values: [ABIDecoder.DecodedValue]) throws {
+        self.address = try values[0].decoded()
+        self.amount = try values[1].decoded()
+        self.owners = try values[2].decodedArray()
+    }
+    
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(address)
+        try encoder.encode(amount)
+        try encoder.encode(owners)
+    }
+    
+    var encodableValues: [ABIType] { [address, amount, ABIArray(values: owners)] }
 }
 
 fileprivate struct RelayerExecute: ABIFunction {
