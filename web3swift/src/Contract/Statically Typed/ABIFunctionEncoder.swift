@@ -56,7 +56,7 @@ public class ABIFunctionEncoder {
         types.append(.DynamicArray(T.rawType))
     }
     
-    private var encodedValues = [ABIEncoder.EncodedValue]()
+    internal var encodedValues = [ABIEncoder.EncodedValue]()
 
     public init(_ name: String) {
         self.name = name
