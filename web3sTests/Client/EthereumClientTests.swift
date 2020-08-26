@@ -375,6 +375,24 @@ class EthereumClientTests: XCTestCase {
         
         waitForExpectations(timeout: 10)
     }
+    
+    func test_GivenValidTransaction_ThenEstimatesGas() {
+        let expect = expectation(description: "estimateOK")
+        let function = TransferToken(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
+                                     token: EthereumAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
+                                     to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
+                                     amount: 1,
+                                     data: Data(),
+                                     gasPrice: 0,
+                                     gasLimit: 0)
+        client!.eth_estimateGas(try! function.transaction(), withAccount: account!) { (error, value) in
+            XCTAssertNil(error)
+            XCTAssert(value != 0)
+            expect.fulfill()
+        }
+        
+        waitForExpectations(timeout: 10)
+    }
 }
 
 struct GetGuardians: ABIFunction {
@@ -401,3 +419,27 @@ struct GetGuardians: ABIFunction {
         
     }
 }
+
+struct TransferToken: ABIFunction {
+    static let name = "transferToken"
+    let contract = EthereumAddress("0xA721E249c185ea3Ed98aBDd29F047db91Df36011")
+    let from: EthereumAddress? = EthereumAddress("0xA721E249c185ea3Ed98aBDd29F047db91Df36011")
+
+    let wallet: EthereumAddress
+    let token: EthereumAddress
+    let to: EthereumAddress
+    let amount: BigUInt
+    let data: Data
+    
+    let gasPrice: BigUInt?
+    let gasLimit: BigUInt?
+    
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(wallet)
+        try encoder.encode(token)
+        try encoder.encode(to)
+        try encoder.encode(amount)
+        try encoder.encode(data)
+    }
+}
+

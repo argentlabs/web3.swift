@@ -177,13 +177,18 @@ public class EthereumClient: EthereumClientProtocol {
                     try nested.encode(from, forKey: .from)
                 }
                 try nested.encode(to, forKey: .to)
-                if let gas = gas {
+                
+                let jsonRPCAmount: (String) -> String = { amount in
+                    amount == "0x00" ? "0x0" : amount
+                }
+                
+                if let gas = gas.map(jsonRPCAmount) {
                     try nested.encode(gas, forKey: .gas)
                 }
-                if let gasPrice = gasPrice {
+                if let gasPrice = gasPrice.map(jsonRPCAmount) {
                     try nested.encode(gasPrice, forKey: .gasPrice)
                 }
-                if let value = value {
+                if let value = gas.map(jsonRPCAmount) {
                     try nested.encode(value, forKey: .value)
                 }
                 if let data = data {
@@ -199,7 +204,12 @@ public class EthereumClient: EthereumClientProtocol {
             value = nil
         }
         
-        let params = CallParams(from: transaction.from?.value, to: transaction.to.value, gas: transaction.gasLimit?.web3.hexString, gasPrice: transaction.gasPrice?.web3.hexString, value: value?.web3.hexString, data: transaction.data?.web3.hexString)
+        let params = CallParams(from: transaction.from?.value,
+                                to: transaction.to.value,
+                                gas: transaction.gasLimit?.web3.hexString,
+                                gasPrice: transaction.gasPrice?.web3.hexString,
+                                value: value?.web3.hexString,
+                                data: transaction.data?.web3.hexString)
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
             if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
                 completion(nil, gas)
