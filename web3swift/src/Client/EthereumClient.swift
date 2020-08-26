@@ -188,7 +188,7 @@ public class EthereumClient: EthereumClientProtocol {
                 if let gasPrice = gasPrice.map(jsonRPCAmount) {
                     try nested.encode(gasPrice, forKey: .gasPrice)
                 }
-                if let value = gas.map(jsonRPCAmount) {
+                if let value = value.map(jsonRPCAmount) {
                     try nested.encode(value, forKey: .value)
                 }
                 if let data = data {
