@@ -378,7 +378,7 @@ class EthereumClientTests: XCTestCase {
     
     func test_GivenValidTransaction_ThenEstimatesGas() {
         let expect = expectation(description: "estimateOK")
-        let function = TransferToken(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
+        let function = TransferToken(wallet: EthereumAddress("0xd5b919520259e1174274420E3291ab77215C3D13"),
                                      token: EthereumAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
                                      to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
                                      amount: 1,
@@ -422,8 +422,8 @@ struct GetGuardians: ABIFunction {
 
 struct TransferToken: ABIFunction {
     static let name = "transferToken"
-    let contract = EthereumAddress("0xA721E249c185ea3Ed98aBDd29F047db91Df36011")
-    let from: EthereumAddress? = EthereumAddress("0xA721E249c185ea3Ed98aBDd29F047db91Df36011")
+    let contract = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
+    let from: EthereumAddress? = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
 
     let wallet: EthereumAddress
     let token: EthereumAddress
