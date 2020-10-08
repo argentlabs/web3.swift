@@ -30,7 +30,7 @@ public class ERC20 {
         }
     }
     
-    public func decimals(tokenContract: EthereumAddress, completion: @escaping((Error?, BigUInt?) -> Void)) {
+    public func decimals(tokenContract: EthereumAddress, completion: @escaping((Error?, UInt8?) -> Void)) {
         let function = ERC20Functions.decimals(contract: tokenContract)
         function.call(withClient: self.client, responseType: ERC20Responses.decimalsResponse.self) { (error, decimalsResponse) in
             return completion(error, decimalsResponse?.value)

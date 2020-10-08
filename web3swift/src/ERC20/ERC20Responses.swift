@@ -29,8 +29,8 @@ enum ERC20Responses {
     }
     
     public struct decimalsResponse: ABIResponse {
-        public static var types: [ABIType.Type] = [ BigUInt.self ]
-        public let value: BigUInt
+        public static var types: [ABIType.Type] = [ UInt8.self ]
+        public let value: UInt8
         
         public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.value = try values[0].decoded()
