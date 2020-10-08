@@ -39,7 +39,7 @@ class ERC20Tests: XCTestCase {
         let expect = expectation(description: "Get token decimals")
         erc20?.decimals(tokenContract: self.testContractAddress, completion: { (error, decimals) in
             XCTAssertNil(error)
-            XCTAssertEqual(decimals, BigUInt(18))
+            XCTAssertEqual(decimals, 18)
             expect.fulfill()
         })
         waitForExpectations(timeout: 10)
@@ -49,7 +49,7 @@ class ERC20Tests: XCTestCase {
         let expect = expectation(description: "Get token decimals (0)")
         erc20?.decimals(tokenContract: EthereumAddress("0x40dd3ac2481960cf34d96e647dd0bc52a1f03f52"), completion: { (error, decimals) in
             XCTAssertNil(error)
-            XCTAssertEqual(decimals, BigUInt(0))
+            XCTAssertEqual(decimals, 0)
             expect.fulfill()
         })
         waitForExpectations(timeout: 10)
