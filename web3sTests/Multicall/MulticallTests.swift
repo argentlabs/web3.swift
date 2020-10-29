@@ -23,7 +23,20 @@ class MulticallTests: XCTestCase {
     func testNameAndSymbol() throws {
         var aggregator = Multicall.Aggregator()
 
-        try aggregator.append(ERC20Functions.name(contract: testContractAddress))
+        var name: String?
+        var decimals: UInt8?
+
+        try aggregator.append(ERC20Functions.decimals(contract: testContractAddress)) { output in
+            decimals = try ERC20Responses.decimalsResponse(data: output.get())?.value
+        }
+
+        try aggregator.append(
+            function: ERC20Functions.name(contract: testContractAddress),
+            response: ERC20Responses.nameResponse.self
+        ) { result in
+            name = try? result.get()
+        }
+
         try aggregator.append(ERC20Functions.symbol(contract: testContractAddress))
 
         let expect = expectation(description: "Get token name and symbol")
@@ -33,12 +46,8 @@ class MulticallTests: XCTestCase {
                 case .failure(let error):
                     XCTFail("Multicall failed with error: \(error)")
                 case .success(let response):
-                    let name = try response.outputs[0].value
-                        .flatMap { try ERC20Responses.nameResponse(data: $0)?.value }
-                    let symbol = try response.outputs[1].value
-                        .flatMap { try ERC20Responses.symbolResponse(data: $0)?.value }
-                    XCTAssertEqual(name, "BokkyPooBah Test Token")
-                    XCTAssertEqual(symbol, "BOKKY")
+                    let symbol = try ERC20Responses.symbolResponse(data: try response.outputs[2].get())?.value
+                     XCTAssertEqual(symbol, "BOKKY")
                 }
             } catch {
                 XCTFail("Unexpected failure while handling output")
@@ -46,5 +55,8 @@ class MulticallTests: XCTestCase {
             expect.fulfill()
         }
         waitForExpectations(timeout: 10)
+
+        XCTAssertEqual(decimals, 18)
+        XCTAssertEqual(name, "BokkyPooBah Test Token")
     }
 }

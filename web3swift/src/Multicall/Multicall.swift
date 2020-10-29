@@ -31,6 +31,14 @@ public struct Multicall {
 
         function.call(withClient: client, responseType: Response.self) { (error, response) in
             if let response = response {
+                guard calls.count == response.outputs.count
+                    else { fatalError("Outputs do not match the number of calls done") }
+
+                zip(calls, response.outputs)
+                    .forEach { call, output in
+                        try? call.handler?(output)
+                    }
+
                 completion(.success(response))
             } else {
                 completion(.failure(MulticallError.executionFailed(error)))
@@ -46,24 +54,16 @@ extension Multicall {
         case executionFailed(Error?)
     }
 
+    public enum CallError: Error {
+        case failed
+    }
+
+    public typealias Output = Result<String, CallError>
+
     public struct Response: ABIResponse {
         static let multicallFailedError = "MULTICALL_FAIL".web3.keccak256.web3.hexString
 
         public static var types: [ABIType.Type] = [BigUInt.self, ABIArray<String>.self]
-
-        public enum Output {
-            case failed
-            case completed(String)
-
-            var value: String? {
-                switch self {
-                case .completed(let value):
-                    return value
-                case .failed:
-                    return nil
-                }
-            }
-        }
 
         public let block: BigUInt
         public let outputs: [Output]
@@ -72,9 +72,9 @@ extension Multicall {
             block = try values[0].decoded()
             outputs = values[1].entry.map { result in
                 guard result != Self.multicallFailedError
-                    else { return Output.failed }
+                    else { return .failure(.failed) }
 
-                return Output.completed(result)
+                return .success(result)
             }
         }
     }
@@ -85,19 +85,22 @@ extension Multicall {
 
         public let target: EthereumAddress
         public let encodedFunction: Data
+        public let handler: ((Output) throws -> Void)?
 
-        public init<Function: ABIFunction>(function: Function) throws {
+        public init<Function: ABIFunction>(function: Function, handler: ((Output) throws -> Void)? = nil) throws {
             self.target = function.contract
             self.encodedFunction = try {
                 let encoder = ABIFunctionEncoder(Function.name)
                 try function.encode(to: encoder)
                 return try encoder.encoded()
             }()
+            self.handler = handler
         }
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.target = try values[0].decoded()
             self.encodedFunction = try values[1].decoded()
+            self.handler = nil
         }
 
         public func encode(to encoder: ABIFunctionEncoder) throws {
@@ -114,5 +117,35 @@ extension Multicall {
         public mutating func append<Function: ABIFunction>(_ f: Function) throws {
             try calls.append(.init(function: f))
         }
+
+        public mutating func append<Function: ABIFunction>(_ f: Function, handler: @escaping (Output) throws -> Void) throws {
+            try calls.append(.init(function: f, handler: handler))
+        }
+
+        public mutating func append<Function: ABIFunction, Response: MulticallDecodableResponse>(
+            function f: Function,
+            response: Response.Type,
+            handler: @escaping (Result<Response.Value, CallError>) throws -> Void
+        ) throws {
+            try calls.append(.init(function: f, handler: { output in
+                try handler(
+                    output.flatMap {
+                        if let response = try? Response(data: $0) {
+                            return .success(response.value)
+                        } else {
+                            return .failure(.failed)
+                        }
+                    }
+                )
+            }))
+        }
     }
+}
+
+public protocol MulticallDecodableResponse: ABIResponse {
+    associatedtype Value
+
+    var value: Value { get }
+
+    init?(data: String) throws
 }

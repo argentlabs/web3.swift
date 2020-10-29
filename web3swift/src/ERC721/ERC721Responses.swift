@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 
 public enum ERC721Responses {
-    public struct balanceResponse: ABIResponse {
+    public struct balanceResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ BigUInt.self ]
         public let value: BigUInt
         
@@ -19,7 +19,7 @@ public enum ERC721Responses {
         }
     }
     
-    public struct ownerResponse: ABIResponse {
+    public struct ownerResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ EthereumAddress.self ]
         public let value: EthereumAddress
         
@@ -30,7 +30,7 @@ public enum ERC721Responses {
 }
 
 public enum ERC721MetadataResponses {
-    public struct nameResponse: ABIResponse {
+    public struct nameResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ String.self ]
         public let value: String
         
@@ -39,7 +39,7 @@ public enum ERC721MetadataResponses {
         }
     }
     
-    public struct symbolResponse: ABIResponse {
+    public struct symbolResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ String.self ]
         public let value: String
         
@@ -48,18 +48,22 @@ public enum ERC721MetadataResponses {
         }
     }
     
-    public struct tokenURIResponse: ABIResponse {
+    public struct tokenURIResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ URL.self ]
-        public let uri: URL
+
+        @available(*, deprecated, renamed: "value")
+        public var uri: URL { value }
+
+        public let value: URL
         
         public init?(values: [ABIDecoder.DecodedValue]) throws {
-            self.uri = try values[0].decoded()
+            self.value = try values[0].decoded()
         }
     }
 }
 
 public enum ERC721EnumerableResponses {
-    public struct numberResponse: ABIResponse {
+    public struct numberResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ BigUInt.self ]
         public let value: BigUInt
         

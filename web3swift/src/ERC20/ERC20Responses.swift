@@ -9,8 +9,8 @@
 import Foundation
 import BigInt
 
-enum ERC20Responses {
-    public struct nameResponse: ABIResponse {
+public enum ERC20Responses {
+    public struct nameResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ String.self ]
         public let value: String
         
@@ -19,7 +19,7 @@ enum ERC20Responses {
         }
     }
     
-    public struct symbolResponse: ABIResponse {
+    public struct symbolResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ String.self ]
         public let value: String
         
@@ -28,7 +28,7 @@ enum ERC20Responses {
         }
     }
     
-    public struct decimalsResponse: ABIResponse {
+    public struct decimalsResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ UInt8.self ]
         public let value: UInt8
         
@@ -37,7 +37,7 @@ enum ERC20Responses {
         }
     }
 
-    public struct balanceResponse: ABIResponse {
+    public struct balanceResponse: ABIResponse, MulticallDecodableResponse {
         public static var types: [ABIType.Type] = [ BigUInt.self ]
         public let value: BigUInt
         
