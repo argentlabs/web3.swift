@@ -12,15 +12,15 @@ import BigInt
 public typealias MulticallResponse = Multicall.Response
 
 public struct Multicall {
-    private let client: EthereumClient
+    private let client: EthereumClientProtocol
 
-    public init(client: EthereumClient) {
+    public init(client: EthereumClientProtocol) {
         self.client = client
     }
 
     public func aggregate(
         calls: [Call],
-        completion: @escaping (Result<MulticallResponse, Error>) -> Void
+        completion: @escaping (Result<MulticallResponse, MulticallError>) -> Void
     ) {
         guard
             let network = client.network,
@@ -55,7 +55,8 @@ extension Multicall {
     }
 
     public enum CallError: Error {
-        case failed
+        case contractFailure
+        case couldNotDecodeResponse(Error?)
     }
 
     public typealias Output = Result<String, CallError>
@@ -72,7 +73,7 @@ extension Multicall {
             block = try values[0].decoded()
             outputs = values[1].entry.map { result in
                 guard result != Self.multicallFailedError
-                    else { return .failure(.failed) }
+                    else { return .failure(.contractFailure) }
 
                 return .success(result)
             }
@@ -130,10 +131,14 @@ extension Multicall {
             try calls.append(.init(function: f, handler: { output in
                 try handler(
                     output.flatMap {
-                        if let response = try? Response(data: $0) {
-                            return .success(response.value)
-                        } else {
-                            return .failure(.failed)
+                        do {
+                            if let response = try Response(data: $0) {
+                                return .success(response.value)
+                            } else {
+                                return .failure(.couldNotDecodeResponse(nil))
+                            }
+                        } catch let error {
+                            return .failure(.couldNotDecodeResponse(error))
                         }
                     }
                 )
@@ -142,7 +147,7 @@ extension Multicall {
     }
 }
 
-public protocol MulticallDecodableResponse: ABIResponse {
+public protocol MulticallDecodableResponse {
     associatedtype Value
 
     var value: Value { get }

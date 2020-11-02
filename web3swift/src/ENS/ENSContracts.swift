@@ -9,11 +9,11 @@
 import Foundation
 import BigInt
 
-enum ENSContracts {
+public enum ENSContracts {
     static let RopstenAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
     static let MainnetAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
     
-    static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
+    public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {
         case .Ropsten:
             return ENSContracts.RopstenAddress
@@ -24,17 +24,17 @@ enum ENSContracts {
         }
     }
     
-    enum ENSResolverFunctions {
-        struct addr: ABIFunction {
-            static let name = "addr"
-            let gasPrice: BigUInt?
-            let gasLimit: BigUInt?
-            var contract: EthereumAddress
-            let from: EthereumAddress?
+    public enum ENSResolverFunctions {
+        public struct addr: ABIFunction {
+            public static let name = "addr"
+            public let gasPrice: BigUInt?
+            public let gasLimit: BigUInt?
+            public var contract: EthereumAddress
+            public let from: EthereumAddress?
             
-            let _node: Data
+            public let _node: Data
             
-            init(contract: EthereumAddress,
+            public init(contract: EthereumAddress,
                  from: EthereumAddress? = nil,
                  gasPrice: BigUInt? = nil,
                  gasLimit: BigUInt? = nil,
@@ -51,14 +51,14 @@ enum ENSContracts {
             }
         }
         
-        struct name: ABIFunction {
-            static let name = "name"
-            let gasPrice: BigUInt?
-            let gasLimit: BigUInt?
-            var contract: EthereumAddress
-            let from: EthereumAddress?
+        public struct name: ABIFunction {
+            public static let name = "name"
+            public let gasPrice: BigUInt?
+            public let gasLimit: BigUInt?
+            public var contract: EthereumAddress
+            public let from: EthereumAddress?
             
-            let _node: Data
+            public let _node: Data
             
             init(contract: EthereumAddress,
                  from: EthereumAddress? = nil,
@@ -99,6 +99,23 @@ enum ENSContracts {
                 self.gasLimit = gasLimit
                 self._node = _node
             }
+
+            public init(contract: EthereumAddress,
+                        from: EthereumAddress? = nil,
+                        gasPrice: BigUInt? = nil,
+                        gasLimit: BigUInt? = nil,
+                        query: EthereumAddress) {
+                let ensReverse = query.value.web3.noHexPrefix + ".addr.reverse"
+                let nameHash = ENSContracts.nameHash(name: ensReverse)
+
+                self.init(
+                    contract: contract,
+                    from: from,
+                    gasPrice: gasPrice,
+                    gasLimit: gasLimit,
+                    _node: nameHash.web3.hexData ?? Data()
+                )
+            }
             
             public func encode(to encoder: ABIFunctionEncoder) throws {
                 try encoder.encode(_node, staticSize: 32)
@@ -130,5 +147,15 @@ enum ENSContracts {
                 try encoder.encode(_node, staticSize: 32)
             }
         }
+    }
+
+    static func nameHash(name: String) -> String {
+        var node = Data.init(count: 32)
+        let labels = name.components(separatedBy: ".")
+        for label in labels.reversed() {
+            node.append(label.web3.keccak256)
+            node = node.web3.keccak256
+        }
+        return node.web3.hexString
     }
 }
