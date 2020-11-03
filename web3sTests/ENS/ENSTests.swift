@@ -132,7 +132,7 @@ class ENSTests: XCTestCase {
 
         let nameService = EthereumNameService(client: client!)
 
-        var results: [EthereumNameService.ResolveOutput.Output]?
+        var results: [EthereumNameService.ResolveOutput<String>]?
 
         nameService.resolve(addresses: [
             EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c8"),
@@ -149,14 +149,48 @@ class ENSTests: XCTestCase {
             expect.fulfill()
         }
 
-        waitForExpectations(timeout: 20)
+        waitForExpectations(timeout: 5)
 
         XCTAssertEqual(
             results,
             [
-                .resolved(name: "julien.argent.test"),
+                .resolved("julien.argent.test"),
                 .couldNotBeResolved(.ensUnknown),
-                .resolved(name: "davidtests.argent.xyz")
+                .resolved("davidtests.argent.xyz")
+            ]
+        )
+    }
+
+    func testGivenRopstenRegistry_TODO2() {
+        let expect = expectation(description: "Get the ENS reverse lookup address")
+
+        let nameService = EthereumNameService(client: client!)
+
+        var results: [EthereumNameService.ResolveOutput<EthereumAddress>]?
+
+        nameService.resolve(names: [
+            "julien.argent.test",
+            "davidtests.argent.xyz",
+            "somefakeens.argent.xyz"
+
+        ]) { result in
+            switch result {
+            case .success(let resolutions):
+                results = resolutions.map { $0.output }
+            case .failure:
+                break
+            }
+            expect.fulfill()
+        }
+
+        waitForExpectations(timeout: 5)
+
+        XCTAssertEqual(
+            results,
+            [
+                .resolved(EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c8")),
+                .resolved(EthereumAddress("0x7e691d7ffb007abe91d8a24d7f22fc74307dab06")),
+                .couldNotBeResolved(.ensUnknown)
             ]
         )
     }

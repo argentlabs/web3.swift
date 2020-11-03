@@ -27,10 +27,20 @@ extension ENSContracts {
             }
         }
 
-        struct ResolverResponse: ABIResponse, MulticallDecodableResponse {
+        struct AddressResolverResponse: ABIResponse, MulticallDecodableResponse {
             static var types: [ABIType.Type] { [String.self] }
 
             var value: String
+
+            init?(values: [ABIDecoder.DecodedValue]) throws {
+                self.value = try values[0].decoded()
+            }
+        }
+
+        struct NameResolverResponse: ABIResponse, MulticallDecodableResponse {
+            static var types: [ABIType.Type] { [EthereumAddress.self] }
+
+            var value: EthereumAddress
 
             init?(values: [ABIDecoder.DecodedValue]) throws {
                 self.value = try values[0].decoded()

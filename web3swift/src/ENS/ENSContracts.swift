@@ -9,6 +9,8 @@
 import Foundation
 import BigInt
 
+public typealias ENSRegistryResolverParameter = ENSContracts.ENSRegistryFunctions.resolver.Parameter
+
 public enum ENSContracts {
     static let RopstenAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
     static let MainnetAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
@@ -78,13 +80,48 @@ public enum ENSContracts {
         }
     }
     
-    enum ENSRegistryFunctions {
-        struct resolver: ABIFunction {
-            static let name = "resolver"
-            let gasPrice: BigUInt?
-            let gasLimit: BigUInt?
-            var contract: EthereumAddress
-            let from: EthereumAddress?
+    public enum ENSRegistryFunctions {
+        public struct resolver: ABIFunction {
+
+            public enum Parameter {
+                case address(EthereumAddress)
+                case name(String)
+
+                var nameHash: Data {
+                    let nameHash: String
+                    switch self {
+                    case .address(let address):
+                        nameHash = ENSContracts.nameHash(name: address.value.web3.noHexPrefix + ".addr.reverse")
+                    case .name(let ens):
+                        nameHash = ENSContracts.nameHash(name: ens)
+                    }
+                    return nameHash.web3.hexData ?? Data()
+                }
+
+                var name: String? {
+                    switch self {
+                    case .name(let ens):
+                        return ens
+                    case .address:
+                        return nil
+                    }
+                }
+
+                var address: EthereumAddress? {
+                    switch self {
+                    case .address(let address):
+                        return address
+                    case .name:
+                        return nil
+                    }
+                }
+            }
+
+            public static let name = "resolver"
+            public let gasPrice: BigUInt?
+            public let gasLimit: BigUInt?
+            public var contract: EthereumAddress
+            public let from: EthereumAddress?
             
             let _node: Data
             
@@ -104,16 +141,13 @@ public enum ENSContracts {
                         from: EthereumAddress? = nil,
                         gasPrice: BigUInt? = nil,
                         gasLimit: BigUInt? = nil,
-                        query: EthereumAddress) {
-                let ensReverse = query.value.web3.noHexPrefix + ".addr.reverse"
-                let nameHash = ENSContracts.nameHash(name: ensReverse)
-
+                        parameter: Parameter) {
                 self.init(
                     contract: contract,
                     from: from,
                     gasPrice: gasPrice,
                     gasLimit: gasLimit,
-                    _node: nameHash.web3.hexData ?? Data()
+                    _node: parameter.nameHash
                 )
             }
             
