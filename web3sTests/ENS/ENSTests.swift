@@ -127,7 +127,7 @@ class ENSTests: XCTestCase {
         waitForExpectations(timeout: 20)
     }
 
-    func testGivenRopstenRegistry_TODO() {
+    func testGivenRopstenRegistry_ThenResolvesMultipleAddressesInOneCall() {
         let expect = expectation(description: "Get the ENS reverse lookup address")
 
         let nameService = EthereumNameService(client: client!)
@@ -161,7 +161,7 @@ class ENSTests: XCTestCase {
         )
     }
 
-    func testGivenRopstenRegistry_TODO2() {
+    func testGivenRopstenRegistry_ThenResolvesMultipleNamesInOneCall() {
         let expect = expectation(description: "Get the ENS reverse lookup address")
 
         let nameService = EthereumNameService(client: client!)
