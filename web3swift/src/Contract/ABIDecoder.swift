@@ -103,6 +103,31 @@ public class ABIDecoder {
             
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)
             return result
+        // NOTE: Needs analysis to confirm it can handle an inner `DynamicArray` too
+        case .DynamicArray(let arrayType) where arrayType.isDynamic:
+            var result: [String] = []
+            var currentOffset = offset
+
+            guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: currentOffset)).first else {
+                throw ABIError.invalidValue
+            }
+
+            currentOffset = Int(hex: offsetHex) ?? currentOffset
+
+            guard let lengthHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: currentOffset)).first else {
+                throw ABIError.invalidValue
+            }
+            guard let length = Int(hex: lengthHex) else {
+                throw ABIError.invalidValue
+            }
+
+            currentOffset += 32
+
+            for instanceOffset in 0 ..< length {
+                result += try decode(Array(data.dropFirst(currentOffset)), forType: arrayType, offset: instanceOffset * 32)
+            }
+
+            return result
         case .DynamicArray(let arrayType):
             var result: [String] = []
             var newOffset = offset
