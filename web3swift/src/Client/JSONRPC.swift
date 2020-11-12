@@ -34,6 +34,7 @@ struct JSONRPCErrorResult: Decodable {
 
 enum JSONRPCErrorCode {
     static var tooManyResults = -32005
+    static var executionReverted = -32000
 }
 
 enum JSONRPCError: Error {
