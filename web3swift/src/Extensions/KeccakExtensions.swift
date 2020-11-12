@@ -11,9 +11,12 @@ import keccaktiny
 
 public extension Web3Extensions where Base == Data {
     var keccak256: Data {
+        let result = UnsafeMutablePointer<UInt8>.allocate(capacity: 32)
+        defer {
+            result.deallocate()
+        }
         let nsData = base as NSData
         let input = nsData.bytes.bindMemory(to: UInt8.self, capacity: base.count)
-        let result = UnsafeMutablePointer<UInt8>.allocate(capacity: 32)
         keccak_256(result, 32, input, base.count)
         return Data(bytes: result, count: 32)
     }
