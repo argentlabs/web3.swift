@@ -378,7 +378,7 @@ class EthereumClientTests: XCTestCase {
     
     func test_GivenValidTransaction_ThenEstimatesGas() {
         let expect = expectation(description: "estimateOK")
-        let function = TransferToken(wallet: EthereumAddress("0xd5b919520259e1174274420E3291ab77215C3D13"),
+        let function = TransferToken(wallet: EthereumAddress("0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F"),
                                      token: EthereumAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
                                      to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
                                      amount: 1,
