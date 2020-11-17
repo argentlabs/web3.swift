@@ -325,7 +325,12 @@ public class EthereumClient: EthereumClientProtocol {
         let params = CallParams(from: transaction.from?.value, to: transaction.to.value, data: transactionData.web3.hexString, block: block.stringValue)
         EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
             if let resDataString = response as? String {
-                completion(nil, resDataString)
+                completion(nil, resDataString) 
+            } else if
+                let error = error,
+                case let JSONRPCError.executionError(result) = error,
+                result.error.code == JSONRPCErrorCode.executionReverted {
+                completion(nil, "0x")
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
             }
