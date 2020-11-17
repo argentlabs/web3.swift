@@ -32,6 +32,7 @@ public protocol EthereumClientProtocol {
 
 public enum EthereumClientError: Error {
     case tooManyResults
+    case executionError
     case unexpectedReturnValue
     case noResultFound
     case decodeIssue
@@ -329,7 +330,7 @@ public class EthereumClient: EthereumClientProtocol {
             } else if
                 let error = error,
                 case let JSONRPCError.executionError(result) = error,
-                result.error.code == JSONRPCErrorCode.executionReverted {
+                (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
                 completion(nil, "0x")
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
