@@ -338,52 +338,55 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock = .Earliest, toBlock: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
-        
+    public func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
+        eth_getLogs(addresses: addresses, topics: topics.map(Topics.plain), fromBlock: from, toBlock: to, completion: completion)
+    }
+    
+    public func eth_getLogs(addresses: [String]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+        eth_getLogs(addresses: addresses, topics: topics.map(Topics.composed), fromBlock: from, toBlock: to, completion: completion)
+    }
+
+    private func eth_getLogs(addresses: [String]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+        DispatchQueue.global(qos: .default)
+            .async {
+                let result = RecursiveLogCollector(ethClient: self)
+                    .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
+
+                switch result {
+                case .success(let logs):
+                    completion(nil, logs)
+                case .failure(let error):
+                    completion(error, nil)
+                }
+            }
+    }
+
+    internal func getLogs(addresses: [String]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void)) {
+
         struct CallParams: Encodable {
-            let fromBlock: String
-            let toBlock: String
+            var fromBlock: String
+            var toBlock: String
             let address: [String]?
-            let topics: [String?]?
+            let topics: Topics?
         }
-        
+
         let params = CallParams(fromBlock: fromBlock.stringValue, toBlock: toBlock.stringValue, address: addresses, topics: topics)
-        
+
         EthereumRPC.execute(session: session, url: url, method: "eth_getLogs", params: [params], receive: [EthereumLog].self) { (error, response) in
-            if let log = response as? [EthereumLog] {
-                completion(nil, log)
+            if let logs = response as? [EthereumLog] {
+                completion(.success(logs))
             } else {
                 if let error = error as? JSONRPCError,
                    case let .executionError(innerError) = error,
                    innerError.error.code == JSONRPCErrorCode.tooManyResults {
-                    completion(EthereumClientError.tooManyResults, nil)
+                    completion(.failure(.tooManyResults))
                 } else {
-                    completion(EthereumClientError.unexpectedReturnValue, nil)
+                    completion(.failure(.unexpectedReturnValue))
                 }
             }
         }
-        
     }
-    
-    public func eth_getLogs(addresses: [String]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
-        struct CallParams: Encodable {
-            let fromBlock: String
-            let toBlock: String
-            let address: [String]?
-            let topics: [[String]?]?
-        }
-        
-        let params = CallParams(fromBlock: fromBlock.stringValue, toBlock: toBlock.stringValue, address: addresses, topics: orTopics)
-        
-        EthereumRPC.execute(session: session, url: url, method: "eth_getLogs", params: [params], receive: [EthereumLog].self) { (error, response) in
-            if let log = response as? [EthereumLog] {
-                completion(nil, log)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
-            }
-        }
-    }
-    
+
     public func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void)) {
         
         struct CallParams: Encodable {
