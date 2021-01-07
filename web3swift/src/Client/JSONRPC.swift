@@ -45,6 +45,15 @@ enum JSONRPCError: Error {
     case decodingError
     case unknownError
     case noResult
+
+    var isExecutionError: Bool {
+        switch self {
+        case .executionError:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 public class EthereumRPC {
