@@ -215,6 +215,8 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
             if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
                 completion(nil, gas)
+            } else if let error = error as? JSONRPCError, error.isExecutionError {
+                completion(EthereumClientError.executionError, nil)
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
             }
