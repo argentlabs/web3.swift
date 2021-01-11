@@ -61,8 +61,11 @@ public class EthereumClient: EthereumClientProtocol {
         self.net_version { (error, retreivedNetwork) in
             if let error = error {
                 print("Client has no network: \(error.localizedDescription)")
+            } else {
+                network = retreivedNetwork
+                self.retreivedNetwork = network
             }
-            network = retreivedNetwork
+            
             group.leave()
         }
         
@@ -328,7 +331,7 @@ public class EthereumClient: EthereumClientProtocol {
         let params = CallParams(from: transaction.from?.value, to: transaction.to.value, data: transactionData.web3.hexString, block: block.stringValue)
         EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
             if let resDataString = response as? String {
-                completion(nil, resDataString) 
+                completion(nil, resDataString)
             } else if
                 let error = error,
                 case let JSONRPCError.executionError(result) = error,
