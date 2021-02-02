@@ -141,7 +141,7 @@ public class ERC721Metadata: ERC721 {
         let function = ERC721MetadataFunctions.tokenURI(contract: contract,
                                                         tokenID: tokenID)
         function.call(withClient: client, responseType: ERC721MetadataResponses.tokenURIResponse.self) { error, response in
-            return completion(error, response?.uri)
+            return completion(error, response?.value)
         }
     }
     

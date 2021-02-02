@@ -20,6 +20,9 @@ class Aes128Util {
     
     func xcrypt(input: Data) -> Data {
         let ctx = UnsafeMutablePointer<AES_ctx>.allocate(capacity: 1)
+        defer {
+            ctx.deallocate()
+        }
         
         let keyPtr = (self.key as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         
@@ -33,6 +36,9 @@ class Aes128Util {
         let inputPtr = (input as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         let length = input.count
         let outputPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: length)
+        defer {
+            outputPtr.deallocate()
+        }
         outputPtr.assign(from: inputPtr, count: length)
 
         AES_CTR_xcrypt_buffer(ctx, outputPtr, UInt32(length))

@@ -16,17 +16,16 @@ public protocol ABIFunction {
     var contract: EthereumAddress { get }
     var from: EthereumAddress? { get }
     func encode(to encoder: ABIFunctionEncoder) throws
-    func transaction() throws -> EthereumTransaction
 }
 
 public protocol ABIResponse: ABITupleDecodable {}
 
 extension ABIFunction {
-    public func transaction() throws -> EthereumTransaction {
+    public func transaction(gasPrice: BigUInt? = nil, gasLimit: BigUInt? = nil) throws -> EthereumTransaction {
         let encoder = ABIFunctionEncoder(Self.name)
         try self.encode(to: encoder)
         let data = try encoder.encoded()
         
-        return EthereumTransaction(from: from, to: contract, data: data, gasPrice: gasPrice ?? BigUInt(0), gasLimit: gasLimit ?? BigUInt(0))
+        return EthereumTransaction(from: from, to: contract, data: data, gasPrice: self.gasPrice ?? gasPrice ?? BigUInt(0), gasLimit: self.gasLimit ?? gasLimit ?? BigUInt(0))
     }
 }

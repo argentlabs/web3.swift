@@ -40,8 +40,7 @@ extension ABIEncoder {
             }
         
         case let value as ABITuple:
-            let sizeToEncode = type.isDynamic && value.encodableValues.count > 1 ? value.encodableValues.count : nil
-            return try ABIEncoder.encodeArray(elements: value.encodableValues.map { (value: $0, size: nil)}, isDynamic: type.isDynamic, size: sizeToEncode)
+            return try encodeTuple(value, type: type)
         default:
             throw ABIError.notCurrentlySupported
         }
@@ -59,5 +58,12 @@ extension ABIEncoder {
         }
 
         return .container(values: values, isDynamic: isDynamic, size: size)
+    }
+    
+    private static func encodeTuple(_ tuple: ABITuple, type: ABIRawType) throws -> EncodedValue {
+        let encoder = ABIFunctionEncoder("")
+        try tuple.encode(to: encoder)
+
+        return .container(values: encoder.encodedValues, isDynamic: type.isDynamic, size: nil)
     }
 }

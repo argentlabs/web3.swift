@@ -31,7 +31,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         self.client = client
         self.registryAddress = registryAddress
     }
-    
+
     public func resolve(address: EthereumAddress, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
         guard
             let network = client.network,
@@ -129,7 +129,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             })
         })
     }
-    
+
     static func nameHash(name: String) -> String {
         var node = Data.init(count: 32)
         let labels = name.components(separatedBy: ".")
@@ -139,5 +139,5 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         }
         return node.web3.hexString
     }
-    
+
 }

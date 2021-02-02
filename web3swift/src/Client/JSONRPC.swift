@@ -32,12 +32,28 @@ struct JSONRPCErrorResult: Decodable {
     var error: JSONRPCErrorDetail
 }
 
+enum JSONRPCErrorCode {
+    static var invalidInput = -32000
+    static var tooManyResults = -32005
+    static var contractExecution = 3
+}
+
 enum JSONRPCError: Error {
+    case executionError(JSONRPCErrorResult)
     case responseError
     case encodingError
     case decodingError
     case unknownError
     case noResult
+
+    var isExecutionError: Bool {
+        switch self {
+        case .executionError:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 public class EthereumRPC {
@@ -73,7 +89,7 @@ public class EthereumRPC {
                     return completion(nil, resultObjects)
                 } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
                     print("Ethereum response error: \(errorResult.error)")
-                    return completion(JSONRPCError.responseError, nil)
+                    return completion(JSONRPCError.executionError(errorResult), nil)
                 } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
                     return completion(JSONRPCError.responseError, nil)
                 } else {

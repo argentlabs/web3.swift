@@ -34,12 +34,14 @@ struct TransferMatchingSignatureEvent: ABIEvent {
 
 class EthereumClientTests: XCTestCase {
     var client: EthereumClient?
+    var mainnetClient: EthereumClient?
     var account: EthereumAccount?
     let timeout = 10.0
     
     override func setUp() {
         super.setUp()
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+        self.mainnetClient = EthereumClient(url: URL(string: TestConfig.mainnetClientUrl)!)
         self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         print("Public address: \(self.account?.address ?? "NONE")")
     }
@@ -375,6 +377,60 @@ class EthereumClientTests: XCTestCase {
         
         waitForExpectations(timeout: 10)
     }
+    
+    // This is how geth used to work up until a recent version
+    // see https://github.com/ethereum/go-ethereum/pull/21083/
+    // Used to return '0x' in response, and would fail decoding
+    // We'll continue to support this as user of library (and Argent in our case)
+    // works with this assumption.
+    // NOTE: This behaviour will be removed at a later time to fail as expected
+    // NOTE: At the time of writing, this test succeeds as-is in ropsten as nodes behaviour is different. That's why we use a mainnet check here
+    func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWith0x() {
+        let expect = expectation(description: "graceful_failure")
+        
+        let function = InvalidMethodA(param: .zero)
+        
+        function.call(withClient: self.mainnetClient!,
+                      responseType: InvalidMethodA.BoolResponse.self) { (error, response) in
+                        XCTAssertEqual(error, .decodeIssue)
+                        XCTAssertNil(response)
+                        expect.fulfill()
+        }
+        
+        waitForExpectations(timeout: 10)
+    }
+    func test_GivenFailingCallMethod_WhenCallingContract_ThenFailsWith0x() {
+        let expect = expectation(description: "graceful_failure")
+        
+        let function = InvalidMethodB(param: .zero)
+        
+        function.call(withClient: self.mainnetClient!,
+                      responseType: InvalidMethodB.BoolResponse.self) { (error, response) in
+                        XCTAssertEqual(error, .decodeIssue)
+                        XCTAssertNil(response)
+                        expect.fulfill()
+        }
+        
+        waitForExpectations(timeout: 10)
+    }
+    
+    func test_GivenValidTransaction_ThenEstimatesGas() {
+        let expect = expectation(description: "estimateOK")
+        let function = TransferToken(wallet: EthereumAddress("0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F"),
+                                     token: EthereumAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
+                                     to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
+                                     amount: 1,
+                                     data: Data(),
+                                     gasPrice: 0,
+                                     gasLimit: 0)
+        client!.eth_estimateGas(try! function.transaction(), withAccount: account!) { (error, value) in
+            XCTAssertNil(error)
+            XCTAssert(value != 0)
+            expect.fulfill()
+        }
+        
+        waitForExpectations(timeout: 10)
+    }
 }
 
 struct GetGuardians: ABIFunction {
@@ -399,5 +455,72 @@ struct GetGuardians: ABIFunction {
     func encode(to encoder: ABIFunctionEncoder) throws {
         try encoder.encode(wallet)
         
+    }
+}
+
+struct TransferToken: ABIFunction {
+    static let name = "transferToken"
+    let contract = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
+    let from: EthereumAddress? = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
+
+    let wallet: EthereumAddress
+    let token: EthereumAddress
+    let to: EthereumAddress
+    let amount: BigUInt
+    let data: Data
+    
+    let gasPrice: BigUInt?
+    let gasLimit: BigUInt?
+    
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(wallet)
+        try encoder.encode(token)
+        try encoder.encode(to)
+        try encoder.encode(amount)
+        try encoder.encode(data)
+    }
+}
+
+struct InvalidMethodA: ABIFunction {
+    static let name = "invalidMethodCallBoolResponse"
+    let contract = EthereumAddress("0xed0439eacf4c4965ae4613d77a5c2efe10e5f183")
+    let from: EthereumAddress? = EthereumAddress("0xed0439eacf4c4965ae4613d77a5c2efe10e5f183")
+    let gasPrice: BigUInt? = nil
+    let gasLimit: BigUInt? = nil
+    
+    let param: EthereumAddress
+    
+    struct BoolResponse: ABIResponse {
+        static var types: [ABIType.Type] = [Bool.self]
+        let value: Bool
+
+        init?(values: [ABIDecoder.DecodedValue]) throws {
+            self.value = try values[0].decoded()
+        }
+    }
+
+    func encode(to encoder: ABIFunctionEncoder) throws {
+    }
+}
+
+struct InvalidMethodB: ABIFunction {
+    static let name = "invalidMethodCallBoolResponse"
+    let contract = EthereumAddress("0xC011A72400E58ecD99Ee497CF89E3775d4bd732F")
+    let from: EthereumAddress? = EthereumAddress("0xC011A72400E58ecD99Ee497CF89E3775d4bd732F")
+    let gasPrice: BigUInt? = nil
+    let gasLimit: BigUInt? = nil
+    
+    let param: EthereumAddress
+    
+    struct BoolResponse: ABIResponse {
+        static var types: [ABIType.Type] = [Bool.self]
+        let value: Bool
+
+        init?(values: [ABIDecoder.DecodedValue]) throws {
+            self.value = try values[0].decoded()
+        }
+    }
+
+    func encode(to encoder: ABIFunctionEncoder) throws {
     }
 }

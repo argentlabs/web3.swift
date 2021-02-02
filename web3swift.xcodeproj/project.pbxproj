@@ -45,6 +45,12 @@
 		47F2EAAD22848BA7007063C2 /* ERC721Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAAC22848BA7007063C2 /* ERC721Events.swift */; };
 		47F2EAAF22848BB2007063C2 /* ERC721Responses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAAE22848BB2007063C2 /* ERC721Responses.swift */; };
 		47F2EAB32285BBDF007063C2 /* ERC165Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F2EAB12285BAB6007063C2 /* ERC165Tests.swift */; };
+		63002262255192D900C97B80 /* ENSMultiResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63002261255192D900C97B80 /* ENSMultiResolver.swift */; };
+		6327068225A48A8A0061388C /* RecursiveLogCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6327068125A48A8A0061388C /* RecursiveLogCollector.swift */; };
+		63C41E6D254C4CFF0055ED7F /* ENSResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C41E6C254C4CFF0055ED7F /* ENSResponses.swift */; };
+		63DAC6252549D8700059FF9C /* MulticallContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DAC6242549D8700059FF9C /* MulticallContract.swift */; };
+		63DAC6292549D9CE0059FF9C /* Multicall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DAC6282549D9CE0059FF9C /* Multicall.swift */; };
+		63DAC6302549E2640059FF9C /* MulticallTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DAC62F2549E2640059FF9C /* MulticallTests.swift */; };
 		6C4ABDDAA3313A1B32EAB620 /* Pods_web3swiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */; };
 		9164E8EEDA7FB33A6638D561 /* Pods_web3swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD54E6F686FEE6C1126AB6A0 /* Pods_web3swift.framework */; };
 		C91A7E80205C1F120074D3B4 /* ABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91A7E7F205C1F120074D3B4 /* ABIEncoder.swift */; };
@@ -155,6 +161,12 @@
 		52B3D38DF87EAFCBBD99CCF1 /* Pods-web3swiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3swiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests.debug.xcconfig"; sourceTree = "<group>"; };
 		595F7375549A81C8950C1F8E /* Pods-web3s.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3s.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3s/Pods-web3s.release.xcconfig"; sourceTree = "<group>"; };
 		5E4FAB97C27DB6CBB355E0F1 /* Pods_web3swiftTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_web3swiftTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		63002261255192D900C97B80 /* ENSMultiResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ENSMultiResolver.swift; sourceTree = "<group>"; };
+		6327068125A48A8A0061388C /* RecursiveLogCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveLogCollector.swift; sourceTree = "<group>"; };
+		63C41E6C254C4CFF0055ED7F /* ENSResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ENSResponses.swift; sourceTree = "<group>"; };
+		63DAC6242549D8700059FF9C /* MulticallContract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MulticallContract.swift; sourceTree = "<group>"; };
+		63DAC6282549D9CE0059FF9C /* Multicall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multicall.swift; sourceTree = "<group>"; };
+		63DAC62F2549E2640059FF9C /* MulticallTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MulticallTests.swift; sourceTree = "<group>"; };
 		673183DE4025E9D5F5EAF360 /* Pods-web3swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3swift.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3swift/Pods-web3swift.release.xcconfig"; sourceTree = "<group>"; };
 		7DE9D050B2C662A66E6B59CE /* Pods-web3swiftTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-web3swiftTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-web3swiftTests/Pods-web3swiftTests.release.xcconfig"; sourceTree = "<group>"; };
 		A1CC3A57435EC4F90800C052 /* Pods_web3s.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_web3s.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -304,6 +316,7 @@
 				C967AAAC2080C35500A24D15 /* ERC20 */,
 				47F2EAB02285BA9C007063C2 /* ERC165 */,
 				C9236B952052FD2800CE5557 /* Extensions */,
+				63DAC62E2549E24D0059FF9C /* Multicall */,
 				3CF37C3C203437D70030520E /* Info.plist */,
 				C9A78E6E20595B3000CF8316 /* Mocks */,
 				3C8D94F9204024DE00D0D5D7 /* Resources */,
@@ -344,6 +357,7 @@
 				47F2EA9C22848981007063C2 /* ERC721 */,
 				C927FD60204ECFE3005922DC /* ENS */,
 				C927FD6E20527A67005922DC /* Extensions */,
+				63DAC6232549D8700059FF9C /* Multicall */,
 				3CF37C6220343BDD0030520E /* Utils */,
 			);
 			path = src;
@@ -378,6 +392,7 @@
 			children = (
 				C9236B832052C6AC00CE5557 /* Models */,
 				3CF37CBF2035ABE90030520E /* EthereumClient.swift */,
+				6327068125A48A8A0061388C /* RecursiveLogCollector.swift */,
 				C927FD58204EB1F4005922DC /* JSONRPC.swift */,
 			);
 			path = Client;
@@ -434,6 +449,23 @@
 				47F2EAB12285BAB6007063C2 /* ERC165Tests.swift */,
 			);
 			path = ERC165;
+			sourceTree = "<group>";
+		};
+		63DAC6232549D8700059FF9C /* Multicall */ = {
+			isa = PBXGroup;
+			children = (
+				63DAC6282549D9CE0059FF9C /* Multicall.swift */,
+				63DAC6242549D8700059FF9C /* MulticallContract.swift */,
+			);
+			path = Multicall;
+			sourceTree = "<group>";
+		};
+		63DAC62E2549E24D0059FF9C /* Multicall */ = {
+			isa = PBXGroup;
+			children = (
+				63DAC62F2549E2640059FF9C /* MulticallTests.swift */,
+			);
+			path = Multicall;
 			sourceTree = "<group>";
 		};
 		C9236B832052C6AC00CE5557 /* Models */ = {
@@ -519,7 +551,9 @@
 			isa = PBXGroup;
 			children = (
 				C927FD61204EF4E1005922DC /* EthereumNameService.swift */,
+				63002261255192D900C97B80 /* ENSMultiResolver.swift */,
 				C9A78E5C205871E500CF8316 /* ENSContracts.swift */,
+				63C41E6C254C4CFF0055ED7F /* ENSResponses.swift */,
 			);
 			path = ENS;
 			sourceTree = "<group>";
@@ -787,6 +821,8 @@
 				C9F836B52078049E004F45A9 /* EthereumAddress.swift in Sources */,
 				C9236B802052C68D00CE5557 /* EthereumLog.swift in Sources */,
 				47F2EAAB22848B9C007063C2 /* ERC721Functions.swift in Sources */,
+				6327068225A48A8A0061388C /* RecursiveLogCollector.swift in Sources */,
+				63DAC6252549D8700059FF9C /* MulticallContract.swift in Sources */,
 				C9236B8B2052E12200CE5557 /* HexExtensions.swift in Sources */,
 				C927FD62204EF4E1005922DC /* EthereumNameService.swift in Sources */,
 				C927FD57204EAD6E005922DC /* EthereumKeyStorage.swift in Sources */,
@@ -808,6 +844,7 @@
 				C94C2BD02090C70D00F024EE /* ERC20Events.swift in Sources */,
 				C91A7E84205C1F260074D3B4 /* ABIRawType.swift in Sources */,
 				3C8D94FE20402D8400D0D5D7 /* EthereumTransaction.swift in Sources */,
+				63DAC6292549D9CE0059FF9C /* Multicall.swift in Sources */,
 				3CF37CBE2035A8240030520E /* EthereumAccount.swift in Sources */,
 				47F2EAA622848B5D007063C2 /* ERC721.swift in Sources */,
 				3CF37CE3203720F30030520E /* KeyDerivation.swift in Sources */,
@@ -818,10 +855,12 @@
 				C9D43D2D207D0DB800685FB6 /* ABIEncoder+Static.swift in Sources */,
 				478E08CE249D16CE000810B0 /* TypedData.swift in Sources */,
 				C9A78E5D205871E500CF8316 /* ENSContracts.swift in Sources */,
+				63C41E6D254C4CFF0055ED7F /* ENSResponses.swift in Sources */,
 				3C8D94F6203ECA2D00D0D5D7 /* RLP.swift in Sources */,
 				C91A7E80205C1F120074D3B4 /* ABIEncoder.swift in Sources */,
 				C967AAA72080BF7100A24D15 /* ERC20Functions.swift in Sources */,
 				C9D43D31207D140E00685FB6 /* EthereumClient+Static.swift in Sources */,
+				63002262255192D900C97B80 /* ENSMultiResolver.swift in Sources */,
 				47B9C62824C730B30028DAAF /* ABITuple.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -840,6 +879,7 @@
 				C9A78E4F20583F1300CF8316 /* KeccakExtensionsTests.swift in Sources */,
 				C967AAB02080C38000A24D15 /* ERC20Tests.swift in Sources */,
 				C9236BA32057CE6F00CE5557 /* EthereumAccountTests.swift in Sources */,
+				63DAC6302549E2640059FF9C /* MulticallTests.swift in Sources */,
 				3C8D94F820400E7200D0D5D7 /* RLPTests.swift in Sources */,
 				C9A78E4A205826CC00CF8316 /* String+NumericTests.swift in Sources */,
 				3CF37CEB20372CA10030520E /* KeyDerivationTests.swift in Sources */,
