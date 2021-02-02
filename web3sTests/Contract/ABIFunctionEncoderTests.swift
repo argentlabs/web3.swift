@@ -15,41 +15,88 @@ class ABIFunctionEncoderTests: XCTestCase {
     
     override func setUp() {
         encoder = ABIFunctionEncoder("test")
-
     }
     
     func testGivenEmptyString_ThenEncodesCorrectly() {
-        try! encoder.encode("")
+        XCTAssertNoThrow(try encoder.encode(""))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xf9fbd554000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
     }
     
     func testGivenNonEmptyString_ThenEncodesCorrectly() {
-        try! encoder.encode("hi")
+        XCTAssertNoThrow(try encoder.encode("hi"))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xf9fbd554000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000026869000000000000000000000000000000000000000000000000000000000000")
     }
+    
+    func testGivenUInt_WhenNoExplicitSize_ThenEncodesAs256() {
+        XCTAssertNoThrow(try encoder.encode(BigUInt(100)))
+        let encoded = try! encoder.encoded()
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x29e99f070000000000000000000000000000000000000000000000000000000000000064")
+    }
+    
+    func testGivenUInt_WhenExplicitSize256_ThenEncodesAs256() {
+        XCTAssertNoThrow(try encoder.encode(BigUInt(100), staticSize: 256))
+        let encoded = try! encoder.encoded()
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x29e99f070000000000000000000000000000000000000000000000000000000000000064")
+    }
+    
+    func testGivenUInt_WhenValidExplicitSize100_ThenEncodesAs100() {
+        XCTAssertNoThrow(try encoder.encode(BigUInt(100), staticSize: 100))
+        let encoded = try! encoder.encoded()
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xbc39e7b50000000000000000000000000000000000000000000000000000000000000064")
+    }
+    
+    func testGivenUInt_WhenInvalidSizeBiggerThan256_ThenFailsEncoding() {
+        XCTAssertThrowsError(try encoder.encode(BigUInt(100), staticSize: 257))
+    }
+    
+    func testGivenPositiveInt_WhenNoExplicitSize_ThenEncodesAs256() {
+        XCTAssertNoThrow(try encoder.encode(BigInt(100)))
+        let encoded = try! encoder.encoded()
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x9b22c05d0000000000000000000000000000000000000000000000000000000000000064")
+    }
+    
+    func testGivenPositiveInt_WhenValidSize256_ThenEncodesAs256() {
+        XCTAssertNoThrow(try encoder.encode(BigInt(100), staticSize: 256))
+        let encoded = try! encoder.encoded()
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x9b22c05d0000000000000000000000000000000000000000000000000000000000000064")
+    }
+    
+    func testGivenPositiveInt_WhenValidExplicitSize100_ThenEncodesAs100() {
+        XCTAssertNoThrow(try encoder.encode(BigInt(100), staticSize: 100))
+        let encoded = try! encoder.encoded()
+        XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x868147590000000000000000000000000000000000000000000000000000000000000064")
+    }
+    
+    func testGivenPositiveInt_WhenInvalidSizeBiggerThan256_ThenFailsEncoding() {
+        XCTAssertThrowsError(try encoder.encode(BigInt(100), staticSize: 257))
+    }
 
     func testGivenEmptyData_ThenEncodesCorrectly() {
-        try! encoder.encode(Data())
+        XCTAssertNoThrow(try encoder.encode(Data()))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x2f570a2300000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000")
     }
     
     func testGivenNonEmptyData_ThenEncodesCorrectly() {
-        try! encoder.encode(Data("hi".web3.bytes))
+        XCTAssertNoThrow(try encoder.encode(Data("hi".web3.bytes)))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0x2f570a23000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000026869000000000000000000000000000000000000000000000000000000000000")
     }
     
     func testGivenStaticSizeData4_ThenEncodesCorrectly() {
-        try! encoder.encode(Data(hex: "0xffffffff")!, staticSize: 4)
+        XCTAssertNoThrow(try encoder.encode(Data(hex: "0xffffffff")!, staticSize: 4))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xda67eb8affffffff00000000000000000000000000000000000000000000000000000000")
     }
     
+    func testGivenStaticSizeDataBiggerThan32_ThenFailsEncoding() {
+        XCTAssertThrowsError(try encoder.encode(Data(hex: "0xffffffff")!, staticSize: 33))
+    }
+    
     func testGivenEmptyArrayOfAddressses_ThenEncodesCorrectly() {
-        try! encoder.encode([EthereumAddress]())
+        XCTAssertNoThrow(try encoder.encode([EthereumAddress]()))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xd57498ea00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000")
     }
@@ -62,7 +109,7 @@ class ABIFunctionEncoderTests: XCTestCase {
                          "0x8c2dc702371d73febc50c6e6ced100bf9dbcb029",
                          "0x007eedb5044ed5512ed7b9f8b42fe3113452491e"].map(EthereumAddress.init)
 
-        try! encoder.encode(addresses)
+        XCTAssertNoThrow(try encoder.encode(addresses))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xd57498ea0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000500000000000000000000000026fc876db425b44bf6c377a7beef65e9ebad0ec300000000000000000000000025a01a05c188dacbcf1d61af55d4a5b4021f7eed000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000008c2dc702371d73febc50c6e6ced100bf9dbcb029000000000000000000000000007eedb5044ed5512ed7b9f8b42fe3113452491e")
     }
@@ -81,7 +128,7 @@ class ABIFunctionEncoderTests: XCTestCase {
     func testGivenArrayOfBigUInt_ThenEncodesCorrectly() {
         let values = [BigUInt(1),BigUInt(2),BigUInt(3)]
 
-        try! encoder.encode(values)
+        XCTAssertNoThrow(try encoder.encode(values))
         let encoded = try! encoder.encoded()
         XCTAssertEqual(String(hexFromBytes: encoded.web3.bytes), "0xca16068400000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003")
     }

@@ -44,7 +44,20 @@ public class ABIFunctionEncoder {
         encodedValues.append(encoded)
         switch (staticSize, rawType) {
         case (let size?, .DynamicBytes):
+            guard size <= 32 else {
+                throw ABIError.invalidType
+            }
             types.append(.FixedBytes(size))
+        case (let size?, .FixedUInt):
+            guard size <= 256 else {
+                throw ABIError.invalidType
+            }
+            types.append(.FixedUInt(size))
+        case (let size?, .FixedInt):
+            guard size <= 256 else {
+                throw ABIError.invalidType
+            }
+            types.append(.FixedInt(size))
         default:
             types.append(rawType)
         }
