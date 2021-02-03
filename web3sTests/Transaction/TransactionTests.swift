@@ -8,7 +8,7 @@
 
 import XCTest
 import BigInt
-@testable import web3swift
+@testable import web3
 
 class TransactionTests: XCTestCase {
     let withoutChainID: EthereumTransaction = EthereumTransaction(from: EthereumAddress("0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"),

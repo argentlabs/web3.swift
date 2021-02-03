@@ -6,6 +6,7 @@
 //  Copyright © 2020 Argent Labs Limited. All rights reserved.
 //
 
+import Foundation
 import BigInt
 import GenericJSON
 
