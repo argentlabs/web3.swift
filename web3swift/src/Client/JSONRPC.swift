@@ -40,7 +40,7 @@ public enum JSONRPCErrorCode {
 
 public enum JSONRPCError: Error {
     case executionError(JSONRPCErrorResult)
-    case responseError
+    case requestRejected(Data)
     case encodingError
     case decodingError
     case unknownError
@@ -91,7 +91,7 @@ public class EthereumRPC {
                     print("Ethereum response error: \(errorResult.error)")
                     return completion(JSONRPCError.executionError(errorResult), nil)
                 } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
-                    return completion(JSONRPCError.responseError, nil)
+                    return completion(JSONRPCError.requestRejected(data), nil)
                 } else {
                     return completion(JSONRPCError.noResult, nil)
                 }
