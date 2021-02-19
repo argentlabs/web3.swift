@@ -11,126 +11,95 @@ import BigInt
 @testable import web3swift
 
 class ABIEncoderTests: XCTestCase {
-    
-    override func setUp() {
-        super.setUp()
+    func testGivenSmallBigUInt_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(BigUInt(10))
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000000a")
     }
     
-    override func tearDown() {
-        super.tearDown()
+    func testGivenBigUInt_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(BigUInt(10).power(20))
+        XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000056bc75e2d63100000")
     }
     
-    func testEncodePositiveInt32() {
-        var encoded: ABIEncoder.EncodedValue
-        do {
-            encoded = try ABIEncoder.encodeRaw("10000", forType: ABIRawType.FixedInt(32))
-            XCTAssertEqual(encoded.hexString, "0x0000000000000000000000000000000000000000000000000000000000002710")
-            encoded = try ABIEncoder.encodeRaw("25639", forType: ABIRawType.FixedInt(32))
-            XCTAssertEqual(encoded.hexString, "0x0000000000000000000000000000000000000000000000000000000000006427")
-        } catch let error {
-            print(error.localizedDescription)    
-            XCTFail()
-        }
-    }
- 
-    func testEncodeNegativeInt32() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("-25896", forType: ABIRawType.FixedInt(32))
-            XCTAssertEqual(encoded.hexString, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9ad8")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenUInt32_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(UInt32(25639))
+        XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000000000000000006427")
     }
     
-    func testEncodeSmallString() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("a response string (unsupported)", forType: ABIRawType.DynamicString)
-            XCTAssertEqual(encoded.hexString, "0x000000000000000000000000000000000000000000000000000000000000001f6120726573706f6e736520737472696e672028756e737570706f727465642900")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenNegativeInt32_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encodeRaw("-25896", forType: ABIRawType.FixedInt(32))
+        XCTAssertEqual(encoded?.hexString, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9ad8")
     }
     
-    func testEncodeLargeString() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw(" hello world hello world hello world hello world  hello world hello world hello world hello world  hello world hello world hello world hello world hello world hello world hello world hello world", forType: ABIRawType.DynamicString)
-            XCTAssertEqual(encoded.hexString, "0x00000000000000000000000000000000000000000000000000000000000000c22068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64000000000000000000000000000000000000000000000000000000000000")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenShortString_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode("a response string (unsupported)")
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000001f6120726573706f6e736520737472696e672028756e737570706f727465642900")
     }
     
-    func testEncodeAddress() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("0x407d73d8a49eeb85d32cf465507dd71d507100c1", forType: ABIRawType.FixedAddress)
-            XCTAssertEqual(encoded.hexString, "0x000000000000000000000000407d73d8a49eeb85d32cf465507dd71d507100c1")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenLongString_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(" hello world hello world hello world hello world  hello world hello world hello world hello world  hello world hello world hello world hello world hello world hello world hello world hello world")
+        XCTAssertEqual(encoded?.hexString, "0x00000000000000000000000000000000000000000000000000000000000000c22068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64000000000000000000000000000000000000000000000000000000000000")
     }
     
-    func testEncodeBytes1() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("0x63", forType: ABIRawType.FixedBytes(1))
-            XCTAssertEqual(encoded.hexString,
-             "0x6300000000000000000000000000000000000000000000000000000000000000")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenAddress_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(EthereumAddress("0x407d73d8a49eeb85d32cf465507dd71d507100c1"))
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000407d73d8a49eeb85d32cf465507dd71d507100c1")
     }
     
-    func testEncodeBytes3() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("0x616263", forType: ABIRawType.FixedBytes(3))
-            XCTAssertEqual(encoded.hexString, "0x6162630000000000000000000000000000000000000000000000000000000000")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenTrue_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(true)
+        XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000000000000000000001")
     }
     
-    func testEncodeBytes32() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("0x0200000000000000000000000050000000000000000000000000000000616263", forType: ABIRawType.FixedBytes(32))
-            XCTAssertEqual(encoded.hexString, "0x0200000000000000000000000050000000000000000000000000000000616263")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenFalse_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(false)
+        XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000000000000000000000")
     }
     
-    func testEncodeSmallDynamicBytes4Array() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("0x01010101aabbccdd9988776678947894", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
-            XCTAssertEqual(encoded.hexString, "0x000000000000000000000000000000000000000000000000000000000000000401010101aabbccdd998877667894789400000000000000000000000000000000")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenBytes1_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode("0x63".web3.hexData!, staticSize: 1)
+        XCTAssertEqual(encoded?.hexString,
+                       "0x6300000000000000000000000000000000000000000000000000000000000000")
     }
     
-    func testEncodeBigDynamicBytes4Array() {
-        
-        do {
-            let encoded = try ABIEncoder.encodeRaw("0x01010101aabbccdd99887766789478941234567891011121314151617181920212223443", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
-            XCTAssertEqual(encoded.hexString, "0x000000000000000000000000000000000000000000000000000000000000000901010101aabbccdd9988776678947894123456789101112131415161718192021222344300000000000000000000000000000000000000000000000000000000")
-        } catch let error {
-            print(error.localizedDescription)
-            XCTFail()
-        }
+    func testGivenBytes3_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode("0x616263".web3.hexData!, staticSize: 3)
+        XCTAssertEqual(encoded?.hexString, "0x6162630000000000000000000000000000000000000000000000000000000000")
+    }
+    
+    func testGivenBytes32_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode("0x0200000000000000000000000050000000000000000000000000000000616263".web3.hexData!, staticSize: 32)
+        XCTAssertEqual(encoded?.hexString, "0x0200000000000000000000000050000000000000000000000000000000616263")
+    }
+    
+    func testGivenDynamicBytes_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode("0x01010101aabbccdd9988776678947894".web3.hexData!)
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000001001010101aabbccdd998877667894789400000000000000000000000000000000")
+    }
+    
+    func testGivenDynamicBytesArray_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(["0x01010101aabbccdd9988776678947894".web3.hexData!, "0x1235566666600980".web3.hexData!])
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000001001010101aabbccdd99887766789478940000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000081235566666600980000000000000000000000000000000000000000000000000")
+    }
+    
+    func testGivenSmallDynamicBytes4Array_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encodeRaw("0x01010101aabbccdd9988776678947894", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000000401010101aabbccdd998877667894789400000000000000000000000000000000")
+    }
+    
+    func testGivenBigDynamicBytes4Array_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encodeRaw("0x01010101aabbccdd99887766789478941234567891011121314151617181920212223443", forType: ABIRawType.DynamicArray(ABIRawType.FixedBytes(4)))
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000000901010101aabbccdd9988776678947894123456789101112131415161718192021222344300000000000000000000000000000000000000000000000000000000")
+    }
+    
+    func testGivenBigUIntArray_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode([BigUInt(2000), BigUInt(9098055), BigUInt(99999)])
+        XCTAssertEqual(encoded?.hexString, "0x00000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000008ad347000000000000000000000000000000000000000000000000000000000001869f")
+    }
+    
+    func testGivenStringArray_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(["hello", "big", "world"])
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000000568656c6c6f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000362696700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005776f726c64000000000000000000000000000000000000000000000000000000")
     }
     
 }
