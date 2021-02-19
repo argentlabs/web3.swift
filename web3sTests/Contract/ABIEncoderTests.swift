@@ -16,14 +16,34 @@ class ABIEncoderTests: XCTestCase {
         XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000000a")
     }
     
+    func testGivenSmallBigUInt_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(BigUInt(10), packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000000a")
+    }
+    
     func testGivenBigUInt_EncodesCorrectly() {
         let encoded = try? ABIEncoder.encode(BigUInt(10).power(20))
+        XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000056bc75e2d63100000")
+    }
+    
+    func testGivenBigUInt_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(BigUInt(10).power(20), packed: true)
         XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000056bc75e2d63100000")
     }
     
     func testGivenUInt32_EncodesCorrectly() {
         let encoded = try? ABIEncoder.encode(UInt32(25639))
         XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000000000000000006427")
+    }
+    
+    func testGivenUInt32_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(UInt32(25639), packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x00006427")
+    }
+    
+    func testGivenUInt8_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(UInt8(12), packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x0c")
     }
     
     func testGivenNegativeInt32_EncodesCorrectly() {
@@ -36,9 +56,19 @@ class ABIEncoderTests: XCTestCase {
         XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000001f6120726573706f6e736520737472696e672028756e737570706f727465642900")
     }
     
+    func testGivenShortString_WhenEncoded_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode("a response string (unsupported)", packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x6120726573706f6e736520737472696e672028756e737570706f7274656429")
+    }
+
     func testGivenLongString_EncodesCorrectly() {
         let encoded = try? ABIEncoder.encode(" hello world hello world hello world hello world  hello world hello world hello world hello world  hello world hello world hello world hello world hello world hello world hello world hello world")
         XCTAssertEqual(encoded?.hexString, "0x00000000000000000000000000000000000000000000000000000000000000c22068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64000000000000000000000000000000000000000000000000000000000000")
+    }
+    
+    func testGivenLongString_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(" hello world hello world hello world hello world  hello world hello world hello world hello world  hello world hello world hello world hello world hello world hello world hello world hello world", packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x2068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64202068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c642068656c6c6f20776f726c64")
     }
     
     func testGivenAddress_EncodesCorrectly() {
@@ -46,14 +76,29 @@ class ABIEncoderTests: XCTestCase {
         XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000407d73d8a49eeb85d32cf465507dd71d507100c1")
     }
     
+    func testGivenAddress_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(EthereumAddress("0x407d73d8a49eeb85d32cf465507dd71d507100c1"), packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x407d73d8a49eeb85d32cf465507dd71d507100c1")
+    }
+    
     func testGivenTrue_EncodesCorrectly() {
         let encoded = try? ABIEncoder.encode(true)
         XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000000000000000000001")
     }
     
+    func testGivenTrue_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(true, packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x01")
+    }
+    
     func testGivenFalse_EncodesCorrectly() {
         let encoded = try? ABIEncoder.encode(false)
         XCTAssertEqual(encoded?.hexString, "0x0000000000000000000000000000000000000000000000000000000000000000")
+    }
+    
+    func testGivenFalse_WhenPacked_EncodesCorrectly() {
+        let encoded = try? ABIEncoder.encode(false, packed: true)
+        XCTAssertEqual(encoded?.hexString, "0x00")
     }
     
     func testGivenBytes1_EncodesCorrectly() {
