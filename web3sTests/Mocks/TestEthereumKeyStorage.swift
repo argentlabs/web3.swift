@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@testable import web3swift
+@testable import web3
 
 class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
     private var privateKey: String

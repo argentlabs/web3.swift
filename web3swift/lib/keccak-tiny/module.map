@@ -1,4 +1,4 @@
 module keccaktiny [system][extern_c] {
-  header "keccak-tiny.h"
+  header "include/keccak-tiny.h"
   export *
 }
