@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import web3swift
+@testable import web3
 
 // https://github.com/ethereum/EIPs/blob/master/assets/eip-712/Example.js
 // https://github.com/dicether/js-eth-personal-sign-examples
@@ -229,7 +229,7 @@ class EthereumAccount_SignTypedTests: XCTestCase {
     }
     
     func test_GivenProdExample_ItHashesCorrectly() {
-        let url = Bundle(for: type(of: self)).url(forResource: "cryptofights_712", withExtension: "json")!
+        let url = Bundle.module.url(forResource: "cryptofights_712", withExtension: "json")!
         let data = try! Data(contentsOf: url)
         let typedData = try! decoder.decode(TypedData.self, from: data)
         XCTAssertEqual(try! typedData.signableHash().web3.hexString, "0xdb12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c")

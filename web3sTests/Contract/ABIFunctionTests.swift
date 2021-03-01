@@ -8,7 +8,7 @@
 
 import XCTest
 import BigInt
-@testable import web3swift
+@testable import web3
 
 struct Deposit_NoParameter: ABIFunction {
     static let name = "deposit"

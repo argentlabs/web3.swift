@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import web3swift
+@testable import web3
 import BigInt
 
 class RLPTests: XCTestCase {
@@ -130,8 +130,8 @@ class RLPTests: XCTestCase {
         XCTAssertEqual(expected, encoded)
     }
     
-    func testOfficalTests() {
-        let url = Bundle(for: type(of: self)).url(forResource: "rlptests", withExtension: "json")!
+    func testOfficialTests() {
+        let url = Bundle.module.url(forResource: "rlptests", withExtension: "json")!
         let data = try! Data(contentsOf: url)
         let json = try! JSONSerialization.jsonObject(with: data) as? [String: [String: Any]]
         
