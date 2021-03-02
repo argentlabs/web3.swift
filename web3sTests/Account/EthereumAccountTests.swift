@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import web3swift
+@testable import web3
 
 class EthereumAccountTests: XCTestCase {
     

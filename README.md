@@ -4,6 +4,12 @@
 
 ## Installation
 
+### Swift Package Manager
+
+Use Xcode to add to the project (**File -> Swift Packages**) or add this to your `Package.swift` file:
+```swift
+.package(url: "https://github.com/argentlabs/web3.swift", from: "0.7.0")
+```
 ### CocoaPods
 
 Add web3.swift to your `Podfile`:

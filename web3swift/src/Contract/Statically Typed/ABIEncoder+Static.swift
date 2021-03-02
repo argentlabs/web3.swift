@@ -11,32 +11,33 @@ import BigInt
 
 extension ABIEncoder {
     public static func encode(_ value: ABIType,
-                              staticSize: Int? = nil) throws -> EncodedValue {
+                              staticSize: Int? = nil,
+                              packed: Bool = false) throws -> EncodedValue {
         let type = Swift.type(of: value).rawType
         switch value {
         case let value as String:
-            return try ABIEncoder.encodeRaw(value, forType: type)
+            return try ABIEncoder.encodeRaw(value, forType: type, padded: !packed)
         case let value as Bool:
-            return try ABIEncoder.encodeRaw(value ? "true" : "false", forType: type)
+            return try ABIEncoder.encodeRaw(value ? "true" : "false", forType: type, padded: !packed)
         case let value as EthereumAddress:
-            return try ABIEncoder.encodeRaw(value.value, forType: type)
+            return try ABIEncoder.encodeRaw(value.value, forType: type, padded: !packed)
         case let value as BigInt:
-            return try ABIEncoder.encodeRaw(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type, padded: !packed)
         case let value as BigUInt:
-            return try ABIEncoder.encodeRaw(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type, padded: !packed)
         case let value as UInt8:
-            return try ABIEncoder.encodeRaw(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type, padded: !packed)
         case let value as UInt16:
-            return try ABIEncoder.encodeRaw(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type, padded: !packed)
         case let value as UInt32:
-            return try ABIEncoder.encodeRaw(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type, padded: !packed)
         case let value as UInt64:
-            return try ABIEncoder.encodeRaw(String(value), forType: type)
+            return try ABIEncoder.encodeRaw(String(value), forType: type, padded: !packed)
         case let data as Data:
             if let staticSize = staticSize {
-                return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: .FixedBytes(staticSize))
+                return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: .FixedBytes(staticSize), padded: !packed)
             } else {
-                return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: type)
+                return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: type, padded: !packed)
             }
         
         case let value as ABITuple:
