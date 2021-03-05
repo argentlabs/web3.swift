@@ -182,6 +182,34 @@ class ABIFunctionEncoderTests: XCTestCase {
         }
     }
     
+    func test_GivenLongTupleArgument_ThenEncodesCorrectly() {
+        let tuple = LongTuple(value1: "https://ethereum.org/abcde",
+                              value2: "https://ethereum.org/xyz",
+                              value3: Data(hex: "0x1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8")!,
+                              value4: Data(hex: "0x8452c9b9140222b08593a26daa782707297be9f7b3e8281d7b4974769f19afd0")!)
+        
+        let encoder = ABIFunctionEncoder("TestLongTuple")
+        
+        try? encoder.encode(tuple)
+        XCTAssertEqual(try? encoder.encoded().web3.hexString, "0xfe83fc010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c01c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac88452c9b9140222b08593a26daa782707297be9f7b3e8281d7b4974769f19afd0000000000000000000000000000000000000000000000000000000000000001a68747470733a2f2f657468657265756d2e6f72672f6162636465000000000000000000000000000000000000000000000000000000000000000000000000001868747470733a2f2f657468657265756d2e6f72672f78797a0000000000000000")
+            
+    }
+    
+    func test_GivenSomeArgumentsAndLongTuple_ThenEncodesCorrectly() {
+        let tuple = LongTuple(value1: "https://ipfs.fleek.co/ipfs/bafybeib7trltlf567dqq3jvok73k7vpnkxdq3gf6evj2ltezzzzhquc6ea",
+                              value2: "https://ipfs.fleek.co/ipfs/bafybeiezpaegcxyltpw3qjmxtfxqiaddqbrdrzoyvmbaghqdhwhuuliciy",
+                              value3: Data(hex: "0x7efef35dcd300eec8819c4ce5cb6b57be685254d583954273c5cc16edee83790")!,
+                              value4: Data(hex: "0xba42a7d804d9eff383efb1864514f5f15c82f1c333a777dd8f76dba1c1977029")!)
+        
+        let encoder = ABIFunctionEncoder("TestLongTuple")
+        try? encoder.encode(tuple)
+        try? encoder.encode(BigUInt(0))
+        try? encoder.encode(BigUInt(hex: "0xa688906bd8b00000")!)
+        try? encoder.encode(BigUInt(hex: "0x4c53ecdc18a600000")!)
+        XCTAssertEqual(try? encoder.encoded().web3.hexString, "0x51746d2300000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a688906bd8b00000000000000000000000000000000000000000000000000004c53ecdc18a600000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001007efef35dcd300eec8819c4ce5cb6b57be685254d583954273c5cc16edee83790ba42a7d804d9eff383efb1864514f5f15c82f1c333a777dd8f76dba1c1977029000000000000000000000000000000000000000000000000000000000000005668747470733a2f2f697066732e666c65656b2e636f2f697066732f62616679626569623774726c746c66353637647171336a766f6b37336b3776706e6b7864713367663665766a326c74657a7a7a7a6871756336656100000000000000000000000000000000000000000000000000000000000000000000000000000000005668747470733a2f2f697066732e666c65656b2e636f2f697066732f62616679626569657a706165676378796c74707733716a6d78746678716961646471627264727a6f79766d62616768716468776875756c6963697900000000000000000000")
+            
+    }
+    
     func testGivenArrayOfTuples_ThenEncodesCorrectly() {
         let tuples = [
             SimpleTuple(address: EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"), amount: 30),
@@ -261,6 +289,41 @@ fileprivate struct SimpleTuple: ABITuple {
     }
     
     var encodableValues: [ABIType] { [address, amount] }
+}
+
+fileprivate struct LongTuple: ABITuple {
+    static var types: [ABIType.Type] { [String.self, String.self, Data32.self, Data32.self] }
+    
+    var value1: String
+    var value2: String
+    var value3: Data
+    var value4: Data
+    
+    init(value1: String,
+         value2: String,
+         value3: Data,
+         value4: Data) {
+        self.value1 = value1
+        self.value2 = value2
+        self.value3 = value3
+        self.value4 = value4
+    }
+    
+    init?(values: [ABIDecoder.DecodedValue]) throws {
+        self.value1 = try values[0].decoded()
+        self.value2 = try values[1].decoded()
+        self.value3 = try values[2].decoded()
+        self.value4 = try values[3].decoded()
+    }
+    
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(value1)
+        try encoder.encode(value2)
+        try encoder.encode(value3, staticSize: 32)
+        try encoder.encode(value4, staticSize: 32)
+    }
+    
+    var encodableValues: [ABIType] { [value1, value2, value3, value4] }
 }
 
 fileprivate struct DynamicContentTuple: ABITuple {
