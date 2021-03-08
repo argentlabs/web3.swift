@@ -36,8 +36,12 @@ public class ABIEncoder {
             switch self {
             case .value(_, _, let staticLength):
                 return staticLength
-            case .container:
-                return 32
+            case .container(let values, let isDynamic, let size):
+                if isDynamic {
+                    return 32
+                } else {
+                    return values.map(\.staticLength).reduce(0, +)
+                }
             }
         }
         
