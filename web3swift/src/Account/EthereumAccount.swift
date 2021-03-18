@@ -9,7 +9,7 @@
 import Foundation
 
 protocol EthereumAccountProtocol {
-    var address: String { get }
+    var address: EthereumAddress { get }
     
     // For Keystore handling
     init?(keyStorage: EthereumKeyStorageProtocol, keystorePassword: String) throws
@@ -40,7 +40,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         return self.publicKeyData.web3.hexString
     }()
     
-    public lazy var address: String = {
+    public lazy var address: EthereumAddress = {
         return KeyUtil.generateAddress(from: self.publicKeyData)
     }()
     

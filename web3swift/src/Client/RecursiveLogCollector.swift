@@ -27,7 +27,7 @@ struct RecursiveLogCollector {
     let ethClient: EthereumClient
 
     func getAllLogs(
-        addresses: [String]?,
+        addresses: [EthereumAddress]?,
         topics: Topics?,
         from: EthereumBlock,
         to: EthereumBlock
@@ -62,7 +62,7 @@ struct RecursiveLogCollector {
     }
 
     private func getLogs(
-        addresses: [String]?,
+        addresses: [EthereumAddress]?,
         topics: Topics? = nil,
         from: EthereumBlock,
         to: EthereumBlock

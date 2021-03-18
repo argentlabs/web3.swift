@@ -48,7 +48,7 @@ class KeyUtilTests: XCTestCase {
         let publicKey = try! KeyUtil.generatePublicKey(from: privateKey)
         let address = KeyUtil.generateAddress(from: publicKey)
         
-        XCTAssertEqual(address, "0x751e735a83a8142c1b9dc722ef559b898f1d77fa")
+        XCTAssertEqual(address.value, "0x751e735a83a8142c1b9dc722ef559b898f1d77fa")
     }
   
 }

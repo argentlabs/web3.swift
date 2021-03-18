@@ -118,7 +118,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
 
 struct KeystoreFile: Codable {
     let crypto: KeystoreFileCrypto
-    let address: String
+    let address: EthereumAddress
     let version: Int
 }
 
