@@ -21,7 +21,7 @@ class EthereumAccountTests: XCTestCase {
     
     func testLoadAccountAndAddress() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        XCTAssertEqual(account.address.lowercased(), TestConfig.publicKey.lowercased(), "Failed to load private key. Ensure key is valid in TestConfig.swift")
+        XCTAssertEqual(account.address.value.lowercased(), TestConfig.publicKey.lowercased(), "Failed to load private key. Ensure key is valid in TestConfig.swift")
     }
     
     func testCreateAccount() {

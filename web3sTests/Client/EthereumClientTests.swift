@@ -43,7 +43,7 @@ class EthereumClientTests: XCTestCase {
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
         self.mainnetClient = EthereumClient(url: URL(string: TestConfig.mainnetClientUrl)!)
         self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        print("Public address: \(self.account?.address ?? "NONE")")
+        print("Public address: \(self.account?.address.value ?? "NONE")")
     }
     
     override func tearDown() {
@@ -52,7 +52,7 @@ class EthereumClientTests: XCTestCase {
     
     func testEthGetBalance() {
         let expectation = XCTestExpectation(description: "get remote balance")
-        client?.eth_getBalance(address: account?.address ?? "", block: .Latest, completion: { (error, balance) in
+        client?.eth_getBalance(address: account?.address ?? .zero, block: .Latest, completion: { (error, balance) in
             XCTAssertNotNil(balance, "Balance not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -63,7 +63,7 @@ class EthereumClientTests: XCTestCase {
     func testEthGetBalanceIncorrectAddress() {
         let expectation = XCTestExpectation(description: "get remote balance incorrect")
         
-        client?.eth_getBalance(address: "0xnig42niog2", block: .Latest, completion: { (error, balance) in
+        client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .Latest, completion: { (error, balance) in
             XCTAssertNotNil(error, "Balance error not available")
             expectation.fulfill()
         })
@@ -103,7 +103,7 @@ class EthereumClientTests: XCTestCase {
     
     func testEthGetCode() {
         let expectation = XCTestExpectation(description: "get contract code")
-        client?.eth_getCode(address: "0x112234455c3a32fd11230c42e7bccd4a84e02010", completion: { (error, code) in
+        client?.eth_getCode(address: EthereumAddress("0x112234455c3a32fd11230c42e7bccd4a84e02010"), completion: { (error, code) in
             XCTAssertNotNil(code, "Contract code not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -173,7 +173,7 @@ class EthereumClientTests: XCTestCase {
     func testSimpleEthGetLogs() {
         let expectation = XCTestExpectation(description: "get logs")
         
-        client?.eth_getLogs(addresses: ["0x23d0a442580c01e420270fba6ca836a8b2353acb"], topics: nil, fromBlock: .Earliest, toBlock: .Latest, completion: { (error, logs) in
+        client?.eth_getLogs(addresses: [EthereumAddress("0x23d0a442580c01e420270fba6ca836a8b2353acb")], topics: nil, fromBlock: .Earliest, toBlock: .Latest, completion: { (error, logs) in
             XCTAssertNotNil(logs, "Logs not available \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })

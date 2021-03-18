@@ -60,10 +60,10 @@ class KeyUtil {
         return publicKey
     }
     
-    static func generateAddress(from publicKey: Data) -> String {
+    static func generateAddress(from publicKey: Data) -> EthereumAddress {
         let hash = publicKey.web3.keccak256
         let address = hash.subdata(in: 12..<hash.count)
-        return address.web3.hexString
+        return EthereumAddress(address.web3.hexString)
     }
     
     static func sign(message: Data, with privateKey: Data, hashing: Bool) throws -> Data {

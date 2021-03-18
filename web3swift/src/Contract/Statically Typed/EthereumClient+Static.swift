@@ -59,7 +59,7 @@ public struct EventFilter {
 
 public extension EthereumClient {
     typealias EventsCompletion = (EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void
-    func getEvents(addresses: [String]?,
+    func getEvents(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,
@@ -70,7 +70,7 @@ public extension EthereumClient {
         }
     }
     
-    func getEvents(addresses: [String]?,
+    func getEvents(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,
@@ -82,7 +82,7 @@ public extension EthereumClient {
         }
     }
 
-    func getEvents(addresses: [String]?,
+    func getEvents(addresses: [EthereumAddress]?,
                    topics: [String?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,
@@ -97,7 +97,7 @@ public extension EthereumClient {
                   completion: completion)
     }
     
-    func getEvents(addresses: [String]?,
+    func getEvents(addresses: [EthereumAddress]?,
                    topics: [String?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,

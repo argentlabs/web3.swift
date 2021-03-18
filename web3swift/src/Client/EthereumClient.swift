@@ -17,16 +17,16 @@ public protocol EthereumClientProtocol {
     func net_version(completion: @escaping((EthereumClientError?, EthereumNetwork?) -> Void))
     func eth_gasPrice(completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_blockNumber(completion: @escaping((EthereumClientError?, Int?) -> Void))
-    func eth_getBalance(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_getCode(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
+    func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
+    func eth_getCode(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_getTransactionCount(address: String, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
+    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
     func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void))
     func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
     func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
-    func eth_getLogs(addresses: [String]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
+    func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
+    func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
 }
 
@@ -136,8 +136,8 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getBalance(address: String, block: EthereumBlock, completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getBalance", params: [address, block.stringValue], receive: String.self) { (error, response) in
+    public func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
+        EthereumRPC.execute(session: session, url: url, method: "eth_getBalance", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
             if let resString = response as? String, let balanceInt = BigUInt(hex: resString.web3.noHexPrefix) {
                 completion(nil, balanceInt)
             } else {
@@ -146,8 +146,8 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getCode(address: String, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, String?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address, block.stringValue], receive: String.self) { (error, response) in
+    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, String?) -> Void)) {
+        EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)
             } else {
@@ -265,8 +265,8 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getTransactionCount(address: String, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address, block.stringValue], receive: String.self) { (error, response) in
+    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
+        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
             if let resString = response as? String {
                 let count = Int(hex: resString)
                 completion(nil, count)
@@ -343,15 +343,15 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getLogs(addresses: [String]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
         eth_getLogs(addresses: addresses, topics: topics.map(Topics.plain), fromBlock: from, toBlock: to, completion: completion)
     }
     
-    public func eth_getLogs(addresses: [String]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
         eth_getLogs(addresses: addresses, topics: topics.map(Topics.composed), fromBlock: from, toBlock: to, completion: completion)
     }
 
-    private func eth_getLogs(addresses: [String]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
         DispatchQueue.global(qos: .default)
             .async {
                 let result = RecursiveLogCollector(ethClient: self)
@@ -366,12 +366,12 @@ public class EthereumClient: EthereumClientProtocol {
             }
     }
 
-    internal func getLogs(addresses: [String]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void)) {
+    internal func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void)) {
 
         struct CallParams: Encodable {
             var fromBlock: String
             var toBlock: String
-            let address: [String]?
+            let address: [EthereumAddress]?
             let topics: Topics?
         }
 
