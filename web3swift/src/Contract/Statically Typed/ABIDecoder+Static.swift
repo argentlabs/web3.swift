@@ -35,6 +35,29 @@ extension ABIDecoder {
             
             return parsed
         }
+        
+        public func decodedTupleArray<T: ABITuple>() throws -> [T] {
+            let parse = T.parser
+            
+            let tupleElements = T.types.count
+            let size = entry.count / tupleElements
+            
+            var parsed = [T]()
+            var leftElements = entry
+            while leftElements.count >= tupleElements {
+                let slice = Array(leftElements[0..<tupleElements])
+                if let abc = try parse(slice) as? T {
+                    parsed.append(abc)
+                }
+                leftElements = Array(leftElements.dropFirst(tupleElements))
+            }
+            
+            guard parsed.count == size else {
+                throw ABIError.invalidValue
+            }
+            
+            return parsed
+        }
     }
     
     public static func decodeData(_ data: RawABI, types: [ABIType.Type], asArray: Bool = false) throws -> [DecodedValue] {

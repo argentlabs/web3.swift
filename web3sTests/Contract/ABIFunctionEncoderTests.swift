@@ -283,7 +283,7 @@ class ABIFunctionEncoderTests: XCTestCase {
     }
 }
 
-fileprivate struct SimpleTuple: ABITuple {
+struct SimpleTuple: ABITuple, Equatable {
     static var types: [ABIType.Type] { [EthereumAddress.self, BigUInt.self] }
     
     var address: EthereumAddress
@@ -308,7 +308,7 @@ fileprivate struct SimpleTuple: ABITuple {
     var encodableValues: [ABIType] { [address, amount] }
 }
 
-fileprivate struct LongTuple: ABITuple {
+struct LongTuple: ABITuple, Equatable {
     static var types: [ABIType.Type] { [String.self, String.self, Data32.self, Data32.self] }
     
     var value1: String
@@ -343,7 +343,7 @@ fileprivate struct LongTuple: ABITuple {
     var encodableValues: [ABIType] { [value1, value2, value3, value4] }
 }
 
-fileprivate struct DynamicContentTuple: ABITuple {
+struct DynamicContentTuple: ABITuple, Equatable {
     static var types: [ABIType.Type] { [String.self] }
     
     var message: String
@@ -425,7 +425,7 @@ fileprivate struct RelayerExecute: ABIFunction {
     }
 }
 
-fileprivate struct NumberTuple: ABITuple {
+struct NumberTuple: ABITuple, Equatable {
     func encode(to encoder: ABIFunctionEncoder) throws {
         try encoder.encode(value)
     }
@@ -445,7 +445,7 @@ fileprivate struct NumberTuple: ABITuple {
     var encodableValues: [ABIType] { [value] }
 }
 
-fileprivate struct TupleOfTuples: ABITuple {
+struct TupleOfTuples: ABITuple {
     func encode(to encoder: ABIFunctionEncoder) throws {
         try encoder.encode(value1)
         try encoder.encode(value2)

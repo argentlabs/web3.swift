@@ -125,6 +125,15 @@ extension ABIRawType: RawRepresentable {
         }
     }
     
+    var isTuple: Bool {
+        switch self {
+        case .Tuple:
+            return true
+        default:
+            return false
+        }
+    }
+    
     var isPaddedInDynamic: Bool {
         switch self {
         case .FixedUInt, .FixedInt:
@@ -155,6 +164,8 @@ extension ABIRawType: RawRepresentable {
         switch self {
         case .FixedArray(let type, let size):
             return type.memory * size
+        case .Tuple(let types):
+            return types.map(\.memory).reduce(0, +)
         default:
             return 32
         }

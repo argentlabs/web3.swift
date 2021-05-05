@@ -147,18 +147,45 @@ public class ABIDecoder {
             
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)
             return result
-        case .Tuple:
-            throw ABIError.notCurrentlySupported
+        case .Tuple(let types):
+            var result: [String] = []
+            
+            if type.isDynamic {
+                guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first else {
+                    throw ABIError.invalidValue
+                }
+
+                let tail = Array(data.dropFirst(Int(hex: offsetHex) ?? offset))
+                var newOffset = 0
+                for type in types {
+                    result += try decode(
+                        tail,
+                        forType: type,
+                        offset: newOffset)
+                    newOffset += type.memory
+                }
+
+                return result
+            } else {
+                var newOffset = offset
+                for type in types {
+                    result += try decode(
+                        Array(data.dropFirst(newOffset)),
+                        forType: type,
+                        offset: 0)
+                    newOffset += type.memory
+                }
+                
+                return result
+            }
         }
     }
     
     private static func deepDecode(data: [UInt8], type: ABIRawType, result: inout [String], offset: inout Int, size: inout Int) throws -> Void {
         if size < 1 { return }
         
-        guard let stringValue = (try decode(data, forType: type, offset: offset)).first else {
-            throw ABIError.invalidValue
-        }
-        result.append(stringValue)
+        let decoded = try decode(data, forType: type, offset: offset)
+        result.append(contentsOf: decoded)
         offset += type.memory
         size -= 1
         

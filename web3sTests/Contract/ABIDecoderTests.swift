@@ -309,5 +309,71 @@ class ABIDecoderTests: XCTestCase {
             print(error.localizedDescription)
         }
     }
+    
+    func test_GivenSimpleTuple_ThenDecodesCorrectly() {
+        do {
+            let value = try ABIDecoder.decodeData("0x00000000000000000000000064d0ea4fc60f27e74f1a70aa6f39d403bbe56793000000000000000000000000000000000000000000000000000000000000001e", types: [SimpleTuple.self])
+            
+            XCTAssertEqual(try value[0].decoded(), SimpleTuple(address: EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793"), amount: BigUInt(30)))
+        } catch {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_testGivenDynamicContentTuple_ThenDecodesCorrectly() {
+        do {
+            let value = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000036162630000000000000000000000000000000000000000000000000000000000", types: [DynamicContentTuple.self])
+            
+            XCTAssertEqual(try value[0].decoded(), DynamicContentTuple(message: "abc"))
+        } catch {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_testGivenLongTuple_ThenDecodesCorrectly() {
+        do {
+            let value = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001007efef35dcd300eec8819c4ce5cb6b57be685254d583954273c5cc16edee83790ba42a7d804d9eff383efb1864514f5f15c82f1c333a777dd8f76dba1c1977029000000000000000000000000000000000000000000000000000000000000005668747470733a2f2f697066732e666c65656b2e636f2f697066732f62616679626569623774726c746c66353637647171336a766f6b37336b3776706e6b7864713367663665766a326c74657a7a7a7a6871756336656100000000000000000000000000000000000000000000000000000000000000000000000000000000005668747470733a2f2f697066732e666c65656b2e636f2f697066732f62616679626569657a706165676378796c74707733716a6d78746678716961646471627264727a6f79766d62616768716468776875756c6963697900000000000000000000", types: [LongTuple.self])
+            
+            XCTAssertEqual(try value[0].decoded(), LongTuple(value1: "https://ipfs.fleek.co/ipfs/bafybeib7trltlf567dqq3jvok73k7vpnkxdq3gf6evj2ltezzzzhquc6ea",
+                                                             value2: "https://ipfs.fleek.co/ipfs/bafybeiezpaegcxyltpw3qjmxtfxqiaddqbrdrzoyvmbaghqdhwhuuliciy",
+                                                             value3: Data(hex: "0x7efef35dcd300eec8819c4ce5cb6b57be685254d583954273c5cc16edee83790")!,
+                                                             value4: Data(hex: "0xba42a7d804d9eff383efb1864514f5f15c82f1c333a777dd8f76dba1c1977029")!))
+        } catch {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_testGivenArrayOfTuples_ThenDecodesCorrectly() {
+        do {
+            let value = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000064d0ea4fc60f27e74f1a70aa6f39d403bbe56793000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000003c1bd6b420448cf16a389c8b0115ccb3660bb8540000000000000000000000000000000000000000000000000000000000000078", types: [ABIArray<SimpleTuple>.self])
+            
+            XCTAssertEqual(try value[0].decodedTupleArray(), [
+                            SimpleTuple(address: EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"), amount: 30),
+                            SimpleTuple(address: EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"), amount: 120)])
+        } catch {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
+    
+    func test_GivenArrayOfLongTuples_WhenHasOneEntry_ThenDecodesCorrectly() {
+        do {
+            let value = try ABIDecoder.decodeData("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001007efef35dcd300eec8819c4ce5cb6b57be685254d583954273c5cc16edee83790ba42a7d804d9eff383efb1864514f5f15c82f1c333a777dd8f76dba1c1977029000000000000000000000000000000000000000000000000000000000000005668747470733a2f2f697066732e666c65656b2e636f2f697066732f62616679626569623774726c746c66353637647171336a766f6b37336b3776706e6b7864713367663665766a326c74657a7a7a7a6871756336656100000000000000000000000000000000000000000000000000000000000000000000000000000000005668747470733a2f2f697066732e666c65656b2e636f2f697066732f62616679626569657a706165676378796c74707733716a6d78746678716961646471627264727a6f79766d62616768716468776875756c6963697900000000000000000000", types: [ABIArray<LongTuple>.self])
+            
+            XCTAssertEqual(try value[0].decodedTupleArray(),
+                           [
+                               LongTuple(value1: "https://ipfs.fleek.co/ipfs/bafybeib7trltlf567dqq3jvok73k7vpnkxdq3gf6evj2ltezzzzhquc6ea",
+                                                     value2: "https://ipfs.fleek.co/ipfs/bafybeiezpaegcxyltpw3qjmxtfxqiaddqbrdrzoyvmbaghqdhwhuuliciy",
+                                                     value3: Data(hex: "0x7efef35dcd300eec8819c4ce5cb6b57be685254d583954273c5cc16edee83790")!,
+                                                     value4: Data(hex: "0xba42a7d804d9eff383efb1864514f5f15c82f1c333a777dd8f76dba1c1977029")!)
+                               
+                           ])
+        } catch {
+            print(error.localizedDescription)
+            XCTFail()
+        }
+    }
 }
-
