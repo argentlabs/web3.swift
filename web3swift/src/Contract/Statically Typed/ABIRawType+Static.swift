@@ -123,8 +123,12 @@ extension ABITuple {
     }
     public static var parser: ParserFunction {
         return { data in
-            let first = data.first ?? ""
-            return try ABIDecoder.decode(first, to: String.self)
+            let values = data.map { ABIDecoder.DecodedValue(entry: [$0]) }
+            guard let decoded = try? self.init(values: values) else {
+                throw ABIError.invalidValue
+            }
+
+            return decoded
         }
     }
 }
