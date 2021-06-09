@@ -133,7 +133,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
 }
 
 public struct SignedTransaction {
-    let transaction: EthereumTransaction
+    public let transaction: EthereumTransaction
     let v: Int
     let r: Data
     let s: Data
@@ -151,7 +151,7 @@ public struct SignedTransaction {
         return RLP.encode(txArray)
     }
     
-    var hash: Data? {
+    public var hash: Data? {
         return raw?.web3.keccak256
     }
 }
