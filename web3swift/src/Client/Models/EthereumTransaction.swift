@@ -132,8 +132,8 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
     }
 }
 
-struct SignedTransaction {
-    let transaction: EthereumTransaction
+public struct SignedTransaction {
+    public let transaction: EthereumTransaction
     let v: Int
     let r: Data
     let s: Data
@@ -145,13 +145,13 @@ struct SignedTransaction {
         self.s = s.web3.strippingZeroesFromBytes
     }
     
-    var raw: Data? {
+    public var raw: Data? {
         let txArray: [Any?] = [transaction.nonce, transaction.gasPrice, transaction.gasLimit, transaction.to.value.web3.noHexPrefix, transaction.value, transaction.data, self.v, self.r, self.s]
 
         return RLP.encode(txArray)
     }
     
-    var hash: Data? {
+    public var hash: Data? {
         return raw?.web3.keccak256
     }
 }
