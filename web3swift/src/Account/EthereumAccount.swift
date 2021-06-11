@@ -23,7 +23,7 @@ protocol EthereumAccountProtocol {
     func sign(hex: String) throws -> Data
     func sign(message: Data) throws -> Data
     func sign(message: String) throws -> Data
-    func sign(_ transaction: EthereumTransaction) throws -> SignedTransaction
+    func sign(transaction: EthereumTransaction) throws -> SignedTransaction
 }
 
 public enum EthereumAccountError: Error {

@@ -11,6 +11,7 @@ import BigInt
 @testable import web3
 
 let tokenOwner = EthereumAddress("0x69F84b91E7107206E841748C2B52294A1176D45e")
+let previousOwner = EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793")
 let nonOwner = EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56792")
 let nftImageURL = URL(string: "https://ipfs.io/ipfs/QmUDJMmiJEsueLbr6jxh7vhSSFAvjfYTLC64hgkQm1vH2C/graph.svg")!
 let nftURL = URL(string: "https://ipfs.io/ipfs/QmUtKP7LnZnL2pWw2ERvNDndP9v5EPoJH7g566XNdgoRfE")!
@@ -71,7 +72,7 @@ class ERC721Tests: XCTestCase {
         waitForExpectations(timeout: 10)
     }
     
-    func test_GivenAddressWithTransfer_FindsTransferEvent() {
+    func test_GivenAddressWithTransfer_FindsInTransferEvent() {
         let expect = expectation(description: "Events")
         
         erc721.transferEventsTo(recipient: tokenOwner,
@@ -80,8 +81,26 @@ class ERC721Tests: XCTestCase {
                                 toBlock: .Number(
                                     6948276),
                                 completion: { (error, events) in
-            XCTAssertEqual(events?.first?.from, EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793"))
+            XCTAssertEqual(events?.first?.from, previousOwner)
             XCTAssertEqual(events?.first?.to, tokenOwner)
+            XCTAssertEqual(events?.first?.tokenId, 23)
+            expect.fulfill()
+        })
+        
+        waitForExpectations(timeout: 10)
+    }
+    
+    func test_GivenAddressWithTransfer_FindsOutTransferEvent() {
+        let expect = expectation(description: "Events")
+        
+        erc721.transferEventsFrom(sender: previousOwner,
+                                fromBlock: .Number(
+                                    6948276),
+                                toBlock: .Number(
+                                    6948276),
+                                completion: { (error, events) in
+            XCTAssertEqual(events?.first?.to, tokenOwner)
+            XCTAssertEqual(events?.first?.from, previousOwner)
             XCTAssertEqual(events?.first?.tokenId, 23)
             expect.fulfill()
         })

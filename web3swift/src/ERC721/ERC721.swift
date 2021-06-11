@@ -52,6 +52,29 @@ public class ERC721: ERC165 {
             }
         }
     }
+    
+    public func transferEventsFrom(sender: EthereumAddress,
+                                   fromBlock: EthereumBlock,
+                                   toBlock: EthereumBlock,
+                                   completion: @escaping((Error?, [ERC721Events.Transfer]?) -> Void)) {
+        guard let result = try? ABIEncoder.encode(sender).bytes, let sig = try? ERC721Events.Transfer.signature() else {
+            completion(EthereumSignerError.unknownError, nil)
+            return
+        }
+        
+        client.getEvents(addresses: nil,
+                         topics: [ sig, String(hexFromBytes: result)],
+                         fromBlock: fromBlock,
+                         toBlock: toBlock,
+                         eventTypes: [ERC721Events.Transfer.self]) { (error, events, unprocessedLogs) in
+            
+            if let events = events as? [ERC721Events.Transfer] {
+                return completion(error, events)
+            } else {
+                return completion(error ?? EthereumClientError.decodeIssue, nil)
+            }
+        }
+    }
 }
 
 public class ERC721Metadata: ERC721 {
