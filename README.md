@@ -63,7 +63,7 @@ function transfer(address recipient, uint256 amount) public returns (bool)
 then you can define an `ABIFunction` with corresponding encodable Swift types like so:
 
 ```swift
-public struct transfer: ABIFunction {
+public struct Transfer: ABIFunction {
     public static let name = "transfer"
     public let gasPrice: BigUInt? = nil
     public let gasLimit: BigUInt? = nil
