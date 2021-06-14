@@ -30,7 +30,7 @@ $ pod install
 
 Create an instance of `EthereumAccount`  with a `EthereumKeyStorage` provider. This provides a wrapper around your key for web3.swift to use. **NOTE** We recommend you implement your own KeyStorage provider, instead of relying on the provided `EthereumKeyLocalStorage` class. This is provided as an example for conformity to the `EthereumKeyStorageProtocol`.
 
-```bash
+```swift
 import web3
 
 
@@ -40,14 +40,14 @@ let account = try? EthereumAccount.create(keyStorage: keyStorage, keystorePasswo
 
 Create an instance of `EthereumClient`. This will then provide you access to a set of functions for interacting with the Blockchain.
 
-```
+```swift
 guard let clientUrl = URL(string: "https://an-infura-or-similar-url.com/123") else { return }
 let client = EthereumClient(url: clientUrl)
 ```
 
 You can then interact with the client methods, such as to get the current gas price:
 
-```
+```swift
 client.eth_gasPrice { (error, currentPrice) in
     print("The current gas price is \(currentPrice)")
 }
@@ -56,41 +56,42 @@ client.eth_gasPrice { (error, currentPrice) in
 ### Smart contracts: Static types
 
 Given a smart contract function ABI like ERC20 `transfer`:
-```
+```javascript
 function transfer(address recipient, uint256 amount) public returns (bool)
 ```
 
 then you can define an `ABIFunction` with corresponding encodable Swift types like so:
-```
-public struct transfer: ABIFunction {
-        public static let name = "transfer"
-        public let gasPrice: BigUInt? = nil
-        public let gasLimit: BigUInt? = nil
-        public var contract: EthereumAddress
-        public let from: EthereumAddress?
 
-        public let to: EthereumAddress
-        public let value: BigUInt
+```swift
+public struct Transfer: ABIFunction {
+    public static let name = "transfer"
+    public let gasPrice: BigUInt? = nil
+    public let gasLimit: BigUInt? = nil
+    public var contract: EthereumAddress
+    public let from: EthereumAddress?
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    to: EthereumAddress,
-                    value: BigUInt) {
-            self.contract = contract
-            self.from = from
-            self.to = to
-            self.value = value
-        }
+    public let to: EthereumAddress
+    public let value: BigUInt
 
-        public func encode(to encoder: ABIFunctionEncoder) throws {
-            try encoder.encode(to)
-            try encoder.encode(value)
-        }
+    public init(contract: EthereumAddress,
+                from: EthereumAddress? = nil,
+                to: EthereumAddress,
+                value: BigUInt) {
+        self.contract = contract
+        self.from = from
+        self.to = to
+        self.value = value
     }
+
+    public func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(to)
+        try encoder.encode(value)
+    }
+}
 ```
 
 This function can be used to generate contract call transactions to send with the client:
-```
+```swift
 let function = transfer(contract: EthereumAddress("0xtokenaddress"), from: EthereumAddress("0xfrom"), to: EthereumAddress("0xto"), value: 100)
 let transaction = try function.transaction()
 
@@ -112,7 +113,7 @@ The library provides some types and helpers to make interacting with web3 and Et
 
 All extensions are namespaced under '<type>'.web3. So for example, to convert an `Int` to a hex string:
 
-```
+```swift
 let gwei = 100
 let hexgwei = gwei.web3.hexString
 ```
