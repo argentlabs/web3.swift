@@ -14,6 +14,12 @@ import GenericJSON
 public struct TypedVariable: Codable, Equatable {
     let name: String
     let type: String
+
+    public init(name: String,
+                type: String) {
+        self.name = name
+        self.type = type
+    }
 }
 
 /// Typed data as per EIP712
@@ -22,6 +28,16 @@ public struct TypedData: Codable, Equatable {
     public let primaryType: String
     public let domain: JSON
     public let message: JSON
+
+    public init(types: [String : [TypedVariable]],
+                primaryType: String,
+                domain: JSON,
+                message: JSON) {
+        self.types = types
+        self.primaryType = primaryType
+        self.domain = domain
+        self.message = message
+    }
 }
 
 extension TypedData: CustomStringConvertible {
