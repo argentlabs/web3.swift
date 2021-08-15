@@ -368,72 +368,81 @@ class EthereumClientAsyncTests: XCTestCase {
         
         wait(for: [expectation], timeout: timeout)
     }
-//
-//    func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned() {
-//        let expectation = XCTestExpectation(description: "get events")
-//
-//        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
-//
-//        client?.getEvents(addresses: nil,
-//                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-//                          fromBlock: .Earliest,
-//                          toBlock: .Latest,
-//                          eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self]) { (error, events, logs) in
-//                            XCTAssertNil(error)
-//                            XCTAssertEqual(events.count, 4)
-//                            XCTAssertEqual(logs.count, 0)
-//                            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testGivenContractFilter_WhenMatchingSingleTransferEvents_OnlyMatchingSourceEventReturned() {
-//        let expectation = XCTestExpectation(description: "get events")
-//
-//        let to = try! ABIEncoder.encodeRaw("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
-//        let filters = [
-//            EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
-//        ]
-//
-//        client?.getEvents(addresses: nil,
-//                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-//                          fromBlock: .Earliest,
-//                          toBlock: .Latest,
-//                          matching: filters) { (error, events, logs) in
-//                            XCTAssertNil(error)
-//                            XCTAssertEqual(events.count, 1)
-//                            XCTAssertEqual(logs.count, 1)
-//                            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testGivenContractFilter_WhenMatchingMultipleTransferEvents_OnlyMatchingSourceEventsReturned() {
-//        let expectation = XCTestExpectation(description: "get events")
-//
-//        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
-//        let filters = [
-//            EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")]),
-//            EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
-//        ]
-//
-//        client?.getEvents(addresses: nil,
-//                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-//                          fromBlock: .Earliest,
-//                          toBlock: .Latest,
-//                          matching: filters) { (error, events, logs) in
-//                            XCTAssertNil(error)
-//                            XCTAssertEqual(events.count, 2)
-//                            XCTAssertEqual(logs.count, 2)
-//                            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func test_GivenDynamicArrayResponse_ThenCallReceivesData() {
+
+    func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned() async {
+        let expectation = XCTestExpectation(description: "get events")
+
+        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
+
+        do {
+            let (events, logs) = try await client!.getEvents(addresses: nil,
+                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                          fromBlock: .earliest,
+                          toBlock: .latest,
+                          eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self])
+        
+            XCTAssertEqual(events.count, 4)
+            XCTAssertEqual(logs.count, 0)
+            expectation.fulfill()
+            
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenContractFilter_WhenMatchingSingleTransferEvents_OnlyMatchingSourceEventReturned() async {
+        let expectation = XCTestExpectation(description: "get events")
+
+        let to = try! ABIEncoder.encodeRaw("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
+        let filters = [
+            EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
+        ]
+        
+        do {
+            let (events, logs) = try await client!.getEvents(addresses: nil,
+                              topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                              fromBlock: .earliest,
+                              toBlock: .latest,
+                              matching: filters)
+            
+            XCTAssertEqual(events.count, 1)
+            XCTAssertEqual(logs.count, 1)
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenContractFilter_WhenMatchingMultipleTransferEvents_OnlyMatchingSourceEventsReturned() async {
+        let expectation = XCTestExpectation(description: "get events")
+
+        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
+        let filters = [
+            EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")]),
+            EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
+        ]
+
+        do {
+            let (events, logs) = try await client!.getEvents(addresses: nil,
+                                                             topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                                                             fromBlock: .earliest,
+                                                             toBlock: .latest,
+                                                             matching: filters)
+           XCTAssertEqual(events.count, 2)
+           XCTAssertEqual(logs.count, 2)
+           expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+//    func test_GivenDynamicArrayResponse_ThenCallReceivesData() async {
 //        let expect = expectation(description: "call")
 //
 //        let function = GetGuardians(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"))
