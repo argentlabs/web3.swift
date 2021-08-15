@@ -122,7 +122,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await net_version()
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -143,7 +143,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_gasPrice()
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -164,7 +164,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_blockNumber()
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -188,7 +188,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getBalance(address: address, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -208,7 +208,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getCode(address: address, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -228,7 +228,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_estimateGas(transaction, withAccount: account)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -315,7 +315,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_sendRawTransaction(transaction, withAccount: account)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -352,7 +352,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getTransactionCount(address: address, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -372,7 +372,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getTransactionReceipt(txHash: txHash)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -393,7 +393,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getTransaction(byHash: txHash)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -414,7 +414,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_call(transaction, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -480,7 +480,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -496,7 +496,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getLogs(addresses: addresses, orTopics: topics, fromBlock: from, toBlock: to)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -513,7 +513,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -543,7 +543,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock)
                 completion(.success(result))
             } catch {
-                completion(.failure(error as! EthereumClientError))
+                completion(.failure(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue))
             }
         }
     }
@@ -584,7 +584,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let result = try await eth_getBlockByNumber(block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError, nil)
+                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
