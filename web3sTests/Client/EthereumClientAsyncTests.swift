@@ -1,38 +1,17 @@
 //
-//  EthereumClientTests.swift
+//  EthereumClientAsyncTests.swift
 //  web3sTests
 //
-//  Created by Matt Marshall on 09/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  Created by Ronald Mannak on 08/14/2021.
+//  Copyright © 2021 Starling Protocol Inc. All rights reserved.
 //
 
 import XCTest
 @testable import web3
 import BigInt
 
-struct TransferMatchingSignatureEvent: ABIEvent {
-    public static let name = "Transfer"
-    public static let types: [ABIType.Type] = [ EthereumAddress.self , EthereumAddress.self , BigUInt.self]
-    public static let typesIndexed = [true, true, false]
-    public let log: EthereumLog
-    
-    public let from: EthereumAddress
-    public let to: EthereumAddress
-    public let value: BigUInt
-    
-    public init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
-        try TransferMatchingSignatureEvent.checkParameters(topics, data)
-        self.log = log
-        
-        self.from = try topics[0].decoded()
-        self.to = try topics[1].decoded()
-        
-        self.value = try data[0].decoded()
-    }
-}
 
-
-class EthereumClientTests: XCTestCase {
+class EthereumClientAsyncTests: XCTestCase {
     var client: EthereumClient?
     var mainnetClient: EthereumClient?
     var account: EthereumAccount?
@@ -50,38 +29,28 @@ class EthereumClientTests: XCTestCase {
         super.tearDown()
     }
     
-    func testEthGetBalance() {
-        let expectation = XCTestExpectation(description: "get remote balance")
-        client?.eth_getBalance(address: account?.address ?? .zero, block: .Latest, completion: { (error, balance) in
-            XCTAssertNotNil(balance, "Balance not available: \(error?.localizedDescription ?? "no error")")
-            expectation.fulfill()
-        })
-        
-        wait(for: [expectation], timeout: timeout)
-    }
+//    func testEthGetBalance() {
+//        let expectation = XCTestExpectation(description: "get remote balance")
+//        client?.eth_getBalance(address: account?.address ?? .zero, block: .Latest, completion: { (error, balance) in
+//            XCTAssertNotNil(balance, "Balance not available: \(error?.localizedDescription ?? "no error")")
+//            expectation.fulfill()
+//        })
+//        
+//        wait(for: [expectation], timeout: timeout)
+//    }
+//    
+//    func testEthGetBalanceIncorrectAddress() {
+//        let expectation = XCTestExpectation(description: "get remote balance incorrect")
+//        
+//        client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .Latest, completion: { (error, balance) in
+//            XCTAssertNotNil(error, "Balance error not available")
+//            expectation.fulfill()
+//        })
+//        
+//        wait(for: [expectation], timeout: timeout)
+//    }
     
-    func testEthGetBalanceIncorrectAddress() {
-        let expectation = XCTestExpectation(description: "get remote balance incorrect")
-        
-        client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .Latest, completion: { (error, balance) in
-            XCTAssertNotNil(error, "Balance error not available")
-            expectation.fulfill()
-        })
-        
-        wait(for: [expectation], timeout: timeout)
-    }
-    
-    func testNetVersion() {
-        let expectation = XCTestExpectation(description: "get net version")
-        client?.net_version(completion: { (error, network) in
-            XCTAssertEqual(network, EthereumNetwork.Ropsten, "Network incorrect: \(error?.localizedDescription ?? "no error")")
-            expectation.fulfill()
-        })
-        
-        wait(for: [expectation], timeout: timeout)
-    }
-    
-    func testNetVersionAsync() async {
+    func testNetVersion() async {
         let expectation = XCTestExpectation(description: "get net version")
         do {
             let network = try await client!.net_version()
@@ -94,12 +63,15 @@ class EthereumClientTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-    func testEthGasPrice() {
+    func testEthGasPrice() async {
         let expectation = XCTestExpectation(description: "get gas price")
-        client?.eth_gasPrice(completion: { (error, gas) in
-            XCTAssertNotNil(gas, "Gas not available: \(error?.localizedDescription ?? "no error")")
+        do {
+            let gasPrice = try await client!.eth_gasPrice()
+            XCTAssertGreaterThan(gasPrice, 0)
             expectation.fulfill()
-        })
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
         
         wait(for: [expectation], timeout: timeout)
     }
@@ -443,97 +415,5 @@ class EthereumClientTests: XCTestCase {
         }
         
         waitForExpectations(timeout: 10)
-    }
-}
-
-struct GetGuardians: ABIFunction {
-    static let name = "getGuardians"
-    let contract = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
-    let from: EthereumAddress? = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
-    let gasPrice: BigUInt? = nil
-    let gasLimit: BigUInt? = nil
-    
-    struct Response: ABIResponse {
-        static var types: [ABIType.Type] = [ABIArray<EthereumAddress>.self]
-        let guardians: [EthereumAddress]
-        
-        init?(values: [ABIDecoder.DecodedValue]) throws {
-            self.guardians = try values[0].decodedArray()
-            
-        }
-    }
-    
-    let wallet: EthereumAddress
-    
-    func encode(to encoder: ABIFunctionEncoder) throws {
-        try encoder.encode(wallet)
-        
-    }
-}
-
-struct TransferToken: ABIFunction {
-    static let name = "transferToken"
-    let contract = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
-    let from: EthereumAddress? = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
-
-    let wallet: EthereumAddress
-    let token: EthereumAddress
-    let to: EthereumAddress
-    let amount: BigUInt
-    let data: Data
-    
-    let gasPrice: BigUInt?
-    let gasLimit: BigUInt?
-    
-    func encode(to encoder: ABIFunctionEncoder) throws {
-        try encoder.encode(wallet)
-        try encoder.encode(token)
-        try encoder.encode(to)
-        try encoder.encode(amount)
-        try encoder.encode(data)
-    }
-}
-
-struct InvalidMethodA: ABIFunction {
-    static let name = "invalidMethodCallBoolResponse"
-    let contract = EthereumAddress("0xed0439eacf4c4965ae4613d77a5c2efe10e5f183")
-    let from: EthereumAddress? = EthereumAddress("0xed0439eacf4c4965ae4613d77a5c2efe10e5f183")
-    let gasPrice: BigUInt? = nil
-    let gasLimit: BigUInt? = nil
-    
-    let param: EthereumAddress
-    
-    struct BoolResponse: ABIResponse {
-        static var types: [ABIType.Type] = [Bool.self]
-        let value: Bool
-
-        init?(values: [ABIDecoder.DecodedValue]) throws {
-            self.value = try values[0].decoded()
-        }
-    }
-
-    func encode(to encoder: ABIFunctionEncoder) throws {
-    }
-}
-
-struct InvalidMethodB: ABIFunction {
-    static let name = "invalidMethodCallBoolResponse"
-    let contract = EthereumAddress("0xC011A72400E58ecD99Ee497CF89E3775d4bd732F")
-    let from: EthereumAddress? = EthereumAddress("0xC011A72400E58ecD99Ee497CF89E3775d4bd732F")
-    let gasPrice: BigUInt? = nil
-    let gasLimit: BigUInt? = nil
-    
-    let param: EthereumAddress
-    
-    struct BoolResponse: ABIResponse {
-        static var types: [ABIType.Type] = [Bool.self]
-        let value: Bool
-
-        init?(values: [ABIDecoder.DecodedValue]) throws {
-            self.value = try values[0].decoded()
-        }
-    }
-
-    func encode(to encoder: ABIFunctionEncoder) throws {
     }
 }

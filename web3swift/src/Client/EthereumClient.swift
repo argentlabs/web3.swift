@@ -98,27 +98,46 @@ public class EthereumClient: EthereumClientProtocol {
         self.session.invalidateAndCancel()
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func net_version(completion: @escaping ((EthereumClientError?, EthereumNetwork?) -> Void)) {
-        let emptyParams: Array<Bool> = []
-        EthereumRPC.execute(session: session, url: url, method: "net_version", params: emptyParams, receive: String.self) { (error, response) in
-            if let resString = response as? String {
-                let network = EthereumNetwork.fromString(resString)
-                completion(nil, network)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+        async {
+            do {
+                let result = try await net_version()
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
             }
         }
     }
     
-    public func eth_gasPrice(completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
+    public func net_version() async throws -> EthereumNetwork {
         let emptyParams: Array<Bool> = []
-        EthereumRPC.execute(session: session, url: url, method: "eth_gasPrice", params: emptyParams, receive: String.self) { (error, response) in
-            if let hexString = response as? String {
-                completion(nil, BigUInt(hex: hexString))
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+        let response = try await EthereumRPC.execute(session: session, url: url, method: "net_version", params: emptyParams, receive: String.self)
+        guard let resString = response as? String else {
+            throw EthereumClientError.unexpectedReturnValue
+        }
+        return EthereumNetwork.fromString(resString)
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    public func eth_gasPrice(completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_gasPrice()
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
             }
         }
+    }
+    
+    public func eth_gasPrice() async throws -> BigUInt {
+        let emptyParams: Array<Bool> = []
+        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_gasPrice", params: emptyParams, receive: String.self)
+        guard let hexString = response as? String, let gasPrice = BigUInt(hex: hexString) else {
+            throw EthereumClientError.unexpectedReturnValue
+        }
+        return gasPrice
     }
     
     public func eth_blockNumber(completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
