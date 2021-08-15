@@ -553,7 +553,20 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
 
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_getBlockByNumber(block)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
+            }
+        }
+    }
+    
+    
+    public func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo {
         
         struct CallParams: Encodable {
             let block: EthereumBlock
@@ -568,13 +581,15 @@ public class EthereumClient: EthereumClientProtocol {
         
         let params = CallParams(block: block, fullTransactions: false)
         
-        EthereumRPC.execute(session: session, url: url, method: "eth_getBlockByNumber", params: params, receive: EthereumBlockInfo.self) { (error, response) in
-            if let blockData = response as? EthereumBlockInfo {
-                completion(nil, blockData)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+        do {
+            let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getBlockByNumber", params: params, receive: EthereumBlockInfo.self)
+            guard let blockData = response as? EthereumBlockInfo else {
+                throw EthereumClientError.unexpectedReturnValue
             }
-        }
+            return blockData
+        } catch {
+            throw EthereumClientError.unexpectedReturnValue
+        }        
     }
 }
 

@@ -286,82 +286,88 @@ class EthereumClientAsyncTests: XCTestCase {
 
         wait(for: [expectation], timeout: timeout)
     }
-//
-//    func testGivenGenesisBlock_ThenReturnsByNumber() {
-//        let expectation = XCTestExpectation(description: "get block by number")
-//
-//        client?.eth_getBlockByNumber(.Number(0)) { error, block in
-//            XCTAssertNil(error)
-//
-//            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 0)
-//            XCTAssertEqual(block?.transactions.count, 0)
-//            XCTAssertEqual(block?.number, .Number(0))
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testGivenLatestBlock_ThenReturnsByNumber() {
-//        let expectation = XCTestExpectation(description: "get block by number")
-//
-//        client?.eth_getBlockByNumber(.Latest) { error, block in
-//            XCTAssertNil(error)
-//            XCTAssertNotNil(block?.number.intValue)
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testGivenExistingBlock_ThenGetsBlockByNumber() {
-//        let expectation = XCTestExpectation(description: "get block by number")
-//
-//        client?.eth_getBlockByNumber(.Number(3415757)) { error, block in
-//            XCTAssertNil(error)
-//
-//            XCTAssertEqual(block?.number, .Number(3415757))
-//            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 1528711895)
-//            XCTAssertEqual(block?.transactions.count, 40)
-//            XCTAssertEqual(block?.transactions.first, "0x387867d052b3f89fb87937572891118aa704c1ba604c157bbd9c5a07f3a7e5cd")
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError() {
-//        let expectation = XCTestExpectation(description: "get block by number")
-//
-//        client?.eth_getBlockByNumber(.Number(Int.max)) { error, block in
-//            XCTAssertNotNil(error)
-//            XCTAssertNil(block)
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
 
-//
-//    func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned() {
-//        let expectation = XCTestExpectation(description: "get events")
-//
-//        let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
-//
-//        client?.getEvents(addresses: nil,
-//                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-//                          fromBlock: .Earliest,
-//                          toBlock: .Latest,
-//                          eventTypes: [ERC20Events.Transfer.self]) { (error, events, logs) in
-//            XCTAssertNil(error)
-//            XCTAssertEqual(events.count, 2)
-//            XCTAssertEqual(logs.count, 0)
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
+    func testGivenGenesisBlock_ThenReturnsByNumber() async {
+        let expectation = XCTestExpectation(description: "get block by number")
+
+        do {
+            let block = try await client!.eth_getBlockByNumber(.number(0))
+            XCTAssertEqual(block.timestamp.timeIntervalSince1970, 0)
+            XCTAssertEqual(block.transactions.count, 0)
+            XCTAssertEqual(block.number, .number(0))
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenLatestBlock_ThenReturnsByNumber() async {
+        let expectation = XCTestExpectation(description: "get block by number")
+
+        do {
+            let block = try await client!.eth_getBlockByNumber(.latest)
+            XCTAssert(block.number.intValue ?? 0 > 1)
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenExistingBlock_ThenGetsBlockByNumber() async {
+        let expectation = XCTestExpectation(description: "get block by number")
+
+        do {
+            let block = try await client!.eth_getBlockByNumber(.number(3415757))
+            XCTAssertEqual(block.number, .number(3415757))
+            XCTAssertEqual(block.timestamp.timeIntervalSince1970, 1528711895)
+            XCTAssertEqual(block.transactions.count, 40)
+            XCTAssertEqual(block.transactions.first, "0x387867d052b3f89fb87937572891118aa704c1ba604c157bbd9c5a07f3a7e5cd")
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError() async {
+        let expectation = XCTestExpectation(description: "get block by number")
+
+        do {
+            _ = try await client!.eth_getBlockByNumber(.number(Int.max))
+            XCTFail("fail: block should not exist")
+        } catch {
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned() async {
+        let expectation = XCTestExpectation(description: "get events")
+
+        do {
+            let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
+            let (events, logs) = try await client!.getEvents(
+                addresses: nil,
+                topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                fromBlock: .earliest,
+                toBlock: .latest,
+                eventTypes: [ERC20Events.Transfer.self])
+            
+            XCTAssertEqual(events.count, 2)
+            XCTAssertEqual(logs.count, 0)
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+        
+        wait(for: [expectation], timeout: timeout)
+    }
 //
 //    func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned() {
 //        let expectation = XCTestExpectation(description: "get events")
