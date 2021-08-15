@@ -446,54 +446,109 @@ public class EthereumClient: EthereumClientProtocol {
             } else {
                 throw EthereumClientError.unexpectedReturnValue
             }
-        }                
+        }
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
-        eth_getLogs(addresses: addresses, topics: topics.map(Topics.plain), fromBlock: from, toBlock: to, completion: completion)
+        async {
+            do {
+                let result = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
+            }
+        }
     }
     
+    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest) async throws -> [EthereumLog] {
+        return try await eth_getLogs(addresses: addresses, topics: topics.map(Topics.plain), fromBlock: from, toBlock: to)
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
-        eth_getLogs(addresses: addresses, topics: topics.map(Topics.composed), fromBlock: from, toBlock: to, completion: completion)
-    }
-
-    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
-        DispatchQueue.global(qos: .default)
-            .async {
-                let result = RecursiveLogCollector(ethClient: self)
-                    .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
-
-                switch result {
-                case .success(let logs):
-                    completion(nil, logs)
-                case .failure(let error):
-                    completion(error, nil)
-                }
+        async {
+            do {
+                let result = try await eth_getLogs(addresses: addresses, orTopics: topics, fromBlock: from, toBlock: to)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
             }
+        }
+    }
+    
+    
+    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest) async throws -> [EthereumLog] {
+        return try await eth_getLogs(addresses: addresses, topics: topics.map(Topics.composed), fromBlock: from, toBlock: to)
     }
 
-    internal func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void)) {
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
+            }
+        }
+    }
+    
+    
+    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock) async throws -> [EthereumLog] {
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .default)
+                .async {
+                    let result = RecursiveLogCollector(ethClient: self)
+                        .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
+                    
+                    switch result {
+                    case .success(let logs):
+                        continuation.resume(returning: logs)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+        }
+    }
 
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    internal func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void)) {
+        async {
+            do {
+                let result = try await getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error as! EthereumClientError))
+            }
+        }
+    }
+    
+    
+    internal func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog] {
+        
         struct CallParams: Encodable {
             var fromBlock: String
             var toBlock: String
             let address: [EthereumAddress]?
             let topics: Topics?
         }
-
+        
         let params = CallParams(fromBlock: fromBlock.stringValue, toBlock: toBlock.stringValue, address: addresses, topics: topics)
-
-        EthereumRPC.execute(session: session, url: url, method: "eth_getLogs", params: [params], receive: [EthereumLog].self) { (error, response) in
-            if let logs = response as? [EthereumLog] {
-                completion(.success(logs))
+        
+        do {
+            let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getLogs", params: [params], receive: [EthereumLog].self)
+            guard let logs = response as? [EthereumLog] else {
+                throw EthereumClientError.unexpectedReturnValue
+            }
+            return logs
+        } catch {
+            if let error = error as? JSONRPCError,
+               case let JSONRPCError.executionError(innerError) = error,
+               innerError.error.code == JSONRPCErrorCode.tooManyResults {
+                throw EthereumClientError.tooManyResults
             } else {
-                if let error = error as? JSONRPCError,
-                   case let .executionError(innerError) = error,
-                   innerError.error.code == JSONRPCErrorCode.tooManyResults {
-                    completion(.failure(.tooManyResults))
-                } else {
-                    completion(.failure(.unexpectedReturnValue))
-                }
+                throw EthereumClientError.unexpectedReturnValue
             }
         }
     }
