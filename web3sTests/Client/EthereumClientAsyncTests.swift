@@ -442,17 +442,13 @@ class EthereumClientAsyncTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
 
-    func test_GivenDynamicArrayResponse_ThenCallReceivesData() async {
+    func test_GivenDynamicArrayResponse_ThenCallReceivesData() async throws {
         let expectation = expectation(description: "call")
 
         let function = GetGuardians(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"))
-        do {
-            let response = try await function.call(withClient: self.client!, responseType: GetGuardians.Response.self)
-            XCTAssertEqual(response.guardians, [EthereumAddress("0x44fe11c90d2bcbc8267a0e56d55235ddc2b96c4f")])
-            expectation.fulfill()
-        } catch {
-            XCTFail("fail: \(error)")
-        }
+        let response = try await function.call(withClient: self.client!, responseType: GetGuardians.Response.self)
+        XCTAssertEqual(response.guardians, [EthereumAddress("0x44fe11c90d2bcbc8267a0e56d55235ddc2b96c4f")])
+        expectation.fulfill()
 
         wait(for: [expectation], timeout: timeout)
     }

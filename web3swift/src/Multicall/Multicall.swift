@@ -18,33 +18,43 @@ public struct Multicall {
         self.client = client
     }
 
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func aggregate(
         calls: [Call],
         completion: @escaping (Result<MulticallResponse, MulticallError>) -> Void
     ) {
-        guard
-            let network = client.network,
-            let contract = Contract.registryAddress(for: network)
-        else { return completion(.failure(MulticallError.contractUnavailable)) }
-
-        let function = Contract.Functions.aggregate(contract: contract, calls: calls)
-
-        function.call(withClient: client, responseType: Response.self) { (error, response) in
-            if let response = response {
-                guard calls.count == response.outputs.count
-                    else { fatalError("Outputs do not match the number of calls done") }
-
-                zip(calls, response.outputs)
-                    .forEach { call, output in
-                        try? call.handler?(output)
-                    }
-
-                completion(.success(response))
-            } else {
-                completion(.failure(MulticallError.executionFailed(error)))
+        async {
+            do {
+                let result = try await aggregate(calls: calls)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error as! Multicall.MulticallError))
             }
         }
     }
+    
+    
+    public func aggregate(calls: [Call]) async throws -> MulticallResponse {
+        
+            guard
+                let network = client.network,
+                let contract = Contract.registryAddress(for: network)
+            else { throw MulticallError.contractUnavailable }
+            
+            let function = Contract.Functions.aggregate(contract: contract, calls: calls)
+            
+            let response = try await function.call(withClient: client, responseType: Response.self)
+            
+            guard calls.count == response.outputs.count else {
+                fatalError("Outputs do not match the number of calls done")
+            }
+                
+            try zip(calls, response.outputs)
+                .forEach { call, output in
+                    try call.handler?(output)
+                }
+            return response
+        }
 }
 
 extension Multicall {
