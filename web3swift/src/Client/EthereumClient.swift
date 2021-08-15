@@ -34,7 +34,7 @@ public enum EthereumClientError: Error {
     case tooManyResults
     case executionError
     case unexpectedReturnValue
-    case noResultFound
+    case noResult
     case decodeIssue
     case encodeIssue
     case noInputData
@@ -326,45 +326,6 @@ public class EthereumClient: EthereumClientProtocol {
             throw EthereumClientError.unexpectedReturnValue
         }
         return resDataString
-        
-        
-//        return await withCheckedContinuation { continuation in
-//            concurrentQueue.addOperation {
-//                let group = DispatchGroup()
-//                group.enter()
-//                
-//                // Inject pending nonce
-//                self.eth_getTransactionCount(address: account.address, block: .pending) { (error, count) in
-//                    guard let nonce = count else {
-//                        group.leave()
-//                        return continuation.resume(returning: (EthereumClientError.unexpectedReturnValue, nil))
-//                    }
-//                    
-//                    var transaction1 = transaction
-//                    transaction1.nonce = nonce
-//                    
-//                    if transaction1.chainId == nil, let network = self.network {
-//                        transaction1.chainId = network.intValue
-//                    }
-//                    
-//                    guard let _ = transaction1.chainId, let signedTx = (try? account.sign(transaction: transaction1)), let transactionHex = signedTx.raw?.web3.hexString else {
-//                        group.leave()
-//                        return continuation.resume(returning: (EthereumClientError.encodeIssue, nil))
-//                    }
-//                    
-//                    EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { (error, response) in
-//                        group.leave()
-//                        if let resDataString = response as? String {
-//                            continuation.resume(returning: (nil, resDataString))
-//                        } else {
-//                            continuation.resume(returning: (EthereumClientError.unexpectedReturnValue, nil))
-//                        }
-//                    }
-//                    
-//                }
-//                group.wait()
-//            }
-//        }
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
@@ -379,7 +340,6 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    
     public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int {
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self)
         guard let resString = response as? String, let count = Int(hex: resString) else {
@@ -388,32 +348,64 @@ public class EthereumClient: EthereumClientProtocol {
         return count
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func eth_getTransactionReceipt(txHash: String, completion: @escaping ((EthereumClientError?, EthereumTransactionReceipt?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionReceipt", params: [txHash], receive: EthereumTransactionReceipt.self) { (error, response) in
-            if let receipt = response as? EthereumTransactionReceipt {
-                completion(nil, receipt)
-            } else if let _ = response {
-                completion(EthereumClientError.noResultFound, nil)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+        async {
+            do {
+                let result = try await eth_getTransactionReceipt(txHash: txHash)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
             }
         }
     }
-    
-    public func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void)) {
         
-        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self) { (error, response) in
-            if let transaction = response as? EthereumTransaction {
-                completion(nil, transaction)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+    // FIXME: try throws JSONRPCError instead of EthereumClientError.
+    public func eth_getTransactionReceipt(txHash: String) async throws -> EthereumTransactionReceipt {
+        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionReceipt", params: [txHash], receive: EthereumTransactionReceipt.self)
+        guard let receipt = response as? EthereumTransactionReceipt else {
+            throw EthereumClientError.noResult
+        }
+        return receipt
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    public func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_getTransaction(byHash: txHash)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
             }
         }
     }
     
+    public func eth_getTransaction(byHash txHash: String) async throws -> EthereumTransaction {
+        
+        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self)
+        guard let transaction = response as? EthereumTransaction else {
+            throw EthereumClientError.unexpectedReturnValue
+        }
+        return transaction
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .latest, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_call(transaction, block: block)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
+            }
+        }
+    }
+    
+    
+    public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .latest) async throws -> String {
         guard let transactionData = transaction.data else {
-            return completion(EthereumClientError.noInputData, nil)
+            throw EthereumClientError.noInputData
         }
         
         struct CallParams: Encodable {
@@ -441,18 +433,20 @@ public class EthereumClient: EthereumClientProtocol {
         }
         
         let params = CallParams(from: transaction.from?.value, to: transaction.to.value, data: transactionData.web3.hexString, block: block.stringValue)
-        EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
-            if let resDataString = response as? String {
-                completion(nil, resDataString)
-            } else if
-                let error = error,
-                case let JSONRPCError.executionError(result) = error,
-                (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
-                completion(nil, "0x")
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+        do {
+            let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self)
+            guard let resDataString = response as? String else {
+                throw EthereumClientError.unexpectedReturnValue
             }
-        }
+            return resDataString
+        } catch {
+            if case let JSONRPCError.executionError(result) = error,
+                (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
+                return "0x"
+            } else {
+                throw EthereumClientError.unexpectedReturnValue
+            }
+        }                
     }
     
     public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {

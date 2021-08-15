@@ -156,41 +156,107 @@ class EthereumClientAsyncTests: XCTestCase {
 
         wait(for: [expectation], timeout: timeout)
     }
-//
-//    func testEthGetTransactionCountPending() {
-//        let expectation = XCTestExpectation(description: "get transaction receipt")
-//
-//        client?.eth_getTransactionCount(address: account!.address, block: .Pending, completion: { (error, count) in
-//            XCTAssertNotNil(count, "Transaction count not available: \(error?.localizedDescription ?? "no error")")
-//            expectation.fulfill()
-//        })
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testEthGetTransactionReceipt() {
-//        let expectation = XCTestExpectation(description: "get transaction receipt")
-//
-//        let txHash = "0xc51002441dc669ad03697fd500a7096c054b1eb2ce094821e68831a3666fc878"
-//        client?.eth_getTransactionReceipt(txHash: txHash, completion: { (error, receipt) in
-//            XCTAssertNotNil(receipt, "Transaction receipt not available: \(error?.localizedDescription ?? "no error")")
-//            expectation.fulfill()
-//        })
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testEthCall() {
-//        let expectation = XCTestExpectation(description: "send raw transaction")
-//
-//        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
-//        client?.eth_call(tx, block: .Latest, completion: { (error, txHash) in
-//            XCTAssertNotNil(txHash, "Transaction hash not available: \(error?.localizedDescription ?? "no error")")
-//            expectation.fulfill()
-//        })
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
+    
+    func testEthGetTransactionCountPending() async {
+        let expectation = XCTestExpectation(description: "get transaction receipt")
+        
+        do {
+            _ = try await client!.eth_getTransactionCount(address: account!.address, block: .pending)
+            expectation.fulfill()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testEthGetTransactionReceipt() async {
+        let expectation = XCTestExpectation(description: "get transaction receipt")
+
+        do {
+            let txHash = "0x9d7282cc7140ac23c709e07cf717bad25605dbc454f6ac22245989afd711e5ec"
+            let receipt = try await client!.eth_getTransactionReceipt(txHash: txHash)
+            XCTAssertEqual(receipt.transactionHash, "0x9d7282cc7140ac23c709e07cf717bad25605dbc454f6ac22245989afd711e5ec")
+            XCTAssertEqual(receipt.blockNumber, BigUInt(10797945))
+            expectation.fulfill()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func testEthGetInvalidTransactionReceipt() async {
+        let expectation = XCTestExpectation(description: "get transaction receipt")
+
+        do {
+            let txHash = "0x9d7282cc7140ac23c709e07cf717bad25605dbc454f6ac22245989afd711e5e1"
+            _ = try await client!.eth_getTransactionReceipt(txHash: txHash)
+            XCTFail("invalid receipt found")
+        } catch {
+            
+            if let error = error as? JSONRPCError, case .noResult = error {
+                expectation.fulfill()
+            } else if let error = error as? EthereumClientError, case .noResult = error {
+                expectation.fulfill()
+            } else {
+                XCTFail("fail: \(error)")
+            }
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenMinedTransactionHash_ThenGetsTransactionByHash() async {
+        let expectation = XCTestExpectation(description: "get transaction by hash")
+
+        do {
+            let transaction = try await client!.eth_getTransaction(byHash: "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
+            
+            XCTAssertEqual(transaction.from?.value, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
+            XCTAssertEqual(transaction.to.value, "0x37f13b5ffcc285d2452c0556724afb22e58b6bbe")
+            XCTAssertEqual(transaction.gas, "30400")
+            XCTAssertEqual(transaction.gasPrice, BigUInt(hex: "0x9184e72a000"))
+            XCTAssertEqual(transaction.nonce, 973253)
+            XCTAssertEqual(transaction.value, BigUInt(hex: "0x56bc75e2d63100000"))
+            XCTAssertEqual(transaction.blockNumber, EthereumBlock.number(3439303))
+            XCTAssertEqual(transaction.hash?.web3.hexString, "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
+
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash() async {
+        let expectation = XCTestExpectation(description: "get transaction by hash")
+
+        do {
+            let transaction = try await client!.eth_getTransaction(byHash: "0x01234")
+            XCTFail("getTransaction should have failed: \(transaction)")
+        } catch {
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testEthCall() async {
+        let expectation = XCTestExpectation(description: "send raw transaction")
+
+        do {
+            let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+            let txHash = try await client!.eth_call(tx, block: .latest)
+            XCTAssertNotNil(txHash)
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
 //
 //    func testSimpleEthGetLogs() {
 //        let expectation = XCTestExpectation(description: "get logs")
@@ -271,37 +337,7 @@ class EthereumClientAsyncTests: XCTestCase {
 //        wait(for: [expectation], timeout: timeout)
 //    }
 //
-//    func testGivenMinedTransactionHash_ThenGetsTransactionByHash() {
-//        let expectation = XCTestExpectation(description: "get transaction by hash")
-//
-//        client?.eth_getTransaction(byHash: "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af") { error, transaction in
-//            XCTAssertNil(error)
-//            XCTAssertEqual(transaction?.from?.value, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
-//            XCTAssertEqual(transaction?.to.value, "0x37f13b5ffcc285d2452c0556724afb22e58b6bbe")
-//            XCTAssertEqual(transaction?.gas, "30400")
-//            XCTAssertEqual(transaction?.gasPrice, BigUInt(hex: "0x9184e72a000"))
-//            XCTAssertEqual(transaction?.nonce, 973253)
-//            XCTAssertEqual(transaction?.value, BigUInt(hex: "0x56bc75e2d63100000"))
-//            XCTAssertEqual(transaction?.blockNumber, EthereumBlock.Number(3439303))
-//            XCTAssertEqual(transaction?.hash?.web3.hexString, "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
-//
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash() {
-//        let expectation = XCTestExpectation(description: "get transaction by hash")
-//
-//        client?.eth_getTransaction(byHash: "0x01234") { error, transaction in
-//            XCTAssertNotNil(error)
-//            XCTAssertNil(transaction)
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
+
 //
 //    func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned() {
 //        let expectation = XCTestExpectation(description: "get events")
