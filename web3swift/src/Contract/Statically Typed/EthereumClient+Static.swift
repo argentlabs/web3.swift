@@ -26,23 +26,47 @@ public extension ABIFunction {
         
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .latest, completion: @escaping((EthereumClientError?, T?) -> Void)) {
+        async {
+            do {
+                let result: T = try await call(withClient: client, responseType: responseType, block: block)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
+            }
+        }
+    }
+    
+    
+    func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .latest) async throws -> T {
         
         guard let tx = try? self.transaction() else {
-            return completion(EthereumClientError.encodeIssue, nil)
+            throw EthereumClientError.encodeIssue
         }
         
-        client.eth_call(tx, block: block) { (error, res) in
-            guard let res = res, error == nil else {
-                return completion(EthereumClientError.unexpectedReturnValue, nil)
-            }
-            
-            guard let response = (try? T(data: res)) else {
-                return completion(EthereumClientError.decodeIssue, nil)
-            }
-            
-            return completion(nil, response)
+        let res = try await client.eth_call(tx, block: block)
+        guard let response = (try? T(data: res)) else {
+            throw EthereumClientError.decodeIssue
         }
+        
+        return response
+//        return continuation.resume(returning: (nil, response))
+//
+//
+//        return await withCheckedContinuation { continuation in
+//            client.eth_call(tx, block: block) { (error, res) in
+//                guard let res1 = res, error == nil else {
+//                    return continuation.resume(returning: (EthereumClientError.unexpectedReturnValue, nil))
+//                }
+//
+//                guard let response = (try? T(data: res1)) else {
+//                    return continuation.resume(returning: (EthereumClientError.decodeIssue, nil))
+//                }
+//
+//                return continuation.resume(returning: (nil, response))
+//            }
+//        }
     }
 }
 

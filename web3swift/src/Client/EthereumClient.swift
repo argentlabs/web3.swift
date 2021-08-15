@@ -14,6 +14,7 @@ public protocol EthereumClientProtocol {
     init(url: URL)
     var network: EthereumNetwork? { get }
     
+    // completion handle versions (deprecated) 
     func net_version(completion: @escaping((EthereumClientError?, EthereumNetwork?) -> Void))
     func eth_gasPrice(completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_blockNumber(completion: @escaping((EthereumClientError?, Int?) -> Void))
@@ -28,6 +29,22 @@ public protocol EthereumClientProtocol {
     func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
+    
+    // async version
+    func net_version() async throws -> EthereumNetwork
+    func eth_gasPrice() async throws -> BigUInt
+    func eth_blockNumber() async throws -> Int
+    func eth_getBalance(address: EthereumAddress, block: EthereumBlock) async throws -> BigUInt
+    func eth_getCode(address: EthereumAddress, block: EthereumBlock) async throws -> String
+    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount) async throws -> BigUInt
+    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount) async throws -> String
+    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int
+    func eth_getTransaction(byHash txHash: String) async throws -> EthereumTransaction
+    func eth_getTransactionReceipt(txHash: String) async throws -> EthereumTransactionReceipt
+    func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock) async throws -> String
+    func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
+    func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
+    func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo
 }
 
 public enum EthereumClientError: Error {
@@ -402,7 +419,6 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    
     public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .latest) async throws -> String {
         guard let transactionData = transaction.data else {
             throw EthereumClientError.noInputData
@@ -433,6 +449,14 @@ public class EthereumClient: EthereumClientProtocol {
         }
         
         let params = CallParams(from: transaction.from?.value, to: transaction.to.value, data: transactionData.web3.hexString, block: block.stringValue)
+//        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self)
+//        guard let resDataString = response as? String else {
+//            throw EthereumClientError.unexpectedReturnValue
+//        }
+//        return resDataString
+        
+        // This code mimics Geth returning 0x in case of certain failures. Some code in the library still depends on it.
+        // https://github.com/ethereum/go-ethereum/pull/21083
         do {
             let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self)
             guard let resDataString = response as? String else {
@@ -589,7 +613,7 @@ public class EthereumClient: EthereumClientProtocol {
             return blockData
         } catch {
             throw EthereumClientError.unexpectedReturnValue
-        }        
+        }
     }
 }
 

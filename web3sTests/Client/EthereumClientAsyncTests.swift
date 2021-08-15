@@ -442,55 +442,57 @@ class EthereumClientAsyncTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
 
-//    func test_GivenDynamicArrayResponse_ThenCallReceivesData() async {
-//        let expect = expectation(description: "call")
-//
-//        let function = GetGuardians(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"))
-//        function.call(withClient: self.client!,
-//                      responseType: GetGuardians.Response.self) { (error, response) in
-//                        XCTAssertNil(error)
-//                        XCTAssertEqual(response?.guardians, [EthereumAddress("0x44fe11c90d2bcbc8267a0e56d55235ddc2b96c4f")])
-//                        expect.fulfill()
-//        }
-//
-//        waitForExpectations(timeout: 10)
-//    }
-//
-//    // This is how geth used to work up until a recent version
-//    // see https://github.com/ethereum/go-ethereum/pull/21083/
-//    // Used to return '0x' in response, and would fail decoding
-//    // We'll continue to support this as user of library (and Argent in our case)
-//    // works with this assumption.
-//    // NOTE: This behaviour will be removed at a later time to fail as expected
-//    // NOTE: At the time of writing, this test succeeds as-is in ropsten as nodes behaviour is different. That's why we use a mainnet check here
-//    func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWith0x() {
-//        let expect = expectation(description: "graceful_failure")
-//
-//        let function = InvalidMethodA(param: .zero)
-//
-//        function.call(withClient: self.mainnetClient!,
-//                      responseType: InvalidMethodA.BoolResponse.self) { (error, response) in
-//                        XCTAssertEqual(error, .decodeIssue)
-//                        XCTAssertNil(response)
-//                        expect.fulfill()
-//        }
-//
-//        waitForExpectations(timeout: 10)
-//    }
-//    func test_GivenFailingCallMethod_WhenCallingContract_ThenFailsWith0x() {
-//        let expect = expectation(description: "graceful_failure")
-//
-//        let function = InvalidMethodB(param: .zero)
-//
-//        function.call(withClient: self.mainnetClient!,
-//                      responseType: InvalidMethodB.BoolResponse.self) { (error, response) in
-//                        XCTAssertEqual(error, .decodeIssue)
-//                        XCTAssertNil(response)
-//                        expect.fulfill()
-//        }
-//
-//        waitForExpectations(timeout: 10)
-//    }
-//
+    func test_GivenDynamicArrayResponse_ThenCallReceivesData() async {
+        let expectation = expectation(description: "call")
+
+        let function = GetGuardians(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"))
+        do {
+            let response = try await function.call(withClient: self.client!, responseType: GetGuardians.Response.self)
+            XCTAssertEqual(response.guardians, [EthereumAddress("0x44fe11c90d2bcbc8267a0e56d55235ddc2b96c4f")])
+            expectation.fulfill()
+        } catch {
+            XCTFail("fail: \(error)")
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    // This is how geth used to work up until a recent version
+    // see https://github.com/ethereum/go-ethereum/pull/21083/
+    // Used to return '0x' in response, and would fail decoding
+    // We'll continue to support this as user of library (and Argent in our case)
+    // works with this assumption.
+    // NOTE: This behaviour will be removed at a later time to fail as expected
+    // NOTE: At the time of writing, this test succeeds as-is in ropsten as nodes behaviour is different. That's why we use a mainnet check here
+    func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWith0x() async {
+        let expectation = expectation(description: "graceful_failure")
+
+        let function = InvalidMethodA(param: .zero)
+
+        do {
+            _ = try await function.call(withClient: self.mainnetClient!, responseType: InvalidMethodA.BoolResponse.self)
+            XCTFail("this call should fail")
+        } catch {
+            XCTAssertEqual(error as? EthereumClientError, EthereumClientError.decodeIssue )
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+    func test_GivenFailingCallMethod_WhenCallingContract_ThenFailsWith0x() async {
+        let expectation = expectation(description: "graceful_failure")
+
+        let function = InvalidMethodB(param: .zero)
+
+        do {
+            _ = try await function.call(withClient: self.mainnetClient!, responseType: InvalidMethodB.BoolResponse.self)
+            XCTFail("this call should fail")
+        } catch {
+            XCTAssertEqual(error as? EthereumClientError, EthereumClientError.decodeIssue )
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
 
 }
