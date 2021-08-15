@@ -184,17 +184,39 @@ public class EthereumClient: EthereumClientProtocol {
         return balanceInt
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .latest, completion: @escaping((EthereumClientError?, String?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
-            if let resDataString = response as? String {
-                completion(nil, resDataString)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+        async {
+            do {
+                let result = try await eth_getCode(address: address, block: block)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
+            }
+        }
+    }
+        
+    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .latest) async throws -> String {
+        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self)
+        guard let resDataString = response as? String else {
+            throw EthereumClientError.unexpectedReturnValue
+        }
+        return resDataString
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_estimateGas(transaction, withAccount: account)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
             }
         }
     }
     
-    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount) async throws -> BigUInt {
         
         struct CallParams: Encodable {
             let from: String?
@@ -240,78 +262,130 @@ public class EthereumClient: EthereumClientProtocol {
             }
         }
         
-        let value: BigUInt?
+        let value1: BigUInt?
         if let txValue = transaction.value, txValue > .zero {
-            value = txValue
+            value1 = txValue
         } else {
-            value = nil
+            value1 = nil
         }
         
         let params = CallParams(from: transaction.from?.value,
                                 to: transaction.to.value,
                                 gas: transaction.gasLimit?.web3.hexString,
                                 gasPrice: transaction.gasPrice?.web3.hexString,
-                                value: value?.web3.hexString,
+                                value: value1?.web3.hexString,
                                 data: transaction.data?.web3.hexString)
-        EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
-            if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
-                completion(nil, gas)
-            } else if let error = error as? JSONRPCError, error.isExecutionError {
-                completion(EthereumClientError.executionError, nil)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
-            }
-        }
-    }
-    
-    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+        do {
+            let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self)
         
-        concurrentQueue.addOperation {
-            let group = DispatchGroup()
-            group.enter()
-            
-            // Inject pending nonce
-            self.eth_getTransactionCount(address: account.address, block: .pending) { (error, count) in
-                guard let nonce = count else {
-                    group.leave()
-                    return completion(EthereumClientError.unexpectedReturnValue, nil)
-                }
-                
-                var transaction = transaction
-                transaction.nonce = nonce
-                
-                if transaction.chainId == nil, let network = self.network {
-                    transaction.chainId = network.intValue
-                }
-                
-                guard let _ = transaction.chainId, let signedTx = (try? account.sign(transaction: transaction)), let transactionHex = signedTx.raw?.web3.hexString else {
-                    group.leave()
-                    return completion(EthereumClientError.encodeIssue, nil)
-                }
-                
-                EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { (error, response) in
-                    group.leave()
-                    if let resDataString = response as? String {
-                        completion(nil, resDataString)
-                    } else {
-                        completion(EthereumClientError.unexpectedReturnValue, nil)
-                    }
-                }
-                
+            guard let gasHex = response as? String, let gas = BigUInt(hex: gasHex) else {
+               throw EthereumClientError.unexpectedReturnValue
             }
-            group.wait()
+            return gas
+        } catch {
+            if let error = error as? JSONRPCError, error.isExecutionError {
+               throw EthereumClientError.executionError
+           } else {
+               throw EthereumClientError.unexpectedReturnValue
+           }
         }
     }
     
-    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
-            if let resString = response as? String {
-                let count = Int(hex: resString)
-                completion(nil, count)
-            } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_sendRawTransaction(transaction, withAccount: account)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
             }
         }
+    }
+    
+    
+    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount) async throws -> String {
+        
+        // Inject pending nonce
+        let nonce = try await eth_getTransactionCount(address: account.address, block: .pending)
+        
+        var transaction1 = transaction
+        transaction1.nonce = nonce
+        
+        if transaction1.chainId == nil, let network = self.network {
+            transaction1.chainId = network.intValue
+        }
+        
+        guard let _ = transaction1.chainId, let signedTx = (try? account.sign(transaction: transaction1)), let transactionHex = signedTx.raw?.web3.hexString else {
+            throw EthereumClientError.encodeIssue
+        }
+        
+        let response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self)
+        
+        guard let resDataString = response as? String else {
+            throw EthereumClientError.unexpectedReturnValue
+        }
+        return resDataString
+        
+        
+//        return await withCheckedContinuation { continuation in
+//            concurrentQueue.addOperation {
+//                let group = DispatchGroup()
+//                group.enter()
+//                
+//                // Inject pending nonce
+//                self.eth_getTransactionCount(address: account.address, block: .pending) { (error, count) in
+//                    guard let nonce = count else {
+//                        group.leave()
+//                        return continuation.resume(returning: (EthereumClientError.unexpectedReturnValue, nil))
+//                    }
+//                    
+//                    var transaction1 = transaction
+//                    transaction1.nonce = nonce
+//                    
+//                    if transaction1.chainId == nil, let network = self.network {
+//                        transaction1.chainId = network.intValue
+//                    }
+//                    
+//                    guard let _ = transaction1.chainId, let signedTx = (try? account.sign(transaction: transaction1)), let transactionHex = signedTx.raw?.web3.hexString else {
+//                        group.leave()
+//                        return continuation.resume(returning: (EthereumClientError.encodeIssue, nil))
+//                    }
+//                    
+//                    EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { (error, response) in
+//                        group.leave()
+//                        if let resDataString = response as? String {
+//                            continuation.resume(returning: (nil, resDataString))
+//                        } else {
+//                            continuation.resume(returning: (EthereumClientError.unexpectedReturnValue, nil))
+//                        }
+//                    }
+//                    
+//                }
+//                group.wait()
+//            }
+//        }
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
+        async {
+            do {
+                let result = try await eth_getTransactionCount(address: address, block: block)
+                completion(nil, result)
+            } catch {
+                completion(error as? EthereumClientError, nil)
+            }
+        }
+    }
+    
+    
+    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int {
+        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self)
+        guard let resString = response as? String, let count = Int(hex: resString) else {
+            throw EthereumClientError.unexpectedReturnValue
+        }
+        return count
     }
     
     public func eth_getTransactionReceipt(txHash: String, completion: @escaping ((EthereumClientError?, EthereumTransactionReceipt?) -> Void)) {

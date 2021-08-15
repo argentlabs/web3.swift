@@ -94,39 +94,68 @@ class EthereumClientAsyncTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
     
-//    func testEthGetCode() {
-//        let expectation = XCTestExpectation(description: "get contract code")
-//        client?.eth_getCode(address: EthereumAddress("0x112234455c3a32fd11230c42e7bccd4a84e02010"), completion: { (error, code) in
-//            XCTAssertNotNil(code, "Contract code not available: \(error?.localizedDescription ?? "no error")")
-//            expectation.fulfill()
-//        })
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testEthSendRawTransaction() {
-//        let expectation = XCTestExpectation(description: "send raw transaction")
-//
-//        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
-//
-//        self.client?.eth_sendRawTransaction(tx, withAccount: self.account!, completion: { (error, txHash) in
-//            XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
-//            expectation.fulfill()
-//        })
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
-//
-//    func testEthGetTransactionCount() {
-//        let expectation = XCTestExpectation(description: "get transaction receipt")
-//
-//        client?.eth_getTransactionCount(address: account!.address, block: .Latest, completion: { (error, count) in
-//            XCTAssertNotNil(count, "Transaction count not available: \(error?.localizedDescription ?? "no error")")
-//            expectation.fulfill()
-//        })
-//
-//        wait(for: [expectation], timeout: timeout)
-//    }
+    func testEthGetCode() async {
+        let expectation = XCTestExpectation(description: "get contract code")
+        do {
+            let code = try await client!.eth_getCode(address: EthereumAddress("0x112234455c3a32fd11230c42e7bccd4a84e02010"))
+            XCTAssertGreaterThan(code.count, 1)
+            expectation.fulfill()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
+    
+    func test_GivenValidTransaction_ThenEstimatesGas() async {
+        let expect = expectation(description: "estimateOK")
+        let function = TransferToken(wallet: EthereumAddress("0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F"),
+                                     token: EthereumAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
+                                     to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
+                                     amount: 1,
+                                     data: Data(),
+                                     gasPrice: 0,
+                                     gasLimit: 0)
+        do {
+            let gas = try await client!.eth_estimateGas(try! function.transaction(), withAccount: account!)
+            XCTAssert(gas > 0)
+            expect.fulfill()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+        wait(for: [expect], timeout: 10)    
+    }
+
+    func testEthSendRawTransaction() async {
+        let expectation = XCTestExpectation(description: "send raw transaction")
+
+        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+
+        do {
+            let txHash = try await self.client!.eth_sendRawTransaction(tx, withAccount: self.account!)
+            XCTAssert(txHash.count > 0)
+            expectation.fulfill()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+                                            
+        wait(for: [expectation], timeout: timeout)
+    }
+
+    func testEthGetTransactionCount() async {
+        let expectation = XCTestExpectation(description: "get transaction receipt")
+
+        do {
+            let count = try await client!.eth_getTransactionCount(address: account!.address, block: .latest)
+            XCTAssert(count > 0)
+            expectation.fulfill()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+        wait(for: [expectation], timeout: timeout)
+    }
 //
 //    func testEthGetTransactionCountPending() {
 //        let expectation = XCTestExpectation(description: "get transaction receipt")
@@ -407,21 +436,5 @@ class EthereumClientAsyncTests: XCTestCase {
 //        waitForExpectations(timeout: 10)
 //    }
 //
-//    func test_GivenValidTransaction_ThenEstimatesGas() {
-//        let expect = expectation(description: "estimateOK")
-//        let function = TransferToken(wallet: EthereumAddress("0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F"),
-//                                     token: EthereumAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
-//                                     to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
-//                                     amount: 1,
-//                                     data: Data(),
-//                                     gasPrice: 0,
-//                                     gasLimit: 0)
-//        client!.eth_estimateGas(try! function.transaction(), withAccount: account!) { (error, value) in
-//            XCTAssertNil(error)
-//            XCTAssert(value != 0)
-//            expect.fulfill()
-//        }
-//
-//        waitForExpectations(timeout: 10)
-//    }
+
 }

@@ -72,7 +72,7 @@ public class EthereumRPC {
         }
     }
     
-    
+    // TODO: Instead of Any, can't we return U?
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1) async throws -> Any {
         
         if type(of: params) == [Any].self {
