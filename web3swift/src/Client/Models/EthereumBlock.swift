@@ -9,27 +9,27 @@
 import Foundation
 
 public enum EthereumBlock: Hashable {
-    case Latest
-    case Earliest
-    case Pending
-    case Number(Int)
+    case latest
+    case earliest
+    case pending
+    case number(Int)
     
     public var stringValue: String {
         switch self {
-        case .Latest:
+        case .latest:
             return "latest"
-        case .Earliest:
+        case .earliest:
             return "earliest"
-        case .Pending:
+        case .pending:
             return "pending"
-        case .Number(let int):
+        case .number(let int):
             return int.web3.hexString
         }
     }
     
     public var intValue: Int? {
         switch self {
-        case .Number(let int):
+        case .number(let int):
             return int
         default:
             return nil
@@ -37,18 +37,18 @@ public enum EthereumBlock: Hashable {
     }
     
     public init(rawValue: Int) {
-        self = .Number(rawValue)
+        self = .number(rawValue)
     }
     
     public init(rawValue: String) {
         if rawValue == "latest" {
-            self = .Latest
+            self = .latest
         } else if rawValue == "earliest" {
-            self = .Earliest
+            self = .earliest
         } else if rawValue == "pending" {
-            self = .Pending
+            self = .pending
         } else {
-            self = .Number(Int(hex: rawValue) ?? 0)
+            self = .number(Int(hex: rawValue) ?? 0)
         }
     }
 }
@@ -73,21 +73,21 @@ extension EthereumBlock: Comparable {
     
     static public func < (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
         switch lhs {
-        case .Earliest:
+        case .earliest:
             return false
-        case .Latest:
-            return rhs != .Pending ? true : false
-        case .Pending:
+        case .latest:
+            return rhs != .pending ? true : false
+        case .pending:
             return true
-        case .Number(let lhsInt):
+        case .number(let lhsInt):
             switch rhs {
-            case .Earliest:
+            case .earliest:
                 return false
-            case .Latest:
+            case .latest:
                 return true
-            case .Pending:
+            case .pending:
                 return true
-            case .Number(let rhsInt):
+            case .number(let rhsInt):
                 return lhsInt < rhsInt
             }
         }

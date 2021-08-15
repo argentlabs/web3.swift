@@ -26,7 +26,7 @@ public extension ABIFunction {
         
     }
     
-    func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, T?) -> Void)) {
+    func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .latest, completion: @escaping((EthereumClientError?, T?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)

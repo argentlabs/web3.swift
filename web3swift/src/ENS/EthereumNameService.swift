@@ -49,7 +49,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             return
         }
 
-        client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
+        client.eth_call(registryTransaction, block: .latest, completion: { (error, resolverData) in
             guard let resolverData = resolverData else {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
@@ -68,7 +68,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                 return
             }
             
-            self.client.eth_call(addressTransaction, block: .Latest, completion: { (error, data) in
+            self.client.eth_call(addressTransaction, block: .latest, completion: { (error, data) in
                 guard let data = data, data != "0x" else {
                     return completion(EthereumNameServiceError.ensUnknown, nil)
                 }
@@ -98,7 +98,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             return
         }
 
-        client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
+        client.eth_call(registryTransaction, block: .latest, completion: { (error, resolverData) in
             guard let resolverData = resolverData else {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
@@ -116,7 +116,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                 return
             }
             
-            self.client.eth_call(addressTransaction, block: .Latest, completion: { (error, data) in
+            self.client.eth_call(addressTransaction, block: .latest, completion: { (error, data) in
                 guard let data = data, data != "0x" else {
                     return completion(EthereumNameServiceError.ensUnknown, nil)
                 }

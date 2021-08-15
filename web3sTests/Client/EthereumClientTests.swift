@@ -52,7 +52,7 @@ class EthereumClientTests: XCTestCase {
     
     func testEthGetBalance() {
         let expectation = XCTestExpectation(description: "get remote balance")
-        client?.eth_getBalance(address: account?.address ?? .zero, block: .Latest, completion: { (error, balance) in
+        client?.eth_getBalance(address: account?.address ?? .zero, block: .latest, completion: { (error, balance) in
             XCTAssertNotNil(balance, "Balance not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -63,7 +63,7 @@ class EthereumClientTests: XCTestCase {
     func testEthGetBalanceIncorrectAddress() {
         let expectation = XCTestExpectation(description: "get remote balance incorrect")
         
-        client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .Latest, completion: { (error, balance) in
+        client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .latest, completion: { (error, balance) in
             XCTAssertNotNil(error, "Balance error not available")
             expectation.fulfill()
         })
@@ -140,7 +140,7 @@ class EthereumClientTests: XCTestCase {
     func testEthGetTransactionCount() {
         let expectation = XCTestExpectation(description: "get transaction receipt")
         
-        client?.eth_getTransactionCount(address: account!.address, block: .Latest, completion: { (error, count) in
+        client?.eth_getTransactionCount(address: account!.address, block: .latest, completion: { (error, count) in
             XCTAssertNotNil(count, "Transaction count not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -151,7 +151,7 @@ class EthereumClientTests: XCTestCase {
     func testEthGetTransactionCountPending() {
         let expectation = XCTestExpectation(description: "get transaction receipt")
         
-        client?.eth_getTransactionCount(address: account!.address, block: .Pending, completion: { (error, count) in
+        client?.eth_getTransactionCount(address: account!.address, block: .pending, completion: { (error, count) in
             XCTAssertNotNil(count, "Transaction count not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -175,7 +175,7 @@ class EthereumClientTests: XCTestCase {
         let expectation = XCTestExpectation(description: "send raw transaction")
         
         let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
-        client?.eth_call(tx, block: .Latest, completion: { (error, txHash) in
+        client?.eth_call(tx, block: .latest, completion: { (error, txHash) in
             XCTAssertNotNil(txHash, "Transaction hash not available: \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -186,7 +186,7 @@ class EthereumClientTests: XCTestCase {
     func testSimpleEthGetLogs() {
         let expectation = XCTestExpectation(description: "get logs")
         
-        client?.eth_getLogs(addresses: [EthereumAddress("0x23d0a442580c01e420270fba6ca836a8b2353acb")], topics: nil, fromBlock: .Earliest, toBlock: .Latest, completion: { (error, logs) in
+        client?.eth_getLogs(addresses: [EthereumAddress("0x23d0a442580c01e420270fba6ca836a8b2353acb")], topics: nil, fromBlock: .earliest, toBlock: .latest, completion: { (error, logs) in
             XCTAssertNotNil(logs, "Logs not available \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
         })
@@ -198,7 +198,7 @@ class EthereumClientTests: XCTestCase {
         let expectation = XCTestExpectation(description: "get logs")
 
         // Deposit/Withdrawal event to specific address
-        client?.eth_getLogs(addresses: nil, orTopics: [["0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c", "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65"], ["0x000000000000000000000000655ef694b98e55977a93259cb3b708560869a8f3"]], fromBlock: .Number(6540313), toBlock: .Number(6540397), completion: { (error, logs) in
+        client?.eth_getLogs(addresses: nil, orTopics: [["0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c", "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65"], ["0x000000000000000000000000655ef694b98e55977a93259cb3b708560869a8f3"]], fromBlock: .number(6540313), toBlock: .number(6540397), completion: { (error, logs) in
             XCTAssertEqual(logs?.count, 2)
             XCTAssertNotNil(logs, "Logs not available \(error?.localizedDescription ?? "no error")")
             expectation.fulfill()
@@ -210,12 +210,12 @@ class EthereumClientTests: XCTestCase {
     func testGivenGenesisBlock_ThenReturnsByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
-        client?.eth_getBlockByNumber(.Number(0)) { error, block in
+        client?.eth_getBlockByNumber(.number(0)) { error, block in
             XCTAssertNil(error)
             
             XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 0)
             XCTAssertEqual(block?.transactions.count, 0)
-            XCTAssertEqual(block?.number, .Number(0))
+            XCTAssertEqual(block?.number, .number(0))
             expectation.fulfill()
         }
         
@@ -225,7 +225,7 @@ class EthereumClientTests: XCTestCase {
     func testGivenLatestBlock_ThenReturnsByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
-        client?.eth_getBlockByNumber(.Latest) { error, block in
+        client?.eth_getBlockByNumber(.latest) { error, block in
             XCTAssertNil(error)
             XCTAssertNotNil(block?.number.intValue)
             expectation.fulfill()
@@ -237,10 +237,10 @@ class EthereumClientTests: XCTestCase {
     func testGivenExistingBlock_ThenGetsBlockByNumber() {
         let expectation = XCTestExpectation(description: "get block by number")
         
-        client?.eth_getBlockByNumber(.Number(3415757)) { error, block in
+        client?.eth_getBlockByNumber(.number(3415757)) { error, block in
             XCTAssertNil(error)
             
-            XCTAssertEqual(block?.number, .Number(3415757))
+            XCTAssertEqual(block?.number, .number(3415757))
             XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 1528711895)
             XCTAssertEqual(block?.transactions.count, 40)
             XCTAssertEqual(block?.transactions.first, "0x387867d052b3f89fb87937572891118aa704c1ba604c157bbd9c5a07f3a7e5cd")
@@ -253,7 +253,7 @@ class EthereumClientTests: XCTestCase {
     func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError() {
         let expectation = XCTestExpectation(description: "get block by number")
         
-        client?.eth_getBlockByNumber(.Number(Int.max)) { error, block in
+        client?.eth_getBlockByNumber(.number(Int.max)) { error, block in
             XCTAssertNotNil(error)
             XCTAssertNil(block)
             expectation.fulfill()
@@ -273,7 +273,7 @@ class EthereumClientTests: XCTestCase {
             XCTAssertEqual(transaction?.gasPrice, BigUInt(hex: "0x9184e72a000"))
             XCTAssertEqual(transaction?.nonce, 973253)
             XCTAssertEqual(transaction?.value, BigUInt(hex: "0x56bc75e2d63100000"))
-            XCTAssertEqual(transaction?.blockNumber, EthereumBlock.Number(3439303))
+            XCTAssertEqual(transaction?.blockNumber, EthereumBlock.number(3439303))
             XCTAssertEqual(transaction?.hash?.web3.hexString, "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
             
             expectation.fulfill()
@@ -301,8 +301,8 @@ class EthereumClientTests: XCTestCase {
             
         client?.getEvents(addresses: nil,
                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                          fromBlock: .Earliest,
-                          toBlock: .Latest,
+                          fromBlock: .earliest,
+                          toBlock: .latest,
                           eventTypes: [ERC20Events.Transfer.self]) { (error, events, logs) in
             XCTAssertNil(error)
             XCTAssertEqual(events.count, 2)
@@ -320,8 +320,8 @@ class EthereumClientTests: XCTestCase {
         
         client?.getEvents(addresses: nil,
                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                          fromBlock: .Earliest,
-                          toBlock: .Latest,
+                          fromBlock: .earliest,
+                          toBlock: .latest,
                           eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self]) { (error, events, logs) in
                             XCTAssertNil(error)
                             XCTAssertEqual(events.count, 4)
@@ -342,8 +342,8 @@ class EthereumClientTests: XCTestCase {
         
         client?.getEvents(addresses: nil,
                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                          fromBlock: .Earliest,
-                          toBlock: .Latest,
+                          fromBlock: .earliest,
+                          toBlock: .latest,
                           matching: filters) { (error, events, logs) in
                             XCTAssertNil(error)
                             XCTAssertEqual(events.count, 1)
@@ -365,8 +365,8 @@ class EthereumClientTests: XCTestCase {
         
         client?.getEvents(addresses: nil,
                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                          fromBlock: .Earliest,
-                          toBlock: .Latest,
+                          fromBlock: .earliest,
+                          toBlock: .latest,
                           matching: filters) { (error, events, logs) in
                             XCTAssertNil(error)
                             XCTAssertEqual(events.count, 2)

@@ -60,7 +60,7 @@ extension EthereumLog: Codable {
         if let blockNumberString = try? values.decode(String.self, forKey: .blockNumber) {
             self.blockNumber = EthereumBlock(rawValue: blockNumberString)
         } else {
-            self.blockNumber = EthereumBlock.Earliest
+            self.blockNumber = EthereumBlock.earliest
         }
     }
     

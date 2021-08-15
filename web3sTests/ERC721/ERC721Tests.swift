@@ -76,9 +76,9 @@ class ERC721Tests: XCTestCase {
         let expect = expectation(description: "Events")
         
         erc721.transferEventsTo(recipient: tokenOwner,
-                                fromBlock: .Number(
+                                fromBlock: .number(
                                     6948276),
-                                toBlock: .Number(
+                                toBlock: .number(
                                     6948276),
                                 completion: { (error, events) in
             XCTAssertEqual(events?.first?.from, previousOwner)
@@ -94,9 +94,9 @@ class ERC721Tests: XCTestCase {
         let expect = expectation(description: "Events")
         
         erc721.transferEventsFrom(sender: previousOwner,
-                                fromBlock: .Number(
+                                fromBlock: .number(
                                     6948276),
-                                toBlock: .Number(
+                                toBlock: .number(
                                     6948276),
                                 completion: { (error, events) in
             XCTAssertEqual(events?.first?.to, tokenOwner)

@@ -72,7 +72,7 @@ class ERC20Tests: XCTestCase {
         let sig = try! ERC20Events.Transfer.signature()
         let topics = [ sig, result.hexString]
     
-        self.client?.getEvents(addresses: nil, topics: topics, fromBlock: .Earliest, toBlock: .Latest, eventTypes: [ERC20Events.Transfer.self], completion: { (error, events, unprocessed) in
+        self.client?.getEvents(addresses: nil, topics: topics, fromBlock: .earliest, toBlock: .latest, eventTypes: [ERC20Events.Transfer.self], completion: { (error, events, unprocessed) in
             XCTAssert(events.count > 0)
             expect.fulfill()
         })
@@ -82,7 +82,7 @@ class ERC20Tests: XCTestCase {
     func testGivenAddressWithInTransfers_ThenGetsTheTransferEvents() {
         let expect = expectation(description: "Get transfer events to")
         
-        erc20?.transferEventsTo(recipient: EthereumAddress("0x72e3b687805ef66bf2a1e6d9f03faf8b33f0267a"), fromBlock: .Earliest, toBlock: .Latest, completion: { (error, events) in
+        erc20?.transferEventsTo(recipient: EthereumAddress("0x72e3b687805ef66bf2a1e6d9f03faf8b33f0267a"), fromBlock: .earliest, toBlock: .latest, completion: { (error, events) in
             XCTAssert(events!.count > 0)
             expect.fulfill()
         })
@@ -93,7 +93,7 @@ class ERC20Tests: XCTestCase {
     func testGivenAddressWithoutInTransfers_ThenGetsNoTransferEvents() {
         let expect = expectation(description: "Get transfer events to")
         
-        erc20?.transferEventsTo(recipient: EthereumAddress("0x78eac6878f5ef99bf2b12698f03faf8b33f02676"), fromBlock: .Earliest, toBlock: .Latest, completion: { (error, events) in
+        erc20?.transferEventsTo(recipient: EthereumAddress("0x78eac6878f5ef99bf2b12698f03faf8b33f02676"), fromBlock: .earliest, toBlock: .latest, completion: { (error, events) in
             XCTAssertEqual(events?.count, 0)
             expect.fulfill()
         })
@@ -105,7 +105,7 @@ class ERC20Tests: XCTestCase {
     func testGivenAddressWithOutgoingEvents_ThenGetsTheTransferEvents() {
         let expect = expectation(description: "Get transfer events to")
         
-        erc20?.transferEventsFrom(sender: EthereumAddress("0x2FB78FA9842f20bfD515A41C3196C4b368bDbC48"), fromBlock: .Earliest, toBlock: .Latest, completion: { (error, events) in
+        erc20?.transferEventsFrom(sender: EthereumAddress("0x2FB78FA9842f20bfD515A41C3196C4b368bDbC48"), fromBlock: .earliest, toBlock: .latest, completion: { (error, events) in
             XCTAssertEqual(events?.first?.log.transactionHash, "0xfb6e0d7fdf8f9b97fe9b634cb5abc7041ee47a396191f23425955f9fda008efe")
             XCTAssertEqual(events?.first?.to, EthereumAddress("0xFe325C1E3396b2285d517B0CE2E3ffA472260Bce"))
             XCTAssertEqual(events?.first?.value, BigUInt(10).power(18))
@@ -119,7 +119,7 @@ class ERC20Tests: XCTestCase {
     func testGivenAddressWithoutOutgoingEvents_ThenGetsTheTransferEvents() {
         let expect = expectation(description: "Get transfer events to")
         
-        erc20?.transferEventsFrom(sender: EthereumAddress("0x78eac6878f5ef99bf2b12698f03faf8b33f02676"), fromBlock: .Earliest, toBlock: .Latest, completion: { (error, events) in
+        erc20?.transferEventsFrom(sender: EthereumAddress("0x78eac6878f5ef99bf2b12698f03faf8b33f02676"), fromBlock: .earliest, toBlock: .latest, completion: { (error, events) in
             XCTAssertEqual(events?.count, 0)
             expect.fulfill()
         })

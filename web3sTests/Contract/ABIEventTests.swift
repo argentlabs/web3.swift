@@ -24,8 +24,8 @@ class ABIEventTests: XCTestCase {
         
         client.getEvents(addresses: nil,
                          topics: [try? EnabledStaticCall.signature(),  String(hexFromBytes: encodedAddress), nil],
-                         fromBlock: .Number(8386245),
-                         toBlock: .Number(8386245),
+                         fromBlock: .number(8386245),
+                         toBlock: .number(8386245),
                          eventTypes: [EnabledStaticCall.self]) { (error, events, logs) in
                             XCTAssertNil(error)
                             let event = events.first as? EnabledStaticCall
@@ -46,9 +46,9 @@ class ABIEventTests: XCTestCase {
         
         client.getEvents(addresses: nil,
                          topics: [try? UpgraderRegistered.signature()],
-                         fromBlock: .Number(
+                         fromBlock: .number(
                          8110676 ),
-                         toBlock: .Number(
+                         toBlock: .number(
                          8110676 ),
                          eventTypes: [UpgraderRegistered.self]) { (error, events, logs) in
                             XCTAssertNil(error)

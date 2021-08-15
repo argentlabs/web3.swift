@@ -32,7 +32,7 @@ class ENSTests: XCTestCase {
             
             let tx = try function.transaction()
             
-            client?.eth_call(tx, block: .Latest, completion: { (error, dataStr) in
+            client?.eth_call(tx, block: .latest, completion: { (error, dataStr) in
                 guard let dataStr = dataStr else {
                     XCTFail()
                     expect.fulfill()
