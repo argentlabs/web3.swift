@@ -15,14 +15,24 @@ public class ERC165 {
         self.client = client
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func supportsInterface(contract: EthereumAddress,
                                   id: Data,
                                   completion: @escaping((Error?, Bool?) -> Void)) {
-        let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
-        function.call(withClient: self.client,
-                      responseType: ERC165Responses.supportsInterfaceResponse.self) { (error, response) in
-            return completion(error, response?.supported)
+        async {
+            do {
+                let result = try await supportsInterface(contract: contract, id: id)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
+    }
+    
+    public func supportsInterface(contract: EthereumAddress, id: Data) async throws -> Bool {
+        let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
+        let response = try await function.call(withClient: self.client, responseType: ERC165Responses.supportsInterfaceResponse.self)
+        return response.supported
     }
 
 }
