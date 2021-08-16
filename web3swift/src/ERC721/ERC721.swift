@@ -10,70 +10,104 @@ import Foundation
 import BigInt
 
 public class ERC721: ERC165 {
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func balanceOf(contract: EthereumAddress,
                           address: EthereumAddress,
                           completion: @escaping((Error?, BigUInt?) -> Void)) {
+        async {
+            do {
+                let result = try await balanceOf(contract: contract, address: address)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
+        }
+    }
+    
+    public func balanceOf(contract: EthereumAddress,
+                          address: EthereumAddress) async throws -> BigUInt {
         let function = ERC721Functions.balanceOf(contract: contract, owner: address)
-        function.call(withClient: client,
-                      responseType: ERC721Responses.balanceResponse.self) { (error, response) in
-                        return completion(error, response?.value)
+        let response = try await function.call(withClient: client, responseType: ERC721Responses.balanceResponse.self)
+        return response.value
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    public func ownerOf(contract: EthereumAddress,
+                        tokenId: BigUInt,
+                        completion: @escaping((Error?, EthereumAddress?) -> Void)) {
+        async {
+            do {
+                let result = try await ownerOf(contract: contract, tokenId: tokenId)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
     }
     
     public func ownerOf(contract: EthereumAddress,
-                        tokenId: BigUInt,
-                        completion: @escaping((Error?, EthereumAddress?) -> Void)) {
+                        tokenId: BigUInt) async throws -> EthereumAddress {
         let function = ERC721Functions.ownerOf(contract: contract, tokenId: tokenId)
-        function.call(withClient: client,
-                      responseType: ERC721Responses.ownerResponse.self) { (error, response) in
-                        return completion(error, response?.value)
-        }
+        let response = try await function.call(withClient: client, responseType: ERC721Responses.ownerResponse.self)
+        return response.value
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func transferEventsTo(recipient: EthereumAddress,
                                  fromBlock: EthereumBlock,
                                  toBlock: EthereumBlock,
                                  completion: @escaping((Error?, [ERC721Events.Transfer]?) -> Void)) {
-        guard let result = try? ABIEncoder.encode(recipient).bytes, let sig = try? ERC721Events.Transfer.signature() else {
-            completion(EthereumSignerError.unknownError, nil)
-            return
-        }
-        
-        client.getEvents(addresses: nil,
-                         topics: [ sig, nil, String(hexFromBytes: result)],
-                         fromBlock: fromBlock,
-                         toBlock: toBlock,
-                         eventTypes: [ERC721Events.Transfer.self]) { (error, events, unprocessedLogs) in
-            
-            if let events = events as? [ERC721Events.Transfer] {
-                return completion(error, events)
-            } else {
-                return completion(error ?? EthereumClientError.decodeIssue, nil)
+        async {
+            do {
+                let result = try await transferEventsTo(recipient: recipient, fromBlock: fromBlock, toBlock: toBlock)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
             }
         }
     }
     
+    
+    public func transferEventsTo(recipient: EthereumAddress,
+                                 fromBlock: EthereumBlock = .earliest,
+                                 toBlock: EthereumBlock = .latest) async throws -> [ERC721Events.Transfer] {
+        let result = try ABIEncoder.encode(recipient).bytes
+        let sig = try ERC721Events.Transfer.signature()
+        
+        let (events, _) = try await client.getEvents(addresses: nil, topics: [ sig, nil, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self])
+        guard let events = events as? [ERC721Events.Transfer] else {
+            throw EthereumClientError.decodeIssue
+        }
+        return events
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func transferEventsFrom(sender: EthereumAddress,
                                    fromBlock: EthereumBlock,
                                    toBlock: EthereumBlock,
                                    completion: @escaping((Error?, [ERC721Events.Transfer]?) -> Void)) {
-        guard let result = try? ABIEncoder.encode(sender).bytes, let sig = try? ERC721Events.Transfer.signature() else {
-            completion(EthereumSignerError.unknownError, nil)
-            return
-        }
-        
-        client.getEvents(addresses: nil,
-                         topics: [ sig, String(hexFromBytes: result)],
-                         fromBlock: fromBlock,
-                         toBlock: toBlock,
-                         eventTypes: [ERC721Events.Transfer.self]) { (error, events, unprocessedLogs) in
-            
-            if let events = events as? [ERC721Events.Transfer] {
-                return completion(error, events)
-            } else {
-                return completion(error ?? EthereumClientError.decodeIssue, nil)
+        async {
+            do {
+                let result = try await transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
             }
         }
+    }    
+    
+    public func transferEventsFrom(sender: EthereumAddress,
+                                   fromBlock: EthereumBlock,
+                                   toBlock: EthereumBlock) async throws -> [ERC721Events.Transfer] {
+        let result = try ABIEncoder.encode(sender).bytes
+        let sig = try ERC721Events.Transfer.signature()
+        
+        let (events, _) = try await client.getEvents(addresses: nil, topics: [ sig, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self])
+        guard let events = events as? [ERC721Events.Transfer] else {
+            throw EthereumClientError.decodeIssue
+        }
+        return events
     }
 }
 
@@ -142,97 +176,154 @@ public class ERC721Metadata: ERC721 {
         super.init(client: client)
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func name(contract: EthereumAddress,
                      completion: @escaping((Error?, String?) -> Void)) {
-        let function = ERC721MetadataFunctions.name(contract: contract)
-        function.call(withClient: client, responseType: ERC721MetadataResponses.nameResponse.self) { error, response in
-            return completion(error, response?.value)
+        async {
+            do {
+                let result = try await name(contract: contract)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
     }
+        
+    public func name(contract: EthereumAddress) async throws -> String {
+        let function = ERC721MetadataFunctions.name(contract: contract)
+        let response = try await function.call(withClient: client, responseType: ERC721MetadataResponses.nameResponse.self)
+        return response.value
+    }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func symbol(contract: EthereumAddress,
                        completion: @escaping((Error?, String?) -> Void)) {
+        async {
+            do {
+                let result = try await symbol(contract: contract)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
+        }
+    }
+        
+    public func symbol(contract: EthereumAddress) async throws -> String {
         let function = ERC721MetadataFunctions.symbol(contract: contract)
-        function.call(withClient: client, responseType: ERC721MetadataResponses.symbolResponse.self) { error, response in
-            return completion(error, response?.value)
+        let response = try await function.call(withClient: client, responseType: ERC721MetadataResponses.symbolResponse.self)
+        return response.value
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
+    public func tokenURI(contract: EthereumAddress,
+                         tokenID: BigUInt,
+                         completion: @escaping((Error?, URL?) -> Void)) {
+        async {
+            do {
+                let result = try await tokenURI(contract: contract, tokenID: tokenID)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
     }
     
     public func tokenURI(contract: EthereumAddress,
-                         tokenID: BigUInt,
-                         completion: @escaping((Error?, URL?) -> Void)) {
+                         tokenID: BigUInt) async throws -> URL {
         let function = ERC721MetadataFunctions.tokenURI(contract: contract,
                                                         tokenID: tokenID)
-        function.call(withClient: client, responseType: ERC721MetadataResponses.tokenURIResponse.self) { error, response in
-            return completion(error, response?.value)
-        }
+        let response = try await function.call(withClient: client, responseType: ERC721MetadataResponses.tokenURIResponse.self)
+        return response.value
     }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func tokenMetadata(contract: EthereumAddress,
                               tokenID: BigUInt,
                               completion: @escaping((Error?, Token?) -> Void)) {
-        tokenURI(contract: contract,
-                 tokenID: tokenID) { [weak self] error, response in
-                    guard let response = response else {
-                        return completion(error, nil)
-                    }
-                    
-                    if let error = error {
-                        return completion(error, nil)
-                    }
-                    
-                    let baseURL = response
-                    let task = self?.session.dataTask(with: baseURL,
-                                                      completionHandler: { (data, response, error) in
-                                                        guard let data = data else {
-                                                            return completion(error, nil)
-                                                        }
-                                                        if let error = error {
-                                                            return completion(error, nil)
-                                                        }
-                                                        
-                                                        do {
-                                                            var metadata = try JSONDecoder().decode(Token.self, from: data)
-                                                            
-                                                            if let image = metadata.properties?.image.description, image.host == nil, let relative = URL(string: image.absoluteString, relativeTo: baseURL) {
-                                                                metadata.properties?.image = Token.Property(description: relative)
-                                                            }
-                                                            completion(nil, metadata)
-                                                        } catch let decodeError {
-                                                            completion(decodeError, nil)
-                                                        }
-                    })
-                    
-                    task?.resume()
+        async {
+            do {
+                let result = try await tokenMetadata(contract: contract, tokenID: tokenID)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
+    }
+        
+    public func tokenMetadata(contract: EthereumAddress,
+                              tokenID: BigUInt) async throws -> ERC721Metadata.Token {
+        let baseURL = try await tokenURI(contract: contract, tokenID: tokenID)
+        let (data, _) = try await session.data(from: baseURL)
+        var metadata = try JSONDecoder().decode(Token.self, from: data)
+        if let image = metadata.properties?.image.description, image.host == nil, let relative = URL(string: image.absoluteString, relativeTo: baseURL) {
+            metadata.properties?.image = Token.Property(description: relative)
+        }
+        return metadata
     }
 }
 
 public class ERC721Enumerable: ERC721 {
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func totalSupply(contract: EthereumAddress,
                             completion: @escaping((Error?, BigUInt?) -> Void)) {
-        let function = ERC721EnumerableFunctions.totalSupply(contract: contract)
-        function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self) { error, response in
-            return completion(error, response?.value)
+        async {
+            do {
+                let result = try await totalSupply(contract: contract)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
     }
     
+    public func totalSupply(contract: EthereumAddress) async throws -> BigUInt {
+        let function = ERC721EnumerableFunctions.totalSupply(contract: contract)
+        let response = try await function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self)
+        return response.value
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func tokenByIndex(contract: EthereumAddress,
                              index: BigUInt,
                              completion: @escaping((Error?, BigUInt?) -> Void)) {
-        let function = ERC721EnumerableFunctions.tokenByIndex(contract: contract, index: index)
-        function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self) { error, response in
-            return completion(error, response?.value)
+        async {
+            do {
+                let result = try await tokenByIndex(contract: contract, index: index)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
     }
+        
+    public func tokenByIndex(contract: EthereumAddress,
+                             index: BigUInt) async throws -> BigUInt {
+        let function = ERC721EnumerableFunctions.tokenByIndex(contract: contract, index: index)
+        let response = try await function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self)
+        return response.value
+    }
     
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func tokenOfOwnerByIndex(contract: EthereumAddress,
                                     owner: EthereumAddress,
                                     index: BigUInt,
                                     completion: @escaping((Error?, BigUInt?) -> Void)) {
-        let function = ERC721EnumerableFunctions.tokenOfOwnerByIndex(contract: contract, address: owner, index: index)
-        function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self) { error, response in
-            return completion(error, response?.value)
+        async {
+            do {
+                let result = try await tokenOfOwnerByIndex(contract: contract, owner: owner, index: index)
+                completion(nil, result)
+            } catch {
+                completion(error, nil)
+            }
         }
+    }
+        
+    public func tokenOfOwnerByIndex(contract: EthereumAddress,
+                                    owner: EthereumAddress,
+                                    index: BigUInt) async throws -> BigUInt {
+        let function = ERC721EnumerableFunctions.tokenOfOwnerByIndex(contract: contract, address: owner, index: index)
+        let response = try await function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self)
+        return response.value
     }
 }
