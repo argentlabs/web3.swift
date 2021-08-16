@@ -88,29 +88,20 @@ public class EthereumRPC {
         let rpcRequest = JSONRPCRequest(jsonrpc: "2.0", method: method, params: params, id: id)
         let encoded = try JSONEncoder().encode(rpcRequest)
         request.httpBody = encoded
-                
-        return try await withCheckedThrowingContinuation { continuation in
-            let task = session.dataTask(with: request) { (data, response, error) in
-                if let data = data {
-                    if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
-                        return continuation.resume(returning: (result.result))
-                    } else if let result = try? JSONDecoder().decode([JSONRPCResult<U>].self, from: data) {
-                        let resultObjects = result.map{ return $0.result }
-                        return continuation.resume(returning: (resultObjects))
-                    } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
-                        print("Ethereum response error: \(errorResult.error)")
-                        return continuation.resume(throwing: JSONRPCError.executionError(errorResult))
-                    } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
-                        return continuation.resume(throwing: JSONRPCError.requestRejected(data))
-                    } else {
-                        return continuation.resume(throwing: JSONRPCError.noResult)
-                    }
-                }
-                
-                continuation.resume(throwing: JSONRPCError.unknownError)
-            }
-            
-            task.resume()
+        let (data, response) = try await session.data(for: request)
+        
+        if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
+            return result.result
+        } else if let result = try? JSONDecoder().decode([JSONRPCResult<U>].self, from: data) {
+            let resultObjects = result.map{ return $0.result }
+            return resultObjects
+        } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
+            print("Ethereum response error: \(errorResult.error)")
+            throw JSONRPCError.executionError(errorResult)
+        } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
+            throw JSONRPCError.requestRejected(data)
+        } else {
+            throw JSONRPCError.noResult
         }
     }
 }
