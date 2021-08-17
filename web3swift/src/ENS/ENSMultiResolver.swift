@@ -10,24 +10,71 @@ import Foundation
 
 extension EthereumNameService {
 
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func resolve(
         addresses: [EthereumAddress],
         completion: @escaping (Result<[AddressResolveOutput], EthereumNameServiceError>) -> Void
     ) {
-        MultiResolver(
-            client: client,
-            registryAddress: registryAddress
-        ).resolve(addresses: addresses, completion: completion)
+        async {
+            do {
+                let result = try await resolve(addresses: addresses)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error as! EthereumNameServiceError))
+            }
+        }
+    }
+    
+    public func resolve(addresses: [EthereumAddress]) async throws -> [EthereumNameService.AddressResolveOutput] {
+        
+        return try await withCheckedThrowingContinuation({ continuation in
+            MultiResolver(
+                client: client,
+                registryAddress: registryAddress
+            ).resolve(addresses: addresses) { result in
+                switch result {
+                case .success(let output):
+                    continuation.resume(returning: output)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        })
     }
 
+    @available(*, deprecated, message: "Prefer async alternative instead")
     public func resolve(
         names: [String],
         completion: @escaping (Result<[NameResolveOutput], EthereumNameServiceError>) -> Void
     ) {
-        MultiResolver(
-            client: client,
-            registryAddress: registryAddress
-        ).resolve(names: names, completion: completion)
+        async {
+            do {
+                let result = try await resolve(names: names)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error as! EthereumNameServiceError))
+            }
+        }
+    }
+        
+    public func resolve(names: [String]) async throws -> [EthereumNameService.NameResolveOutput] {
+        return try await withCheckedThrowingContinuation({ continuation in
+            MultiResolver(
+                client: client,
+                registryAddress: registryAddress
+            ).resolve(names: names) { result in
+                switch result {
+                case .success(let output):
+                    continuation.resume(returning: output)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        })
+//            return try await MultiResolver(
+//                client: client,
+//                registryAddress: registryAddress
+//            ).resolve(names: names)
     }
 }
 
@@ -205,34 +252,45 @@ extension EthereumNameService {
             }
         }
 
+        @available(*, deprecated, message: "Prefer async alternative instead")
         private func resolveQueries<ResolverOutput>(
             registryOutput: RegistryOutput<ResolverOutput>,
             completion: @escaping (Result<[ResolverOutput], EthereumNameServiceError>) -> Void
         ) {
-            var aggegator = Multicall.Aggregator()
-
-            registryOutput.queries.forEach { query in
-                switch query.parameter {
-                case .address(let address):
-                    guard let registryOutput = registryOutput as? RegistryOutput<AddressResolveOutput>
-                        else { fatalError("Invalid registry output provided") }
-                    resolveAddress(query, address: address, aggegator: &aggegator, registryOutput: registryOutput)
-                case .name(let name):
-                    guard let registryOutput = registryOutput as? RegistryOutput<NameResolveOutput>
-                        else { fatalError("Invalid registry output provided") }
-                    resolveName(query, ens: name, aggegator: &aggegator, registryOutput: registryOutput)
-                }
-            }
-
-            multicall.aggregate(calls: aggegator.calls) { result in
-                switch result {
-                case .success:
-                    completion(.success(registryOutput.intermediaryResponses.compactMap { $0 }))
-                case .failure:
-                    completion(.failure(.noNetwork))
+            async {
+                do {
+                    let result: [ResolverOutput] = try await resolveQueries(registryOutput: registryOutput)
+                    completion(.success(result))
+                } catch {
+                    completion(.failure(error as! EthereumNameServiceError))
                 }
             }
         }
+                
+        private func resolveQueries<ResolverOutput>(registryOutput: RegistryOutput<ResolverOutput>) async throws -> [ResolverOutput] {
+            
+                var aggegator = Multicall.Aggregator()
+                
+                registryOutput.queries.forEach { query in
+                    switch query.parameter {
+                    case .address(let address):
+                        guard let registryOutput1 = registryOutput as? RegistryOutput<AddressResolveOutput>
+                        else { fatalError("Invalid registry output provided") }
+                        resolveAddress(query, address: address, aggegator: &aggegator, registryOutput: registryOutput1)
+                    case .name(let name):
+                        guard let registryOutput1 = registryOutput as? RegistryOutput<NameResolveOutput>
+                        else { fatalError("Invalid registry output provided") }
+                        resolveName(query, ens: name, aggegator: &aggegator, registryOutput: registryOutput1)
+                    }
+                }
+                
+//                do {
+                    let result = try await multicall.aggregate(calls: aggegator.calls)
+                    return registryOutput.intermediaryResponses.compactMap { $0 }
+//                } catch {
+//                    throw .noNetwork
+//                }
+            }
 
         private func resolveAddress(
             _ query: EthereumNameService.MultiResolver.ResolverQuery,
