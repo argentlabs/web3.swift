@@ -284,12 +284,8 @@ extension EthereumNameService {
                     }
                 }
                 
-//                do {
-                    let result = try await multicall.aggregate(calls: aggegator.calls)
-                    return registryOutput.intermediaryResponses.compactMap { $0 }
-//                } catch {
-//                    throw .noNetwork
-//                }
+                let result = try await multicall.aggregate(calls: aggegator.calls)
+                return registryOutput.intermediaryResponses.compactMap { $0 }
             }
 
         private func resolveAddress(

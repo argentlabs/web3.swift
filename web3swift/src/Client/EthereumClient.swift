@@ -31,7 +31,7 @@ public protocol EthereumClientProtocol {
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
     
     // async version
-    func net_version() async throws -> EthereumNetwork
+    func net_version(fromCache: Bool) async throws -> EthereumNetwork
     func eth_gasPrice() async throws -> BigUInt
     func eth_blockNumber() async throws -> Int
     func eth_getBalance(address: EthereumAddress, block: EthereumBlock) async throws -> BigUInt
@@ -58,29 +58,32 @@ public enum EthereumClientError: Error {
 }
 
 public class EthereumClient: EthereumClientProtocol {
-    public let url: URL
-    private var retreivedNetwork: EthereumNetwork?
     
+    public let url: URL
+        
     private let networkQueue: OperationQueue
     private let concurrentQueue: OperationQueue
     
     public let session: URLSession
     
+    private var _retrievedNetwork: EthereumNetwork?
+    
+    @available(*, deprecated, message: "Prefer async alternative instead: net_version(fromCache: true")
     public var network: EthereumNetwork? {
-        if let _ = self.retreivedNetwork {
-            return self.retreivedNetwork
+        if let _ = self._retrievedNetwork {
+            return self._retrievedNetwork
         }
         
         let group = DispatchGroup()
         group.enter()
         
         var network: EthereumNetwork?
-        self.net_version { (error, retreivedNetwork) in
+        self.net_version { (error, retrievedNetwork) in
             if let error = error {
                 print("Client has no network: \(error.localizedDescription)")
             } else {
-                network = retreivedNetwork
-                self.retreivedNetwork = network
+                network = retrievedNetwork
+                self._retrievedNetwork = network
             }
             
             group.leave()
@@ -119,7 +122,7 @@ public class EthereumClient: EthereumClientProtocol {
     public func net_version(completion: @escaping ((EthereumClientError?, EthereumNetwork?) -> Void)) {
         async {
             do {
-                let result = try await net_version()
+                let result = try await net_version(fromCache: false)
                 completion(nil, result)
             } catch {
                 completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
@@ -127,13 +130,18 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func net_version() async throws -> EthereumNetwork {
+    public func net_version(fromCache: Bool = true) async throws -> EthereumNetwork {
+        
+        if fromCache == true, let cached = _retrievedNetwork { return cached }
+        
         let emptyParams: Array<Bool> = []
         let response = try await EthereumRPC.execute(session: session, url: url, method: "net_version", params: emptyParams, receive: String.self)
         guard let resString = response as? String else {
             throw EthereumClientError.unexpectedReturnValue
         }
-        return EthereumNetwork.fromString(resString)
+        
+        _retrievedNetwork = EthereumNetwork.fromString(resString)
+        return _retrievedNetwork!
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
@@ -329,8 +337,8 @@ public class EthereumClient: EthereumClientProtocol {
         var transaction1 = transaction
         transaction1.nonce = nonce
         
-        if transaction1.chainId == nil, let network = self.network {
-            transaction1.chainId = network.intValue
+        if transaction1.chainId == nil {
+            transaction1.chainId = try await net_version(fromCache: true).intValue
         }
         
         guard let _ = transaction1.chainId, let signedTx = (try? account.sign(transaction: transaction1)), let transactionHex = signedTx.raw?.web3.hexString else {
@@ -520,20 +528,9 @@ public class EthereumClient: EthereumClientProtocol {
     
     
     private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock) async throws -> [EthereumLog] {
-        return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.global(qos: .default)
-                .async {
-                    let result = RecursiveLogCollector(ethClient: self)
-                        .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
-                    
-                    switch result {
-                    case .success(let logs):
-                        continuation.resume(returning: logs)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
+        
+        return try await RecursiveLogCollector(ethClient: self)
+            .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
     }
 
     @available(*, deprecated, message: "Prefer async alternative instead")
