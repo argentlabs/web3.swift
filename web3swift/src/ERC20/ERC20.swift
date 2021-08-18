@@ -169,7 +169,7 @@ public class ERC20 {
         let result = try ABIEncoder.encode(sender).bytes
         let sig = try ERC20Events.Transfer.signature()
         
-        let (events, unprocessedLogs) = try await self.client.getEvents(addresses: nil, topics: [ sig, String(hexFromBytes: result), nil ], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC20Events.Transfer.self])
+        let (events, _) = try await self.client.getEvents(addresses: nil, topics: [ sig, String(hexFromBytes: result), nil ], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC20Events.Transfer.self])
         
         guard let events = events as? [ERC20Events.Transfer] else {
             throw EthereumClientError.decodeIssue

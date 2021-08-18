@@ -26,6 +26,7 @@ enum Topics: Encodable {
 struct RecursiveLogCollector {
     let ethClient: EthereumClient
 
+    @available(*, deprecated, message: "Prefer async alternative instead")
     func getAllLogs(
         addresses: [EthereumAddress]?,
         topics: Topics?,
@@ -60,7 +61,33 @@ struct RecursiveLogCollector {
             return .failure(error)
         }
     }
+    
+    func getAllLogs(
+        addresses: [EthereumAddress]?,
+        topics: Topics?,
+        from: EthereumBlock,
+        to: EthereumBlock
+    ) async throws -> [EthereumLog] {
 
+        do {
+            return try await getLogs(addresses: addresses, topics: topics, from: from, to: to)
+        } catch EthereumClientError.tooManyResults {
+            
+            guard let middleBlock = await getMiddleBlock(from: from, to: to) else {
+                throw EthereumClientError.unexpectedReturnValue
+            }
+            
+            guard let lhs = try? await getAllLogs(addresses: addresses, topics: topics, from: from, to: middleBlock),
+                  let rhs = try? await getAllLogs(addresses: addresses, topics: topics, from: middleBlock, to: to) else {
+                
+                      throw EthereumClientError.unexpectedReturnValue
+                      
+            }
+            return lhs+rhs
+        }
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     private func getLogs(
         addresses: [EthereumAddress]?,
         topics: Topics? = nil,
@@ -81,7 +108,18 @@ struct RecursiveLogCollector {
 
         return response
     }
+    
+    private func getLogs(
+        addresses: [EthereumAddress]?,
+        topics: Topics? = nil,
+        from: EthereumBlock,
+        to: EthereumBlock
+    ) async throws -> [EthereumLog] {
+        
+        return try await ethClient.getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
+    }
 
+    @available(*, deprecated, message: "Prefer async alternative instead")
     private func getMiddleBlock(
         from: EthereumBlock,
         to: EthereumBlock
@@ -104,7 +142,31 @@ struct RecursiveLogCollector {
 
         return EthereumBlock(rawValue: fromBlockNumber + (toBlockNumber - fromBlockNumber) / 2)
     }
+    
+    private func getMiddleBlock(
+        from: EthereumBlock,
+        to: EthereumBlock
+    ) async -> EthereumBlock? {
 
+        guard let fromBlockNumber = from.intValue else { return nil }
+            
+        let toBlockNumber: Int
+        do {
+            if let toBlock = to.intValue {
+                toBlockNumber = toBlock
+            } else if let toBlock = try await getCurrentBlock().intValue {
+                toBlockNumber = toBlock
+            } else {
+                return nil
+            }
+        } catch {
+            return nil
+        }
+
+        return EthereumBlock(rawValue: fromBlockNumber + (toBlockNumber - fromBlockNumber) / 2)
+    }
+    
+    @available(*, deprecated, message: "Prefer async alternative instead")
     private func getCurrentBlock() -> Result<EthereumBlock, EthereumClientError> {
         let sem = DispatchSemaphore(value: 0)
         var responseValue: EthereumBlock?
@@ -118,5 +180,10 @@ struct RecursiveLogCollector {
         sem.wait()
 
         return responseValue.map(Result.success) ?? .failure(.unexpectedReturnValue)
+    }
+    
+    private func getCurrentBlock() async throws -> EthereumBlock {
+        let blockInt = try await self.ethClient.eth_blockNumber()
+        return EthereumBlock(rawValue: blockInt)
     }
 }
