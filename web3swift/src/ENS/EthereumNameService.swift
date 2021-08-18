@@ -127,46 +127,6 @@ public class EthereumNameService: EthereumNameServiceProtocol {
             throw EthereumNameServiceError.decodeIssue
         }
         return ensAddress
-        
-//        let ensAddress: EthereumAddress = try? (try? ABIDecoder.decodeData(data1, types: [EthereumAddress.self]))?.first?.decoded() {
-//            continuation.resume(returning: (nil, ensAddress))
-//        } else {
-//            continuation.resume(returning: (EthereumNameServiceError.decodeIssue, nil))
-//        }
-//
-//
-//        return await withCheckedContinuation { continuation in
-//            client.eth_call(registryTransaction, block: .latest, completion: { (error, resolverData) in
-//                guard let resolverData1 = resolverData else {
-//                    return continuation.resume(returning: (EthereumNameServiceError.noResolver, nil))
-//                }
-//
-//                guard resolverData1 != "0x" else {
-//                    return continuation.resume(returning: (EthereumNameServiceError.ensUnknown, nil))
-//                }
-//
-//                let idx = resolverData1.index(resolverData1.endIndex, offsetBy: -40)
-//                let resolverAddress = EthereumAddress(String(resolverData1[idx...]).web3.withHexPrefix)
-//
-//                let function = ENSContracts.ENSResolverFunctions.addr(contract: resolverAddress, _node: nameHash1.web3.hexData ?? Data())
-//                guard let addressTransaction = try? function.transaction() else {
-//                    continuation.resume(returning: (EthereumNameServiceError.invalidInput, nil))
-//                    return
-//                }
-//                // till here
-//                self.client.eth_call(addressTransaction, block: .latest, completion: { (error, data) in
-//                    guard let data1 = data, data1 != "0x" else {
-//                        return continuation.resume(returning: (EthereumNameServiceError.ensUnknown, nil))
-//                    }
-//
-//                    if let ensAddress: EthereumAddress = try? (try? ABIDecoder.decodeData(data1, types: [EthereumAddress.self]))?.first?.decoded() {
-//                        continuation.resume(returning: (nil, ensAddress))
-//                    } else {
-//                        continuation.resume(returning: (EthereumNameServiceError.decodeIssue, nil))
-//                    }
-//                })
-//            })
-//        }
     }
 
     static func nameHash(name: String) -> String {
