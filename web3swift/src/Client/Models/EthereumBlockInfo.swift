@@ -24,16 +24,16 @@ extension EthereumBlockInfo: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         guard let number = try? container.decode(EthereumBlock.self, forKey: .number) else {
-            throw JSONRPCError.decodingError
+            throw Web3Error.decodingError
         }
         
         guard let timestampRaw = try? container.decode(String.self, forKey: .timestamp),
             let timestamp = TimeInterval(timestampRaw) else {
-                throw JSONRPCError.decodingError
+                throw Web3Error.decodingError
         }
         
         guard let transactions = try? container.decode([String].self, forKey: .transactions) else {
-            throw JSONRPCError.decodingError
+            throw Web3Error.decodingError
         }
         
         self.number = number

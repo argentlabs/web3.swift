@@ -13,14 +13,14 @@ extension EthereumNameService {
     @available(*, deprecated, message: "Prefer async alternative instead")
     public func resolve(
         addresses: [EthereumAddress],
-        completion: @escaping (Result<[AddressResolveOutput], EthereumNameServiceError>) -> Void
+        completion: @escaping (Result<[AddressResolveOutput], Web3Error>) -> Void
     ) {
         async {
             do {
                 let result = try await resolve(addresses: addresses)
                 completion(.success(result))
             } catch {
-                completion(.failure(error as! EthereumNameServiceError))
+                completion(.failure(error as! Web3Error))
             }
         }
     }
@@ -45,14 +45,14 @@ extension EthereumNameService {
     @available(*, deprecated, message: "Prefer async alternative instead")
     public func resolve(
         names: [String],
-        completion: @escaping (Result<[NameResolveOutput], EthereumNameServiceError>) -> Void
+        completion: @escaping (Result<[NameResolveOutput], Web3Error>) -> Void
     ) {
         async {
             do {
                 let result = try await resolve(names: names)
                 completion(.success(result))
             } catch {
-                completion(.failure(error as! EthereumNameServiceError))
+                completion(.failure(error as! Web3Error))
             }
         }
     }
@@ -81,7 +81,7 @@ extension EthereumNameService {
 extension EthereumNameService {
 
     public enum ResolveOutput<Value: Equatable>: Equatable {
-        case couldNotBeResolved(EthereumNameServiceError)
+        case couldNotBeResolved(Web3Error)
         case resolved(Value)
     }
 
@@ -128,7 +128,7 @@ extension EthereumNameService {
 
         func resolve(
             addresses: [EthereumAddress],
-            completion: @escaping (Result<[AddressResolveOutput], EthereumNameServiceError>) -> Void
+            completion: @escaping (Result<[AddressResolveOutput], Web3Error>) -> Void
         ) {
             let output = RegistryOutput<AddressResolveOutput>(expectedResponsesCount: addresses.count)
 
@@ -172,7 +172,7 @@ extension EthereumNameService {
 
         func resolve(
             names: [String],
-            completion: @escaping (Result<[NameResolveOutput], EthereumNameServiceError>) -> Void
+            completion: @escaping (Result<[NameResolveOutput], Web3Error>) -> Void
         ) {
             let output = RegistryOutput<NameResolveOutput>(expectedResponsesCount: names.count)
 
@@ -216,8 +216,8 @@ extension EthereumNameService {
 
         private func resolveRegistry(
             parameters: [ENSRegistryResolverParameter],
-            handler: @escaping (Int, ENSRegistryResolverParameter, Result<EthereumAddress, Multicall.CallError>) -> Void,
-            completion: @escaping (Result<Void, EthereumNameServiceError>) -> Void
+            handler: @escaping (Int, ENSRegistryResolverParameter, Result<EthereumAddress, Web3Error>) -> Void,
+            completion: @escaping (Result<Void, Web3Error>) -> Void
         ) {
 
             guard
@@ -255,14 +255,14 @@ extension EthereumNameService {
         @available(*, deprecated, message: "Prefer async alternative instead")
         private func resolveQueries<ResolverOutput>(
             registryOutput: RegistryOutput<ResolverOutput>,
-            completion: @escaping (Result<[ResolverOutput], EthereumNameServiceError>) -> Void
+            completion: @escaping (Result<[ResolverOutput], Web3Error>) -> Void
         ) {
             async {
                 do {
                     let result: [ResolverOutput] = try await resolveQueries(registryOutput: registryOutput)
                     completion(.success(result))
                 } catch {
-                    completion(.failure(error as! EthereumNameServiceError))
+                    completion(.failure(error as! Web3Error))
                 }
             }
         }
@@ -279,13 +279,13 @@ extension EthereumNameService {
                 case .address(let address):
                     
                     guard let registryOutput1 = registryOutput as? RegistryOutput<AddressResolveOutput> else {
-                        throw EthereumNameServiceError.invalidInput
+                        throw Web3Error.invalidInput
                     }
                             
                     resolveAddress(query, address: address, aggegator: &aggegator, registryOutput: registryOutput1)
                 case .name(let name):
                     guard let registryOutput1 = registryOutput as? RegistryOutput<NameResolveOutput> else {
-                        throw EthereumNameServiceError.invalidInput
+                        throw Web3Error.invalidInput
                     }
                     resolveName(query, ens: name, aggegator: &aggegator, registryOutput: registryOutput1)
                 }
@@ -360,19 +360,19 @@ extension EthereumNameService {
         }
 
         private static func output<Value: Equatable>(from error: Error) -> ResolveOutput<Value> {
-            guard let error = error as? Multicall.CallError
+            guard let error = error as? Web3Error
             else { return .couldNotBeResolved(.invalidInput) }
 
             switch error {
-            case .contractFailure:
-                return .couldNotBeResolved(.invalidInput)
             case .couldNotDecodeResponse(let error):
-                if let specificError = error as? EthereumNameServiceError {
-                    return .couldNotBeResolved(specificError)
-                } else {
-                    return .couldNotBeResolved(.invalidInput)
+                guard let specificError = error else {
+                    fallthrough
                 }
+                return .couldNotBeResolved(specificError)
+            default:
+                return .couldNotBeResolved(.invalidInput)
             }
+        
         }
     }
 }

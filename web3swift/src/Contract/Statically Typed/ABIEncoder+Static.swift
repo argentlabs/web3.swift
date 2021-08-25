@@ -43,7 +43,7 @@ extension ABIEncoder {
         case let value as ABITuple:
             return try encodeTuple(value, type: type)
         default:
-            throw ABIError.notCurrentlySupported
+            throw Web3Error.notCurrentlySupported
         }
     }
     

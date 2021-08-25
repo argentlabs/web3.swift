@@ -7,7 +7,8 @@
 
 import Foundation
 
-enum Web3Error: Error {
+// FIXME: Indirect keyword needed because of couldNotDecodeResponse case that recursively wraps a Web3Error
+public indirect enum Web3Error: Error {
     
     // Thrown by EthereumAccount
     case createAccountError
@@ -25,7 +26,6 @@ enum Web3Error: Error {
     
     // Thrown by EthereumClient
     case tooManyResults
-//    case executionError Instead use executionError(JSONRPCErrorResult)
     case unexpectedReturnValue
     case noResult
     case decodeIssue
@@ -37,8 +37,6 @@ enum Web3Error: Error {
     case requestRejected(Data)
     case encodingError
     case decodingError
-//    case unknownError
-//    case noResult
     
     // Thrown by ABI
     case invalidSignature
@@ -52,80 +50,55 @@ enum Web3Error: Error {
     case noResolver
     case ensUnknown
     case invalidInput
-//    case decodeIssue
     
     // Thrown by MultiCall
     case contractUnavailable
-    case executionFailed(Error?)
     
     // Thrown by Call
     case contractFailure
-    case couldNotDecodeResponse(Error?)
+    case couldNotDecodeResponse(Web3Error?)
 }
 
-/*
-
-enum EthereumSignerError: Error {
-    case emptyRawTransaction
-    case unknownError
-}
-
-public enum EthereumKeyStorageError: Error {
-    case notFound
-    case failedToSave
-    case failedToLoad
-}
-
-public enum EthereumClientError: Error {
-    case tooManyResults
-    case executionError
-    case unexpectedReturnValue
-    case noResult
-    case decodeIssue
-    case encodeIssue
-    case noInputData
-}
-
-public enum JSONRPCError: Error {
-    case executionError(JSONRPCErrorResult)
-    case requestRejected(Data)
-    case encodingError
-    case decodingError
-    case unknownError
-    case noResult
-
-    var isExecutionError: Bool {
-        switch self {
-        case .executionError:
+extension Web3Error: Equatable {
+    
+    public static func == (lhs: Web3Error, rhs: Web3Error) -> Bool {
+        switch (lhs, rhs) {
+        case (.createAccountError, .createAccountError),
+            (.loadAccountError, .loadAccountError),
+            (.signError, .signError),
+            (.emptyRawTransaction, .emptyRawTransaction),
+            (.unknownError, .unknownError),
+            (.notFound, .notFound),
+            (.failedToSave, .failedToSave),
+            (failedToLoad, .failedToLoad),
+            (.tooManyResults, .tooManyResults),
+            (.unexpectedReturnValue, .unexpectedReturnValue),
+            (.noResult, .noResult),
+            (.decodeIssue, .decodeIssue),
+            (.encodeIssue, .encodeIssue),
+            (.noInputData, .noInputData),
+            (.encodingError, .encodingError),
+            (.decodingError, .decodingError),
+            (.invalidSignature, .invalidSignature),
+            (.invalidType, .invalidType),
+            (.invalidValue, .invalidValue),
+            (.incorrectParameterCount, .incorrectParameterCount),
+            (.notCurrentlySupported, .notCurrentlySupported),
+            (.noNetwork, .noNetwork),
+            (.noResolver, .noResolver),
+            (.ensUnknown, .ensUnknown),
+            (.invalidInput, .invalidInput),
+            (.contractUnavailable, .contractUnavailable),
+            (.contractFailure, .contractFailure):
             return true
+        case (.executionError(let lhsCode), .executionError(let rhsCode)):
+            return lhsCode == rhsCode
+        case (.requestRejected(let lhsData), .requestRejected(let rhsData)):
+            return lhsData == rhsData
+        case (.couldNotDecodeResponse(let lhsError), .couldNotDecodeResponse(let rhsError)):
+            return lhsError == rhsError
         default:
             return false
         }
     }
 }
-
-public enum ABIError: Error {
-    case invalidSignature
-    case invalidType
-    case invalidValue
-    case incorrectParameterCount
-    case notCurrentlySupported
-}
-public enum EthereumNameServiceError: Error, Equatable {
-    case noNetwork
-    case noResolver
-    case ensUnknown
-    case invalidInput
-    case decodeIssue
-}
-
-public enum MulticallError: Error {
-    case contractUnavailable
-    case executionFailed(Error?)
-}
-
-public enum CallError: Error {
-    case contractFailure
-    case couldNotDecodeResponse(Error?)
-}
-*/

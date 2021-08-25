@@ -15,20 +15,20 @@ public protocol EthereumClientProtocol {
     var network: EthereumNetwork? { get }
     
     // completion handle versions (deprecated) 
-    func net_version(completion: @escaping((EthereumClientError?, EthereumNetwork?) -> Void))
-    func eth_gasPrice(completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_blockNumber(completion: @escaping((EthereumClientError?, Int?) -> Void))
-    func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_getCode(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
-    func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void))
-    func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
-    func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
-    func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
-    func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
+    func net_version(completion: @escaping((Web3Error?, EthereumNetwork?) -> Void))
+    func eth_gasPrice(completion: @escaping((Web3Error?, BigUInt?) -> Void))
+    func eth_blockNumber(completion: @escaping((Web3Error?, Int?) -> Void))
+    func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping((Web3Error?, BigUInt?) -> Void))
+    func eth_getCode(address: EthereumAddress, block: EthereumBlock, completion: @escaping((Web3Error?, String?) -> Void))
+    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((Web3Error?, BigUInt?) -> Void))
+    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((Web3Error?, String?) -> Void))
+    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping((Web3Error?, Int?) -> Void))
+    func eth_getTransaction(byHash txHash: String, completion: @escaping((Web3Error?, EthereumTransaction?) -> Void))
+    func eth_getTransactionReceipt(txHash: String, completion: @escaping((Web3Error?, EthereumTransactionReceipt?) -> Void))
+    func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((Web3Error?, String?) -> Void))
+    func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Web3Error?, [EthereumLog]?) -> Void))
+    func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Web3Error?, [EthereumLog]?) -> Void))
+    func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((Web3Error?, EthereumBlockInfo?) -> Void))
     
     // async version
     func net_version(fromCache: Bool) async throws -> EthereumNetwork
@@ -46,16 +46,16 @@ public protocol EthereumClientProtocol {
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
     func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo
 }
-
-public enum EthereumClientError: Error {
-    case tooManyResults
-    case executionError
-    case unexpectedReturnValue
-    case noResult
-    case decodeIssue
-    case encodeIssue
-    case noInputData
-}
+//
+//public enum Web3Error: Error {
+//    case tooManyResults
+//    case executionError
+//    case unexpectedReturnValue
+//    case noResult
+//    case decodeIssue
+//    case encodeIssue
+//    case noInputData
+//}
 
 public class EthereumClient: EthereumClientProtocol {
     
@@ -119,13 +119,13 @@ public class EthereumClient: EthereumClientProtocol {
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func net_version(completion: @escaping ((EthereumClientError?, EthereumNetwork?) -> Void)) {
+    public func net_version(completion: @escaping ((Web3Error?, EthereumNetwork?) -> Void)) {
         async {
             do {
                 let result = try await net_version(fromCache: false)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -137,7 +137,7 @@ public class EthereumClient: EthereumClientProtocol {
         let emptyParams: Array<Bool> = []
         let response = try await EthereumRPC.execute(session: session, url: url, method: "net_version", params: emptyParams, receive: String.self)
         guard let resString = response as? String else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         
         _retrievedNetwork = EthereumNetwork.fromString(resString)
@@ -145,13 +145,13 @@ public class EthereumClient: EthereumClientProtocol {
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_gasPrice(completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_gasPrice(completion: @escaping ((Web3Error?, BigUInt?) -> Void)) {
         async {
             do {
                 let result = try await eth_gasPrice()
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -160,19 +160,19 @@ public class EthereumClient: EthereumClientProtocol {
         let emptyParams: Array<Bool> = []
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_gasPrice", params: emptyParams, receive: String.self)
         guard let hexString = response as? String, let gasPrice = BigUInt(hex: hexString) else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         return gasPrice
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_blockNumber(completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
+    public func eth_blockNumber(completion: @escaping ((Web3Error?, Int?) -> Void)) {
         async {
             do {
                 let result = try await eth_blockNumber()
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -181,22 +181,22 @@ public class EthereumClient: EthereumClientProtocol {
         let emptyParams: Array<Bool> = []
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_blockNumber", params: emptyParams, receive: String.self)
         guard let hexString = response as? String else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         guard let integerValue = Int(hex: hexString) else {
-            throw EthereumClientError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         return integerValue
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getBalance(address: EthereumAddress, block: EthereumBlock = .latest, completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_getBalance(address: EthereumAddress, block: EthereumBlock = .latest, completion: @escaping ((Web3Error?, BigUInt?) -> Void)) {
         async {
             do {
                 let result = try await eth_getBalance(address: address, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -204,19 +204,19 @@ public class EthereumClient: EthereumClientProtocol {
     public func eth_getBalance(address: EthereumAddress, block: EthereumBlock = .latest) async throws -> BigUInt {
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getBalance", params: [address.value, block.stringValue], receive: String.self)
         guard let resString = response as? String, let balanceInt = BigUInt(hex: resString.web3.noHexPrefix) else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         return balanceInt
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .latest, completion: @escaping((EthereumClientError?, String?) -> Void)) {
+    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .latest, completion: @escaping((Web3Error?, String?) -> Void)) {
         async {
             do {
                 let result = try await eth_getCode(address: address, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -224,19 +224,19 @@ public class EthereumClient: EthereumClientProtocol {
     public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .latest) async throws -> String {
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self)
         guard let resDataString = response as? String else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         return resDataString
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((Web3Error?, BigUInt?) -> Void)) {
         async {
             do {
                 let result = try await eth_estimateGas(transaction, withAccount: account)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -300,30 +300,23 @@ public class EthereumClient: EthereumClientProtocol {
                                 gasPrice: transaction.gasPrice?.web3.hexString,
                                 value: value1?.web3.hexString,
                                 data: transaction.data?.web3.hexString)
-        do {
-            let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self)
-        
-            guard let gasHex = response as? String, let gas = BigUInt(hex: gasHex) else {
-               throw EthereumClientError.unexpectedReturnValue
-            }
-            return gas
-        } catch {
-            if let error = error as? JSONRPCError, error.isExecutionError {
-               throw EthereumClientError.executionError
-           } else {
-               throw EthereumClientError.unexpectedReturnValue
-           }
+
+        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self)
+    
+        guard let gasHex = response as? String, let gas = BigUInt(hex: gasHex) else {
+           throw Web3Error.unexpectedReturnValue
         }
+        return gas
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping ((Web3Error?, String?) -> Void)) {
         async {
             do {
                 let result = try await eth_sendRawTransaction(transaction, withAccount: account)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -342,25 +335,25 @@ public class EthereumClient: EthereumClientProtocol {
         }
         
         guard let _ = transaction1.chainId, let signedTx = (try? account.sign(transaction: transaction1)), let transactionHex = signedTx.raw?.web3.hexString else {
-            throw EthereumClientError.encodeIssue
+            throw Web3Error.encodeIssue
         }
         
         let response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self)
         
         guard let resDataString = response as? String else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         return resDataString
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
+    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((Web3Error?, Int?) -> Void)) {
         async {
             do {
                 let result = try await eth_getTransactionCount(address: address, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -368,40 +361,39 @@ public class EthereumClient: EthereumClientProtocol {
     public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int {
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self)
         guard let resString = response as? String, let count = Int(hex: resString) else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         return count
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getTransactionReceipt(txHash: String, completion: @escaping ((EthereumClientError?, EthereumTransactionReceipt?) -> Void)) {
+    public func eth_getTransactionReceipt(txHash: String, completion: @escaping ((Web3Error?, EthereumTransactionReceipt?) -> Void)) {
         async {
             do {
                 let result = try await eth_getTransactionReceipt(txHash: txHash)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
         
-    // FIXME: try throws JSONRPCError instead of EthereumClientError.
     public func eth_getTransactionReceipt(txHash: String) async throws -> EthereumTransactionReceipt {
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionReceipt", params: [txHash], receive: EthereumTransactionReceipt.self)
         guard let receipt = response as? EthereumTransactionReceipt else {
-            throw EthereumClientError.noResult
+            throw Web3Error.noResult
         }
         return receipt
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void)) {
+    public func eth_getTransaction(byHash txHash: String, completion: @escaping((Web3Error?, EthereumTransaction?) -> Void)) {
         async {
             do {
                 let result = try await eth_getTransaction(byHash: txHash)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -410,26 +402,26 @@ public class EthereumClient: EthereumClientProtocol {
         
         let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self)
         guard let transaction = response as? EthereumTransaction else {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
         return transaction
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .latest, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+    public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .latest, completion: @escaping ((Web3Error?, String?) -> Void)) {
         async {
             do {
                 let result = try await eth_call(transaction, block: block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
     
     public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .latest) async throws -> String {
         guard let transactionData = transaction.data else {
-            throw EthereumClientError.noInputData
+            throw Web3Error.noInputData
         }
         
         struct CallParams: Encodable {
@@ -457,38 +449,33 @@ public class EthereumClient: EthereumClientProtocol {
         }
         
         let params = CallParams(from: transaction.from?.value, to: transaction.to.value, data: transactionData.web3.hexString, block: block.stringValue)
-//        let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self)
-//        guard let resDataString = response as? String else {
-//            throw EthereumClientError.unexpectedReturnValue
-//        }
-//        return resDataString
         
         // This code mimics Geth returning 0x in case of certain failures. Some code in the library still depends on it.
         // https://github.com/ethereum/go-ethereum/pull/21083
         do {
             let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self)
             guard let resDataString = response as? String else {
-                throw EthereumClientError.unexpectedReturnValue
+                throw Web3Error.unexpectedReturnValue
             }
             return resDataString
         } catch {
-            if case let JSONRPCError.executionError(result) = error,
+            if case let Web3Error.executionError(result) = error,
                 (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
                 return "0x"
             } else {
-                throw EthereumClientError.unexpectedReturnValue
+                throw Web3Error.unexpectedReturnValue
             }
         }
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest, completion: @escaping ((Web3Error?, [EthereumLog]?) -> Void)) {
         async {
             do {
                 let result = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -498,13 +485,13 @@ public class EthereumClient: EthereumClientProtocol {
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .earliest, toBlock to: EthereumBlock = .latest, completion: @escaping((Web3Error?, [EthereumLog]?) -> Void)) {
         async {
             do {
                 let result = try await eth_getLogs(addresses: addresses, orTopics: topics, fromBlock: from, toBlock: to)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -515,13 +502,13 @@ public class EthereumClient: EthereumClientProtocol {
     }
 
     @available(*, deprecated, message: "Prefer async alternative instead")
-    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((Web3Error?, [EthereumLog]?) -> Void)) {
         async {
             do {
                 let result = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -534,13 +521,13 @@ public class EthereumClient: EthereumClientProtocol {
     }
 
     @available(*, deprecated, message: "Prefer async alternative instead")
-    internal func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void)) {
+    internal func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Result<[EthereumLog], Web3Error>) -> Void)) {
         async {
             do {
                 let result = try await getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock)
                 completion(.success(result))
             } catch {
-                completion(.failure(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue))
+                completion(.failure(error as? Web3Error ?? Web3Error.unexpectedReturnValue))
             }
         }
     }
@@ -560,28 +547,28 @@ public class EthereumClient: EthereumClientProtocol {
         do {
             let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getLogs", params: [params], receive: [EthereumLog].self)
             guard let logs = response as? [EthereumLog] else {
-                throw EthereumClientError.unexpectedReturnValue
+                throw Web3Error.unexpectedReturnValue
             }
             return logs
         } catch {
-            if let error = error as? JSONRPCError,
-               case let JSONRPCError.executionError(innerError) = error,
+            if let error = error as? Web3Error,
+               case let Web3Error.executionError(innerError) = error,
                innerError.error.code == JSONRPCErrorCode.tooManyResults {
-                throw EthereumClientError.tooManyResults
+                throw Web3Error.tooManyResults
             } else {
-                throw EthereumClientError.unexpectedReturnValue
+                throw Web3Error.unexpectedReturnValue
             }
         }
     }
 
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void)) {
+    public func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((Web3Error?, EthereumBlockInfo?) -> Void)) {
         async {
             do {
                 let result = try await eth_getBlockByNumber(block)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumClientError ?? EthereumClientError.unexpectedReturnValue, nil)
+                completion(error as? Web3Error ?? Web3Error.unexpectedReturnValue, nil)
             }
         }
     }
@@ -605,11 +592,11 @@ public class EthereumClient: EthereumClientProtocol {
         do {
             let response = try await EthereumRPC.execute(session: session, url: url, method: "eth_getBlockByNumber", params: params, receive: EthereumBlockInfo.self)
             guard let blockData = response as? EthereumBlockInfo else {
-                throw EthereumClientError.unexpectedReturnValue
+                throw Web3Error.unexpectedReturnValue
             }
             return blockData
         } catch {
-            throw EthereumClientError.unexpectedReturnValue
+            throw Web3Error.unexpectedReturnValue
         }
     }
 }

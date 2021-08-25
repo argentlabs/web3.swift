@@ -32,7 +32,7 @@ struct RecursiveLogCollector {
         topics: Topics?,
         from: EthereumBlock,
         to: EthereumBlock
-    ) -> Result<[EthereumLog], EthereumClientError> {
+    ) -> Result<[EthereumLog], Web3Error> {
 
         switch getLogs(addresses: addresses, topics: topics, from: from, to: to) {
         case .success(let logs):
@@ -71,16 +71,16 @@ struct RecursiveLogCollector {
 
         do {
             return try await getLogs(addresses: addresses, topics: topics, from: from, to: to)
-        } catch EthereumClientError.tooManyResults {
+        } catch Web3Error.tooManyResults {
             
             guard let middleBlock = await getMiddleBlock(from: from, to: to) else {
-                throw EthereumClientError.unexpectedReturnValue
+                throw Web3Error.unexpectedReturnValue
             }
             
             guard let lhs = try? await getAllLogs(addresses: addresses, topics: topics, from: from, to: middleBlock),
                   let rhs = try? await getAllLogs(addresses: addresses, topics: topics, from: middleBlock, to: to) else {
                 
-                      throw EthereumClientError.unexpectedReturnValue
+                      throw Web3Error.unexpectedReturnValue
                       
             }
             return lhs+rhs
@@ -93,11 +93,11 @@ struct RecursiveLogCollector {
         topics: Topics? = nil,
         from: EthereumBlock,
         to: EthereumBlock
-    ) -> Result<[EthereumLog], EthereumClientError> {
+    ) -> Result<[EthereumLog], Web3Error> {
 
         let sem = DispatchSemaphore(value: 0)
 
-        var response: Result<[EthereumLog], EthereumClientError>!
+        var response: Result<[EthereumLog], Web3Error>!
 
         ethClient.getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to) { result in
             response = result
@@ -167,7 +167,7 @@ struct RecursiveLogCollector {
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    private func getCurrentBlock() -> Result<EthereumBlock, EthereumClientError> {
+    private func getCurrentBlock() -> Result<EthereumBlock, Web3Error> {
         let sem = DispatchSemaphore(value: 0)
         var responseValue: EthereumBlock?
 

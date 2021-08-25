@@ -43,7 +43,7 @@ class ENSAsyncTests: XCTestCase {
             let nameService = EthereumNameService(client: client!)
             _ = try await nameService.resolve(address: EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c9"))
         } catch {
-            XCTAssertEqual(error as? EthereumNameServiceError, EthereumNameServiceError.ensUnknown)
+            XCTAssertEqual(error as? Web3Error, Web3Error.ensUnknown)
         }
     }
     
@@ -52,7 +52,7 @@ class ENSAsyncTests: XCTestCase {
             let nameService = EthereumNameService(client: client!, registryAddress: EthereumAddress("0x7D7C04B7A05539a92541105806e0971E45969F85"))
             _ = try await nameService.resolve(address: EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c9"))
         } catch {
-            XCTAssertEqual(error as? EthereumNameServiceError, EthereumNameServiceError.ensUnknown)
+            XCTAssertEqual(error as? Web3Error, Web3Error.ensUnknown)
         }
     }
     
@@ -67,7 +67,7 @@ class ENSAsyncTests: XCTestCase {
             let nameService = EthereumNameService(client: client!)
             _ = try await nameService.resolve(ens: "**somegarbage)_!!")
         } catch {
-            XCTAssertEqual(error as? EthereumNameServiceError, EthereumNameServiceError.ensUnknown)
+            XCTAssertEqual(error as? Web3Error, Web3Error.ensUnknown)
         }
     }
     
@@ -76,7 +76,7 @@ class ENSAsyncTests: XCTestCase {
             let nameService = EthereumNameService(client: client!, registryAddress: EthereumAddress("0x7D7C04B7A05539a92541105806e0971E45969F85"))
             _ = try await nameService.resolve(ens: "**somegarbage)_!!")
         } catch {
-            XCTAssertEqual(error as? EthereumNameServiceError, EthereumNameServiceError.ensUnknown)
+            XCTAssertEqual(error as? Web3Error, Web3Error.ensUnknown)
         }
     }
 

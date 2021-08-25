@@ -142,7 +142,7 @@ public class ERC20 {
                 
         let (events, _) = try await self.client.getEvents(addresses: nil, topics: [ sig, nil, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC20Events.Transfer.self])
         guard let events = events as? [ERC20Events.Transfer] else {
-            throw EthereumClientError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         return events
     }
@@ -172,7 +172,7 @@ public class ERC20 {
         let (events, _) = try await self.client.getEvents(addresses: nil, topics: [ sig, String(hexFromBytes: result), nil ], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC20Events.Transfer.self])
         
         guard let events = events as? [ERC20Events.Transfer] else {
-            throw EthereumClientError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         return events
     }

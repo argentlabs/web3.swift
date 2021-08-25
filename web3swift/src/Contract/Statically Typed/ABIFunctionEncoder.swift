@@ -18,7 +18,7 @@ extension ABIFunction {
         var raw = data.web3.hexString
         
         guard raw.hasPrefix(methodId) else {
-            throw ABIError.invalidSignature
+            throw Web3Error.invalidSignature
         }
         raw = raw.replacingOccurrences(of: methodId, with: "")
         let decoded = try ABIDecoder.decodeData(raw, types: expectedTypes)
@@ -26,7 +26,7 @@ extension ABIFunction {
         guard
             empty.count == 0,
             decoded.count == expectedTypes.count else {
-            throw ABIError.invalidSignature
+            throw Web3Error.invalidSignature
         }
         
         return decoded
@@ -45,17 +45,17 @@ public class ABIFunctionEncoder {
         switch (staticSize, rawType) {
         case (let size?, .DynamicBytes):
             guard size <= 32 else {
-                throw ABIError.invalidType
+                throw Web3Error.invalidType
             }
             types.append(.FixedBytes(size))
         case (let size?, .FixedUInt):
             guard size <= 256 else {
-                throw ABIError.invalidType
+                throw Web3Error.invalidType
             }
             types.append(.FixedUInt(size))
         case (let size?, .FixedInt):
             guard size <= 256 else {
-                throw ABIError.invalidType
+                throw Web3Error.invalidType
             }
             types.append(.FixedInt(size))
         default:
@@ -84,7 +84,7 @@ public class ABIFunctionEncoder {
     static func signature(name: String, types: [ABIRawType]) throws -> [UInt8] {
         let typeNames = types.map { $0.rawValue }
         let signature = name + "(" + typeNames.joined(separator: ",") + ")"
-        guard let data = signature.data(using: .utf8) else { throw ABIError.invalidSignature }
+        guard let data = signature.data(using: .utf8) else { throw Web3Error.invalidSignature }
         return data.web3.keccak256.web3.bytes
     }
     

@@ -106,9 +106,9 @@ class EthereumClientAsyncTests: XCTestCase {
             XCTFail("invalid receipt found")
         } catch {
             
-            if let error = error as? JSONRPCError, case .noResult = error {
+            if let error = error as? Web3Error, case .noResult = error {
                 expectation.fulfill()
-            } else if let error = error as? EthereumClientError, case .noResult = error {
+            } else if let error = error as? Web3Error, case .noResult = error {
                 expectation.fulfill()
             } else {
                 XCTFail("fail: \(error)")
@@ -269,7 +269,7 @@ class EthereumClientAsyncTests: XCTestCase {
             _ = try await function.call(withClient: self.mainnetClient!, responseType: InvalidMethodA.BoolResponse.self)
             XCTFail("this call should fail")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, EthereumClientError.decodeIssue )
+            XCTAssertEqual(error as? Web3Error, Web3Error.decodeIssue )
             expectation.fulfill()
         }
 
@@ -285,7 +285,7 @@ class EthereumClientAsyncTests: XCTestCase {
             _ = try await function.call(withClient: self.mainnetClient!, responseType: InvalidMethodB.BoolResponse.self)
             XCTFail("this call should fail")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, EthereumClientError.decodeIssue )
+            XCTAssertEqual(error as? Web3Error, Web3Error.decodeIssue )
             expectation.fulfill()
         }
 
