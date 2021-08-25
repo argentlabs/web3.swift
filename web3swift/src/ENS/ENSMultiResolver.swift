@@ -229,30 +229,29 @@ extension EthereumNameService {
                 let ensRegistryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network)
             else { return completion(.failure(.noNetwork)) }
 
+            Task() {
+                var aggregator = Multicall.Aggregator()
 
-            var aggegator = Multicall.Aggregator()
+                do {
+                    try parameters.enumerated().forEach { index, parameter in
 
-            do {
-                try parameters.enumerated().forEach { index, parameter in
+                        let function = ENSContracts.ENSRegistryFunctions.resolver(contract: ensRegistryAddress, parameter: parameter)
 
-                    let function = ENSContracts.ENSRegistryFunctions.resolver(contract: ensRegistryAddress, parameter: parameter)
-
-                    try aggegator.append(
-                        function: function,
-                        response: ENSContracts.ENSRegistryResponses.RegistryResponse.self
-                    ) { result in handler(index, parameter, result) }
-                }
-
-                multicall.aggregate(calls: aggegator.calls) { result in
-                    switch result {
-                    case .success:
+                        try aggregator.append(
+                            function: function,
+                            response: ENSContracts.ENSRegistryResponses.RegistryResponse.self
+                        ) { result in handler(index, parameter, result) }
+                    }
+                    
+                    do {
+                        _ = try await multicall.aggregate(calls: aggregator.calls)
                         completion(.success(()))
-                    case .failure:
+                    } catch {
                         completion(.failure(.noNetwork))
                     }
+                } catch {
+                    completion(.failure(.invalidInput))
                 }
-            } catch {
-                completion(.failure(.invalidInput))
             }
         }
 
@@ -272,10 +271,8 @@ extension EthereumNameService {
         }
                 
         private func resolveQueries<ResolverOutput>(registryOutput: RegistryOutput<ResolverOutput>) async throws -> [ResolverOutput] {
-                        
-            // TODO: Refactor to concurrent calls using async let result = ... await result
-        
-            var aggegator = Multicall.Aggregator()
+                                
+            var aggregator = Multicall.Aggregator()
             
             try registryOutput.queries.forEach { query in
                 
@@ -286,27 +283,27 @@ extension EthereumNameService {
                         throw Web3Error.invalidInput
                     }
                             
-                    resolveAddress(query, address: address, aggegator: &aggegator, registryOutput: registryOutput1)
+                    resolveAddress(query, address: address, aggregator: &aggregator, registryOutput: registryOutput1)
                 case .name(let name):
                     guard let registryOutput1 = registryOutput as? RegistryOutput<NameResolveOutput> else {
                         throw Web3Error.invalidInput
                     }
-                    resolveName(query, ens: name, aggegator: &aggegator, registryOutput: registryOutput1)
+                    resolveName(query, ens: name, aggegator: &aggregator, registryOutput: registryOutput1)
                 }
             }
             
-            let result = try await multicall.aggregate(calls: aggegator.calls)
+            _ = try await multicall.aggregate(calls: aggregator.calls)
             return registryOutput.intermediaryResponses.compactMap { $0 }
         }
 
         private func resolveAddress(
             _ query: EthereumNameService.MultiResolver.ResolverQuery,
             address: EthereumAddress,
-            aggegator: inout Multicall.Aggregator,
+            aggregator: inout Multicall.Aggregator,
             registryOutput: RegistryOutput<AddressResolveOutput>
         ) {
             do {
-                try aggegator.append(
+                _ = try aggregator.append(
                     function: ENSContracts.ENSResolverFunctions.name(contract: query.resolverAddress, _node: query.nameHash),
                     response: ENSContracts.ENSRegistryResponses.AddressResolverResponse.self
                 ) { result in
