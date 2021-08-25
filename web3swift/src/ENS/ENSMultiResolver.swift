@@ -71,10 +71,6 @@ extension EthereumNameService {
                 }
             }
         })
-//            return try await MultiResolver(
-//                client: client,
-//                registryAddress: registryAddress
-//            ).resolve(names: names)
     }
 }
 
@@ -156,12 +152,16 @@ extension EthereumNameService {
                 }, completion: { result  in
                     switch result {
                     case .success:
-                        self.resolveQueries(registryOutput: output) { result in
-                            switch result {
-                            case .success(let output):
+                        Task(priority: .userInitiated) {
+                            do {
+                                let output = try await self.resolveQueries(registryOutput: output)
                                 completion(.success(output))
-                            case .failure:
-                                completion(result)
+                            } catch {
+                                guard let error = error as? Web3Error else {
+                                    completion(.failure(.unknownError))
+                                    return
+                                }
+                                completion(.failure(error))
                             }
                         }
                     case .failure(let error):
