@@ -64,11 +64,6 @@ enum Web3Error: Error {
 }
 
 /*
-public enum EthereumAccountError: Error {
-    case createAccountError
-    case loadAccountError
-    case signError
-}
 
 enum EthereumSignerError: Error {
     case emptyRawTransaction
