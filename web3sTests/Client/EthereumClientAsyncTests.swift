@@ -293,3 +293,115 @@ class EthereumClientAsyncTests: XCTestCase {
     }
 
 }
+
+struct GetGuardians: ABIFunction {
+    static let name = "getGuardians"
+    let contract = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
+    let from: EthereumAddress? = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
+    let gasPrice: BigUInt? = nil
+    let gasLimit: BigUInt? = nil
+    
+    struct Response: ABIResponse {
+        static var types: [ABIType.Type] = [ABIArray<EthereumAddress>.self]
+        let guardians: [EthereumAddress]
+        
+        init?(values: [ABIDecoder.DecodedValue]) throws {
+            self.guardians = try values[0].decodedArray()
+            
+        }
+    }
+    
+    let wallet: EthereumAddress
+    
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(wallet)
+        
+    }
+}
+
+struct TransferToken: ABIFunction {
+    static let name = "transferToken"
+    let contract = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
+    let from: EthereumAddress? = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
+
+    let wallet: EthereumAddress
+    let token: EthereumAddress
+    let to: EthereumAddress
+    let amount: BigUInt
+    let data: Data
+    
+    let gasPrice: BigUInt?
+    let gasLimit: BigUInt?
+    
+    func encode(to encoder: ABIFunctionEncoder) throws {
+        try encoder.encode(wallet)
+        try encoder.encode(token)
+        try encoder.encode(to)
+        try encoder.encode(amount)
+        try encoder.encode(data)
+    }
+}
+
+struct InvalidMethodA: ABIFunction {
+    static let name = "invalidMethodCallBoolResponse"
+    let contract = EthereumAddress("0xed0439eacf4c4965ae4613d77a5c2efe10e5f183")
+    let from: EthereumAddress? = EthereumAddress("0xed0439eacf4c4965ae4613d77a5c2efe10e5f183")
+    let gasPrice: BigUInt? = nil
+    let gasLimit: BigUInt? = nil
+    
+    let param: EthereumAddress
+    
+    struct BoolResponse: ABIResponse {
+        static var types: [ABIType.Type] = [Bool.self]
+        let value: Bool
+
+        init?(values: [ABIDecoder.DecodedValue]) throws {
+            self.value = try values[0].decoded()
+        }
+    }
+
+    func encode(to encoder: ABIFunctionEncoder) throws {
+    }
+}
+
+struct InvalidMethodB: ABIFunction {
+    static let name = "invalidMethodCallBoolResponse"
+    let contract = EthereumAddress("0xC011A72400E58ecD99Ee497CF89E3775d4bd732F")
+    let from: EthereumAddress? = EthereumAddress("0xC011A72400E58ecD99Ee497CF89E3775d4bd732F")
+    let gasPrice: BigUInt? = nil
+    let gasLimit: BigUInt? = nil
+    
+    let param: EthereumAddress
+    
+    struct BoolResponse: ABIResponse {
+        static var types: [ABIType.Type] = [Bool.self]
+        let value: Bool
+
+        init?(values: [ABIDecoder.DecodedValue]) throws {
+            self.value = try values[0].decoded()
+        }
+    }
+
+    func encode(to encoder: ABIFunctionEncoder) throws {
+    }
+}
+struct TransferMatchingSignatureEvent: ABIEvent {
+    public static let name = "Transfer"
+    public static let types: [ABIType.Type] = [ EthereumAddress.self , EthereumAddress.self , BigUInt.self]
+    public static let typesIndexed = [true, true, false]
+    public let log: EthereumLog
+    
+    public let from: EthereumAddress
+    public let to: EthereumAddress
+    public let value: BigUInt
+    
+    public init?(topics: [ABIDecoder.DecodedValue], data: [ABIDecoder.DecodedValue], log: EthereumLog) throws {
+        try TransferMatchingSignatureEvent.checkParameters(topics, data)
+        self.log = log
+        
+        self.from = try topics[0].decoded()
+        self.to = try topics[1].decoded()
+        
+        self.value = try data[0].decoded()
+    }
+}
