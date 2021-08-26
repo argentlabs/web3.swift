@@ -50,7 +50,7 @@ class ERC20Tests: XCTestCase {
         let sig = try! ERC20Events.Transfer.signature()
         let topics = [ sig, result.hexString]
     
-        let (events, unprocessed) = try await self.client!.getEvents(addresses: nil, topics: topics, fromBlock: .earliest, toBlock: .latest, eventTypes: [ERC20Events.Transfer.self])
+        let (events, _) = try await self.client!.events(addresses: nil, topics: topics, fromBlock: .earliest, toBlock: .latest, eventTypes: [ERC20Events.Transfer.self])
         XCTAssert(events.count > 0)
     }
     

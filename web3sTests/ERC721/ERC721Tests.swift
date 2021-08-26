@@ -16,7 +16,7 @@ let nonOwner = EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56792")
 let nftImageURL = URL(string: "https://ipfs.io/ipfs/QmUDJMmiJEsueLbr6jxh7vhSSFAvjfYTLC64hgkQm1vH2C/graph.svg")!
 let nftURL = URL(string: "https://ipfs.io/ipfs/QmUtKP7LnZnL2pWw2ERvNDndP9v5EPoJH7g566XNdgoRfE")!
 
-class ERC721AsyncTests: XCTestCase {
+class ERC721Tests: XCTestCase {
     var client: EthereumClient!
     var erc721: ERC721!
     let address = EthereumAddress(TestConfig.erc721Contract)

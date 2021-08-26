@@ -194,7 +194,7 @@ class EthereumClientTests: XCTestCase {
 
     func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned() async throws {
         let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
-        let (events, logs) = try await client!.getEvents(
+        let (events, logs) = try await client!.events(
             addresses: nil,
             topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
             fromBlock: .earliest,
@@ -207,7 +207,7 @@ class EthereumClientTests: XCTestCase {
 
     func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned() async throws {
         let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
-        let (events, logs) = try await client!.getEvents(addresses: nil,
+        let (events, logs) = try await client!.events(addresses: nil,
                       topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
                       fromBlock: .earliest,
                       toBlock: .latest,
@@ -222,7 +222,7 @@ class EthereumClientTests: XCTestCase {
         let filters = [
             EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
         ]
-        let (events, logs) = try await client!.getEvents(addresses: nil,
+        let (events, logs) = try await client!.events(addresses: nil,
                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
                           fromBlock: .earliest,
                           toBlock: .latest,
@@ -238,7 +238,7 @@ class EthereumClientTests: XCTestCase {
             EventFilter(type: ERC20Events.Transfer.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")]),
             EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: [EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6")])
         ]
-        let (events, logs) = try await client!.getEvents(addresses: nil,
+        let (events, logs) = try await client!.events(addresses: nil,
                                                          topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
                                                          fromBlock: .earliest,
                                                          toBlock: .latest,

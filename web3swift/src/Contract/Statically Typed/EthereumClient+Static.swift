@@ -78,7 +78,7 @@ public extension EthereumClient {
                    completion: @escaping EventsCompletion) {
         async {
             do {
-            let result = try await getEvents(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock, matching: matches)
+            let result = try await events(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock, matching: matches)
                 completion(nil, result.0, result.1)
             } catch {
                 completion(error as? Web3Error, [], [])
@@ -87,7 +87,7 @@ public extension EthereumClient {
     }
     
     
-    func getEvents(addresses: [EthereumAddress]?,
+    func events(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,
@@ -106,7 +106,7 @@ public extension EthereumClient {
                    completion: @escaping EventsCompletion) {
         async {
             do {
-                let result = try await getEvents(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock, eventTypes: eventTypes)
+                let result = try await events(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock, eventTypes: eventTypes)
                 completion(nil, result.0, result.1)
             } catch {
                 completion(error as? Web3Error, [], [])
@@ -115,11 +115,12 @@ public extension EthereumClient {
     }
     
     
-    func getEvents(addresses: [EthereumAddress]?,
+    func events(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,
                    eventTypes: [ABIEvent.Type]) async throws -> ([ABIEvent], [EthereumLog]) {
+        
         let unfiltered = eventTypes.map { EventFilter(type: $0, allowedSenders: []) }
         let logs = try await self.eth_getLogs(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock)
         return try await self.handleLogs(logs, unfiltered)
@@ -134,7 +135,7 @@ public extension EthereumClient {
                    completion: @escaping EventsCompletion) {
         async {
             do {
-                let result = try await getEvents(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, eventTypes: eventTypes)
+                let result = try await events(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, eventTypes: eventTypes)
                 completion(nil, result.0, result.1)
             } catch {
                 completion(error as? Web3Error, [], [])
@@ -142,13 +143,14 @@ public extension EthereumClient {
         }
     }
     
-    func getEvents(addresses: [EthereumAddress]?,
+    func events(addresses: [EthereumAddress]?,
                    topics: [String?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,
                    eventTypes: [ABIEvent.Type]) async throws -> ([ABIEvent], [EthereumLog]) {
+        
         let unfiltered = eventTypes.map { EventFilter(type: $0, allowedSenders: []) }
-        return try await getEvents(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, matching: unfiltered)
+        return try await events(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, matching: unfiltered)
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
@@ -160,7 +162,7 @@ public extension EthereumClient {
                    completion: @escaping EventsCompletion) {
         async {
             do {
-                let result = try await getEvents(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, matching: matches)
+                let result = try await events(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, matching: matches)
                 completion(nil, result.0, result.1)
             } catch {
                 completion(error as? Web3Error, [], [])
@@ -168,7 +170,7 @@ public extension EthereumClient {
         }
     }
     
-    func getEvents(addresses: [EthereumAddress]?,
+    func events(addresses: [EthereumAddress]?,
                    topics: [String?]?,
                    fromBlock: EthereumBlock,
                    toBlock: EthereumBlock,

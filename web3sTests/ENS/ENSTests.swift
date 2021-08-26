@@ -97,40 +97,6 @@ class ENSTests: XCTestCase {
             ]
         )
     }
-//    
-    func testGivenRopstenRegistry_ThenResolvesMultipleAddressesInOneCall() {
-        let expect = expectation(description: "Get the ENS reverse lookup address")
-
-        let nameService = EthereumNameService(client: client!)
-
-        var results: [EthereumNameService.ResolveOutput<String>]?
-
-        nameService.resolve(addresses: [
-            EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c8"),
-            EthereumAddress("0x09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1"),
-            EthereumAddress("0x7e691d7ffb007abe91d8a24d7f22fc74307dab06")
-
-        ]) { result in
-            switch result {
-            case .success(let resolutions):
-                results = resolutions.map { $0.output }
-            case .failure:
-                break
-            }
-            expect.fulfill()
-        }
-
-        waitForExpectations(timeout: 5)
-
-        XCTAssertEqual(
-            results,
-            [
-                .resolved("julien.argent.test"),
-                .couldNotBeResolved(.ensUnknown),
-                .resolved("davidtests.argent.xyz")
-            ]
-        )
-    }
 
     func testGivenRopstenRegistry_ThenResolvesMultipleNamesInOneCall() async throws {
 
