@@ -517,7 +517,7 @@ public class EthereumClient: EthereumClientProtocol {
     private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock) async throws -> [EthereumLog] {
         
         return try await RecursiveLogCollector(ethClient: self)
-            .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
+            .allLogs(addresses: addresses, topics: topics, from: from, to: to)
     }
 
     @available(*, deprecated, message: "Prefer async alternative instead")

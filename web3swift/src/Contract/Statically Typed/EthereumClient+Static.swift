@@ -86,7 +86,6 @@ public extension EthereumClient {
         }
     }
     
-    
     func events(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
                    fromBlock: EthereumBlock,

@@ -62,7 +62,7 @@ struct RecursiveLogCollector {
         }
     }
     
-    func getAllLogs(
+    func allLogs(
         addresses: [EthereumAddress]?,
         topics: Topics?,
         from: EthereumBlock,
@@ -70,15 +70,15 @@ struct RecursiveLogCollector {
     ) async throws -> [EthereumLog] {
 
         do {
-            return try await getLogs(addresses: addresses, topics: topics, from: from, to: to)
+            return try await logs(addresses: addresses, topics: topics, from: from, to: to)
         } catch Web3Error.tooManyResults {
             
-            guard let middleBlock = await getMiddleBlock(from: from, to: to) else {
+            guard let middleBlock = await middleBlock(from: from, to: to) else {
                 throw Web3Error.unexpectedReturnValue
             }
             
-            guard let lhs = try? await getAllLogs(addresses: addresses, topics: topics, from: from, to: middleBlock),
-                  let rhs = try? await getAllLogs(addresses: addresses, topics: topics, from: middleBlock, to: to) else {
+            guard let lhs = try? await allLogs(addresses: addresses, topics: topics, from: from, to: middleBlock),
+                  let rhs = try? await allLogs(addresses: addresses, topics: topics, from: middleBlock, to: to) else {
                 
                       throw Web3Error.unexpectedReturnValue
                       
@@ -109,7 +109,7 @@ struct RecursiveLogCollector {
         return response
     }
     
-    private func getLogs(
+    private func logs(
         addresses: [EthereumAddress]?,
         topics: Topics? = nil,
         from: EthereumBlock,
@@ -143,7 +143,7 @@ struct RecursiveLogCollector {
         return EthereumBlock(rawValue: fromBlockNumber + (toBlockNumber - fromBlockNumber) / 2)
     }
     
-    private func getMiddleBlock(
+    private func middleBlock(
         from: EthereumBlock,
         to: EthereumBlock
     ) async -> EthereumBlock? {
@@ -154,7 +154,7 @@ struct RecursiveLogCollector {
         do {
             if let toBlock = to.intValue {
                 toBlockNumber = toBlock
-            } else if let toBlock = try await getCurrentBlock().intValue {
+            } else if let toBlock = try await currentBlock().intValue {
                 toBlockNumber = toBlock
             } else {
                 return nil
@@ -182,7 +182,7 @@ struct RecursiveLogCollector {
         return responseValue.map(Result.success) ?? .failure(.unexpectedReturnValue)
     }
     
-    private func getCurrentBlock() async throws -> EthereumBlock {
+    private func currentBlock() async throws -> EthereumBlock {
         let blockInt = try await self.ethClient.eth_blockNumber()
         return EthereumBlock(rawValue: blockInt)
     }
