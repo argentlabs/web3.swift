@@ -10,7 +10,7 @@ import XCTest
 import BigInt
 @testable import web3
 
-class ERC20AsyncTests: XCTestCase {
+class ERC20Tests: XCTestCase {
     var client: EthereumClient?
     var erc20: ERC20?
     let testContractAddress = EthereumAddress(TestConfig.erc20Contract)

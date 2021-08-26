@@ -11,7 +11,7 @@ import XCTest
 import BigInt
 
 
-class EthereumClientAsyncTests: XCTestCase {
+class EthereumClientTests: XCTestCase {
     var client: EthereumClient?
     var mainnetClient: EthereumClient?
     var account: EthereumAccount?

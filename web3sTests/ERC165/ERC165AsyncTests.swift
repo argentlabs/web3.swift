@@ -25,27 +25,13 @@ class ERC165Tests: XCTestCase {
         XCTAssertEqual(ERC165Functions.interfaceId.web3.hexString, "0x01ffc9a7")
     }
     
-    func test_GivenInterfaceffff_returnsNotSupported() {
-        let expect = expectation(description: "Supports own interface")
-        erc165.supportsInterface(contract: address,
-                                 id: "0xffffffff".web3.hexData!) { (error, supported) in
-            XCTAssertNil(error)
-            XCTAssertEqual(supported, false)
-            expect.fulfill()
-        }
-        
-        waitForExpectations(timeout: 10)
+    func test_GivenInterfaceffff_returnsNotSupported() async throws {
+        let supported = try await erc165.supportsInterface(contract: address, id: "0xffffffff".web3.hexData!)
+        XCTAssertEqual(supported, false)
     }
     
-    func test_GivenInterfaceERC165_returnsSupported() {
-        let expect = expectation(description: "Supports own interface")
-        erc165.supportsInterface(contract: address,
-                                 id: ERC165Functions.interfaceId) { (error, supported) in
-                                    XCTAssertNil(error)
-                                    XCTAssertEqual(supported, true)
-                                    expect.fulfill()
-        }
-        
-        waitForExpectations(timeout: 10)
+    func test_GivenInterfaceERC165_returnsSupported() async throws {
+        let supported = try await erc165.supportsInterface(contract: address, id: ERC165Functions.interfaceId)
+        XCTAssertEqual(supported, true)
     }
 }

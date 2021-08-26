@@ -9,7 +9,7 @@
 import XCTest
 @testable import web3
 
-class ENSAsyncTests: XCTestCase {
+class ENSTests: XCTestCase {
     var account: EthereumAccount?
     var client: EthereumClient!
 
