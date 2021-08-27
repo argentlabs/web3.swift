@@ -46,16 +46,6 @@ public protocol EthereumClientProtocol {
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
     func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo
 }
-//
-//public enum Web3Error: Error {
-//    case tooManyResults
-//    case executionError
-//    case unexpectedReturnValue
-//    case noResult
-//    case decodeIssue
-//    case encodeIssue
-//    case noInputData
-//}
 
 public class EthereumClient: EthereumClientProtocol {
     

@@ -60,7 +60,7 @@ public class EthereumRPC {
         }
     }
     
-    // TODO: Instead of Any, can't we return U?
+    // TODO: Instead of Any, can't we return U? Edit: That will break returning [U], but shouldn't receive be set to [U] in that case?
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1) async throws -> Any {
         
         if type(of: params) == [Any].self {
