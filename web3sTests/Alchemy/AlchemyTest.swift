@@ -28,4 +28,18 @@ class AlchemyTests: XCTestCase {
         XCTAssertGreaterThan(fee, 0)
     }
     
+    func testTokenAllowance() async throws {
+        
+        // This is a random Ethereum address that recently had approved tokens on Uniswap
+        // Since Uniswap always allows the maxInt amount, the allowance is always the same
+        let tokenContract = EthereumAddress("0x1f9840a85d5af5bf1d1762f925bdaddc4201f984")
+        let owner = EthereumAddress("0x99a16cec9e0c5f3421da53b83b6649a85b3f4054")
+        let spender = EthereumAddress("0x2faf487a4414fe77e2327f0bf4ae2a264a776ad2")
+        
+        let allowance = try await mainnetClient.alchemyTokenAllowance(tokenContract: tokenContract, owner: owner, spender: spender)
+        XCTAssertEqual(allowance, BigUInt("79228162514264337593543950335")) // maxValue
+        XCTAssertEqual(allowance, "79228162514264337593543950335")
+        print("allowance: \(allowance)")
+    }
+    
 }

@@ -10,28 +10,41 @@ import BigInt
 
 // Or move to file ERC20+Alchemy.swift?
 // https://dashboard.alchemyapi.io/composer
-extension ERC20 {
+
+extension EthereumClient {
     
-    public func alchemy_TokenAllowance() async throws -> Data {
-        return Data()
+    /// Returns token balances for a specific address given a list of contracts.
+    /// - SeeAlso:
+    ///  (Alchemy documentation)[https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-alchemy-gettokenallowance-contract-owner-spender]
+    /// - Parameters:
+    ///   - tokenContract: The address of the token contract.
+    ///   - owner: The address of the token owner.
+    ///   - spender: The address of the token spender.
+    /// - Returns: The allowance amount, as a string representing a base-10 number.
+    public func alchemyTokenAllowance(tokenContract: EthereumAddress,
+                                       owner: EthereumAddress,
+                                      spender: EthereumAddress) async throws -> BigUInt {
+        let function = ERC20Functions.TokenAllowance(contract: tokenContract, owner: owner, spender: spender)
+        let balanceResponse = try await function.call(withClient: self, responseType: ERC20Responses.balanceResponse.self)
+        return balanceResponse.value
     }
     
-    public func alchemy_assetTransfers() async throws -> Data {
-        return Data()
-    }
-    
-    public func alchemy_tokenBalances() async throws -> Data {
+    // https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-alchemy-gettokenbalances-address-contractaddresses
+    public func alchemy_tokenBalances(address: EthereumAddress, contractAddresses: [EthereumAddress]) async throws -> Data {
         return Data()
     }
     
     public func alchemy_tokenMetadata() async throws -> Data {
         return Data()
     }
-}
+        
+    public func alchemyAssetTransfers() async throws -> Data {
+        return Data()
+    }
 
-// EIP 1559 related methods
-extension EthereumClient {
+    // EIP 1559 related methods
     
+    // https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-eth-getfeehistory-blockrange-startingblock-percentiles
 //    public func feeHistory(blockRange, startingBlock, percentiles[]) async throws -> BigUInt
     
     
