@@ -15,7 +15,7 @@ extension EthereumClient {
     
     /// Returns token balances for a specific address given a list of contracts.
     /// - SeeAlso:
-    ///  (Alchemy documentation)[https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-alchemy-gettokenallowance-contract-owner-spender]
+    ///  (TokenAllowance documentation on Alchemy)[https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-alchemy-gettokenallowance-contract-owner-spender]
     /// - Parameters:
     ///   - tokenContract: The address of the token contract.
     ///   - owner: The address of the token owner.
@@ -29,9 +29,17 @@ extension EthereumClient {
         return balanceResponse.value
     }
     
-    // https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-alchemy-gettokenbalances-address-contractaddresses
+    //
     
-    public func alchemyTokenBalances(address: EthereumAddress, tokenAddresses: [EthereumAddress]? = nil) async throws -> AlchemyTokenBalances {
+    
+    /// Returns token balances for a specific address given a list of contracts.
+    /// - SeeAlso:
+    /// (TokenBalances documentation on Alchemy)[https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-alchemy-gettokenbalances-address-contractaddresses]
+    /// - Parameters:
+    ///   - address: The address for which token balances will be checked.
+    ///   - tokenAddresses: An array of contract addresses. if nil, a list of the top 100 DEFAULT_TOKENS will be returned
+    /// - Returns: An array of AlchemyTokenBalances.
+    public func alchemyTokenBalances(address: EthereumAddress, tokenAddresses: [EthereumAddress]? = nil) async throws -> [AlchemyTokenBalance] {
         
         struct CallParams: Encodable {
             let address: EthereumAddress
@@ -53,8 +61,8 @@ extension EthereumClient {
         }
         
         if let response = response as? AlchemyTokenBalances {
-            dump(response)
-            return response
+//            dump(response)
+            return response.tokenBalances
         } else {
             throw Web3Error.unexpectedReturnValue
         }

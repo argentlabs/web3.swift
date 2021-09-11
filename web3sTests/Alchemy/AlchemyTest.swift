@@ -47,8 +47,7 @@ class AlchemyTests: XCTestCase {
     func testDefaultTokenBalances() async throws {
         let owner = EthereumAddress("0xb739D0895772DBB71A89A3754A160269068f0D45")
         let balances = try await mainnetClient.alchemyTokenBalances(address: owner)
-        XCTAssertEqual(balances.tokenBalances.count, 100)
-        XCTAssertEqual(balances.address, owner)
+        XCTAssertEqual(balances.count, 100)
     }
     
     func testTokenBalances() async throws {
@@ -62,8 +61,7 @@ class AlchemyTests: XCTestCase {
         ]
         let balances = try await mainnetClient.alchemyTokenBalances(address: owner, tokenAddresses: tokens)
     
-        XCTAssertEqual(tokens.count, balances.tokenBalances.count)
-        XCTAssertEqual(balances.address, owner)
+        XCTAssertEqual(tokens.count, balances.count)    
     }
     
     func testErc20Balance() async throws {
