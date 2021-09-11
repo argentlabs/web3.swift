@@ -69,4 +69,13 @@ class AlchemyTests: XCTestCase {
         let balance = try await erc20.balanceOf(tokenContract: uniswapTokenContract, address: EthereumAddress("0xb739D0895772DBB71A89A3754A160269068f0D45"))
         XCTAssertGreaterThan(balance, 0)
     }
+    
+    func testTokenMetadata() async throws {
+        let gysrAddress = EthereumAddress("0xbea98c05eeae2f3bc8c3565db7551eb738c8ccab")
+        let metadata = try await mainnetClient.alchemy_tokenMetadata(tokenAddresss: gysrAddress)
+        XCTAssertEqual(metadata.name, "GYSR")
+        XCTAssertEqual(metadata.symbol, "GYSR")
+        XCTAssertEqual(metadata.logo, URL(string: "https://static.alchemyapi.io/images/assets/7661.png")!)
+        XCTAssertEqual(metadata.decimals, 18)
+    }
 }

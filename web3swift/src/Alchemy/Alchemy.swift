@@ -29,8 +29,6 @@ extension EthereumClient {
         return balanceResponse.value
     }
     
-    //
-    
     
     /// Returns token balances for a specific address given a list of contracts.
     /// - SeeAlso:
@@ -68,8 +66,11 @@ extension EthereumClient {
         }
     }
     
-    public func alchemy_tokenMetadata() async throws -> Data {
-        return Data()
+    public func alchemyTokenMetadata(tokenAddresss: EthereumAddress) async throws -> AlchemyTokenMetadata {
+        guard let response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "alchemy_getTokenMetadata", params:  [tokenAddresss.value], receive: AlchemyTokenMetadata.self) as? AlchemyTokenMetadata else {
+            throw Web3Error.unexpectedReturnValue
+        }
+        return response
     }
         
     public func alchemyAssetTransfers() async throws -> Data {

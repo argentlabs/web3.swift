@@ -52,6 +52,19 @@ extension AlchemyTokenBalance: Equatable {
 }
 
 
+/// https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#returns-2
+public struct AlchemyTokenMetadata: Codable {
+    let name: String
+    let symbol: String
+    let decimals: Int
+    let logo: URL?
+}
+
+extension AlchemyTokenMetadata: Equatable {
+    public static func == (lhs: AlchemyTokenMetadata, rhs: AlchemyTokenMetadata) -> Bool {
+        return lhs.name == rhs.name && lhs.symbol == rhs.symbol && lhs.decimals == rhs.decimals
+    }
+}
 
 
 // see ethereumTransactionReceipt
