@@ -66,6 +66,14 @@ extension EthereumClient {
         }
     }
     
+        
+    /// Returns metadata (name, symbol, decimals, logo) for a given token contract address.
+    /// - Parameter tokenAddresss: The address of the token contract.
+    /// - Returns: An object with the following fields:
+    /// name: The token's name. null if not defined in the contract and not available from other sources.
+    /// symbol: The token's symbol. null if not defined in the contract and not available from other sources.
+    /// decimals: The token's decimals. null if not defined in the contract and not available from other sources.
+    /// logo: URL of the token's logo image. null if not available.
     public func alchemyTokenMetadata(tokenAddresss: EthereumAddress) async throws -> AlchemyTokenMetadata {
         guard let response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "alchemy_getTokenMetadata", params:  [tokenAddresss.value], receive: AlchemyTokenMetadata.self) as? AlchemyTokenMetadata else {
             throw Web3Error.unexpectedReturnValue
