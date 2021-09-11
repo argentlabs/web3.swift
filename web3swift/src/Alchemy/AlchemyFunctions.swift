@@ -9,11 +9,12 @@ import Foundation
 import BigInt
 
 extension ERC20Functions {
+    
     public struct TokenAllowance: ABIFunction {
         public static let name = "allowance"
         public let gasPrice: BigUInt? = nil
         public let gasLimit: BigUInt? = nil
-        public var contract: EthereumAddress
+        public let contract: EthereumAddress
         public let from: EthereumAddress? = nil
         
         public let owner: EthereumAddress
@@ -32,4 +33,30 @@ extension ERC20Functions {
             try encoder.encode(spender)
         }
     }
+    
+//    public struct TokenBalances: ABIFunction {
+//        public static let name = "alchemy_getTokenBalances"
+//        public let gasPrice: BigUInt? = nil
+//        public let gasLimit: BigUInt? = nil
+//        public var contract: EthereumAddress? = nil
+//        public let from: EthereumAddress? = nil
+//        
+//        public let owner: EthereumAddress
+//        public let tokenAddresses: [EthereumAddress]?
+//        
+//        public init(owner: EthereumAddress,
+//                    tokenAddresses: [EthereumAddress]? = nil) {
+//            self.owner = owner
+//            self.tokenAddresses = tokenAddresses
+//        }
+//        
+//        public func encode(to encoder: ABIFunctionEncoder) throws {
+//            try encoder.encode(owner)
+//            if let tokenAddresses = tokenAddresses {
+//                try encoder.encode(tokenAddresses)
+//            }
+//            try encoder.encode("DEFAULT_TOKENS")
+//        }
+//    }
+    
 }

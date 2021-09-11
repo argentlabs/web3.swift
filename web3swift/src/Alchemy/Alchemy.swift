@@ -30,8 +30,34 @@ extension EthereumClient {
     }
     
     // https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-alchemy-gettokenbalances-address-contractaddresses
-    public func alchemy_tokenBalances(address: EthereumAddress, contractAddresses: [EthereumAddress]) async throws -> Data {
-        return Data()
+    
+    public func alchemyTokenBalances(address: EthereumAddress, tokenAddresses: [EthereumAddress]? = nil) async throws -> AlchemyTokenBalances {
+        
+        struct CallParams: Encodable {
+            let address: EthereumAddress
+            let tokenAddresses: [EthereumAddress]
+            
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.unkeyedContainer()
+                try container.encode(address.value)
+                try container.encode(tokenAddresses.map{ $0.value })
+            }
+        }
+        
+        let response: Any
+        if let tokenAddresses = tokenAddresses {
+            let params = CallParams(address: address, tokenAddresses: tokenAddresses)
+            response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "alchemy_getTokenBalances", params: params, receive: AlchemyTokenBalances.self)
+        } else {
+            response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "alchemy_getTokenBalances", params:  [address.value, "DEFAULT_TOKENS"], receive: AlchemyTokenBalances.self)
+        }
+        
+        if let response = response as? AlchemyTokenBalances {
+            dump(response)
+            return response
+        } else {
+            throw Web3Error.unexpectedReturnValue
+        }
     }
     
     public func alchemy_tokenMetadata() async throws -> Data {

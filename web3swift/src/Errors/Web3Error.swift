@@ -57,6 +57,9 @@ public indirect enum Web3Error: Error {
     // Thrown by Call
     case contractFailure
     case couldNotDecodeResponse(Web3Error?)
+    
+    // Thrown by Alchemy
+    case tokenBalanceError(String)
 }
 
 extension Web3Error: Equatable {

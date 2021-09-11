@@ -15,6 +15,8 @@ class AlchemyTests: XCTestCase {
     var mainnetClient: EthereumClient!
     var account: EthereumAccount!
     
+    let uniswapTokenContract = EthereumAddress("0x1f9840a85d5af5bf1d1762f925bdaddc4201f984")
+    
     override func setUp() {
         super.setUp()
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
@@ -42,4 +44,31 @@ class AlchemyTests: XCTestCase {
         print("allowance: \(allowance)")
     }
     
+    func testDefaultTokenBalances() async throws {
+        let owner = EthereumAddress("0xb739D0895772DBB71A89A3754A160269068f0D45")
+        let balances = try await mainnetClient.alchemyTokenBalances(address: owner)
+        XCTAssertEqual(balances.tokenBalances.count, 100)
+        XCTAssertEqual(balances.address, owner)
+    }
+    
+    func testTokenBalances() async throws {
+        
+        let owner = EthereumAddress("0xb739D0895772DBB71A89A3754A160269068f0D45")
+        let tokens = [
+            EthereumAddress("0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"), // Uniswap
+            EthereumAddress("0xE41d2489571d322189246DaFA5ebDe1F4699F498"), // ZRX
+            EthereumAddress("0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC"), // KEEP
+            EthereumAddress("0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828"), // UMA token
+        ]
+        let balances = try await mainnetClient.alchemyTokenBalances(address: owner, tokenAddresses: tokens)
+    
+        XCTAssertEqual(tokens.count, balances.tokenBalances.count)
+        XCTAssertEqual(balances.address, owner)
+    }
+    
+    func testErc20Balance() async throws {
+        let erc20 = ERC20(client: mainnetClient)
+        let balance = try await erc20.balanceOf(tokenContract: uniswapTokenContract, address: EthereumAddress("0xb739D0895772DBB71A89A3754A160269068f0D45"))
+        XCTAssertGreaterThan(balance, 0)
+    }
 }
