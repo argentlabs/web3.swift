@@ -78,4 +78,11 @@ class AlchemyTests: XCTestCase {
         XCTAssertEqual(metadata.logo, URL(string: "https://static.alchemyapi.io/images/assets/7661.png")!)
         XCTAssertEqual(metadata.decimals, 18)
     }
+    
+    func testAssetTransfers() async throws {
+        let fromAddress = EthereumAddress("0x99a16cec9e0c5f3421da53b83b6649a85b3f4054")
+        let contractAddresses = [EthereumAddress("0x1f9840a85d5af5bf1d1762f925bdaddc4201f984")]
+        let transfers = try await mainnetClient.alchemyAssetTransfers(fromAddress: fromAddress, contractAddresses: contractAddresses, excludeZeroValue: true)
+        XCTAssertGreaterThan(transfers.count, 1)
+    }
 }

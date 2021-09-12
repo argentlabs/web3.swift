@@ -88,27 +88,48 @@ extension EthereumClient {
         }
         return response
     }
-        
-//    public func alchemyAssetTransfers(fromBlock: EthereumBlock = .latest, toBlock: EthereumBlock = .latest, fromAddress: EthereumAddress? = nil, toAddress: EthereumAddress? = nil, contractAddress: EthereumAddress? = nil, category: Category, excludeZeroValue: Bool = true, maxCount: Int = 1_000, pageKey: Int? = nil) async throws -> Data {
-//        
-//        enum Category: String {
-//            case external = "external"
-//            case internalCategory = "internal"
-//            case token = "token"
-//        }
-//        
-//        return Data()
-//    }
     
-//fromBlock: in hex string or "latest". optional (default to latest)
-//toBlock: in hex string or "latest". optional (default to latest)
-//fromAddress: in hex string. optional
-//toAddress: in hex string. optional.
-//contractAddresses: list of hex strings. optional.
-//category: list of any combination of external, token. optional, if blank, would include both.
-//excludeZeroValue: aBoolean . optional (default true)
-//maxCount: max number of results to return per call. optional (default 1000)
-//pageKey: for pagination. optional
+    /// Returns an array of asset transfers based on the specified paramaters.
+    /// - Parameters:
+    ///   - fromBlock: in hex string or "latest". optional (default to latest)
+    ///   - toBlock:  in hex string or "latest". optional (default to latest)
+    ///   - fromAddress: in hex string. optional
+    ///   - toAddress:  in hex string. optional.
+    ///   - contractAddresses:  list of hex strings. optional.
+    ///   - transferCategory: list of any combination of external, token. optional, if blank, would include both.
+    ///   - excludeZeroValue:  aBoolean . optional (default true)
+    ///   - maxCount: max number of results to return per call. optional (default 1000)
+    ///   - pageKey: for pagination. optional
+    /// - Returns: Returns an array of asset transfers based on the specified paramaters.
+    public func alchemyAssetTransfers(fromBlock: EthereumBlock = EthereumBlock(rawValue: 0), toBlock: EthereumBlock = .latest, fromAddress: EthereumAddress? = nil, toAddress: EthereumAddress? = nil, contractAddresses: [EthereumAddress]? = nil, transferCategory: AlchemyAssetTransferCategory = .all, excludeZeroValue: Bool = true, maxCount: Int? = nil, pageKey: Int? = nil) async throws -> [AlchemyAssetTransfer] {
+        
+        enum TransferCategory: String, Encodable {
+            case external = "external"
+            case internalCategory = "internal"
+            case token = "token"
+        }
+        
+        struct CallParams: Encodable {
+            let fromBlock: EthereumBlock? // in hex string or "latest". optional (default to latest)
+            let toBlock: EthereumBlock? //in hex string or "latest". optional (default to latest)
+            let fromAddress: EthereumAddress? // in hex string. optional
+            let toAddress: EthereumAddress? // in hex string. optional.
+            let contractAddresses: [EthereumAddress]? // list of hex strings. optional.
+            let category: String? // list of any combination of external, token. optional, if blank, would include both.
+            let excludeZeroValue: Bool // aBoolean . optional (default true)
+            let maxCount: Int? // max number of results to return per call. optional (default 1000)
+            let pageKey: Int? // for pagination. optional
+        }
+        
+        let params = CallParams(fromBlock: fromBlock, toBlock: toBlock, fromAddress: fromAddress, toAddress: toAddress, contractAddresses: contractAddresses, category: (transferCategory == .all ? nil : transferCategory.rawValue), excludeZeroValue: excludeZeroValue, maxCount: maxCount, pageKey: pageKey)            
+    
+        guard let response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "alchemy_getAssetTransfers", params: [params], receive: AlchemyAssetTransfers.self) as? AlchemyAssetTransfers else {
+            throw Web3Error.unexpectedReturnValue
+        }
+        return response.transfers
+    }
+    
+
 
     // EIP 1559 related methods
     

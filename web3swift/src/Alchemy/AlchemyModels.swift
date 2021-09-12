@@ -66,9 +66,34 @@ extension AlchemyTokenMetadata: Equatable {
     }
 }
 
-//public struct AlchemyAssetTransfer: Codable {
-//        
-//}
+public enum AlchemyAssetTransferCategory: String, Codable {
+    case external = "external"
+    case internalCategory = "internal"
+    case token = "token"
+    case all = "all"
+}
+
+public struct AlchemyRawContract: Decodable {
+    let value: String?
+    let address: EthereumAddress?
+    let decimal: String?
+}
+
+public struct AlchemyAssetTransfer: Decodable {
+    let blockNum: EthereumBlock
+    let hash: String
+    let from: EthereumAddress
+    let to: EthereumAddress
+    let value: Float
+    let erc721TokenId: String?
+    let asset: String
+    let category: AlchemyAssetTransferCategory?
+    let rawContract: AlchemyRawContract?
+}
+
+public struct AlchemyAssetTransfers: Decodable {
+    let transfers: [AlchemyAssetTransfer]
+}
 
 // see ethereumTransactionReceipt
 
