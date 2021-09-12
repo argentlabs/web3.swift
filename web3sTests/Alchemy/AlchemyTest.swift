@@ -85,4 +85,9 @@ class AlchemyTests: XCTestCase {
         let transfers = try await mainnetClient.alchemyAssetTransfers(fromAddress: fromAddress, contractAddresses: contractAddresses, excludeZeroValue: true)
         XCTAssertGreaterThan(transfers.count, 1)
     }
+    
+    func testFeeHistory() async throws {
+        let history = try await mainnetClient.feeHistory(blockRange: 1, startingBlock: .latest, percentiles: [25, 50, 75])
+//        XCTAssertEqual(history.reward.count, 3)
+    }
 }

@@ -133,8 +133,42 @@ extension EthereumClient {
 
     // EIP 1559 related methods
     
-    // https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-eth-getfeehistory-blockrange-startingblock-percentiles
-//    public func feeHistory(blockRange, startingBlock, percentiles[]) async throws -> BigUInt
+    //
+    
+    /// Fetches the fee history for the given block range as per the (eth spec)[https://github.com/ethereum/eth1.0-specs/blob/master/json-rpc/spec.json].
+    /// - SeeAlso:
+    /// https://docs.alchemy.com/alchemy/documentation/alchemy-web3/enhanced-web3-api#web-3-eth-getfeehistory-blockrange-startingblock-percentiles
+    /// - Parameters:
+    ///   - blockRange: The number of blocks for which to fetch historical fees. Can be an integer or a hex string.
+    ///   - startingBlock: The block to start the search. The result will look backwards from here. Can be a hex string or a predefined block string e.g. "latest".
+    ///   - percentiles:  (Optional) An array of numbers that define which percentiles of reward values you want to see for each block.
+    /// - Returns: An object with the following fields:
+    /// oldestBlock: The oldest block in the range that the fee history is being returned for.
+    /// baseFeePerGas: An array of base fees for each block in the range that was looked up. These are the same values that would be returned on a block for the eth_getBlockByNumber method.
+    /// gasUsedRatio: An array of the ratio of gas used to gas limit for each block.
+    /// reward: Only returned if a percentiles paramater was provided. Each block will have an array corresponding to the percentiles provided. Each element of the nested array will have the tip provided to miners for the percentile given. So if you provide [50, 90] as the percentiles then each block will have a 50th percentile reward and a 90th percentile reward.
+    public func feeHistory(blockRange: Int, startingBlock: EthereumBlock = .latest, percentiles: [Int]) async throws -> FeeHistoryResponse {
+        
+        struct CallParams: Encodable {
+            let blockRange: Int
+            let startingBlock: EthereumBlock
+            let percentiles: [Int]
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.unkeyedContainer()
+                try container.encode(blockRange)
+                try container.encode(startingBlock)
+                try container.encode(percentiles)
+            }
+        }
+        
+        let callParams = CallParams(blockRange: blockRange, startingBlock: startingBlock, percentiles: percentiles)        
+        guard let response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "eth_feeHistory", params: callParams, receive: FeeHistoryResponse.self) as? FeeHistoryResponse else {
+            throw Web3Error.unexpectedReturnValue
+        }
+        
+        return response
+    }
     
     
     /// Returns a quick estimate for maxPriorityFeePerGas in EIP 1559 transactions. Rather than using feeHistory and making a calculation yourself you can just use this method to get a quick estimate. Note: this is a geth-only method, but Alchemy handles that for you behind the scenes.

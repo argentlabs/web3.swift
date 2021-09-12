@@ -95,7 +95,13 @@ public struct AlchemyAssetTransfers: Decodable {
     let transfers: [AlchemyAssetTransfer]
 }
 
-// see ethereumTransactionReceipt
+public struct FeeHistoryResponse: Decodable {
+    let oldestBlock: EthereumBlock
+    let reward: [[String]] //[BigUInt]
+    let baseFeePerGas: [String] //[BigUInt]
+    let gasUsedRatio: [Float]
+}
+
 
 /*
 address: The address for which token balances were checked.
