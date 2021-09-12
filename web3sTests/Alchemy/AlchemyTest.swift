@@ -72,7 +72,7 @@ class AlchemyTests: XCTestCase {
     
     func testTokenMetadata() async throws {
         let gysrAddress = EthereumAddress("0xbea98c05eeae2f3bc8c3565db7551eb738c8ccab")
-        let metadata = try await mainnetClient.alchemy_tokenMetadata(tokenAddresss: gysrAddress)
+        let metadata = try await mainnetClient.alchemyTokenMetadata(tokenAddresss: gysrAddress)
         XCTAssertEqual(metadata.name, "GYSR")
         XCTAssertEqual(metadata.symbol, "GYSR")
         XCTAssertEqual(metadata.logo, URL(string: "https://static.alchemyapi.io/images/assets/7661.png")!)

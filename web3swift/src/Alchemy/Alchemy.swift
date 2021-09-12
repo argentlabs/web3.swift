@@ -24,9 +24,17 @@ extension EthereumClient {
     public func alchemyTokenAllowance(tokenContract: EthereumAddress,
                                        owner: EthereumAddress,
                                       spender: EthereumAddress) async throws -> BigUInt {
-        let function = ERC20Functions.TokenAllowance(contract: tokenContract, owner: owner, spender: spender)
-        let balanceResponse = try await function.call(withClient: self, responseType: ERC20Responses.balanceResponse.self)
-        return balanceResponse.value
+        struct CallParams: Encodable {
+            let contract: EthereumAddress
+            let owner: EthereumAddress
+            let spender: EthereumAddress
+        }
+        
+        let params = CallParams(contract: tokenContract, owner: owner, spender: spender)
+        guard let response = try await EthereumRPC.execute(session: self.session, url: self.url, method: "alchemy_getTokenAllowance", params: [params], receive: String.self) as? String, let allowance = BigUInt(response) else {
+            throw Web3Error.unexpectedReturnValue
+        }
+        return allowance
     }
     
     
@@ -81,9 +89,26 @@ extension EthereumClient {
         return response
     }
         
-    public func alchemyAssetTransfers() async throws -> Data {
-        return Data()
-    }
+//    public func alchemyAssetTransfers(fromBlock: EthereumBlock = .latest, toBlock: EthereumBlock = .latest, fromAddress: EthereumAddress? = nil, toAddress: EthereumAddress? = nil, contractAddress: EthereumAddress? = nil, category: Category, excludeZeroValue: Bool = true, maxCount: Int = 1_000, pageKey: Int? = nil) async throws -> Data {
+//        
+//        enum Category: String {
+//            case external = "external"
+//            case internalCategory = "internal"
+//            case token = "token"
+//        }
+//        
+//        return Data()
+//    }
+    
+//fromBlock: in hex string or "latest". optional (default to latest)
+//toBlock: in hex string or "latest". optional (default to latest)
+//fromAddress: in hex string. optional
+//toAddress: in hex string. optional.
+//contractAddresses: list of hex strings. optional.
+//category: list of any combination of external, token. optional, if blank, would include both.
+//excludeZeroValue: aBoolean . optional (default true)
+//maxCount: max number of results to return per call. optional (default 1000)
+//pageKey: for pagination. optional
 
     // EIP 1559 related methods
     

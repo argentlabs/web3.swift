@@ -66,6 +66,9 @@ extension AlchemyTokenMetadata: Equatable {
     }
 }
 
+//public struct AlchemyAssetTransfer: Codable {
+//        
+//}
 
 // see ethereumTransactionReceipt
 
