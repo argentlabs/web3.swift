@@ -82,13 +82,13 @@ extension TypedData {
         var encoded = try ABIEncoder.encode(encodeType(primaryType: type).web3.keccak256, staticSize: 32).bytes
         
         guard let valueTypes = types[type] else {
-            throw ABIError.invalidType
+            throw Web3Error.invalidType
         }
         
         let recursiveEncoded: [UInt8] = try valueTypes.flatMap { variable -> [UInt8] in
             if types[variable.type] != nil {
                 guard let json = data[variable.name] else {
-                    throw ABIError.invalidValue
+                    throw Web3Error.invalidValue
                 }
                 return try encodeData(data: json, type: variable.type).web3.keccak256.web3.bytes
             } else if let json = data[variable.name] {
@@ -119,23 +119,23 @@ extension TypedData {
 
     private func parseAtomicType(_ data: JSON, type: String) throws -> [UInt8] {
         guard let abiType = ABIRawType(rawValue: type) else {
-            throw ABIError.invalidValue
+            throw Web3Error.invalidValue
         }
         
         switch abiType {
         case .DynamicString:
             guard let value = data.stringValue?.web3.keccak256 else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             return try ABIEncoder.encodeRaw(value, forType: .FixedBytes(32)).bytes
         case .DynamicBytes:
             guard let value = data.stringValue.flatMap(Data.init(hex:))?.web3.keccak256 else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             return try ABIEncoder.encodeRaw(value, forType: .FixedBytes(32)).bytes
         case .FixedAddress, .FixedBytes:
             guard let value = data.stringValue else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             return try ABIEncoder.encodeRaw(value, forType: abiType).bytes
         case .FixedInt, .FixedUInt:
@@ -144,34 +144,34 @@ extension TypedData {
             } else if let value = data.doubleValue {
                 return try ABIEncoder.encode(BigUInt(value)).bytes
             } else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
         case .FixedBool:
             guard let value = data.boolValue else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             
             return try ABIEncoder.encode(BigUInt(value ? 1 : 0)).bytes
         case .DynamicArray(let nested):
             guard let value = data.arrayValue else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             
             let encoded = try value.flatMap { try parseAtomicType($0, type: nested.rawValue) }
             return Data(encoded).web3.keccak256.web3.bytes
         case .FixedArray(let nested, let count):
             guard let value = data.arrayValue else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             
             guard value.count == count else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             
             let encoded = try value.flatMap { try parseAtomicType($0, type: nested.rawValue) }
             return Data(encoded).web3.keccak256.web3.bytes
         case .Tuple:
-            throw ABIError.invalidValue
+            throw Web3Error.invalidValue
         }
     }
 }

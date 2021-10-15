@@ -75,9 +75,9 @@ public class ERC721: ERC165 {
         let result = try ABIEncoder.encode(recipient).bytes
         let sig = try ERC721Events.Transfer.signature()
         
-        let (events, _) = try await client.getEvents(addresses: nil, topics: [ sig, nil, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self])
+        let (events, _) = try await client.events(addresses: nil, topics: [ sig, nil, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self])
         guard let events = events as? [ERC721Events.Transfer] else {
-            throw EthereumClientError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         return events
     }
@@ -103,9 +103,9 @@ public class ERC721: ERC165 {
         let result = try ABIEncoder.encode(sender).bytes
         let sig = try ERC721Events.Transfer.signature()
         
-        let (events, _) = try await client.getEvents(addresses: nil, topics: [ sig, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self])
+        let (events, _) = try await client.events(addresses: nil, topics: [ sig, String(hexFromBytes: result)], fromBlock: fromBlock, toBlock: toBlock, eventTypes: [ERC721Events.Transfer.self])
         guard let events = events as? [ERC721Events.Transfer] else {
-            throw EthereumClientError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         return events
     }

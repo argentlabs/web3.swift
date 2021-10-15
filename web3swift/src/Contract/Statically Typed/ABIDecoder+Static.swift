@@ -20,7 +20,7 @@ extension ABIDecoder {
         public func decoded<T: ABIType>() throws -> T {
             let parse = T.parser
             guard let decoded = try parse(entry) as? T else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             return decoded
         }
@@ -30,7 +30,7 @@ extension ABIDecoder {
             let parsed = try entry.map { try parse([$0]) }.compactMap { $0 as? T }
             
             guard entry.count == parsed.count else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             
             return parsed
@@ -53,7 +53,7 @@ extension ABIDecoder {
             }
             
             guard parsed.count == size else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
             
             return parsed
@@ -65,7 +65,7 @@ extension ABIDecoder {
 
         let rawDecoded = try ABIDecoder.decodeData(data, types: rawTypes, asArray: asArray)
         guard rawDecoded.count == types.count else {
-            throw ABIError.incorrectParameterCount
+            throw Web3Error.incorrectParameterCount
         }
         
         return rawDecoded.map(DecodedValue.init)
@@ -81,67 +81,67 @@ extension ABIDecoder {
         } else if data == "0x00" {
             return false
         } else {
-            throw ABIError.invalidValue
+            throw Web3Error.invalidValue
         }
     }
     
     public static func decode(_ data: ParsedABIEntry, to: EthereumAddress.Type) throws -> EthereumAddress {
         let address = EthereumAddress(data)
         guard address.value.hasPrefix("0x") else {
-            throw ABIError.invalidValue
+            throw Web3Error.invalidValue
         }
         
         return address
     }
     
     public static func decode(_ data: ParsedABIEntry, to: BigInt.Type) throws -> BigInt {
-        guard let value = BigInt(hex: data) else { throw ABIError.invalidValue }
+        guard let value = BigInt(hex: data) else { throw Web3Error.invalidValue }
         return value
     }
     
     public static func decode(_ data: ParsedABIEntry, to: BigUInt.Type) throws -> BigUInt {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else { throw Web3Error.invalidValue }
         return value
     }
     
     public static func decode(_ data: ParsedABIEntry, to: UInt8.Type) throws -> UInt8 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 8 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else { throw Web3Error.invalidValue }
+        guard value.bitWidth <= 8 else { throw Web3Error.invalidValue }
         return UInt8(value)
     }
     
     public static func decode(_ data: ParsedABIEntry, to: UInt16.Type) throws -> UInt16 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 16 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else { throw Web3Error.invalidValue }
+        guard value.bitWidth <= 16 else { throw Web3Error.invalidValue }
         return UInt16(value)
     }
     
     public static func decode(_ data: ParsedABIEntry, to: UInt32.Type) throws -> UInt32 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 32 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else { throw Web3Error.invalidValue }
+        guard value.bitWidth <= 32 else { throw Web3Error.invalidValue }
         return UInt32(value)
     }
     
     public static func decode(_ data: ParsedABIEntry, to: UInt64.Type) throws -> UInt64 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 64 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else { throw Web3Error.invalidValue }
+        guard value.bitWidth <= 64 else { throw Web3Error.invalidValue }
         return UInt64(value)
     }
     
     public static func decode(_ data: ParsedABIEntry, to: URL.Type) throws -> URL {
         guard let string = try? ABIDecoder.decode(data, to: String.self) else {
-            throw ABIError.invalidValue
+            throw Web3Error.invalidValue
         }
         let filtered = string.trimmingCharacters(in: CharacterSet(charactersIn: "\0"))
         guard let url = URL(string: filtered) else {
-            throw ABIError.invalidValue
+            throw Web3Error.invalidValue
         }
         
         return url
     }
 
     public static func decode(_ data: ParsedABIEntry, to: Data.Type) throws -> Data {
-        guard let data = Data(hex: data) else { throw ABIError.invalidValue }
+        guard let data = Data(hex: data) else { throw Web3Error.invalidValue }
         return data
     }
 

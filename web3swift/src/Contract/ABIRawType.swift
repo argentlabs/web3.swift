@@ -9,14 +9,6 @@
 import Foundation
 import BigInt
 
-public enum ABIError: Error {
-    case invalidSignature
-    case invalidType
-    case invalidValue
-    case incorrectParameterCount
-    case notCurrentlySupported
-}
-
 public enum ABIRawType {
     case FixedUInt(Int)
     case FixedInt(Int)

@@ -125,7 +125,7 @@ extension ABITuple {
         return { data in
             let values = data.map { ABIDecoder.DecodedValue(entry: [$0]) }
             guard let decoded = try? self.init(values: values) else {
-                throw ABIError.invalidValue
+                throw Web3Error.invalidValue
             }
 
             return decoded

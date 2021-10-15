@@ -17,49 +17,36 @@ class ABIEventTests: XCTestCase {
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
     }
     
-    func test_givenEventWithData4_ItParsesCorrectly() {
-        let expect = expectation(description: "Request")
-        
+    func test_givenEventWithData4_ItParsesCorrectly() async throws {
         let encodedAddress = (try? ABIEncoder.encode(EthereumAddress("0x3B6Def16666a23905DD29071d13E7a9db08240E2")).bytes) ?? []
         
-        client.getEvents(addresses: nil,
-                         topics: [try? EnabledStaticCall.signature(),  String(hexFromBytes: encodedAddress), nil],
-                         fromBlock: .number(8386245),
-                         toBlock: .number(8386245),
-                         eventTypes: [EnabledStaticCall.self]) { (error, events, logs) in
-                            XCTAssertNil(error)
-                            let event = events.first as? EnabledStaticCall
-                            XCTAssertEqual(event?.module, EthereumAddress("0x3b6def16666a23905dd29071d13e7a9db08240e2"))
-                            XCTAssertEqual(event?.method, Data(hex: "0x20c13b0b")!)
-                            
-                            let event1 = events.last as? EnabledStaticCall
-                            XCTAssertEqual(event1?.module, EthereumAddress("0x3b6def16666a23905dd29071d13e7a9db08240e2"))
-                            XCTAssertEqual(event1?.method, Data(hex: "0x1626ba7e")!)
-                            expect.fulfill()
-        }
+        let (events, _) = try await client.events(addresses: nil,
+                                                        topics: [try? EnabledStaticCall.signature(),  String(hexFromBytes: encodedAddress), nil],
+                                                        fromBlock: .number(8386245),
+                                                        toBlock: .number(8386245),
+                                                        eventTypes: [EnabledStaticCall.self])
+        let event = events.first as? EnabledStaticCall
+        XCTAssertEqual(event?.module, EthereumAddress("0x3b6def16666a23905dd29071d13e7a9db08240e2"))
+        XCTAssertEqual(event?.method, Data(hex: "0x20c13b0b")!)
         
-        waitForExpectations(timeout: 10)
+        let event1 = events.last as? EnabledStaticCall
+        XCTAssertEqual(event1?.module, EthereumAddress("0x3b6def16666a23905dd29071d13e7a9db08240e2"))
+        XCTAssertEqual(event1?.method, Data(hex: "0x1626ba7e")!)
     }
     
-    func test_givenEventWithData32_ItParsesCorrectly() {
-        let expect = expectation(description: "Request")
+    func test_givenEventWithData32_ItParsesCorrectly() async throws {
         
-        client.getEvents(addresses: nil,
-                         topics: [try? UpgraderRegistered.signature()],
-                         fromBlock: .number(
-                         8110676 ),
-                         toBlock: .number(
-                         8110676 ),
-                         eventTypes: [UpgraderRegistered.self]) { (error, events, logs) in
-                            XCTAssertNil(error)
-                            XCTAssertEqual(events.count, 1)
-                            let event = events.first as? UpgraderRegistered
-                            XCTAssertEqual(event?.upgrader, EthereumAddress("0x17b11d842ae09eddedf5592f8271a7d07f6931e7"))
-                            XCTAssertEqual(event?.name, Data(hex: "0x307864323664616666635f307833373731376663310000000000000000000000")!)
-                            expect.fulfill()
-        }
-        
-        waitForExpectations(timeout: 10)
+        let (events, _) = try await client.events(addresses: nil,
+                                        topics: [try? UpgraderRegistered.signature()],
+                                        fromBlock: .number(
+                                            8110676 ),
+                                        toBlock: .number(
+                                            8110676 ),
+                                        eventTypes: [UpgraderRegistered.self])
+        XCTAssertEqual(events.count, 1)
+        let event = events.first as? UpgraderRegistered
+        XCTAssertEqual(event?.upgrader, EthereumAddress("0x17b11d842ae09eddedf5592f8271a7d07f6931e7"))
+        XCTAssertEqual(event?.name, Data(hex: "0x307864323664616666635f307833373731376663310000000000000000000000")!)
     }
 }
 

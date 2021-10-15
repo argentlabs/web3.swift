@@ -13,12 +13,6 @@ public protocol EthereumKeyStorageProtocol {
     func loadPrivateKey() throws -> Data
 }
 
-public enum EthereumKeyStorageError: Error {
-    case notFound
-    case failedToSave
-    case failedToLoad
-}
-
 public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     public init() {}
     
@@ -31,23 +25,23 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     
     public func storePrivateKey(key: Data) throws -> Void {
         guard let localPath = self.localPath else {
-            throw EthereumKeyStorageError.failedToSave
+            throw Web3Error.failedToSave
         }
         
         let success = NSKeyedArchiver.archiveRootObject(key, toFile: localPath)
         
         if !success {
-            throw EthereumKeyStorageError.failedToSave
+            throw Web3Error.failedToSave
         }
     }
     
     public func loadPrivateKey() throws -> Data {
         guard let localPath = self.localPath else {
-            throw EthereumKeyStorageError.failedToLoad
+            throw Web3Error.failedToLoad
         }
         
         guard let data = NSKeyedUnarchiver.unarchiveObject(withFile: localPath) as? Data else {
-            throw EthereumKeyStorageError.failedToLoad
+            throw Web3Error.failedToLoad
         }
 
         return data

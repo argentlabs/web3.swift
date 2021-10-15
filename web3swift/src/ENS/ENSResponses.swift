@@ -15,14 +15,14 @@ extension ENSContracts {
 
             init?(data: String) throws {
                 guard data != "0x" else {
-                    throw EthereumNameServiceError.ensUnknown
+                    throw Web3Error.ensUnknown
                 }
 
                 let idx = data.index(data.endIndex, offsetBy: -40)
                 self.value = EthereumAddress(String(data[idx...]).web3.withHexPrefix)
 
                 guard self.value != .zero else {
-                    throw EthereumNameServiceError.ensUnknown
+                    throw Web3Error.ensUnknown
                 }
             }
         }

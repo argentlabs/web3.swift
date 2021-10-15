@@ -53,7 +53,7 @@ public struct EthereumTransactionReceipt: Decodable {
         let statusString = try values.decode(String.self, forKey: .status)
         
         guard let transactionIndex = BigUInt(hex: transactionIndexString), let blockNumber = BigUInt(hex: blockNumberString), let gasUsed = BigUInt(hex: gasUsedString), let statusCode = Int(hex: statusString) else {
-            throw EthereumClientError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         
         self.transactionIndex = transactionIndex

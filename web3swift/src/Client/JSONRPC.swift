@@ -32,28 +32,16 @@ public struct JSONRPCErrorResult: Decodable {
     var error: JSONRPCErrorDetail
 }
 
+extension JSONRPCErrorResult: Equatable {
+    public static func ==(lhs: JSONRPCErrorResult, rhs: JSONRPCErrorResult) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
 public enum JSONRPCErrorCode {
     public static var invalidInput = -32000
     public static var tooManyResults = -32005
     public static var contractExecution = 3
-}
-
-public enum JSONRPCError: Error {
-    case executionError(JSONRPCErrorResult)
-    case requestRejected(Data)
-    case encodingError
-    case decodingError
-    case unknownError
-    case noResult
-
-    var isExecutionError: Bool {
-        switch self {
-        case .executionError:
-            return true
-        default:
-            return false
-        }
-    }
 }
 
 public class EthereumRPC {
@@ -72,12 +60,12 @@ public class EthereumRPC {
         }
     }
     
-    // TODO: Instead of Any, can't we return U?
+    // TODO: Instead of Any, can't we return U? Edit: That will break returning [U], but shouldn't receive be set to [U] in that case?
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1) async throws -> Any {
         
         if type(of: params) == [Any].self {
             // If params are passed in with Array<Any> and not caught, runtime fatal error
-            throw JSONRPCError.encodingError
+            throw Web3Error.encodingError
         }
         
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData)
@@ -97,11 +85,11 @@ public class EthereumRPC {
             return resultObjects
         } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
             print("Ethereum response error: \(errorResult.error)")
-            throw JSONRPCError.executionError(errorResult)
+            throw Web3Error.executionError(errorResult)
         } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
-            throw JSONRPCError.requestRejected(data)
+            throw Web3Error.requestRejected(data)
         } else {
-            throw JSONRPCError.noResult
+            throw Web3Error.noResult
         }
     }
 }

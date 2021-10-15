@@ -10,7 +10,7 @@ import XCTest
 import BigInt
 @testable import web3
 
-class ERC165AsyncTests: XCTestCase {
+class ERC165Tests: XCTestCase {
     var client: EthereumClient!
     var erc165: ERC165!
     let address = EthereumAddress(TestConfig.erc165Contract)
@@ -26,14 +26,12 @@ class ERC165AsyncTests: XCTestCase {
     }
     
     func test_GivenInterfaceffff_returnsNotSupported() async throws {
-        let supported = try await erc165.supportsInterface(contract: address,
-                                 id: "0xffffffff".web3.hexData!)
+        let supported = try await erc165.supportsInterface(contract: address, id: "0xffffffff".web3.hexData!)
         XCTAssertEqual(supported, false)
     }
     
     func test_GivenInterfaceERC165_returnsSupported() async throws {
-        let supported = try await erc165.supportsInterface(contract: address,
-                                 id: ERC165Functions.interfaceId)
+        let supported = try await erc165.supportsInterface(contract: address, id: ERC165Functions.interfaceId)
         XCTAssertEqual(supported, true)
     }
 }

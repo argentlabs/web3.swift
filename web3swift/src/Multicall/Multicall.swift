@@ -21,14 +21,14 @@ public struct Multicall {
     @available(*, deprecated, message: "Prefer async alternative instead")
     public func aggregate(
         calls: [Call],
-        completion: @escaping (Result<MulticallResponse, MulticallError>) -> Void
+        completion: @escaping (Result<MulticallResponse, Web3Error>) -> Void
     ) {
         async {
             do {
                 let result = try await aggregate(calls: calls)
                 completion(.success(result))
             } catch {
-                completion(.failure(error as! Multicall.MulticallError))
+                completion(.failure(error as! Web3Error))
             }
         }
     }
@@ -39,7 +39,7 @@ public struct Multicall {
             guard
                 let network = client.network,
                 let contract = Contract.registryAddress(for: network)
-            else { throw MulticallError.contractUnavailable }
+            else { throw Web3Error.contractUnavailable }
             
             let function = Contract.Functions.aggregate(contract: contract, calls: calls)
             
@@ -59,17 +59,12 @@ public struct Multicall {
 
 extension Multicall {
 
-    public enum MulticallError: Error {
-        case contractUnavailable
-        case executionFailed(Error?)
-    }
+//    public enum Web3Error: Error {
+//        case contractFailure
+//        case couldNotDecodeResponse(Error?)
+//    }
 
-    public enum CallError: Error {
-        case contractFailure
-        case couldNotDecodeResponse(Error?)
-    }
-
-    public typealias Output = Result<String, CallError>
+    public typealias Output = Result<String, Web3Error>
 
     public struct Response: ABIResponse {
         static let multicallFailedError = "MULTICALL_FAIL".web3.keccak256.web3.hexString
@@ -136,7 +131,7 @@ extension Multicall {
         public mutating func append<Function: ABIFunction, Response: MulticallDecodableResponse>(
             function f: Function,
             response: Response.Type,
-            handler: @escaping (Result<Response.Value, CallError>) throws -> Void
+            handler: @escaping (Result<Response.Value, Web3Error>) throws -> Void
         ) throws {
             try calls.append(.init(function: f, handler: { output in
                 try handler(
@@ -148,7 +143,7 @@ extension Multicall {
                                 return .failure(.couldNotDecodeResponse(nil))
                             }
                         } catch let error {
-                            return .failure(.couldNotDecodeResponse(error))
+                            return .failure(.couldNotDecodeResponse(error as? Web3Error))
                         }
                     }
                 )

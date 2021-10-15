@@ -10,16 +10,8 @@ import Foundation
 
 protocol EthereumNameServiceProtocol {
     init(client: EthereumClientProtocol, registryAddress: EthereumAddress?)
-    func resolve(address: EthereumAddress, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
-    func resolve(ens: String, completion: @escaping((EthereumNameServiceError?, EthereumAddress?) -> Void)) -> Void
-}
-
-public enum EthereumNameServiceError: Error, Equatable {
-    case noNetwork
-    case noResolver
-    case ensUnknown
-    case invalidInput
-    case decodeIssue
+    func resolve(address: EthereumAddress, completion: @escaping((Web3Error?, String?) -> Void)) -> Void
+    func resolve(ens: String, completion: @escaping((Web3Error?, EthereumAddress?) -> Void)) -> Void
 }
 
 // This is an example of interacting via a JSON Definition contract API
@@ -33,13 +25,13 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     }
 
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func resolve(address: EthereumAddress, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
+    public func resolve(address: EthereumAddress, completion: @escaping ((Web3Error?, String?) -> Void)) {
         async {
             do {
                 let result = try await resolve(address: address)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumNameServiceError ?? EthereumNameServiceError.decodeIssue, nil)
+                completion(error as? Web3Error ?? Web3Error.decodeIssue, nil)
             }
         }
     }
@@ -49,7 +41,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         guard
             let network = client.network,
             let registryAddress1 = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
-                throw EthereumNameServiceError.noNetwork
+                throw Web3Error.noNetwork
             }
         
         let ensReverse = address.value.web3.noHexPrefix + ".addr.reverse"
@@ -61,7 +53,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         
         let resolverData = try await client.eth_call(registryTransaction, block: .latest)
         guard resolverData != "0x" else {
-            throw EthereumNameServiceError.ensUnknown
+            throw Web3Error.ensUnknown
         }
         let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
         let resolverAddress = EthereumAddress(String(resolverData[idx...]).web3.withHexPrefix)
@@ -72,24 +64,24 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         
         let data = try await client.eth_call(addressTransaction, block: .latest)
         guard data != "0x" else {
-            throw EthereumNameServiceError.ensUnknown
+            throw Web3Error.ensUnknown
         }
         
         let decoded = try ABIDecoder.decodeData(data, types: [String.self])
         guard let ensHex: String = try decoded.first?.decoded() else {
-            throw EthereumNameServiceError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         return ensHex
     }
     
     @available(*, deprecated, message: "Prefer async alternative instead")
-    public func resolve(ens: String, completion: @escaping ((EthereumNameServiceError?, EthereumAddress?) -> Void)) {
+    public func resolve(ens: String, completion: @escaping ((Web3Error?, EthereumAddress?) -> Void)) {
         async {
             do {
                 let result = try await resolve(ens: ens)
                 completion(nil, result)
             } catch {
-                completion(error as? EthereumNameServiceError ?? EthereumNameServiceError.decodeIssue, nil)
+                completion(error as? Web3Error ?? Web3Error.decodeIssue, nil)
             }
         }
     }
@@ -99,7 +91,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         guard
             let network = client.network,
             let registryAddress1 = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
-                throw EthereumNameServiceError.noNetwork
+                throw Web3Error.noNetwork
             }
         let nameHash1 = Self.nameHash(name: ens)
         let function = ENSContracts.ENSRegistryFunctions.resolver(contract: registryAddress1,
@@ -108,7 +100,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         
         let resolverData = try await client.eth_call(registryTransaction, block: .latest)
         guard resolverData != "0x" else {
-            throw EthereumNameServiceError.ensUnknown
+            throw Web3Error.ensUnknown
         }
         
         let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
@@ -119,12 +111,12 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         
         let data = try await client.eth_call(addressTransaction, block: .latest)
         guard data != "0x" else {
-            throw EthereumNameServiceError.ensUnknown
+            throw Web3Error.ensUnknown
         }
         
         let decoded = try ABIDecoder.decodeData(data, types: [EthereumAddress.self])
         guard let ensAddress: EthereumAddress = try decoded.first?.decoded() else {
-            throw EthereumNameServiceError.decodeIssue
+            throw Web3Error.decodeIssue
         }
         return ensAddress
     }
