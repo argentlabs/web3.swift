@@ -1,9 +1,8 @@
 //
-//  EthereumClientAsyncTests.swift
-//  web3sTests
+//  xDaiClientTests.swift
 //
-//  Created by Ronald Mannak on 08/14/2021.
-//  Copyright © 2021 Starling Protocol Inc. All rights reserved.
+//
+//  Created by Ronald Mannak on 9/13/21.
 //
 
 import XCTest
@@ -11,18 +10,35 @@ import XCTest
 import BigInt
 
 
-class EthereumClientTests: XCTestCase {
+struct XDaiTestConfig {
+    // This is the proxy URL for connecting to the Blockchain. For testing we usually use the Ropsten network on Infura. Using free tier, so might hit rate limits
+    static let clientUrl = "https://core.poa.network/"
+    
+    // Same for mainnet
+    static let mainnetClientUrl = "https://rpc.xdaichain.com/"
+    
+    // An EOA with some Ether, so that we can test sending transactions (pay for gas)
+    static let privateKey = "0xef4e182ae2cf32192d2a62c1159c8c4f7f2d658c303d0dfca5791a205456a132"
+    
+    // This is the expected public key (address) from the above private key
+    static let publicKey = "0x719561fee351F7aC6560D0302aE415FfBEEc0B51"
+    
+    static let privateKey2 = "0xe331b6d69882b4cb4ea581d88e0b604039a3de5967688d3dcffdd2270c0fd109" // Address 0x719561fee351f7ac6560d0302ae415ffbeec0b51
+}
+
+class XDaiClientTests: XCTestCase {
     var client: EthereumClient?
     var mainnetClient: EthereumClient?
     var account: EthereumAccount?
+    var account2: EthereumAccount!
     let timeout = 10.0
     
     override func setUp() {
         super.setUp()
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
-        self.mainnetClient = EthereumClient(url: URL(string: TestConfig.mainnetClientUrl)!)
-        self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        print("Public address: \(self.account?.address.value ?? "NONE")")
+        self.client = EthereumClient(url: URL(string: XDaiTestConfig.clientUrl)!)
+        self.mainnetClient = EthereumClient(url: URL(string: XDaiTestConfig.mainnetClientUrl)!)
+        self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: XDaiTestConfig.privateKey))
+        self.account2 = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: XDaiTestConfig.privateKey2))
     }
     
     override func tearDown() {
@@ -40,11 +56,21 @@ class EthereumClientTests: XCTestCase {
     
     func testNetVersion() async throws {
         let network = try await client!.net_version()
-        XCTAssertEqual(network, EthereumNetwork.ropsten)
+        XCTAssertEqual(network, EthereumNetwork.sokol)
+    }
+    
+    func testMainnetVersion() async throws {
+        let network = try await mainnetClient!.net_version()
+        XCTAssertEqual(network, EthereumNetwork.xDai)
     }
     
     func testEthGasPrice() async throws {
         let gasPrice = try await client!.eth_gasPrice()
+        XCTAssertGreaterThan(gasPrice, 0)
+    }
+    
+    func testMainNetEthGasPrice() async throws {
+        let gasPrice = try await mainnetClient!.eth_gasPrice()
         XCTAssertGreaterThan(gasPrice, 0)
     }
     
@@ -54,7 +80,7 @@ class EthereumClientTests: XCTestCase {
     }
     
     func testEthGetBalance() async throws {
-        let balance = try await client!.eth_getBalance(address: account?.address ?? .zero, block: .latest)
+        let balance = try await mainnetClient!.eth_getBalance(address: account?.address ?? .zero, block: .latest)
         XCTAssertGreaterThan(balance, 0)
     }
     
@@ -74,33 +100,61 @@ class EthereumClientTests: XCTestCase {
         let gas = try await client!.eth_estimateGas(try! function.transaction(), withAccount: account!)
         XCTAssert(gas > 0)
     }
+    
+    // TODO: send money between two accounts back and forth
 
     func testEthSendRawTransaction() async throws {
-        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.ropsten.intValue)
+        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.sokol.intValue)
         let txHash = try await self.client!.eth_sendRawTransaction(tx, withAccount: self.account!)
         XCTAssert(txHash.count > 0)
     }
 
-    func testEthGetTransactionCount() async throws {
-        let count = try await client!.eth_getTransactionCount(address: account!.address, block: .latest)
-        XCTAssert(count > 0)
+//    func testEthGetTransactionCount() async throws {
+//        let count = try await mainnetClient!.eth_getTransactionCount(address: account!.address, block: .latest)
+//        print(account!.address)
+//        XCTAssert(count > 0)
+//    }
+    
+//    func testEthGetTransactions() async throws {
+//        let count = try await mainnetClient!.eth_getTransaction(byHash: "0x93a4642e045aaf2bae9ca7b6abbd64fc150a8c9bf1eaeb8bdada342ec664c834")
+//        eth_getTransactionCount(address: account!.address, block: .latest)
+//        print(account!.address)
+//        XCTAssert(count > 0)
+//    }
+    
+    func testLogs() async throws {
+        let logs = try await mainnetClient!.eth_getLogs(addresses: [account!.address], topics: nil)
+        print(logs)
     }
     
+    func testxDaiFaucetTransaction() async throws {
+        let count = try await mainnetClient!.eth_getTransactionCount(address: EthereumAddress("0x00000000092769687eeb04fdc990c363eddefec2"), block: .latest) // faucet
+        XCTAssertGreaterThan(count, 0)
+    }
+    
+    func testxDaiFaucetTransactionReceiptExistence() async throws {
+        let receipt = try await mainnetClient!.eth_getTransactionReceipt(txHash: "0x93a4642e045aaf2bae9ca7b6abbd64fc150a8c9bf1eaeb8bdada342ec664c834")
+        XCTAssertEqual(receipt.blockHash, "0xf66990f32bf7c73dbe97f265b9df367aa2b3b8680122192d4c4a06a9f5ba5b72")
+    }
+    
+    func testxDaiFaucetTransactionExistence() async throws {
+        let tx = try await mainnetClient!.eth_getTransaction(byHash: "0x93a4642e045aaf2bae9ca7b6abbd64fc150a8c9bf1eaeb8bdada342ec664c834")
+        XCTAssertEqual(tx.to, account!.address)
+        XCTAssertEqual(tx.value, 4000000000000000)
+    }
+    
+    
     func testEthGetTransactionCountPending() async throws {
+        print(account!.address)
         _ = try await client!.eth_getTransactionCount(address: account!.address, block: .pending)
     }
     
-    func testEthGetTransactionReceipt() async throws {
-        let txHash = "0x9d7282cc7140ac23c709e07cf717bad25605dbc454f6ac22245989afd711e5ec"
-        let receipt = try await client!.eth_getTransactionReceipt(txHash: txHash)
-        XCTAssertEqual(receipt.transactionHash, "0x9d7282cc7140ac23c709e07cf717bad25605dbc454f6ac22245989afd711e5ec")
-        XCTAssertEqual(receipt.blockNumber, BigUInt(10797945))
-    }
-    
-    func testEthTransactionCount() async throws {
-        let count = try await client!.eth_getTransactionCount(address: EthereumAddress("0x9fFed2297C7B81293413550Db675073ab46980b2"), block: .latest)
-        XCTAssertGreaterThan(count, 154)
-    }
+//    func testEthGetTransactionReceipt() async throws {
+//        let txHash = "0x9d7282cc7140ac23c709e07cf717bad25605dbc454f6ac22245989afd711e5ec"
+//        let receipt = try await client!.eth_getTransactionReceipt(txHash: txHash)
+//        XCTAssertEqual(receipt.transactionHash, "0x9d7282cc7140ac23c709e07cf717bad25605dbc454f6ac22245989afd711e5ec")
+//        XCTAssertEqual(receipt.blockNumber, BigUInt(10797945))
+//    }
     
     func testEthGetInvalidTransactionReceipt() async {
         let expectation = XCTestExpectation(description: "get transaction receipt")
@@ -124,16 +178,16 @@ class EthereumClientTests: XCTestCase {
     }
 
     func testGivenMinedTransactionHash_ThenGetsTransactionByHash() async throws {
-        let transaction = try await client!.eth_getTransaction(byHash: "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
+        let transaction = try await mainnetClient!.eth_getTransaction(byHash: "0x93a4642e045aaf2bae9ca7b6abbd64fc150a8c9bf1eaeb8bdada342ec664c834")
         
-        XCTAssertEqual(transaction.from?.value, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
-        XCTAssertEqual(transaction.to.value, "0x37f13b5ffcc285d2452c0556724afb22e58b6bbe")
-        XCTAssertEqual(transaction.gas, "30400")
-        XCTAssertEqual(transaction.gasPrice, BigUInt(hex: "0x9184e72a000"))
-        XCTAssertEqual(transaction.nonce, 973253)
-        XCTAssertEqual(transaction.value, BigUInt(hex: "0x56bc75e2d63100000"))
-        XCTAssertEqual(transaction.blockNumber, EthereumBlock.number(3439303))
-        XCTAssertEqual(transaction.hash?.web3.hexString, "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
+        XCTAssertEqual(transaction.from?.value, "0x00000000092769687eeb04fdc990c363eddefec2")
+        XCTAssertEqual(transaction.to.value, "0x719561fee351f7ac6560d0302ae415ffbeec0b51")
+        XCTAssertEqual(transaction.gas, "21000")
+        XCTAssertEqual(transaction.gasPrice, 1000000000)
+        XCTAssertEqual(transaction.nonce, 23197)
+        XCTAssertEqual(transaction.value, BigUInt("4000000000000000")) //$0.004
+        XCTAssertEqual(transaction.blockNumber, EthereumBlock.number(18081241))
+        XCTAssertEqual(transaction.hash?.web3.hexString, "0x93a4642e045aaf2bae9ca7b6abbd64fc150a8c9bf1eaeb8bdada342ec664c834")
     }
 
     func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash() async {
@@ -150,13 +204,15 @@ class EthereumClientTests: XCTestCase {
     }
 
     func testEthCall() async throws {
-        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.ropsten.intValue)
+        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.sokol.intValue)
         let txHash = try await client!.eth_call(tx, block: .latest)
         XCTAssertNotNil(txHash)
     }
 
     func testSimpleEthGetLogs() async throws {
-        _ = try await client!.eth_getLogs(addresses: [EthereumAddress("0x23d0a442580c01e420270fba6ca836a8b2353acb")], topics: nil, fromBlock: .earliest, toBlock: .latest)
+        let logs = try await client!.eth_getLogs(addresses: [EthereumAddress("0x22C1f6050E56d2876009903609a2cC3fEf83B415")], topics: nil, fromBlock: .earliest, toBlock: .latest)
+        XCTAssertGreaterThan(logs.count, 0)
+        print(logs)
     }
 
     func testOrTopicsEthGetLogs() async throws {
@@ -299,31 +355,7 @@ class EthereumClientTests: XCTestCase {
 
 }
 
-struct GetGuardians: ABIFunction {
-    static let name = "getGuardians"
-    let contract = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
-    let from: EthereumAddress? = EthereumAddress("0x25BD64224b7534f7B9e3E16dd10b6dED1A412b90")
-    let gasPrice: BigUInt? = nil
-    let gasLimit: BigUInt? = nil
-    
-    struct Response: ABIResponse {
-        static var types: [ABIType.Type] = [ABIArray<EthereumAddress>.self]
-        let guardians: [EthereumAddress]
-        
-        init?(values: [ABIDecoder.DecodedValue]) throws {
-            self.guardians = try values[0].decodedArray()
-            
-        }
-    }
-    
-    let wallet: EthereumAddress
-    
-    func encode(to encoder: ABIFunctionEncoder) throws {
-        try encoder.encode(wallet)
-        
-    }
-}
-
+/*
 struct TransferToken: ABIFunction {
     static let name = "transferToken"
     let contract = EthereumAddress("0xe4f5384d96cc4e6929b63546082788906250b60b")
@@ -410,3 +442,4 @@ struct TransferMatchingSignatureEvent: ABIEvent {
         self.value = try data[0].decoded()
     }
 }
+*/

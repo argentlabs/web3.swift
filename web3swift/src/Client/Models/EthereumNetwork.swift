@@ -9,22 +9,28 @@
 import Foundation
 
 public enum EthereumNetwork: Equatable {
-    case Mainnet
-    case Ropsten
-    case Rinkeby
-    case Kovan
+    case mainnet
+    case ropsten
+    case rinkeby
+    case kovan
+    case xDai
+    case sokol
     case Custom(String)
     
     static func fromString(_ networkId: String) -> EthereumNetwork {
         switch networkId {
         case "1":
-            return .Mainnet
+            return .mainnet
         case "3":
-            return .Ropsten
+            return .ropsten
         case "4":
-            return .Rinkeby
+            return .rinkeby
         case "42":
-            return .Kovan
+            return .kovan
+        case "100":
+            return .xDai
+        case "99":
+            return .sokol
         default:
             return .Custom(networkId)
         }
@@ -32,14 +38,18 @@ public enum EthereumNetwork: Equatable {
     
     var stringValue: String {
         switch self {
-        case .Mainnet:
+        case .mainnet:
             return "1"
-        case .Ropsten:
+        case .ropsten:
             return "3"
-        case .Rinkeby:
+        case .rinkeby:
             return "4"
-        case .Kovan:
+        case .kovan:
             return "42"
+        case .xDai:
+            return "100"
+        case .sokol:
+            return "99"
         case .Custom(let str):
             return str
         }
@@ -47,14 +57,18 @@ public enum EthereumNetwork: Equatable {
     
     var intValue: Int {
         switch self {
-        case .Mainnet:
+        case .mainnet:
             return 1
-        case .Ropsten:
+        case .ropsten:
             return 3
-        case .Rinkeby:
+        case .rinkeby:
             return 4
-        case .Kovan:
+        case .kovan:
             return 42
+        case .xDai:
+            return 100
+        case .sokol:
+            return 99
         case .Custom(let str):
             return Int(str) ?? 0
         }
