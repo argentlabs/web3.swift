@@ -19,8 +19,8 @@ public protocol EthereumClientProtocol {
     func eth_blockNumber(completion: @escaping((EthereumClientError?, Int?) -> Void))
     func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     func eth_getCode(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, String?) -> Void))
+    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
+    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, String?) -> Void))
     func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
     func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void))
     func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
@@ -156,7 +156,7 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
         
         struct CallParams: Encodable {
             let from: String?
@@ -226,7 +226,7 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccount, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
         
         concurrentQueue.addOperation {
             let group = DispatchGroup()

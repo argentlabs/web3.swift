@@ -29,7 +29,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
     public let gas: BigUInt?
     public let blockNumber: EthereumBlock?
     public private(set) var hash: Data?
-    var chainId: Int? {
+    public var chainId: Int? {
         didSet {
             self.hash = self.raw?.web3.keccak256
         }
@@ -138,7 +138,7 @@ public struct SignedTransaction {
     let r: Data
     let s: Data
     
-    init(transaction: EthereumTransaction, v: Int, r: Data, s: Data) {
+    public init(transaction: EthereumTransaction, v: Int, r: Data, s: Data) {
         self.transaction = transaction
         self.v = v
         self.r = r.web3.strippingZeroesFromBytes

@@ -8,15 +8,8 @@
 
 import Foundation
 
-protocol EthereumAccountProtocol {
+public protocol EthereumAccountProtocol {
     var address: EthereumAddress { get }
-    
-    // For Keystore handling
-    init?(keyStorage: EthereumKeyStorageProtocol, keystorePassword: String) throws
-    static func create(keyStorage: EthereumKeyStorageProtocol, keystorePassword password: String) throws -> EthereumAccount
-    
-    // For non-Keystore formats. This is not recommended, however some apps may wish to implement their own storage.
-    init(keyStorage: EthereumKeyStorageProtocol) throws
     
     func sign(data: Data) throws -> Data
     func sign(hash: String) throws -> Data
