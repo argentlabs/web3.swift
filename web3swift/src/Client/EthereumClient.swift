@@ -38,6 +38,7 @@ public enum EthereumClientError: Error {
     case decodeIssue
     case encodeIssue
     case noInputData
+    case chainIdMissing
 }
 
 public class EthereumClient: EthereumClientProtocol {
@@ -105,7 +106,7 @@ public class EthereumClient: EthereumClientProtocol {
                 let network = EthereumNetwork.fromString(resString)
                 completion(nil, network)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -116,7 +117,7 @@ public class EthereumClient: EthereumClientProtocol {
             if let hexString = response as? String {
                 completion(nil, BigUInt(hex: hexString))
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -131,7 +132,7 @@ public class EthereumClient: EthereumClientProtocol {
                     completion(EthereumClientError.decodeIssue, nil)
                 }
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -141,7 +142,7 @@ public class EthereumClient: EthereumClientProtocol {
             if let resString = response as? String, let balanceInt = BigUInt(hex: resString.web3.noHexPrefix) {
                 completion(nil, balanceInt)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -151,7 +152,7 @@ public class EthereumClient: EthereumClientProtocol {
             if let resDataString = response as? String {
                 completion(nil, resDataString)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -218,10 +219,8 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
             if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
                 completion(nil, gas)
-            } else if let error = error as? JSONRPCError, error.isExecutionError {
-                completion(EthereumClientError.executionError, nil)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -234,30 +233,38 @@ public class EthereumClient: EthereumClientProtocol {
             
             // Inject pending nonce
             self.eth_getTransactionCount(address: account.address, block: .Pending) { (error, count) in
-                guard let nonce = count else {
-                    group.leave()
-                    return completion(EthereumClientError.unexpectedReturnValue, nil)
-                }
-                
-                var transaction = transaction
-                transaction.nonce = nonce
-                
-                if transaction.chainId == nil, let network = self.network {
-                    transaction.chainId = network.intValue
-                }
-                
-                guard let _ = transaction.chainId, let signedTx = (try? account.sign(transaction: transaction)), let transactionHex = signedTx.raw?.web3.hexString else {
-                    group.leave()
-                    return completion(EthereumClientError.encodeIssue, nil)
-                }
-                
-                EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { (error, response) in
-                    group.leave()
-                    if let resDataString = response as? String {
-                        completion(nil, resDataString)
-                    } else {
-                        completion(EthereumClientError.unexpectedReturnValue, nil)
+                do {
+                    guard let nonce = count else {
+                        throw error ?? EthereumClientError.unexpectedReturnValue
                     }
+                    
+                    var transaction = transaction
+                    transaction.nonce = nonce
+                    
+                    if transaction.chainId == nil, let network = self.network {
+                        transaction.chainId = network.intValue
+                    }
+                    
+                    guard let _ = transaction.chainId else {
+                        throw EthereumClientError.chainIdMissing
+                    }
+                    
+                    let signedTx = try account.sign(transaction: transaction)
+                    guard let transactionHex = signedTx.raw?.web3.hexString else {
+                        throw EthereumClientError.encodeIssue
+                    }
+                    
+                    EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { (error, response) in
+                        group.leave()
+                        if let resDataString = response as? String {
+                            completion(nil, resDataString)
+                        } else {
+                            completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
+                        }
+                    }
+                } catch {
+                    group.leave()
+                    return completion(error, nil)
                 }
                 
             }
@@ -283,7 +290,7 @@ public class EthereumClient: EthereumClientProtocol {
             } else if let _ = response {
                 completion(EthereumClientError.noResultFound, nil)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -294,7 +301,7 @@ public class EthereumClient: EthereumClientProtocol {
             if let transaction = response as? EthereumTransaction {
                 completion(nil, transaction)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
@@ -338,7 +345,7 @@ public class EthereumClient: EthereumClientProtocol {
                 (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
                 completion(nil, "0x")
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
