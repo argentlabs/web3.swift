@@ -14,20 +14,20 @@ public protocol EthereumClientProtocol {
     init(url: URL)
     var network: EthereumNetwork? { get }
     
-    func net_version(completion: @escaping((EthereumClientError?, EthereumNetwork?) -> Void))
-    func eth_gasPrice(completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_blockNumber(completion: @escaping((EthereumClientError?, Int?) -> Void))
-    func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_getCode(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
-    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
-    func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void))
-    func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
-    func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
-    func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
-    func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
-    func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
+    func net_version(completion: @escaping((Error?, EthereumNetwork?) -> Void))
+    func eth_gasPrice(completion: @escaping((Error?, BigUInt?) -> Void))
+    func eth_blockNumber(completion: @escaping((Error?, Int?) -> Void))
+    func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping((Error?, BigUInt?) -> Void))
+    func eth_getCode(address: EthereumAddress, block: EthereumBlock, completion: @escaping((Error?, String?) -> Void))
+    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((Error?, BigUInt?) -> Void))
+    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((Error?, String?) -> Void))
+    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping((Error?, Int?) -> Void))
+    func eth_getTransaction(byHash txHash: String, completion: @escaping((Error?, EthereumTransaction?) -> Void))
+    func eth_getTransactionReceipt(txHash: String, completion: @escaping((Error?, EthereumTransactionReceipt?) -> Void))
+    func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((Error?, String?) -> Void))
+    func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [EthereumLog]?) -> Void))
+    func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [EthereumLog]?) -> Void))
+    func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((Error?, EthereumBlockInfo?) -> Void))
 }
 
 public enum EthereumClientError: Error {
@@ -38,6 +38,7 @@ public enum EthereumClientError: Error {
     case decodeIssue
     case encodeIssue
     case noInputData
+    case chainIdMissing
 }
 
 public class EthereumClient: EthereumClientProtocol {
@@ -98,30 +99,30 @@ public class EthereumClient: EthereumClientProtocol {
         self.session.invalidateAndCancel()
     }
     
-    public func net_version(completion: @escaping ((EthereumClientError?, EthereumNetwork?) -> Void)) {
+    public func net_version(completion: @escaping ((Error?, EthereumNetwork?) -> Void)) {
         let emptyParams: Array<Bool> = []
         EthereumRPC.execute(session: session, url: url, method: "net_version", params: emptyParams, receive: String.self) { (error, response) in
             if let resString = response as? String {
                 let network = EthereumNetwork.fromString(resString)
                 completion(nil, network)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_gasPrice(completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_gasPrice(completion: @escaping ((Error?, BigUInt?) -> Void)) {
         let emptyParams: Array<Bool> = []
         EthereumRPC.execute(session: session, url: url, method: "eth_gasPrice", params: emptyParams, receive: String.self) { (error, response) in
             if let hexString = response as? String {
                 completion(nil, BigUInt(hex: hexString))
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_blockNumber(completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
+    public func eth_blockNumber(completion: @escaping ((Error?, Int?) -> Void)) {
         let emptyParams: Array<Bool> = []
         EthereumRPC.execute(session: session, url: url, method: "eth_blockNumber", params: emptyParams, receive: String.self) { (error, response) in
             if let hexString = response as? String {
@@ -131,32 +132,32 @@ public class EthereumClient: EthereumClientProtocol {
                     completion(EthereumClientError.decodeIssue, nil)
                 }
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((Error?, BigUInt?) -> Void)) {
         EthereumRPC.execute(session: session, url: url, method: "eth_getBalance", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
             if let resString = response as? String, let balanceInt = BigUInt(hex: resString.web3.noHexPrefix) {
                 completion(nil, balanceInt)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, String?) -> Void)) {
+    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest, completion: @escaping((Error?, String?) -> Void)) {
         EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
+    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((Error?, BigUInt?) -> Void)) {
         
         struct CallParams: Encodable {
             let from: String?
@@ -218,15 +219,13 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
             if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
                 completion(nil, gas)
-            } else if let error = error as? JSONRPCError, error.isExecutionError {
-                completion(EthereumClientError.executionError, nil)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping ((Error?, String?) -> Void)) {
         
         concurrentQueue.addOperation {
             let group = DispatchGroup()
@@ -234,30 +233,38 @@ public class EthereumClient: EthereumClientProtocol {
             
             // Inject pending nonce
             self.eth_getTransactionCount(address: account.address, block: .Pending) { (error, count) in
-                guard let nonce = count else {
-                    group.leave()
-                    return completion(EthereumClientError.unexpectedReturnValue, nil)
-                }
-                
-                var transaction = transaction
-                transaction.nonce = nonce
-                
-                if transaction.chainId == nil, let network = self.network {
-                    transaction.chainId = network.intValue
-                }
-                
-                guard let _ = transaction.chainId, let signedTx = (try? account.sign(transaction: transaction)), let transactionHex = signedTx.raw?.web3.hexString else {
-                    group.leave()
-                    return completion(EthereumClientError.encodeIssue, nil)
-                }
-                
-                EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { (error, response) in
-                    group.leave()
-                    if let resDataString = response as? String {
-                        completion(nil, resDataString)
-                    } else {
-                        completion(EthereumClientError.unexpectedReturnValue, nil)
+                do {
+                    guard let nonce = count else {
+                        throw error ?? EthereumClientError.unexpectedReturnValue
                     }
+                    
+                    var transaction = transaction
+                    transaction.nonce = nonce
+                    
+                    if transaction.chainId == nil, let network = self.network {
+                        transaction.chainId = network.intValue
+                    }
+                    
+                    guard let _ = transaction.chainId else {
+                        throw EthereumClientError.chainIdMissing
+                    }
+                    
+                    let signedTx = try account.sign(transaction: transaction)
+                    guard let transactionHex = signedTx.raw?.web3.hexString else {
+                        throw EthereumClientError.encodeIssue
+                    }
+                    
+                    EthereumRPC.execute(session: self.session, url: self.url, method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { (error, response) in
+                        group.leave()
+                        if let resDataString = response as? String {
+                            completion(nil, resDataString)
+                        } else {
+                            completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
+                        }
+                    }
+                } catch {
+                    group.leave()
+                    return completion(error, nil)
                 }
                 
             }
@@ -265,7 +272,7 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
+    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((Error?, Int?) -> Void)) {
         EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
             if let resString = response as? String {
                 let count = Int(hex: resString)
@@ -276,30 +283,30 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
     
-    public func eth_getTransactionReceipt(txHash: String, completion: @escaping ((EthereumClientError?, EthereumTransactionReceipt?) -> Void)) {
+    public func eth_getTransactionReceipt(txHash: String, completion: @escaping ((Error?, EthereumTransactionReceipt?) -> Void)) {
         EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionReceipt", params: [txHash], receive: EthereumTransactionReceipt.self) { (error, response) in
             if let receipt = response as? EthereumTransactionReceipt {
                 completion(nil, receipt)
             } else if let _ = response {
                 completion(EthereumClientError.noResultFound, nil)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void)) {
+    public func eth_getTransaction(byHash txHash: String, completion: @escaping((Error?, EthereumTransaction?) -> Void)) {
         
         EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self) { (error, response) in
             if let transaction = response as? EthereumTransaction {
                 completion(nil, transaction)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
+    public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .Latest, completion: @escaping ((Error?, String?) -> Void)) {
         guard let transactionData = transaction.data else {
             return completion(EthereumClientError.noInputData, nil)
         }
@@ -338,20 +345,20 @@ public class EthereumClient: EthereumClientProtocol {
                 (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
                 completion(nil, "0x")
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
         }
     }
     
-    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping ((Error?, [EthereumLog]?) -> Void)) {
         eth_getLogs(addresses: addresses, topics: topics.map(Topics.plain), fromBlock: from, toBlock: to, completion: completion)
     }
     
-    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping((Error?, [EthereumLog]?) -> Void)) {
         eth_getLogs(addresses: addresses, topics: topics.map(Topics.composed), fromBlock: from, toBlock: to, completion: completion)
     }
 
-    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void)) {
+    private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((Error?, [EthereumLog]?) -> Void)) {
         DispatchQueue.global(qos: .default)
             .async {
                 let result = RecursiveLogCollector(ethClient: self)
@@ -392,7 +399,7 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
 
-    public func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void)) {
+    public func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((Error?, EthereumBlockInfo?) -> Void)) {
         
         struct CallParams: Encodable {
             let block: EthereumBlock

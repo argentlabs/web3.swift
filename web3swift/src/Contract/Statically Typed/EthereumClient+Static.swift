@@ -9,7 +9,7 @@
 import Foundation
 
 public extension ABIFunction {
-    func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, String?) -> Void)) {
+    func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol, completion: @escaping((Error?, String?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
@@ -18,7 +18,7 @@ public extension ABIFunction {
         
         client.eth_sendRawTransaction(tx, withAccount: account) { (error, res) in
             guard let res = res, error == nil else {
-                return completion(EthereumClientError.unexpectedReturnValue, nil)
+                return completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
             
             return completion(nil, res)
@@ -26,7 +26,7 @@ public extension ABIFunction {
         
     }
     
-    func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, T?) -> Void)) {
+    func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .Latest, completion: @escaping((Error?, T?) -> Void)) {
         
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
@@ -34,7 +34,7 @@ public extension ABIFunction {
         
         client.eth_call(tx, block: block) { (error, res) in
             guard let res = res, error == nil else {
-                return completion(EthereumClientError.unexpectedReturnValue, nil)
+                return completion(error ?? EthereumClientError.unexpectedReturnValue, nil)
             }
             
             guard let response = (try? T(data: res)) else {
@@ -58,7 +58,7 @@ public struct EventFilter {
 }
 
 public extension EthereumClient {
-    typealias EventsCompletion = (EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void
+    typealias EventsCompletion = (Error?, [ABIEvent], [EthereumLog]) -> Void
     func getEvents(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
                    fromBlock: EthereumBlock,
@@ -109,7 +109,7 @@ public extension EthereumClient {
         }
     }
         
-    private func handleLogs(_ error: EthereumClientError?,
+    private func handleLogs(_ error: Error?,
                             _ logs: [EthereumLog]?,
                             _ matches: [EventFilter],
                             _ completion: EventsCompletion) {
