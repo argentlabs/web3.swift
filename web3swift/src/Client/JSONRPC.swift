@@ -16,20 +16,20 @@ struct JSONRPCRequest<T: Encodable>: Encodable {
 }
 
 public struct JSONRPCResult<T: Decodable>: Decodable {
-    var id: Int
-    var jsonrpc: String
-    var result: T
+    public var id: Int
+    public var jsonrpc: String
+    public var result: T
 }
 
 public struct JSONRPCErrorDetail: Decodable {
-    var code: Int
-    var message: String
+    public var code: Int
+    public var message: String
 }
 
 public struct JSONRPCErrorResult: Decodable {
-    var id: Int
-    var jsonrpc: String
-    var error: JSONRPCErrorDetail
+    public var id: Int
+    public var jsonrpc: String
+    public var error: JSONRPCErrorDetail
 }
 
 public enum JSONRPCErrorCode {
