@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
 
   s.source_files = 'web3swift/src/**/*.swift', 'web3swift/lib/**/*.{c,h}'
   s.pod_target_xcconfig = {
-    'SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]' => '$(PODS_TARGET_SRCROOT)/web3swift/lib/**',
-    'SWIFT_INCLUDE_PATHS[sdk=iphoneos*]' => '$(PODS_TARGET_SRCROOT)/web3swift/lib/**'
+    'SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]' => '$(inherited) $(PODS_TARGET_SRCROOT)/web3swift/lib/**',
+    'SWIFT_INCLUDE_PATHS[sdk=iphoneos*]' => '$(inherited) $(PODS_TARGET_SRCROOT)/web3swift/lib/**'
   }
   s.preserve_paths = 'web3swift/lib/**/module.map'
 
