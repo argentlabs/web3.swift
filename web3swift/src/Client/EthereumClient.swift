@@ -30,9 +30,9 @@ public protocol EthereumClientProtocol {
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
 }
 
-public enum EthereumClientError: Error {
+public enum EthereumClientError: Error, Equatable {
     case tooManyResults
-    case executionError
+    case executionError(description: String)
     case unexpectedReturnValue
     case noResultFound
     case decodeIssue
@@ -218,8 +218,8 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
             if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
                 completion(nil, gas)
-            } else if let error = error as? JSONRPCError, error.isExecutionError {
-                completion(EthereumClientError.executionError, nil)
+            } else if case let .executionError(errorResult) = error as? JSONRPCError {
+                completion(EthereumClientError.executionError(description: "\(errorResult.error)"), nil)
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
             }
