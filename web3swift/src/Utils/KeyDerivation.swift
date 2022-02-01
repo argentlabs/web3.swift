@@ -10,6 +10,7 @@ import Foundation
 #if canImport(CommonCrypto)
 import CommonCrypto
 #endif
+import CryptoSwift
 
 enum KeyDerivationAlgorithm {
     case pbkdf2sha256
