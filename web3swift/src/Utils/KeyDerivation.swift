@@ -7,12 +7,16 @@
 //
 
 import Foundation
+#if canImport(CommonCrypto)
 import CommonCrypto
+#endif
+import CryptoSwift
 
 enum KeyDerivationAlgorithm {
     case pbkdf2sha256
     case pbkdf2sha512
-    
+
+    #if canImport(CommonCrypto)
     func ccAlgorithm() -> CCAlgorithm {
         switch (self) {
         case .pbkdf2sha256:
@@ -21,7 +25,8 @@ enum KeyDerivationAlgorithm {
             return CCPBKDFAlgorithm(kCCPRFHmacAlgSHA512)
         }
     }
-    
+    #endif
+
     func function() -> String {
         switch (self) {
         case .pbkdf2sha256:
@@ -39,7 +44,15 @@ enum KeyDerivationAlgorithm {
             return "hmac-sha512"
         }
     }
-    
+
+    fileprivate func hmacVariant() -> HMAC.Variant {
+        switch (self) {
+        case .pbkdf2sha256:
+            return .sha256
+        case .pbkdf2sha512:
+            return .sha512
+        }
+    }
 }
 
 class KeyDerivator {
@@ -54,29 +67,45 @@ class KeyDerivator {
         self.round = round
     }
     
-    func deriveKey(key: String, salt: Data) -> Data? {
-        
-        let hash = self.algorithm.ccAlgorithm()
+    func deriveKey(key: String, salt: Data, forceCryptoSwiftImplementation: Bool = false) -> Data? {
+
         let password = key
         let keyByteCount = self.dklen
         let rounds = self.round
-        
-        return self.pbkdf2(hash: hash, password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
-        
+
+        // This is done so we can test this implementation on a macOS setup
+        if forceCryptoSwiftImplementation {
+            return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+        }
+
+        #if canImport(CommonCrypto)
+        return self.pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+        #else
+        return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+        #endif
     }
     
-    func deriveKey(key: String, salt: String) -> Data? {
-        
-        let hash = self.algorithm.ccAlgorithm()
+    func deriveKey(key: String, salt: String, forceCryptoSwiftImplementation: Bool = false) -> Data? {
+
         let password = key
         guard let saltData = salt.data(using: .utf8) else { return nil }
         let keyByteCount = self.dklen
         let rounds = self.round
-        
-        return self.pbkdf2(hash: hash, password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
-        
+
+        // This is done so we can test this implementation on a macOS setup
+        if forceCryptoSwiftImplementation {
+            return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+        }
+
+        #if canImport(CommonCrypto)
+        return self.pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+        #else
+        return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+        #endif
+
     }
-    
+
+    #if canImport(CommonCrypto)
     private func pbkdf2(hash :CCPBKDFAlgorithm, password: String, salt: Data, keyByteCount: Int, rounds: Int) -> Data? {
         guard let passwordData = password.data(using:String.Encoding.utf8) else { return nil }
         var derivedKeyData = [UInt8](repeating: 0, count: keyByteCount)
@@ -97,6 +126,22 @@ class KeyDerivator {
             return nil;
         }
         return Data(derivedKeyData)
+    }
+    #endif
+    
+    private func pbkdf2(variant: HMAC.Variant, password: String, salt: Data, keyByteCount: Int, rounds: Int) -> Data? {
+
+        guard let passwordData = password.data(using:String.Encoding.utf8) else { return nil }
+
+        let derivedKey = try? PBKDF2(
+            password: [UInt8](passwordData),
+            salt: [UInt8](salt),
+            iterations: rounds,
+            keyLength: keyByteCount,
+            variant: variant
+        ).calculate()
+
+        return derivedKey.map { Data($0) }
     }
     
 }

@@ -36,5 +36,15 @@ class KeyDerivationTests: XCTestCase {
         
         XCTAssertEqual(result, expected)
     }
-    
+
+    func testSha256Round4096CryptoSwift() {
+        // CryptoSwift implementation of PBKD2 is much slower on Debug builds, so testing it with more rounds
+        // is not feasible, we'll test only the smaller round number.
+        let derivator = KeyDerivator(algorithm: .pbkdf2sha256, dklen: 32, round: 4096)
+        let result = derivator.deriveKey(key: "password", salt: "salt", forceCryptoSwiftImplementation: true)!
+
+        let expected = Data( [0xc5, 0xe4, 0x78, 0xd5, 0x92, 0x88, 0xc8, 0x41, 0xaa, 0x53, 0x0d, 0xb6, 0x84, 0x5c, 0x4c, 0x8d, 0x96, 0x28, 0x93, 0xa0, 0x01, 0xce, 0x4e, 0x11, 0xa4, 0x96, 0x38, 0x73, 0xaa, 0x98, 0x13, 0x4a])
+
+        XCTAssertEqual(result, expected)
+    }
 }
