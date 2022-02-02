@@ -10,14 +10,6 @@ import Foundation
 
 extension Data {
     static func randomOfLength(_ length: Int) -> Data? {
-        var data = [UInt8](repeating: 0, count: length)
-        let result = SecRandomCopyBytes(kSecRandomDefault,
-                               data.count,
-                               &data)
-        if result == errSecSuccess {
-            return Data(data)
-        }
-        
-        return nil
+        return Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
     }
 }

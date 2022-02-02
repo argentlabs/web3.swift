@@ -4,7 +4,8 @@ import PackageDescription
 let package = Package(
     name: "web3.swift",
     platforms: [
-        .iOS(SupportedPlatform.IOSVersion.v11)
+        .iOS(SupportedPlatform.IOSVersion.v11),
+        .macOS(SupportedPlatform.MacOSVersion.v10_12)
     ],
     products: [
         .library(name: "web3.swift", targets: ["web3"]),
@@ -19,6 +20,7 @@ let package = Package(
                 dependencies:
                     [.target(name: "keccaktiny"),
                      .target(name: "aes"),
+                     .target(name: "CryptoSwift"),
                      "BigInt",
                      "GenericJSON",
                      "secp256k1"],
@@ -31,6 +33,9 @@ let package = Package(
                 dependencies: [],
                 path: "web3swift/lib/aes",
                 exclude: ["module.map"]),
+        .target(name: "CryptoSwift",
+                dependencies: [],
+                path: "web3swift/lib/CryptoSwift"),
         .testTarget(name: "web3swiftTests",
                     dependencies: ["web3"],
                     path: "web3sTests",
