@@ -164,7 +164,6 @@ There are some features that have yet to be fully implemented! Not every RPC met
 - Use [Truffle](https://github.com/trufflesuite/ganache-cli) for running tests
 - Add support for Swift Package Manager
 - Bloom Filter support
-- Full ERC20 token support of totalSupply, allowance, transfer, approve, transferFrom, and Transfer/Approval events
 
 ## Contributors
 
