@@ -10,6 +10,10 @@ import XCTest
 import BigInt
 @testable import web3
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 let tokenOwner = EthereumAddress("0x69F84b91E7107206E841748C2B52294A1176D45e")
 let previousOwner = EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793")
 let nonOwner = EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56792")

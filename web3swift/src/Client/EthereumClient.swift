@@ -9,6 +9,10 @@
 import Foundation
 import BigInt
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 public protocol EthereumClientProtocol {
     init(url: URL, sessionConfig: URLSessionConfiguration)
     init(url: URL)
