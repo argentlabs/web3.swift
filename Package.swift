@@ -20,7 +20,7 @@ let package = Package(
                 dependencies:
                     [.target(name: "keccaktiny"),
                      .target(name: "aes"),
-                     .target(name: "CryptoSwift"),
+                     .target(name: "Internal_CryptoSwift_PBDKF2"),
                      "BigInt",
                      "GenericJSON",
                      "secp256k1"],
@@ -33,7 +33,7 @@ let package = Package(
                 dependencies: [],
                 path: "web3swift/lib/aes",
                 exclude: ["module.map"]),
-        .target(name: "CryptoSwift",
+        .target(name: "Internal_CryptoSwift_PBDKF2",
                 dependencies: [],
                 path: "web3swift/lib/CryptoSwift"),
         .testTarget(name: "web3swiftTests",
