@@ -8,6 +8,10 @@
 
 import Foundation
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 struct JSONRPCRequest<T: Encodable>: Encodable {
     let jsonrpc: String
     let method: String

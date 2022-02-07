@@ -9,6 +9,10 @@
 import Foundation
 import BigInt
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 public class ERC721: ERC165 {
     public func balanceOf(contract: EthereumAddress,
                           address: EthereumAddress,
