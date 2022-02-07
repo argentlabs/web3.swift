@@ -11,7 +11,7 @@ import Foundation
 import CommonCrypto
 #endif
 #if !COCOAPODS
-import CryptoSwift
+import Internal_CryptoSwift_PBDKF2
 #endif
 
 enum KeyDerivationAlgorithm {
