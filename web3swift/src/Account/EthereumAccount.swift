@@ -21,6 +21,7 @@ public protocol EthereumAccountProtocol {
 
 public enum EthereumAccountError: Error {
     case createAccountError
+	case importAccountError
     case loadAccountError
     case signError
 }
@@ -76,7 +77,20 @@ public class EthereumAccount: EthereumAccountProtocol {
             throw EthereumAccountError.createAccountError
         }
     }
-    
+
+	public static func importAccount(keyStorage: EthereumKeyStorageProtocol, privateKey: String, keystorePassword password: String) throws -> EthereumAccount {
+		guard let privateKey = privateKey.web3.hexData else {
+			throw EthereumAccountError.importAccountError
+		}
+		do {
+			let encodedData = try KeystoreUtil.encode(privateKey: privateKey, password: password)
+			try keyStorage.storePrivateKey(key: encodedData)
+			return try self.init(keyStorage: keyStorage, keystorePassword: password)
+		} catch {
+			throw EthereumAccountError.importAccountError
+		}
+	}
+
     public func sign(data: Data) throws -> Data {
         return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
     }
