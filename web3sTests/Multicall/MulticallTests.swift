@@ -47,7 +47,7 @@ class MulticallTests: XCTestCase {
                     XCTFail("Multicall failed with error: \(error)")
                 case .success(let response):
                     let symbol = try ERC20Responses.symbolResponse(data: try response.outputs[2].get())?.value
-                     XCTAssertEqual(symbol, "BOKKY")
+                    XCTAssertEqual(symbol, "BOKKY")
                 }
             } catch {
                 XCTFail("Unexpected failure while handling output")
@@ -60,3 +60,47 @@ class MulticallTests: XCTestCase {
         XCTAssertEqual(name, "BokkyPooBah Test Token")
     }
 }
+
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+extension MulticallTests {
+    func testNameAndSymbol_Async() async throws {
+        var aggregator = Multicall.Aggregator()
+
+        var name: String?
+        var decimals: UInt8?
+
+        try aggregator.append(ERC20Functions.decimals(contract: testContractAddress)) { output in
+            decimals = try ERC20Responses.decimalsResponse(data: output.get())?.value
+        }
+
+        try aggregator.append(
+            function: ERC20Functions.name(contract: testContractAddress),
+            response: ERC20Responses.nameResponse.self
+        ) { result in
+            name = try? result.get()
+        }
+
+        try aggregator.append(ERC20Functions.symbol(contract: testContractAddress))
+
+        let result = await multicall.aggregate(calls: aggregator.calls)
+        do {
+            switch result {
+            case .failure(let error):
+                XCTFail("Multicall failed with error: \(error)")
+            case .success(let response):
+                let symbol = try ERC20Responses.symbolResponse(data: try response.outputs[2].get())?.value
+                XCTAssertEqual(symbol, "BOKKY")
+            }
+        } catch {
+            XCTFail("Unexpected failure while handling output")
+        }
+
+
+        XCTAssertEqual(decimals, 18)
+        XCTAssertEqual(name, "BokkyPooBah Test Token")
+    }
+}
+
+#endif
