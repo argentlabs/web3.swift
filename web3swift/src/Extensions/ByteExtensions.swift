@@ -26,11 +26,26 @@ public extension Web3Extensions where Base == BigUInt {
 
 extension BigInt {
     init(twosComplement data: Data) {
-        let unsigned = BigUInt(data)
-        self.init(BigInt(unsigned))
-        if data[0] == 0xff {
-            self.negate()
+        guard data.count > 1 else {
+            self.init(0)
+            return
         }
+        
+        let isNegative = data[0] & 0x80 == 0x80
+        guard isNegative else {
+            self = BigInt(BigUInt(data))
+            return
+        }
+
+        let bytesLength = data.count
+        let signBit = BigUInt(2).power(bytesLength * 8) / 2
+        let signValue = isNegative ? signBit : 0
+        let rest = data.enumerated().map { index, value in
+            index == 0 ? value & 0x7f : value
+        }
+
+        self = BigInt(signValue - BigUInt(Data(rest)))
+        self.negate()
     }
 }
 
@@ -40,11 +55,10 @@ public extension Web3Extensions where Base == BigInt {
         if base.sign == .plus {
             data = base.magnitude.serialize()
         } else {
-            // Twos Complement
-            let len = base.magnitude.serialize().count
-            let maximum = BigUInt(1) << (len * 8)
-            let twosComplement = maximum - base.magnitude
-            data = twosComplement.serialize()
+            let len = base.magnitude.serialize().count + 1
+            let maximum = BigUInt(2).power(len * 8)
+            let (twosComplement, _) = maximum.subtractingReportingOverflow(base.magnitude)
+            data = (twosComplement).serialize()
         }
         
         
