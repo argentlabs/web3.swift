@@ -52,6 +52,10 @@ client.eth_gasPrice { (error, currentPrice) in
     print("The current gas price is \(currentPrice)")
 }
 ```
+If using `async/await` you can `await` on the result
+```swift
+let gasPrice = try await client.eth_gasPrice()
+```
 
 ### Smart contracts: Static types
 
@@ -98,6 +102,10 @@ let transaction = try function.transaction()
 client.eth_sendRawTransaction(transacton, withAccount: account) { (error, txHash) in
     print("TX Hash: \(txHash)")
 }
+```
+If using `async/await` you can `await` on the result
+```swift
+let txHash = try await client.eth_sendRawTransaction(transacton, withAccount: account)
 ```
 
 ### Data types
@@ -162,7 +170,6 @@ There are some features that have yet to be fully implemented! Not every RPC met
 - Batch support for JSONRPC interface
 - Use a Hex struct for values to be more explicit in expected types
 - Use [Truffle](https://github.com/trufflesuite/ganache-cli) for running tests
-- Add support for Swift Package Manager
 - Bloom Filter support
 
 ## Contributors
