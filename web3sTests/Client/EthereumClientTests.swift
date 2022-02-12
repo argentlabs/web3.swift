@@ -114,7 +114,7 @@ class EthereumClientTests: XCTestCase {
     func testEthSendRawTransaction() {
         let expectation = XCTestExpectation(description: "send raw transaction")
 
-        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+        let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(40000000), gasLimit: BigUInt(500000), chainId: EthereumNetwork.Ropsten.intValue)
 
         self.client?.eth_sendRawTransaction(tx, withAccount: self.account!, completion: { (error, txHash) in
             XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
