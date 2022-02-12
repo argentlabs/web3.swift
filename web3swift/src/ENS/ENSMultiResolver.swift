@@ -31,6 +31,29 @@ extension EthereumNameService {
     }
 }
 
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+extension EthereumNameService {
+    public func resolve(addresses: [EthereumAddress]) async -> Result<[AddressResolveOutput], EthereumNameServiceError> {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Result<[AddressResolveOutput], EthereumNameServiceError>, Never>) in
+            MultiResolver(client: client, registryAddress: registryAddress).resolve(addresses: addresses) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
+    public func resolve(names: [String]) async -> Result<[NameResolveOutput], EthereumNameServiceError> {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Result<[NameResolveOutput], EthereumNameServiceError>, Never>) in
+            MultiResolver(client: client, registryAddress: registryAddress).resolve(names: names) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+}
+
+#endif
+
 extension EthereumNameService {
 
     public enum ResolveOutput<Value: Equatable>: Equatable {
@@ -215,11 +238,11 @@ extension EthereumNameService {
                 switch query.parameter {
                 case .address(let address):
                     guard let registryOutput = registryOutput as? RegistryOutput<AddressResolveOutput>
-                        else { fatalError("Invalid registry output provided") }
+                    else { fatalError("Invalid registry output provided") }
                     resolveAddress(query, address: address, aggegator: &aggegator, registryOutput: registryOutput)
                 case .name(let name):
                     guard let registryOutput = registryOutput as? RegistryOutput<NameResolveOutput>
-                        else { fatalError("Invalid registry output provided") }
+                    else { fatalError("Invalid registry output provided") }
                     resolveName(query, ens: name, aggegator: &aggegator, registryOutput: registryOutput)
                 }
             }

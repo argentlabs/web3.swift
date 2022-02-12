@@ -61,11 +61,11 @@ public enum JSONRPCError: Error {
 }
 
 public class EthereumRPC {
-        
+
     // Swift4 warning bug - https://bugs.swift.org/browse/SR-6265
-   // static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, JSONRPCResult<U>?) -> Void)) -> Void {
+    // static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, JSONRPCResult<U>?) -> Void)) -> Void {
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, Any?) -> Void)) -> Void {
-        
+
         if type(of: params) == [Any].self {
             // If params are passed in with Array<Any> and not caught, runtime fatal error
             completion(JSONRPCError.encodingError, nil)
@@ -76,14 +76,14 @@ public class EthereumRPC {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         let rpcRequest = JSONRPCRequest(jsonrpc: "2.0", method: method, params: params, id: id)
         guard let encoded = try? JSONEncoder().encode(rpcRequest) else {
             completion(JSONRPCError.encodingError, nil)
             return
         }
         request.httpBody = encoded
-        
+
         let task = session.dataTask(with: request) { (data, response, error) in
             if let data = data {
                 if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
@@ -100,10 +100,29 @@ public class EthereumRPC {
                     return completion(JSONRPCError.noResult, nil)
                 }
             }
-            
+
             completion(JSONRPCError.unknownError, nil)
         }
-        
+
         task.resume()
     }
 }
+
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+extension EthereumRPC {
+    public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1) async throws -> Any {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
+            Self.execute(session: session, url: url, method: method, params: params, receive: receive, id: id) { error, result in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let result = result {
+                    continuation.resume(returning: result)
+                }
+            }
+        }
+    }
+}
+
+#endif
