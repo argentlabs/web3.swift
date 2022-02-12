@@ -77,7 +77,8 @@ class KeyUtil {
             secp256k1_context_destroy(ctx)
         }
 
-        let msg = ((hashing ? message.web3.keccak256 : message) as NSData).bytes.assumingMemoryBound(to: UInt8.self)
+        let msgData = hashing ? message.web3.keccak256 : message
+        let msg = (msgData as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         let privateKeyPtr = (privateKey as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         let signaturePtr = UnsafeMutablePointer<secp256k1_ecdsa_recoverable_signature>.allocate(capacity: 1)
         defer {
