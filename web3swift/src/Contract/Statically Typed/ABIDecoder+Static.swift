@@ -95,7 +95,7 @@ extension ABIDecoder {
     }
     
     public static func decode(_ data: ParsedABIEntry, to: BigInt.Type) throws -> BigInt {
-        guard let value = BigInt(hex: data) else { throw ABIError.invalidValue }
+        guard let value = data.web3.hexData.map(BigInt.init(twosComplement:)) else { throw ABIError.invalidValue }
         return value
     }
     

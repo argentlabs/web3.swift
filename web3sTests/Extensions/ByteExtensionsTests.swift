@@ -11,29 +11,38 @@ import BigInt
 @testable import web3
 
 class ByteExtensionsTests: XCTestCase {
-    
-    override func setUp() {
-        super.setUp()
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-    }
-    
     func testBytesFromBigInt() {
         XCTAssertEqual(BigInt(3251).web3.bytes, [12, 179])
         XCTAssertEqual(BigInt(434350411044).web3.bytes, [101, 33, 77, 77, 36])
-        XCTAssertEqual(BigInt(-404).web3.bytes, [254, 108])
+        XCTAssertEqual(BigInt(-404).web3.bytes, [255, 254, 108])
     }
     
-    func testBigIntFromTwosComplement() {
-        let bytes: [UInt8] = [3, 0, 24, 124, 109]
+    func testGivenBigInt_WhenPositive_ThenParsesCorrectly() {
+        let bytes: [UInt8] = [0x00, 0xc8]
         let data = Data(bytes)
         let bint = BigInt(twosComplement: data)
         
-        XCTAssertEqual(bint, 12886506605)
+        XCTAssertEqual(bint, 200)
     }
-    
+
+    func testGivenBigInt_WhenNegative_ThenParsesCorrectly() {
+        let bytes: [UInt8] = [0xff, 0x38]
+        let data = Data(bytes)
+        let bint = BigInt(twosComplement: data)
+
+        XCTAssertEqual(bint, -200)
+    }
+
+    func testGivenBigInt_WhenPositive_ThenBytesArrayIsTwosComplement() {
+        let bint = BigInt(200)
+        XCTAssertEqual(bint.web3.bytes, [0xc8])
+    }
+
+    func testGivenBigInt_WhenNegative_ThenBytesArrayIsTwosComplement() {
+        let bint = BigInt(-200)
+        XCTAssertEqual(bint.web3.bytes, [0xff, 0x38])
+    }
+
     func testBytesFromData() {
         let bytes: [UInt8] = [255, 0, 123, 64]
         let data = Data(bytes)
