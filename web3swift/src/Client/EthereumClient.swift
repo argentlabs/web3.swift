@@ -380,11 +380,8 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)
-            } else if
-                let error = error,
-                case let JSONRPCError.executionError(result) = error,
-                (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
-                completion(nil, "0x")
+			}  else if case let .executionError(errorResult) = error as? JSONRPCError {
+				completion(EthereumClientError.executionError(description: "\(errorResult.error)"), nil)
             } else {
                 completion(EthereumClientError.unexpectedReturnValue, nil)
             }
