@@ -43,4 +43,17 @@ class EthereumKeyStorageTests: XCTestCase {
         }
     }
 
+    func testEncryptAndStorePrivateKey() {
+        let randomData = Data.randomOfLength(256)!
+        let keyStorage = EthereumKeyLocalStorage()
+        let password = "myP4ssw0rD"
+
+        do {
+            try keyStorage.encryptAndStorePrivateKey(key: randomData, keystorePassword: password)
+            let decrypted = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
+            XCTAssertEqual(decrypted, randomData)
+        } catch let error {
+            XCTFail("Failed to encrypt and store private key with error: \(error)")
+        }
+    }
 }
