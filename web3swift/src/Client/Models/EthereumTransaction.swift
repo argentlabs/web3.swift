@@ -49,11 +49,35 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
         let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.web3.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
         self.hash = RLP.encode(txArray)
     }
+
+    public init(
+        from: EthereumAddress?,
+        to: EthereumAddress,
+        data: Data,
+        gasPrice: BigUInt,
+        gasLimit: BigUInt
+    ) {
+        self.init(
+            from: from,
+            to: to,
+            value: 0,
+            data: data,
+            gasPrice: gasPrice,
+            gasLimit: gasLimit
+        )
+    }
     
-    public init(from: EthereumAddress?, to: EthereumAddress, data: Data, gasPrice: BigUInt, gasLimit: BigUInt) {
+    public init(
+        from: EthereumAddress?,
+        to: EthereumAddress,
+        value: BigUInt = 0,
+        data: Data,
+        gasPrice: BigUInt,
+        gasLimit: BigUInt
+    ) {
         self.from = from
         self.to = to
-        self.value = BigUInt(0)
+        self.value = value
         self.data = data
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
