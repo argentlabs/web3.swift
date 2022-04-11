@@ -1,6 +1,6 @@
 ![web3.swift: Ethereum API for Swift](https://raw.github.com/argentlabs/web3.swift/master/web3swift.png)
 
-[![Build Status](https://app.bitrise.io/app/c65202fce1ab4f66/status.svg?token=3G01KrQCcivwF5puzFd0PA&branch=develop)](https://app.bitrise.io/app/c65202fce1ab4f66)
+![Build Status](https://github.com/argentlabs/web3.swift/blob/master/.github/workflows/swift.yml/badge.svg)
 
 ## Installation
 
@@ -8,7 +8,7 @@
 
 Use Xcode to add to the project (**File -> Swift Packages**) or add this to your `Package.swift` file:
 ```swift
-.package(url: "https://github.com/argentlabs/web3.swift", from: "0.7.0")
+.package(url: "https://github.com/argentlabs/web3.swift", from: "0.9.3")
 ```
 ### CocoaPods
 
