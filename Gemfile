@@ -2,4 +2,4 @@
 source "https://rubygems.org"
 
 #iOS
-gem 'cocoapods', '1.11.2'
+gem 'cocoapods', '1.11.3'
