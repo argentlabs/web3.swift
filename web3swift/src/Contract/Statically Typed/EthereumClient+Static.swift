@@ -8,6 +8,42 @@
 
 import Foundation
 
+public extension ABIConstructor {
+    func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, String?) -> Void)) {
+
+        guard let tx = try? self.transaction() else {
+            return completion(EthereumClientError.encodeIssue, nil)
+        }
+
+        client.eth_sendRawTransaction(tx, withAccount: account) { (error, res) in
+            guard let res = res, error == nil else {
+                return completion(EthereumClientError.unexpectedReturnValue, nil)
+            }
+
+            return completion(nil, res)
+        }
+    }
+}
+
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+public extension ABIConstructor {
+    func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol) async throws -> String  {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+            execute(withClient: client, account: account) { error, response in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let response = response {
+                    continuation.resume(returning: response)
+                }
+            }
+        }
+    }
+}
+
+#endif
+
 public extension ABIFunction {
     func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, String?) -> Void)) {
 
