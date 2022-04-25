@@ -18,7 +18,7 @@ public struct EthereumLog: Equatable {
     public let address: EthereumAddress
     public var data: String
     public var topics: [String]
-    public let removed: Bool
+    public let removed: Bool?
 }
 
 extension EthereumLog: Codable {
@@ -37,7 +37,7 @@ extension EthereumLog: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.removed = try values.decode(Bool.self, forKey: .removed)
+        self.removed = try values.decodeIfPresent(Bool.self, forKey: .removed)
         self.address = try values.decode(EthereumAddress.self, forKey: .address)
         self.data = try values.decode(String.self, forKey: .data)
         self.topics = try values.decode([String].self, forKey: .topics)
@@ -66,7 +66,7 @@ extension EthereumLog: Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(self.removed, forKey: .removed)
+        try container.encodeIfPresent(self.removed, forKey: .removed)
         if let bytes = self.logIndex?.web3.bytes {
             try? container.encode(String(bytes: bytes).web3.withHexPrefix, forKey: .logIndex)
         }
