@@ -26,22 +26,41 @@ public extension ABIFunction {
 
     }
 
-    func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, T?) -> Void)) {
+    func call<T: ABIResponse>(
+        withClient client: EthereumClientProtocol,
+        responseType: T.Type,
+        block: EthereumBlock = .Latest,
+        failOnExecutionError: Bool = true,
+        completion: @escaping((EthereumClientError?, T?) -> Void)
+    ) {
 
         guard let tx = try? self.transaction() else {
             return completion(EthereumClientError.encodeIssue, nil)
         }
 
         client.eth_call(tx, block: block) { (error, res) in
-            guard let res = res, error == nil else {
+            let parseOrFail: (String) -> Void = { data in
+                guard let response = (try? T(data: data)) else {
+                    return completion(EthereumClientError.decodeIssue, nil)
+                }
+
+                return completion(nil, response)
+            }
+
+            switch (error, res) {
+            case (.executionError, _):
+                if failOnExecutionError {
+                    return completion(error, nil)
+                } else {
+                    return parseOrFail("0x")
+                }
+            case (let error?, _):
+                return completion(error, nil)
+            case (nil, let data?):
+                parseOrFail(data)
+            case (nil, nil):
                 return completion(EthereumClientError.unexpectedReturnValue, nil)
             }
-
-            guard let response = (try? T(data: res)) else {
-                return completion(EthereumClientError.decodeIssue, nil)
-            }
-
-            return completion(nil, response)
         }
     }
 }
@@ -62,9 +81,19 @@ public extension ABIFunction {
         }
     }
 
-    func call<T: ABIResponse>(withClient client: EthereumClientProtocol, responseType: T.Type, block: EthereumBlock = .Latest) async throws -> T {
+    func call<T: ABIResponse>(
+        withClient client: EthereumClientProtocol,
+        responseType: T.Type,
+        block: EthereumBlock = .Latest,
+        failOnExecutionError: Bool = true
+    ) async throws -> T {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<T, Error>) in
-            call(withClient: client, responseType: responseType) { error, response in
+            call(
+                withClient: client,
+                responseType: responseType,
+                block: block,
+                failOnExecutionError: failOnExecutionError
+            ) { error, response in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else if let response = response {

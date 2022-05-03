@@ -25,9 +25,21 @@ public struct JSONRPCResult<T: Decodable>: Decodable {
     var result: T
 }
 
-public struct JSONRPCErrorDetail: Decodable {
+public struct JSONRPCErrorDetail: Decodable, Equatable, CustomStringConvertible {
     var code: Int
     var message: String
+
+    public init(
+        code: Int,
+        message: String
+    ) {
+        self.code = code
+        self.message = message
+    }
+
+    public var description: String {
+        "Code: \(code)\nMessage: \(message)"
+    }
 }
 
 public struct JSONRPCErrorResult: Decodable {

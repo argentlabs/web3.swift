@@ -34,14 +34,12 @@ struct TransferMatchingSignatureEvent: ABIEvent {
 
 class EthereumClientTests: XCTestCase {
     var client: EthereumClient?
-    var mainnetClient: EthereumClient?
     var account: EthereumAccount?
     let timeout = 10.0
 
     override func setUp() {
         super.setUp()
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
-        self.mainnetClient = EthereumClient(url: URL(string: TestConfig.mainnetClientUrl)!)
         self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         print("Public address: \(self.account?.address.value ?? "NONE")")
     }
@@ -325,32 +323,20 @@ extension EthereumClientTests {
         }
     }
 
-    // This is how geth used to work up until a recent version
-    // see https://github.com/ethereum/go-ethereum/pull/21083/
-    // Used to return '0x' in response, and would fail decoding
-    // We'll continue to support this as user of library (and Argent in our case)
-    // works with this assumption.
-    // NOTE: This behaviour will be removed at a later time to fail as expected
-    // NOTE: At the time of writing, this test succeeds as-is in ropsten as nodes behaviour is different. That's why we use a mainnet check here
-    func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWith0x_Async() async {
+    func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWithExecutionError_Async() async {
         do {
             let function = InvalidMethodA(param: .zero)
-            let _ = try await function.call(withClient: self.mainnetClient!,
-                                            responseType: InvalidMethodA.BoolResponse.self)
+            let _ = try await function.call(
+                withClient: self.client!,
+                responseType: InvalidMethodA.BoolResponse.self)
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, .decodeIssue)
-        }
-    }
-
-    func test_GivenFailingCallMethod_WhenCallingContract_ThenFailsWith0x_Async() async {
-        do {
-            let function = InvalidMethodB(param: .zero)
-            let _ = try await function.call(withClient: self.mainnetClient!,
-                                            responseType: InvalidMethodB.BoolResponse.self)
-            XCTFail("Expected to throw while awaiting, but succeeded")
-        } catch {
-            XCTAssertEqual(error as? EthereumClientError, .decodeIssue)
+            XCTAssertEqual(
+                error as? EthereumClientError,
+                .executionError(
+                    .init(code: -32000, message: "execution reverted")
+                )
+            )
         }
     }
 

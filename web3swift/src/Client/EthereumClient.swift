@@ -80,7 +80,7 @@ public protocol EthereumClientProtocol {
 
 public enum EthereumClientError: Error, Equatable {
     case tooManyResults
-    case executionError(description: String)
+    case executionError(JSONRPCErrorDetail)
     case unexpectedReturnValue
     case noResultFound
     case decodeIssue
@@ -266,10 +266,10 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
             if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
                 completion(nil, gas)
-            } else if case let .executionError(errorResult) = error as? JSONRPCError {
-                completion(EthereumClientError.executionError(description: "\(errorResult.error)"), nil)
+            } else if case let .executionError(result) = error as? JSONRPCError {
+                completion(.executionError(result.error), nil)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(.unexpectedReturnValue, nil)
             }
         }
     }
@@ -380,13 +380,10 @@ public class EthereumClient: EthereumClientProtocol {
         EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)
-            } else if
-                let error = error,
-                case let JSONRPCError.executionError(result) = error,
-                (result.error.code == JSONRPCErrorCode.invalidInput || result.error.code == JSONRPCErrorCode.contractExecution) {
-                completion(nil, "0x")
+            } else if case let .executionError(result) = error as? JSONRPCError {
+                completion(.executionError(result.error), nil)
             } else {
-                completion(EthereumClientError.unexpectedReturnValue, nil)
+                completion(.unexpectedReturnValue, nil)
             }
         }
     }

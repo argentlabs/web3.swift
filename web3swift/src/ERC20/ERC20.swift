@@ -66,7 +66,11 @@ public class ERC20: ERC20Protocol {
 
     public func decimals(tokenContract: EthereumAddress, completion: @escaping((Error?, UInt8?) -> Void)) {
         let function = ERC20Functions.decimals(contract: tokenContract)
-        function.call(withClient: self.client, responseType: ERC20Responses.decimalsResponse.self) { (error, decimalsResponse) in
+        function.call(
+            withClient: self.client,
+            responseType: ERC20Responses.decimalsResponse.self,
+            failOnExecutionError: false
+        ) { (error, decimalsResponse) in
             return completion(error, decimalsResponse?.value)
         }
     }

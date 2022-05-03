@@ -58,6 +58,10 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         }
 
         client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
+            if case .executionError = error {
+                return completion(.ensUnknown, nil)
+            }
+
             guard let resolverData = resolverData else {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
@@ -107,6 +111,10 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         }
 
         client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
+            if case .executionError = error {
+                return completion(.ensUnknown, nil)
+            }
+            
             guard let resolverData = resolverData else {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
