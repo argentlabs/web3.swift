@@ -154,7 +154,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
 
 @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension EthereumNameService {
-    func resolve(address: EthereumAddress) async throws -> String {
+    public func resolve(address: EthereumAddress) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             resolve(address: address) { error, ensHex in
                 if let error = error {
@@ -166,7 +166,7 @@ extension EthereumNameService {
         }
     }
 
-    func resolve(ens: String) async throws -> EthereumAddress {
+    public func resolve(ens: String) async throws -> EthereumAddress {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumAddress, Error>) in
             resolve(ens: ens) { error, address in
                 if let error = error {
