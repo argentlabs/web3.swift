@@ -347,7 +347,11 @@ public class ERC721Enumerable: ERC721 {
                                     index: BigUInt,
                                     completion: @escaping((Error?, BigUInt?) -> Void)) {
         let function = ERC721EnumerableFunctions.tokenOfOwnerByIndex(contract: contract, address: owner, index: index)
-        function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self) { error, response in
+        function.call(
+            withClient: client,
+            responseType: ERC721EnumerableResponses.numberResponse.self,
+            failOnExecutionError: false
+        ) { error, response in
             return completion(error, response?.value)
         }
     }

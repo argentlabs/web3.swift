@@ -20,20 +20,32 @@ struct JSONRPCRequest<T: Encodable>: Encodable {
 }
 
 public struct JSONRPCResult<T: Decodable>: Decodable {
-    var id: Int
-    var jsonrpc: String
-    var result: T
+    public var id: Int
+    public var jsonrpc: String
+    public var result: T
 }
 
-public struct JSONRPCErrorDetail: Decodable {
-    var code: Int
-    var message: String
+public struct JSONRPCErrorDetail: Decodable, Equatable, CustomStringConvertible {
+    public var code: Int
+    public var message: String
+
+    public init(
+        code: Int,
+        message: String
+    ) {
+        self.code = code
+        self.message = message
+    }
+
+    public var description: String {
+        "Code: \(code)\nMessage: \(message)"
+    }
 }
 
 public struct JSONRPCErrorResult: Decodable {
-    var id: Int
-    var jsonrpc: String
-    var error: JSONRPCErrorDetail
+    public var id: Int
+    public var jsonrpc: String
+    public var error: JSONRPCErrorDetail
 }
 
 public enum JSONRPCErrorCode {
@@ -50,7 +62,7 @@ public enum JSONRPCError: Error {
     case unknownError
     case noResult
 
-    var isExecutionError: Bool {
+    public var isExecutionError: Bool {
         switch self {
         case .executionError:
             return true
