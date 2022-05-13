@@ -9,13 +9,11 @@
 import Foundation
 import BigInt
 
-public protocol ABIFunction {
-    static var name: String { get }
+public protocol ABIFunction: ABIFunctionEncodable {
     var gasPrice: BigUInt? { get }
     var gasLimit: BigUInt? { get }
     var contract: EthereumAddress { get }
     var from: EthereumAddress? { get }
-    func encode(to encoder: ABIFunctionEncoder) throws
 }
 
 public protocol ABIResponse: ABITupleDecodable {}

@@ -69,7 +69,7 @@ public class ERC20: ERC20Protocol {
         function.call(
             withClient: self.client,
             responseType: ERC20Responses.decimalsResponse.self,
-            failOnExecutionError: false
+            resolution: .noOffchain(failOnExecutionError: false)
         ) { (error, decimalsResponse) in
             return completion(error, decimalsResponse?.value)
         }

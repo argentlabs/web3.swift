@@ -1,0 +1,235 @@
+//
+//  EthereumClient+Call.swift
+//  web3swift
+//
+//  Created by Miguel on 16/05/2022.
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//
+
+import Foundation
+import Combine
+
+public enum OffchainReadError: Error {
+    case network
+    case server(code: Int, message: String?)
+    case invalidParams
+    case invalidResponse
+    case tooManyRedirections
+}
+
+extension EthereumClient {
+    public func eth_call(
+        _ transaction: EthereumTransaction,
+        resolution: CallResolution = .noOffchain(failOnExecutionError: true),
+        block: EthereumBlock = .Latest,
+        completion: @escaping ((EthereumClientError?, String?) -> Void)
+    ) {
+        guard let transactionData = transaction.data else {
+            return completion(EthereumClientError.noInputData, nil)
+        }
+
+        struct CallParams: Encodable {
+            let from: String?
+            let to: String
+            let data: String
+            let block: String
+
+            enum TransactionCodingKeys: String, CodingKey {
+                case from
+                case to
+                case data
+            }
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.unkeyedContainer()
+                var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
+                if let from = from {
+                    try nested.encode(from, forKey: .from)
+                }
+                try nested.encode(to, forKey: .to)
+                try nested.encode(data, forKey: .data)
+                try container.encode(block)
+            }
+        }
+
+        let params = CallParams(
+            from: transaction.from?.value,
+            to: transaction.to.value,
+            data: transactionData.web3.hexString,
+            block: block.stringValue
+        )
+
+        EthereumRPC.execute(
+            session: session,
+            url: url,
+            method: "eth_call",
+            params: params,
+            receive: String.self
+        ) { (error, response) in
+            if let resDataString = response as? String {
+                completion(nil, resDataString)
+            } else if case let .executionError(result) = error as? JSONRPCError {
+                switch resolution {
+                case .noOffchain:
+                    completion(.executionError(result.error), nil)
+                case .offchainAllowed(let redirects):
+                    if let lookup = result.offchainLookup, lookup.address == transaction.to {
+                        self.offchainRead(
+                            lookup: lookup,
+                            maxReads: redirects
+                        ).sink(receiveCompletion: { offchainCompletion in
+                            if case .failure = offchainCompletion {
+                                completion(.noResultFound, nil)
+                            }
+                        }, receiveValue: { data in
+                            self.eth_call(
+                                .init(
+                                    to: lookup.address,
+                                    data: lookup.encodeCall(withResponse: data)
+                                ),
+                                resolution: .noOffchain(failOnExecutionError: true),
+                                block: block, completion: completion
+                            )
+                        }
+                        )
+                        .store(in: &cancellables)
+                    } else {
+                        completion(.executionError(result.error), nil)
+                    }
+                }
+            } else {
+                completion(.unexpectedReturnValue, nil)
+            }
+        }
+    }
+
+    private func offchainRead(
+        lookup: OffchainLookup,
+        attempt: Int = 1,
+        maxReads: Int = 4
+    ) -> AnyPublisher<Data, OffchainReadError> {
+        guard !lookup.urls.isEmpty else {
+            return Fail(error: OffchainReadError.invalidResponse)
+                .eraseToAnyPublisher()
+        }
+
+        let url = lookup.urls[0]
+
+        return self.offchainRead(
+            sender: lookup.address,
+            data: lookup.callData,
+            rawURL: url,
+            attempt: attempt,
+            maxAttempts: maxReads
+        )
+        .catch { error -> AnyPublisher<Data, OffchainReadError> in
+            guard error.isNextURLAllowed else {
+                return Fail(error: error)
+                    .eraseToAnyPublisher()
+            }
+            var lookup = lookup
+            lookup.urls = Array(lookup.urls.dropFirst())
+            return self.offchainRead(
+                lookup: lookup,
+                attempt: attempt + 1,
+                maxReads: maxReads
+            ).eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
+    }
+
+    private func offchainRead(
+        sender: EthereumAddress,
+        data: Data,
+        rawURL: String,
+        attempt: Int,
+        maxAttempts: Int
+    ) -> AnyPublisher<Data, OffchainReadError> {
+        guard attempt <= maxAttempts else {
+            return Fail(error: OffchainReadError.tooManyRedirections)
+                .eraseToAnyPublisher()
+        }
+
+        let isGet = rawURL.contains("{data}")
+
+        guard
+            let url = URL(
+                string: rawURL
+                    .replacingOccurrences(of: "{sender}", with: sender.value.lowercased())
+                    .replacingOccurrences(of: "{data}", with: data.web3.hexString.lowercased())
+            )
+        else {
+            return Fail(error: OffchainReadError.invalidParams)
+                .eraseToAnyPublisher()
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = isGet ? "GET" : "POST"
+        if !isGet {
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try? JSONEncoder().encode(
+                OffchainReadJSONBody(
+                    sender: sender,
+                    data: data.web3.hexString
+                )
+            )
+        }
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+        return session.dataTaskPublisher(for: request)
+            .tryMap { data, response in
+                guard let res = response as? HTTPURLResponse else {
+                    throw OffchainReadError.network
+                }
+
+                guard res.statusCode >= 200, res.statusCode < 300 else {
+                    let error = try? JSONDecoder().decode(OffchainReadErrorResponse.self, from: data)
+                    throw OffchainReadError.server(
+                        code: res.statusCode,
+                        message: error?.message ?? nil
+                    )
+                }
+
+                guard let decoded = try? JSONDecoder().decode(OffchainReadResponse.self, from: data) else {
+                    throw OffchainReadError.invalidResponse
+                }
+
+                return decoded.data
+            }
+            .mapError { error in
+                error as? OffchainReadError ?? OffchainReadError.network
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
+fileprivate struct OffchainReadJSONBody: Encodable {
+    let sender: EthereumAddress
+    let data: String
+}
+
+fileprivate struct OffchainReadResponse: Decodable {
+    @DataStr
+    var data: Data
+}
+
+fileprivate struct OffchainReadErrorResponse: Decodable {
+    let message: String?
+    let pathname: String
+}
+
+fileprivate var cancellables = Set<AnyCancellable>()
+
+fileprivate extension OffchainReadError {
+    var isNextURLAllowed: Bool {
+        switch self {
+        case let .server(code, _):
+            return code >= 500 // 4xx responses -> Don't continue with next url
+        case .network, .invalidParams, .invalidResponse:
+            return true
+        case .tooManyRedirections:
+            return false
+        }
+    }
+}
+

@@ -10,8 +10,8 @@ import Foundation
 import BigInt
 
 public class ERC165 {
-    public let client: EthereumClient
-    required public init(client: EthereumClient) {
+    public let client: EthereumClientProtocol
+    required public init(client: EthereumClientProtocol) {
         self.client = client
     }
 

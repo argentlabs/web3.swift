@@ -13,7 +13,12 @@ import BigInt
 import FoundationNetworking
 #endif
 
-public protocol EthereumClientProtocol {
+public enum CallResolution {
+    case noOffchain(failOnExecutionError: Bool)
+    case offchainAllowed(maxRedirects: Int)
+}
+
+public protocol EthereumClientProtocol: AnyObject {
     init(url: URL, sessionConfig: URLSessionConfiguration)
     init(url: URL)
     var network: EthereumNetwork? { get }
@@ -28,7 +33,12 @@ public protocol EthereumClientProtocol {
     func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping((EthereumClientError?, Int?) -> Void))
     func eth_getTransaction(byHash txHash: String, completion: @escaping((EthereumClientError?, EthereumTransaction?) -> Void))
     func eth_getTransactionReceipt(txHash: String, completion: @escaping((EthereumClientError?, EthereumTransactionReceipt?) -> Void))
-    func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock, completion: @escaping((EthereumClientError?, String?) -> Void))
+    func eth_call(
+        _ transaction: EthereumTransaction,
+        resolution: CallResolution,
+        block: EthereumBlock,
+        completion: @escaping((EthereumClientError?, String?) -> Void)
+    )
     func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
@@ -65,7 +75,11 @@ public protocol EthereumClientProtocol {
     func eth_getTransactionReceipt(txHash: String) async throws -> EthereumTransactionReceipt
 
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock) async throws -> String
+    func eth_call(
+        _ transaction: EthereumTransaction,
+        resolution: CallResolution,
+        block: EthereumBlock
+    ) async throws -> String
 
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws ->  [EthereumLog]
@@ -347,47 +361,6 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
 
-    public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, String?) -> Void)) {
-        guard let transactionData = transaction.data else {
-            return completion(EthereumClientError.noInputData, nil)
-        }
-
-        struct CallParams: Encodable {
-            let from: String?
-            let to: String
-            let data: String
-            let block: String
-
-            enum TransactionCodingKeys: String, CodingKey {
-                case from
-                case to
-                case data
-            }
-
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.unkeyedContainer()
-                var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
-                if let from = from {
-                    try nested.encode(from, forKey: .from)
-                }
-                try nested.encode(to, forKey: .to)
-                try nested.encode(data, forKey: .data)
-                try container.encode(block)
-            }
-        }
-
-        let params = CallParams(from: transaction.from?.value, to: transaction.to.value, data: transactionData.web3.hexString, block: block.stringValue)
-        EthereumRPC.execute(session: session, url: url, method: "eth_call", params: params, receive: String.self) { (error, response) in
-            if let resDataString = response as? String {
-                completion(nil, resDataString)
-            } else if case let .executionError(result) = error as? JSONRPCError {
-                completion(.executionError(result.error), nil)
-            } else {
-                completion(.unexpectedReturnValue, nil)
-            }
-        }
-    }
-
     public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completion: @escaping ((EthereumClientError?, [EthereumLog]?) -> Void)) {
         eth_getLogs(addresses: addresses, topics: topics.map(Topics.plain), fromBlock: from, toBlock: to, completion: completion)
     }
@@ -586,9 +559,16 @@ extension EthereumClient {
         }
     }
 
-    public func eth_call(_ transaction: EthereumTransaction, block: EthereumBlock = .Latest) async throws -> String {
+    public func eth_call(
+        _ transaction: EthereumTransaction,
+        resolution: CallResolution = .noOffchain(failOnExecutionError: true),
+        block: EthereumBlock = .Latest) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            eth_call(transaction, block: block) { error, txHash in
+            eth_call(
+                transaction,
+                resolution: resolution,
+                block: block
+            ) { error, txHash in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else if let txHash = txHash {

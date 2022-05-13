@@ -28,13 +28,16 @@ public struct JSONRPCResult<T: Decodable>: Decodable {
 public struct JSONRPCErrorDetail: Decodable, Equatable, CustomStringConvertible {
     public var code: Int
     public var message: String
+    public var data: String?
 
     public init(
         code: Int,
-        message: String
+        message: String,
+        data: String?
     ) {
         self.code = code
         self.message = message
+        self.data = data
     }
 
     public var description: String {
@@ -104,7 +107,6 @@ public class EthereumRPC {
                     let resultObjects = result.map{ return $0.result }
                     return completion(nil, resultObjects)
                 } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
-                    print("Ethereum response error: \(errorResult.error)")
                     return completion(JSONRPCError.executionError(errorResult), nil)
                 } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
                     return completion(JSONRPCError.requestRejected(data), nil)

@@ -195,12 +195,12 @@ public class ERC721Metadata: ERC721 {
 
     public let session: URLSession
 
-    public init(client: EthereumClient, metadataSession: URLSession) {
+    public init(client: EthereumClientProtocol, metadataSession: URLSession) {
         self.session = metadataSession
         super.init(client: client)
     }
 
-    required init(client: EthereumClient) {
+    required init(client: EthereumClientProtocol) {
         fatalError("init(client:) has not been implemented")
     }
 
@@ -350,7 +350,7 @@ public class ERC721Enumerable: ERC721 {
         function.call(
             withClient: client,
             responseType: ERC721EnumerableResponses.numberResponse.self,
-            failOnExecutionError: false
+            resolution: .noOffchain(failOnExecutionError: false)
         ) { error, response in
             return completion(error, response?.value)
         }

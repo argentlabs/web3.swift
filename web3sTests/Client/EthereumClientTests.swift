@@ -334,7 +334,7 @@ extension EthereumClientTests {
             XCTAssertEqual(
                 error as? EthereumClientError,
                 .executionError(
-                    .init(code: -32000, message: "execution reverted")
+                    .init(code: -32000, message: "execution reverted", data: nil)
                 )
             )
         }
