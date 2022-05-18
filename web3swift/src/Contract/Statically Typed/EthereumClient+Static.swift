@@ -30,7 +30,7 @@ public extension ABIFunction {
         withClient client: EthereumClientProtocol,
         responseType: T.Type,
         block: EthereumBlock = .Latest,
-        failOnExecutionError: Bool = true,
+        resolution: CallResolution = .noOffchain(failOnExecutionError: true),
         completion: @escaping((EthereumClientError?, T?) -> Void)
     ) {
 
@@ -38,7 +38,11 @@ public extension ABIFunction {
             return completion(EthereumClientError.encodeIssue, nil)
         }
 
-        client.eth_call(tx, block: block) { (error, res) in
+        client.eth_call(
+            tx,
+            resolution: resolution,
+            block: block
+        ) { (error, res) in
             let parseOrFail: (String) -> Void = { data in
                 guard let response = (try? T(data: data)) else {
                     return completion(EthereumClientError.decodeIssue, nil)
@@ -49,7 +53,7 @@ public extension ABIFunction {
 
             switch (error, res) {
             case (.executionError, _):
-                if failOnExecutionError {
+                if resolution.failOnExecutionError {
                     return completion(error, nil)
                 } else {
                     return parseOrFail("0x")
@@ -61,6 +65,26 @@ public extension ABIFunction {
             case (nil, nil):
                 return completion(EthereumClientError.unexpectedReturnValue, nil)
             }
+        }
+    }
+}
+
+extension CallResolution {
+    var failOnExecutionError: Bool {
+        switch self {
+        case .noOffchain(let fail):
+            return fail
+        case .offchainAllowed:
+            return true
+        }
+    }
+
+    var allowsOffchain: Bool {
+        switch self {
+        case .noOffchain:
+            return false
+        case .offchainAllowed:
+            return true
         }
     }
 }
@@ -85,14 +109,14 @@ public extension ABIFunction {
         withClient client: EthereumClientProtocol,
         responseType: T.Type,
         block: EthereumBlock = .Latest,
-        failOnExecutionError: Bool = true
+        resolution: CallResolution = .noOffchain(failOnExecutionError: true)
     ) async throws -> T {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<T, Error>) in
             call(
                 withClient: client,
                 responseType: responseType,
                 block: block,
-                failOnExecutionError: failOnExecutionError
+                resolution: resolution
             ) { error, response in
                 if let error = error {
                     continuation.resume(throwing: error)
@@ -116,7 +140,7 @@ public struct EventFilter {
     }
 }
 
-public extension EthereumClient {
+public extension EthereumClientProtocol {
     typealias EventsCompletion = (EthereumClientError?, [ABIEvent], [EthereumLog]) -> Void
     func getEvents(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
@@ -168,7 +192,7 @@ public extension EthereumClient {
         }
     }
 
-    private func handleLogs(_ error: EthereumClientError?,
+    func handleLogs(_ error: EthereumClientError?,
                             _ logs: [EthereumLog]?,
                             _ matches: [EventFilter],
                             _ completion: EventsCompletion) {

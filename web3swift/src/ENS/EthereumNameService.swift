@@ -7,19 +7,34 @@
 //
 
 import Foundation
+import BigInt
+
+public enum ResolutionMode {
+    case onchain
+    case allowOffchainLookup
+}
 
 protocol EthereumNameServiceProtocol {
-    init(client: EthereumClientProtocol, registryAddress: EthereumAddress?)
-    func resolve(address: EthereumAddress, completion: @escaping((EthereumNameServiceError?, String?) -> Void)) -> Void
-    func resolve(ens: String, completion: @escaping((EthereumNameServiceError?, EthereumAddress?) -> Void)) -> Void
+    func resolve(
+        address: EthereumAddress,
+        mode: ResolutionMode,
+        completion: @escaping((EthereumNameServiceError?, String?) -> Void)
+    ) -> Void
+    func resolve(
+        ens: String,
+        mode: ResolutionMode,
+        completion: @escaping((EthereumNameServiceError?, EthereumAddress?) -> Void)
+    ) -> Void
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    func resolve(address: EthereumAddress) async throws -> String
+    func resolve(
+        address: EthereumAddress,
+        mode: ResolutionMode
+    ) async throws -> String
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    func resolve(ens: String) async throws -> EthereumAddress
-#endif
+    func resolve(
+        ens: String,
+        mode: ResolutionMode
+    ) async throws -> EthereumAddress
 }
 
 public enum EthereumNameServiceError: Error, Equatable {
@@ -28,143 +43,137 @@ public enum EthereumNameServiceError: Error, Equatable {
     case ensUnknown
     case invalidInput
     case decodeIssue
+    case tooManyRedirections
 }
 
-// This is an example of interacting via a JSON Definition contract API
 public class EthereumNameService: EthereumNameServiceProtocol {
     let client: EthereumClientProtocol
     let registryAddress: EthereumAddress?
+    let maximumRedirections: Int
 
-    required public init(client: EthereumClientProtocol, registryAddress: EthereumAddress? = nil) {
+    required public init(
+        client: EthereumClientProtocol,
+        registryAddress: EthereumAddress? = nil,
+        maximumRedirections: Int = 5
+    ) {
         self.client = client
         self.registryAddress = registryAddress
+        self.maximumRedirections = maximumRedirections
     }
 
-    public func resolve(address: EthereumAddress, completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
+    public func resolve(
+        address: EthereumAddress,
+        mode: ResolutionMode,
+        completion: @escaping ((EthereumNameServiceError?, String?) -> Void)
+    ) {
         guard
             let network = client.network,
             let registryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
                 return completion(EthereumNameServiceError.noNetwork, nil)
             }
 
-        let ensReverse = address.value.web3.noHexPrefix + ".addr.reverse"
-        let nameHash = Self.nameHash(name: ensReverse)
+        let function = ENSContracts.ENSRegistryFunctions.resolver(
+            contract: registryAddress,
+            parameter: .address(address)
+        )
 
-        let function = ENSContracts.ENSRegistryFunctions.resolver(contract: registryAddress,
-                                                                  _node: nameHash.web3.hexData ?? Data())
-        guard let registryTransaction = try? function.transaction() else {
-            completion(EthereumNameServiceError.invalidInput, nil)
-            return
-        }
-
-        client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
+        function.call(
+            withClient: client,
+            responseType: ENSContracts.AddressResponse.self,
+            block: .Latest,
+            resolution: .noOffchain(failOnExecutionError: true)
+        ) { (error, response) in
             if case .executionError = error {
                 return completion(.ensUnknown, nil)
             }
 
-            guard let resolverData = resolverData else {
+            guard let resolverAddress = response?.value else {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
 
-            guard resolverData != "0x" else {
-                return completion(EthereumNameServiceError.ensUnknown, nil)
-            }
+            Task {
+                let resolver = ENSResolver(
+                    address: resolverAddress,
+                    client: self.client,
+                    callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
+                )
 
-            let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
-            let resolverAddress = EthereumAddress(String(resolverData[idx...]).web3.withHexPrefix)
-
-            let function = ENSContracts.ENSResolverFunctions.name(contract: resolverAddress,
-                                                                  _node: nameHash.web3.hexData ?? Data())
-            guard let addressTransaction = try? function.transaction() else {
-                completion(EthereumNameServiceError.invalidInput, nil)
-                return
-            }
-
-            self.client.eth_call(addressTransaction, block: .Latest, completion: { (error, data) in
-                guard let data = data, data != "0x" else {
-                    return completion(EthereumNameServiceError.ensUnknown, nil)
+                do {
+                    let name = try await resolver.resolve(address: address)
+                    completion(nil, name)
+                } catch let error {
+                    completion(error as? EthereumNameServiceError ?? .ensUnknown, nil)
                 }
-                if let ensHex: String = try? (try? ABIDecoder.decodeData(data, types: [String.self]))?.first?.decoded() {
-                    completion(nil, ensHex)
-                } else {
-                    completion(EthereumNameServiceError.decodeIssue, nil)
-                }
-
-            })
-        })
+            }
+        }
     }
 
-    public func resolve(ens: String, completion: @escaping ((EthereumNameServiceError?, EthereumAddress?) -> Void)) {
-
+    public func resolve(
+        ens: String,
+        mode: ResolutionMode,
+        completion: @escaping ((EthereumNameServiceError?, EthereumAddress?) -> Void)
+    ) {
         guard
             let network = client.network,
             let registryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
                 return completion(EthereumNameServiceError.noNetwork, nil)
             }
-        let nameHash = Self.nameHash(name: ens)
-        let function = ENSContracts.ENSRegistryFunctions.resolver(contract: registryAddress,
-                                                                  _node: nameHash.web3.hexData ?? Data())
+        let function = ENSContracts.ENSRegistryFunctions.resolver(
+            contract: registryAddress,
+            parameter: .name(ens)
+        )
 
-        guard let registryTransaction = try? function.transaction() else {
-            completion(EthereumNameServiceError.invalidInput, nil)
-            return
-        }
-
-        client.eth_call(registryTransaction, block: .Latest, completion: { (error, resolverData) in
+        function.call(
+            withClient: client,
+            responseType: ENSContracts.AddressResponse.self,
+            block: .Latest,
+            resolution: .noOffchain(failOnExecutionError: true)
+        ) { (error, response) in
             if case .executionError = error {
                 return completion(.ensUnknown, nil)
             }
-            
-            guard let resolverData = resolverData else {
+
+            guard let resolverAddress = response?.value else {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
 
-            guard resolverData != "0x" else {
-                return completion(EthereumNameServiceError.ensUnknown, nil)
-            }
-
-            let idx = resolverData.index(resolverData.endIndex, offsetBy: -40)
-            let resolverAddress = EthereumAddress(String(resolverData[idx...]).web3.withHexPrefix)
-
-            let function = ENSContracts.ENSResolverFunctions.addr(contract: resolverAddress, _node: nameHash.web3.hexData ?? Data())
-            guard let addressTransaction = try? function.transaction() else {
-                completion(EthereumNameServiceError.invalidInput, nil)
-                return
-            }
-
-            self.client.eth_call(addressTransaction, block: .Latest, completion: { (error, data) in
-                guard let data = data, data != "0x" else {
-                    return completion(EthereumNameServiceError.ensUnknown, nil)
+            Task {
+                let resolver = ENSResolver(
+                    address: resolverAddress,
+                    client: self.client,
+                    callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
+                )
+                do {
+                    let address = try await resolver.resolve(name: ens)
+                    completion(nil, address)
+                } catch let error {
+                    completion(error as? EthereumNameServiceError ?? .ensUnknown, nil)
                 }
-
-                if let ensAddress: EthereumAddress = try? (try? ABIDecoder.decodeData(data, types: [EthereumAddress.self]))?.first?.decoded() {
-                    completion(nil, ensAddress)
-                } else {
-                    completion(EthereumNameServiceError.decodeIssue, nil)
-                }
-            })
-        })
+            }
+        }
     }
 
     static func nameHash(name: String) -> String {
-        var node = Data.init(count: 32)
-        let labels = name.components(separatedBy: ".")
-        for label in labels.reversed() {
-            node.append(label.web3.keccak256)
-            node = node.web3.keccak256
-        }
-        return node.web3.hexString
+        ENSContracts.nameHash(name: name)
     }
 
+    static func dnsEncode(
+        name: String
+    ) -> Data {
+        ENSContracts.dnsEncode(name: name)
+    }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension EthereumNameService {
-    public func resolve(address: EthereumAddress) async throws -> String {
+    public func resolve(
+        address: EthereumAddress,
+        mode: ResolutionMode
+    ) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            resolve(address: address) { error, ensHex in
+            resolve(
+                address: address,
+                mode: mode
+            ) { error, ensHex in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else if let ensHex = ensHex {
@@ -174,9 +183,15 @@ extension EthereumNameService {
         }
     }
 
-    public func resolve(ens: String) async throws -> EthereumAddress {
+    public func resolve(
+        ens: String,
+        mode: ResolutionMode
+    ) async throws -> EthereumAddress {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumAddress, Error>) in
-            resolve(ens: ens) { error, address in
+            resolve(
+                ens: ens,
+                mode: mode
+            ) { error, address in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else if let address = address {
@@ -187,4 +202,14 @@ extension EthereumNameService {
     }
 }
 
-#endif
+
+fileprivate extension ResolutionMode {
+    func callResolution(maxRedirects: Int) -> CallResolution {
+        switch self {
+        case .allowOffchainLookup:
+            return .offchainAllowed(maxRedirects: maxRedirects)
+        case .onchain:
+            return .noOffchain(failOnExecutionError: true)
+        }
+    }
+}

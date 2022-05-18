@@ -111,7 +111,6 @@ extension EthereumNameService {
             resolveRegistry(
                 parameters: addresses.map(ENSRegistryResolverParameter.address),
                 handler: { index, parameter, result in
-                    // TODO: Temporary solution
                     guard let address = parameter.address else { return }
                     switch result {
                     case .success(let resolverAddress):
@@ -155,7 +154,6 @@ extension EthereumNameService {
             resolveRegistry(
                 parameters: names.map(ENSRegistryResolverParameter.name),
                 handler: { index, parameter, result in
-                    // TODO: Temporary solution
                     guard let name = parameter.name else { return }
                     switch result {
                     case .success(let resolverAddress):
