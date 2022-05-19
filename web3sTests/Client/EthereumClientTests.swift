@@ -35,7 +35,6 @@ struct TransferMatchingSignatureEvent: ABIEvent {
 class EthereumClientTests: XCTestCase {
     var client: EthereumClient?
     var account: EthereumAccount?
-    let timeout = 10.0
 
     override func setUp() {
         super.setUp()
@@ -44,34 +43,25 @@ class EthereumClientTests: XCTestCase {
         print("Public address: \(self.account?.address.value ?? "NONE")")
     }
 
-    func testEthGetTransactionCount() {
-        let expectation = XCTestExpectation(description: "get transaction receipt")
-
-        client?.eth_getTransactionCount(address: account!.address, block: .Latest, completion: { (error, count) in
-            XCTAssertNotNil(count, "Transaction count not available: \(error?.localizedDescription ?? "no error")")
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: timeout)
+    func testEthGetTransactionCount() async {
+        do {
+            let count = try await client?.eth_getTransactionCount(address: account!.address, block: .Latest)
+            XCTAssertNotEqual(count, 0)
+        } catch {
+            XCTFail("Expected count but failed \(error).")
+        }
     }
 
-    func testEthGetTransactionCountPending() {
-        let expectation = XCTestExpectation(description: "get transaction receipt")
-
-        client?.eth_getTransactionCount(address: account!.address, block: .Pending, completion: { (error, count) in
-            XCTAssertNotNil(count, "Transaction count not available: \(error?.localizedDescription ?? "no error")")
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: timeout)
+    func testEthGetTransactionCountPending() async {
+        do {
+            let count = try await client?.eth_getTransactionCount(address: account!.address, block: .Pending)
+            XCTAssertNotEqual(count, 0)
+        } catch {
+            XCTFail("Expected count but failed \(error).")
+        }
     }
-}
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-extension EthereumClientTests {
-    func testEthGetBalance_Async() async throws {
+    func testEthGetBalance() async throws {
         do {
             let balance = try await client?.eth_getBalance(address: account?.address ?? .zero, block: .Latest)
             XCTAssertNotNil(balance, "Balance not available")
@@ -80,7 +70,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testEthGetBalanceIncorrectAddress_Async() async {
+    func testEthGetBalanceIncorrectAddress() async {
         do {
             _ = try await client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .Latest)
             XCTFail("Expected to throw while awaiting, but succeeded")
@@ -89,7 +79,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testNetVersion_Async() async {
+    func testNetVersion() async {
         do {
             let network = try await client?.net_version()
             XCTAssertEqual(network, EthereumNetwork.Ropsten, "Network incorrect")
@@ -98,7 +88,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testEthGasPrice_Async() async {
+    func testEthGasPrice() async {
         do {
             let gas = try await client?.eth_gasPrice()
             XCTAssertNotNil(gas, "Gas not available")
@@ -107,7 +97,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testEthBlockNumber_Async() async {
+    func testEthBlockNumber() async {
         do {
             let block = try await client?.eth_blockNumber()
             XCTAssertNotNil(block, "Block not available")
@@ -116,7 +106,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testEthGetCode_Async() async {
+    func testEthGetCode() async {
         do {
             let code = try await client?.eth_getCode(address: EthereumAddress("0x112234455c3a32fd11230c42e7bccd4a84e02010"))
             XCTAssertNotNil(code, "Contract code not available")
@@ -125,7 +115,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testEthSendRawTransaction_Async() async {
+    func testEthSendRawTransaction() async {
         do {
             let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(500000), chainId: EthereumNetwork.Ropsten.intValue)
 
@@ -136,7 +126,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testEthGetTransactionReceipt_Async() async {
+    func testEthGetTransactionReceipt() async {
         do {
             let txHash = "0xc51002441dc669ad03697fd500a7096c054b1eb2ce094821e68831a3666fc878"
             let receipt = try await client?.eth_getTransactionReceipt(txHash: txHash)
@@ -146,7 +136,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testEthCall_Async() async {
+    func testEthCall() async {
         do {
             let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
             let txHash = try await client?.eth_call(tx, block: .Latest)
@@ -156,7 +146,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testSimpleEthGetLogs_Async() async {
+    func testSimpleEthGetLogs() async {
         do {
             let logs = try await client?.eth_getLogs(addresses: [EthereumAddress("0x23d0a442580c01e420270fba6ca836a8b2353acb")], topics: nil, fromBlock: .Earliest, toBlock: .Latest)
             XCTAssertNotNil(logs, "Logs not available")
@@ -165,7 +155,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testOrTopicsEthGetLogs_Async() async {
+    func testOrTopicsEthGetLogs() async {
         do {
             let logs = try await client?.eth_getLogs(addresses: nil, orTopics: [["0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c", "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65"], ["0x000000000000000000000000655ef694b98e55977a93259cb3b708560869a8f3"]], fromBlock: .Number(6540313), toBlock: .Number(6540397))
             XCTAssertEqual(logs?.count, 2)
@@ -175,7 +165,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenGenesisBlock_ThenReturnsByNumber_Async() async {
+    func testGivenGenesisBlock_ThenReturnsByNumber() async {
         do {
             let block = try await client?.eth_getBlockByNumber(.Number(0))
             XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 0)
@@ -186,7 +176,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenLatestBlock_ThenReturnsByNumber_Async() async {
+    func testGivenLatestBlock_ThenReturnsByNumber() async {
         do {
             let block = try await client?.eth_getBlockByNumber(.Latest)
             XCTAssertNotNil(block?.number.intValue)
@@ -195,7 +185,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenExistingBlock_ThenGetsBlockByNumber_Async() async {
+    func testGivenExistingBlock_ThenGetsBlockByNumber() async {
         do {
             let block = try await client?.eth_getBlockByNumber(.Number(3415757))
             XCTAssertEqual(block?.number, .Number(3415757))
@@ -207,7 +197,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError_Async() async {
+    func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError() async {
         do {
             let _ = try await client?.eth_getBlockByNumber(.Number(Int.max))
             XCTFail("Expected to throw while awaiting, but succeeded")
@@ -216,7 +206,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenMinedTransactionHash_ThenGetsTransactionByHash_Async() async {
+    func testGivenMinedTransactionHash_ThenGetsTransactionByHash() async {
         do {
             let transaction = try await client?.eth_getTransaction(byHash: "0x014726c783ab2fd6828a9ca556850bccfc66f70926f411274eaf886385c704af")
             XCTAssertEqual(transaction?.from?.value, "0xbbf5029fd710d227630c8b7d338051b8e76d50b3")
@@ -232,7 +222,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash_Async() async {
+    func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash() async {
         do {
             let _ = try await client?.eth_getTransaction(byHash: "0x01234")
             XCTFail("Expected to throw while awaiting, but succeeded")
@@ -241,7 +231,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned_Async() async {
+    func testGivenNoFilters_WhenMatchingSingleTransferEvents_AllEventsReturned() async {
         do {
             let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
 
@@ -257,7 +247,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned_Async() async {
+    func testGivenNoFilters_WhenMatchingMultipleTransferEvents_BothEventsReturned() async {
         do {
             let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
 
@@ -273,7 +263,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenContractFilter_WhenMatchingSingleTransferEvents_OnlyMatchingSourceEventReturned_Async() async {
+    func testGivenContractFilter_WhenMatchingSingleTransferEvents_OnlyMatchingSourceEventReturned() async {
         do {
             let to = try! ABIEncoder.encodeRaw("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", forType: ABIRawType.FixedAddress)
             let filters = [
@@ -292,7 +282,7 @@ extension EthereumClientTests {
         }
     }
 
-    func testGivenContractFilter_WhenMatchingMultipleTransferEvents_OnlyMatchingSourceEventsReturned_Async() async {
+    func testGivenContractFilter_WhenMatchingMultipleTransferEvents_OnlyMatchingSourceEventsReturned() async {
         do {
             let to = try! ABIEncoder.encode(EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"))
             let filters = [
@@ -312,7 +302,7 @@ extension EthereumClientTests {
         }
     }
 
-    func test_GivenDynamicArrayResponse_ThenCallReceivesData_Async() async {
+    func test_GivenDynamicArrayResponse_ThenCallReceivesData() async {
         do {
             let function = GetGuardians(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"))
 
@@ -323,7 +313,7 @@ extension EthereumClientTests {
         }
     }
 
-    func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWithExecutionError_Async() async {
+    func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWithExecutionError() async {
         do {
             let function = InvalidMethodA(param: .zero)
             let _ = try await function.call(
@@ -340,7 +330,7 @@ extension EthereumClientTests {
         }
     }
 
-    func test_GivenValidTransaction_ThenEstimatesGas_Async() async {
+    func test_GivenValidTransaction_ThenEstimatesGas() async {
         do {
             let function = TransferToken(wallet: EthereumAddress("0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F"),
                                          token: EthereumAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
@@ -357,8 +347,6 @@ extension EthereumClientTests {
         }
     }
 }
-
-#endif
 
 struct GetGuardians: ABIFunction {
     static let name = "getGuardians"

@@ -8,8 +8,8 @@ Pod::Spec.new do |s|
   s.source = { :git => 'https://github.com/argentlabs/web3.swift.git', :tag => s.version.to_s }
   s.module_name = 'web3'
 
-  s.swift_version = '5.0'
-  s.ios.deployment_target = '11.0'
+  s.swift_version = '5.5'
+  s.ios.deployment_target = '13.0'
 
   s.source_files = 'web3swift/src/**/*.swift', 'web3swift/lib/**/*.{c,h,swift}'
   s.pod_target_xcconfig = {

@@ -48,9 +48,6 @@ public struct Multicall {
 }
 
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension Multicall {
     public func aggregate(calls: [Call]) async -> Result<MulticallResponse, MulticallError> {
         return await withCheckedContinuation { (continuation: CheckedContinuation<Result<MulticallResponse, MulticallError>, Never>) in
@@ -60,8 +57,6 @@ extension Multicall {
         }
     }
 }
-
-#endif
 
 extension Multicall {
 

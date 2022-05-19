@@ -19,28 +19,19 @@ public protocol ERC20Protocol {
     func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void))
     func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void))
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func name(tokenContract: EthereumAddress) async throws -> String
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func symbol(tokenContract: EthereumAddress) async throws -> String
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func decimals(tokenContract: EthereumAddress) async throws -> UInt8
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress) async throws -> BigUInt
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC20Events.Transfer]
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC20Events.Transfer]
-#endif
 }
 
 public class ERC20: ERC20Protocol {
@@ -134,9 +125,6 @@ public class ERC20: ERC20Protocol {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension ERC20 {
     public func name(tokenContract: EthereumAddress) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
@@ -222,4 +210,3 @@ extension ERC20 {
         }
     }
 }
-#endif
