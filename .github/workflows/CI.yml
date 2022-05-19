@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: swift build -v
+    - name: Tests
+      run: swift test -v
+  linux:
+    runs-on: ubuntu-latest
+    container:
+      image: swift:5.5-bionic
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: swift build -v
+    - name: Tests
+      run: swift test -v
