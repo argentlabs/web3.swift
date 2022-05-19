@@ -7,7 +7,9 @@
 //
 
 import Foundation
+#if canImport(Combine)
 import Combine
+#endif
 
 public enum OffchainReadError: Error {
     case network
