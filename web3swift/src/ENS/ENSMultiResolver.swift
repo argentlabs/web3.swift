@@ -31,9 +31,6 @@ extension EthereumNameService {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension EthereumNameService {
     public func resolve(addresses: [EthereumAddress]) async -> Result<[AddressResolveOutput], EthereumNameServiceError> {
         return await withCheckedContinuation { (continuation: CheckedContinuation<Result<[AddressResolveOutput], EthereumNameServiceError>, Never>) in
@@ -51,8 +48,6 @@ extension EthereumNameService {
         }
     }
 }
-
-#endif
 
 extension EthereumNameService {
 

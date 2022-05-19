@@ -43,53 +43,37 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((EthereumClientError?, [EthereumLog]?) -> Void))
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func net_version() async throws -> EthereumNetwork
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_gasPrice() async throws -> BigUInt
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_blockNumber() async throws -> Int
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getBalance(address: EthereumAddress, block: EthereumBlock) async throws -> BigUInt
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getCode(address: EthereumAddress, block: EthereumBlock) async throws -> String
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol) async throws -> BigUInt
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol) async throws -> String
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getTransaction(byHash txHash: String) async throws -> EthereumTransaction
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getTransactionReceipt(txHash: String) async throws -> EthereumTransactionReceipt
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_call(
         _ transaction: EthereumTransaction,
         resolution: CallResolution,
         block: EthereumBlock
     ) async throws -> String
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws ->  [EthereumLog]
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws ->  [EthereumLog]
 
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo
-#endif
 }
 
 public enum EthereumClientError: Error, Equatable {
@@ -435,9 +419,6 @@ public class EthereumClient: EthereumClientProtocol {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension EthereumClient {
     public func net_version() async throws -> EthereumNetwork {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumNetwork, Error>) in
@@ -614,4 +595,3 @@ extension EthereumClient {
         }
     }
 }
-#endif

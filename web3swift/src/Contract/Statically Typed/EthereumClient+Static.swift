@@ -89,9 +89,6 @@ extension CallResolution {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 public extension ABIFunction {
     func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol) async throws -> String  {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
@@ -127,7 +124,6 @@ public extension ABIFunction {
         }
     }
 }
-#endif
 
 public struct EventFilter {
     public let type: ABIEvent.Type
@@ -269,15 +265,11 @@ public extension EthereumClientProtocol {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 public struct Events {
     let events: [ABIEvent]
     let logs: [EthereumLog]
 }
 
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 public extension EthereumClient {
     func getEvents(addresses: [EthereumAddress]?,
                    orTopics: [[String]?]?,
@@ -348,4 +340,3 @@ public extension EthereumClient {
     }
 }
 
-#endif
