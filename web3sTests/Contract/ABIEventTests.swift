@@ -17,57 +17,7 @@ class ABIEventTests: XCTestCase {
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
-    func test_givenEventWithData4_ItParsesCorrectly() {
-        let expect = expectation(description: "Request")
-
-        let encodedAddress = (try? ABIEncoder.encode(EthereumAddress("0x3B6Def16666a23905DD29071d13E7a9db08240E2")).bytes) ?? []
-
-        client.getEvents(addresses: nil,
-                         topics: [try? EnabledStaticCall.signature(),  String(hexFromBytes: encodedAddress), nil],
-                         fromBlock: .Number(8386245),
-                         toBlock: .Number(8386245),
-                         eventTypes: [EnabledStaticCall.self]) { (error, events, logs) in
-            XCTAssertNil(error)
-            let event = events.first as? EnabledStaticCall
-            XCTAssertEqual(event?.module, EthereumAddress("0x3b6def16666a23905dd29071d13e7a9db08240e2"))
-            XCTAssertEqual(event?.method, Data(hex: "0x20c13b0b")!)
-
-            let event1 = events.last as? EnabledStaticCall
-            XCTAssertEqual(event1?.module, EthereumAddress("0x3b6def16666a23905dd29071d13e7a9db08240e2"))
-            XCTAssertEqual(event1?.method, Data(hex: "0x1626ba7e")!)
-            expect.fulfill()
-        }
-
-        waitForExpectations(timeout: 10)
-    }
-
-    func test_givenEventWithData32_ItParsesCorrectly() {
-        let expect = expectation(description: "Request")
-
-        client.getEvents(addresses: nil,
-                         topics: [try? UpgraderRegistered.signature()],
-                         fromBlock: .Number(
-                            8110676 ),
-                         toBlock: .Number(
-                            8110676 ),
-                         eventTypes: [UpgraderRegistered.self]) { (error, events, logs) in
-            XCTAssertNil(error)
-            XCTAssertEqual(events.count, 1)
-            let event = events.first as? UpgraderRegistered
-            XCTAssertEqual(event?.upgrader, EthereumAddress("0x17b11d842ae09eddedf5592f8271a7d07f6931e7"))
-            XCTAssertEqual(event?.name, Data(hex: "0x307864323664616666635f307833373731376663310000000000000000000000")!)
-            expect.fulfill()
-        }
-
-        waitForExpectations(timeout: 10)
-    }
-}
-
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-extension ABIEventTests {
-    func test_givenEventWithData4_ItParsesCorrectly_Async() async {
+    func test_givenEventWithData4_ItParsesCorrectly() async {
         do {
             let encodedAddress = (try? ABIEncoder.encode(EthereumAddress("0x3B6Def16666a23905DD29071d13E7a9db08240E2")).bytes) ?? []
 
@@ -89,7 +39,7 @@ extension ABIEventTests {
         }
     }
 
-    func test_givenEventWithData32_ItParsesCorrectly_Async() async {
+    func test_givenEventWithData32_ItParsesCorrectly() async {
         do {
             let eventsResult = try await client.getEvents(addresses: nil,
                                                           topics: [try? UpgraderRegistered.signature()],
@@ -108,8 +58,6 @@ extension ABIEventTests {
         }
     }
 }
-
-#endif
 
 struct EnabledStaticCall: ABIEvent {
     static let name = "EnabledStaticCall"

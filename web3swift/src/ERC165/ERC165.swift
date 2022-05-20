@@ -25,9 +25,6 @@ public class ERC165 {
 
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension ERC165 {
     public func supportsInterface(contract: EthereumAddress, id: Data) async throws -> Bool {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
@@ -41,7 +38,6 @@ extension ERC165 {
         }
     }
 }
-#endif
 
 public enum ERC165Functions {
     public static var interfaceId: Data {

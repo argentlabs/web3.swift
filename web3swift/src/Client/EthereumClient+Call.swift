@@ -7,7 +7,15 @@
 //
 
 import Foundation
+#if canImport(Combine)
 import Combine
+#else
+import OpenCombine
+import OpenCombineFoundation
+#endif
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public enum OffchainReadError: Error {
     case network

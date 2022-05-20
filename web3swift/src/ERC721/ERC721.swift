@@ -81,9 +81,6 @@ public class ERC721: ERC165 {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension ERC721 {
     public func balanceOf(contract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
@@ -133,7 +130,6 @@ extension ERC721 {
         }
     }
 }
-#endif
 
 public class ERC721Metadata: ERC721 {
     public struct Token: Equatable, Decodable {
@@ -270,9 +266,6 @@ public class ERC721Metadata: ERC721 {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension ERC721Metadata {
     public func name(contract: EthereumAddress) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
@@ -322,7 +315,6 @@ extension ERC721Metadata {
         }
     }
 }
-#endif
 
 public class ERC721Enumerable: ERC721 {
     public func totalSupply(contract: EthereumAddress,
@@ -357,9 +349,6 @@ public class ERC721Enumerable: ERC721 {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension ERC721Enumerable {
     public func totalSupply(contract: EthereumAddress) async throws -> BigUInt {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
@@ -397,4 +386,3 @@ extension ERC721Enumerable {
         }
     }
 }
-#endif

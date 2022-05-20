@@ -122,9 +122,6 @@ public class EthereumRPC {
     }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension EthereumRPC {
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1) async throws -> Any {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
@@ -139,4 +136,3 @@ extension EthereumRPC {
     }
 }
 
-#endif
