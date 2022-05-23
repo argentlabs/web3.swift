@@ -50,6 +50,21 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     let client: EthereumClientProtocol
     let registryAddress: EthereumAddress?
     let maximumRedirections: Int
+    private let syncQueue = DispatchQueue(label: "web3swift.ethereumNameService.syncQueue")
+
+    private var _resolversByAddress = [EthereumAddress: ENSResolver]()
+    var resolversByAddress: [EthereumAddress : ENSResolver] {
+        get {
+            var byAddress: [EthereumAddress: ENSResolver]!
+            syncQueue.sync { byAddress = _resolversByAddress }
+            return byAddress
+        }
+        set {
+            syncQueue.async(flags: .barrier) {
+                self._resolversByAddress = newValue
+            }
+        }
+    }
 
     required public init(
         client: EthereumClientProtocol,
@@ -91,13 +106,14 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
 
-            Task {
-                let resolver = ENSResolver(
-                    address: resolverAddress,
-                    client: self.client,
-                    callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
-                )
+            let resolver = self.resolversByAddress[resolverAddress] ?? ENSResolver(
+                address: resolverAddress,
+                client: self.client,
+                callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
+            )
+            self.resolversByAddress[resolverAddress] = resolver
 
+            Task {
                 do {
                     let name = try await resolver.resolve(address: address)
                     completion(nil, name)
@@ -137,12 +153,14 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                 return completion(EthereumNameServiceError.noResolver, nil)
             }
 
+            let resolver = self.resolversByAddress[resolverAddress] ?? ENSResolver(
+                address: resolverAddress,
+                client: self.client,
+                callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
+            )
+            self.resolversByAddress[resolverAddress] = resolver
+
             Task {
-                let resolver = ENSResolver(
-                    address: resolverAddress,
-                    client: self.client,
-                    callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
-                )
                 do {
                     let address = try await resolver.resolve(name: ens)
                     completion(nil, address)
