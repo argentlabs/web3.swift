@@ -13,6 +13,7 @@ class ENSResolver {
     let address: EthereumAddress
     let callResolution: CallResolution
     private (set) var supportsWildCard: Bool?
+    private let mustSupportWilcard: Bool
     
     private let client: EthereumClientProtocol
 
@@ -20,12 +21,14 @@ class ENSResolver {
         address: EthereumAddress,
         client: EthereumClientProtocol,
         callResolution: CallResolution,
-        supportsWildCard: Bool? = nil
+        supportsWildCard: Bool? = nil,
+        mustSupportWildcard: Bool = false
     ) {
         self.address = address
         self.callResolution = callResolution
         self.client = client
         self.supportsWildCard = supportsWildCard
+        self.mustSupportWilcard = mustSupportWildcard
     }
 
     func resolve(
@@ -39,7 +42,12 @@ class ENSResolver {
         }
         self.supportsWildCard = wildcardResolution
 
-        if wildcardResolution && callResolution.allowsOffchain {
+        if mustSupportWilcard && !wildcardResolution {
+            // Wildcard name resolution (ENSIP-10)
+            throw EthereumNameServiceError.ensUnknown
+        }
+
+        if wildcardResolution {
             let response = try await ENSContracts.ENSOffchainResolverFunctions.resolve(
                 contract: address,
                 parameter: .name(name)
@@ -73,7 +81,7 @@ class ENSResolver {
         }
         self.supportsWildCard = wildcardResolution
 
-        if wildcardResolution && callResolution.allowsOffchain {
+        if wildcardResolution {
             let response = try await ENSContracts.ENSOffchainResolverFunctions.resolve(
                 contract: self.address,
                 parameter: .address(address)
@@ -101,7 +109,7 @@ class ENSResolver {
         }
     }
 
-    private func supportsWildcard() async throws -> Bool {
+    func supportsWildcard() async throws -> Bool {
         try await ERC165(client: client).supportsInterface(
             contract: address,
             id: ENSContracts.ENSOffchainResolverFunctions.interfaceId
