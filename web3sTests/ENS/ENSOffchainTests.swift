@@ -68,5 +68,20 @@ class ENSOffchainTests: XCTestCase {
             XCTFail("Expected ens but failed \(error).")
         }
     }
+    
+    func testGivenRopstenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesCorrectly() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+
+            let address = try await nameService.resolve(
+                ens: "1.offchainexample.eth",
+                mode: .allowOffchainLookup
+            )
+
+            XCTAssertEqual(address, EthereumAddress("0x41563129cdbbd0c5d3e1c86cf9563926b243834d"))
+        } catch {
+            XCTFail("Expected ens but failed \(error).")
+        }
+    }
 }
 

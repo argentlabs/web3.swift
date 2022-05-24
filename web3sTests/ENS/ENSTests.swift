@@ -176,5 +176,35 @@ class ENSTests: XCTestCase {
             ]
         )
     }
+
+    func testGivenRopstenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesExampleCorrectly() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+
+            let address = try await nameService.resolve(
+                ens: "ricmoose.hatch.eth",
+                mode: .onchain
+            )
+
+            XCTAssertEqual(address, EthereumAddress("0x4FaBE0A3a4DDd9968A7b4565184Ad0eFA7BE5411"))
+        } catch {
+            XCTFail("Expected ens but failed \(error).")
+        }
+    }
+
+    func testGivenRopstenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+
+            _ = try await nameService.resolve(
+                ens: "1.resolver.eth",
+                mode: .onchain
+            )
+
+            XCTFail("Expected error")
+        } catch {
+            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
+        }
+    }
 }
 
