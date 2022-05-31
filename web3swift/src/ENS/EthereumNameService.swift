@@ -114,7 +114,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         }
         Task {
             do {
-                let resolver = try await getResolver(
+                let (resolver, supportingWildCard) = try await getResolver(
                     for: ens,
                     fullName: ens,
                     registryAddress: registryAddress,
@@ -122,7 +122,8 @@ public class EthereumNameService: EthereumNameServiceProtocol {
                 )
 
                 let address = try await resolver.resolve(
-                    name: ens
+                    name: ens,
+                    supportingWildcard: supportingWildCard
                 )
                 completion(nil, address)
             } catch let error {
@@ -229,7 +230,7 @@ extension EthereumNameService {
         fullName: String,
         registryAddress: EthereumAddress,
         mode: ResolutionMode
-    ) async throws -> ENSResolver {
+    ) async throws -> (ENSResolver, Bool) {
         let function = ENSContracts.ENSRegistryFunctions.resolver(
             contract: registryAddress,
             parameter: .name(name)
@@ -263,11 +264,10 @@ extension EthereumNameService {
             let resolver = resolversByAddress[resolverAddress] ?? ENSResolver(
                 address: resolverAddress,
                 client: client,
-                callResolution: mode.callResolution(maxRedirects: self.maximumRedirections),
-                mustSupportWildcard: fullName != name
+                callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
             )
             self.resolversByAddress[resolverAddress] = resolver
-            return resolver
+            return (resolver, fullName != name)
         } catch {
             throw error as? EthereumNameServiceError ?? .ensUnknown
         }
