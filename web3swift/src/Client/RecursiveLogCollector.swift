@@ -26,19 +26,17 @@ enum Topics: Encodable {
 struct RecursiveLogCollector {
     let ethClient: EthereumClient
 
-    func getAllLogs(
-        addresses: [EthereumAddress]?,
-        topics: Topics?,
-        from: EthereumBlock,
-        to: EthereumBlock
-    ) -> Result<[EthereumLog], EthereumClientError> {
+    func getAllLogs(addresses: [EthereumAddress]?,
+                    topics: Topics?,
+                    from: EthereumBlock,
+                    to: EthereumBlock) -> Result<[EthereumLog], EthereumClientError> {
 
         switch getLogs(addresses: addresses, topics: topics, from: from, to: to) {
         case .success(let logs):
             return .success(logs)
         case.failure(.tooManyResults):
             guard let middleBlock = getMiddleBlock(from: from, to: to)
-                else { return .failure(.unexpectedReturnValue) }
+            else { return .failure(.unexpectedReturnValue) }
 
             guard
                 case let .success(lhs) = getAllLogs(
@@ -61,12 +59,10 @@ struct RecursiveLogCollector {
         }
     }
 
-    private func getLogs(
-        addresses: [EthereumAddress]?,
-        topics: Topics? = nil,
-        from: EthereumBlock,
-        to: EthereumBlock
-    ) -> Result<[EthereumLog], EthereumClientError> {
+    private func getLogs(addresses: [EthereumAddress]?,
+                         topics: Topics? = nil,
+                         from: EthereumBlock,
+                         to: EthereumBlock) -> Result<[EthereumLog], EthereumClientError> {
 
         let sem = DispatchSemaphore(value: 0)
 
@@ -82,10 +78,7 @@ struct RecursiveLogCollector {
         return response
     }
 
-    private func getMiddleBlock(
-        from: EthereumBlock,
-        to: EthereumBlock
-    ) -> EthereumBlock? {
+    private func getMiddleBlock(from: EthereumBlock, to: EthereumBlock) -> EthereumBlock? {
 
         func toBlockNumber() -> Int? {
             if let toBlockNumber = to.intValue {
@@ -97,9 +90,8 @@ struct RecursiveLogCollector {
             }
         }
 
-        guard
-            let fromBlockNumber = from.intValue,
-            let toBlockNumber = toBlockNumber()
+        guard let fromBlockNumber = from.intValue,
+              let toBlockNumber = toBlockNumber()
         else { return nil }
 
         return EthereumBlock(rawValue: fromBlockNumber + (toBlockNumber - fromBlockNumber) / 2)
@@ -109,9 +101,12 @@ struct RecursiveLogCollector {
         let sem = DispatchSemaphore(value: 0)
         var responseValue: EthereumBlock?
 
-        self.ethClient.eth_blockNumber { (error, blockInt) in
-            if let blockInt = blockInt {
-                responseValue = EthereumBlock(rawValue: blockInt)
+        self.ethClient.eth_blockNumber { result in
+            switch result {
+            case .success(let block):
+                responseValue = EthereumBlock(rawValue: block)
+            default:
+                break
             }
             sem.signal()
         }
