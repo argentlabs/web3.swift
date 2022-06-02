@@ -33,37 +33,37 @@ extension EthereumLog: Codable {
         case data               // Data
         case topics             // Array of Data
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         self.removed = try values.decodeIfPresent(Bool.self, forKey: .removed)
         self.address = try values.decode(EthereumAddress.self, forKey: .address)
         self.data = try values.decode(String.self, forKey: .data)
         self.topics = try values.decode([String].self, forKey: .topics)
-        
+
         if let logIndexString = try? values.decode(String.self, forKey: .logIndex), let logIndex = BigUInt(hex: logIndexString) {
             self.logIndex = logIndex
         } else {
             self.logIndex = nil
         }
-        
+
         if let transactionIndexString = try? values.decode(String.self, forKey: .transactionIndex), let transactionIndex = BigUInt(hex: transactionIndexString) {
             self.transactionIndex = transactionIndex
         } else {
             self.transactionIndex = nil
         }
-        
+
         self.transactionHash = try? values.decode(String.self, forKey: .transactionHash)
         self.blockHash = try? values.decode(String.self, forKey: .blockHash)
-        
+
         if let blockNumberString = try? values.decode(String.self, forKey: .blockNumber) {
             self.blockNumber = EthereumBlock(rawValue: blockNumberString)
         } else {
             self.blockNumber = EthereumBlock.Earliest
         }
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.removed, forKey: .removed)
@@ -79,10 +79,8 @@ extension EthereumLog: Codable {
         try container.encode(self.address, forKey: .address)
         try container.encode(self.data, forKey: .data)
         try container.encode(self.topics, forKey: .topics)
-        
-    }
-    
 
+    }
 }
 
 extension EthereumLog: Comparable {
@@ -92,9 +90,7 @@ extension EthereumLog: Comparable {
             let rhsIndex = rhs.logIndex {
             return lhsIndex < rhsIndex
         }
-        
+
         return lhs.blockNumber < rhs.blockNumber
     }
 }
-
-

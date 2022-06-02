@@ -96,12 +96,12 @@ public class EthereumRPC {
         }
         request.httpBody = encoded
 
-        let task = session.dataTask(with: request) { (data, response, error) in
+        let task = session.dataTask(with: request) { (data, response, _) in
             if let data = data {
                 if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
                     completionHandler(.success(result.result))
                 } else if let result = try? JSONDecoder().decode([JSONRPCResult<U>].self, from: data) {
-                    let resultObjects = result.map{ return $0.result }
+                    let resultObjects = result.map { return $0.result }
                     completionHandler(.success(resultObjects))
                 } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
                     completionHandler(.failure(JSONRPCError.executionError(errorResult)))
@@ -124,21 +124,6 @@ extension EthereumRPC {
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1) async throws -> Any {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
             Self.execute(session: session, url: url, method: method, params: params, receive: receive, id: id, completionHandler: continuation.resume)
-        }
-    }
-}
-
-// MARK: - Deprecated
-extension EthereumRPC {
-    @available(*, deprecated, renamed: "execute(session:url:method:params:receive:id:completionHandler:)")
-    public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, Any?) -> Void)) -> Void {
-        Self.execute(session: session, url: url, method: method, params: params, receive: receive, id: id) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
         }
     }
 }

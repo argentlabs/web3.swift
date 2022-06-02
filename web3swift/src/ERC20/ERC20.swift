@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 
 public protocol ERC20Protocol {
-    init(client: EthereumClient)
+    init(client: EthereumClientProtocol)
 
     func name(tokenContract: EthereumAddress, completionHandler: @escaping(Result<String, Error>) -> Void)
     func symbol(tokenContract: EthereumAddress, completionHandler: @escaping(Result<String, Error>) -> Void)
@@ -28,21 +28,12 @@ public protocol ERC20Protocol {
     func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress) async throws -> BigUInt
     func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC20Events.Transfer]
     func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC20Events.Transfer]
-
-    // deprecated
-    func name(tokenContract: EthereumAddress, completion: @escaping((Error?, String?) -> Void))
-    func symbol(tokenContract: EthereumAddress, completion: @escaping((Error?, String?) -> Void))
-    func decimals(tokenContract: EthereumAddress, completion: @escaping((Error?, UInt8?) -> Void))
-    func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completion: @escaping((Error?, BigUInt?) -> Void))
-    func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completion: @escaping((Error?, BigUInt?) -> Void))
-    func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void))
-    func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void))
 }
 
 public class ERC20: ERC20Protocol {
-    let client: EthereumClient
+    let client: EthereumClientProtocol
 
-    required public init(client: EthereumClient) {
+    required public init(client: EthereumClientProtocol) {
         self.client = client
     }
 
@@ -199,93 +190,6 @@ extension ERC20 {
     public func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC20Events.Transfer] {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[ERC20Events.Transfer], Error>) in
             transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock, completionHandler: continuation.resume)
-        }
-    }
-}
-
-// MARK: - Deprecated
-extension ERC20 {
-    @available(*, deprecated, renamed: "name(tokenContract:completionHandler:)")
-    public func name(tokenContract: EthereumAddress, completion: @escaping((Error?, String?) -> Void)) {
-        name(tokenContract: tokenContract) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "symbol(tokenContract:completionHandler:)")
-    public func symbol(tokenContract: EthereumAddress, completion: @escaping((Error?, String?) -> Void)) {
-        symbol(tokenContract: tokenContract) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "decimals(tokenContract:completionHandler:)")
-    public func decimals(tokenContract: EthereumAddress, completion: @escaping((Error?, UInt8?) -> Void)) {
-        decimals(tokenContract: tokenContract) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "balanceOf(tokenContract:address:completionHandler:)")
-    public func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completion: @escaping((Error?, BigUInt?) -> Void)) {
-        balanceOf(tokenContract: tokenContract, address: address) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "allowance(tokenContract:address:spender:completionHandler:)")
-    public func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completion: @escaping((Error?, BigUInt?) -> Void)) {
-        allowance(tokenContract: tokenContract, address: address, spender: spender) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "transferEventsTo(recipient:fromBlock:toBlock:completionHandler:)")
-    public func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void)) {
-        transferEventsTo(recipient: recipient, fromBlock: fromBlock, toBlock: toBlock) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "transferEventsFrom(sender:fromBlock:toBlock:completionHandler:)")
-    public func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completion: @escaping((Error?, [ERC20Events.Transfer]?) -> Void)) {
-        transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
         }
     }
 }

@@ -141,7 +141,7 @@ extension EthereumClientError {
 }
 
 class OffchainLookupTests: XCTestCase {
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
     var account: EthereumAccount!
     var offchainLookup = OffchainLookup(address: .zero, urls: [], callData: Data(), callbackFunction: Data(), extraData: Data())
 
@@ -160,7 +160,7 @@ class OffchainLookupTests: XCTestCase {
         let tx = try! function.transaction()
 
         do {
-            let _ = try await client.eth_call(tx)
+            let _ = try await client.eth_call(tx, resolution: .noOffchain(failOnExecutionError: true), block: .Latest)
             XCTFail("Expecting error, not return value")
         } catch let error {
             let error = (error as? EthereumClientError)?.executionError
@@ -332,3 +332,13 @@ fileprivate func expectedResponse(
         .flatMap { $0 }
     ).web3.keccak256.web3.hexString
 }
+
+// TODO: Disable till feature implementation
+/*
+class OffchainLookupWebSocketTests: OffchainLookupTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: TestConfig.wssUrl, configuration: TestConfig.webSocketConfig)
+    }
+}
+*/

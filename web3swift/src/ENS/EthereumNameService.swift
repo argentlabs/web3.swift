@@ -18,12 +18,12 @@ protocol EthereumNameServiceProtocol {
     func resolve(
         address: EthereumAddress,
         mode: ResolutionMode,
-        completion: @escaping((EthereumNameServiceError?, String?) -> Void)
+        completionHandler: @escaping(Result<String, EthereumNameServiceError>) -> Void
     ) -> Void
     func resolve(
         ens: String,
         mode: ResolutionMode,
-        completion: @escaping((EthereumNameServiceError?, EthereumAddress?) -> Void)
+        completionHandler: @escaping(Result<EthereumAddress, EthereumNameServiceError>) -> Void
     ) -> Void
 
     func resolve(
@@ -243,38 +243,6 @@ extension EthereumNameService {
             return (resolver, fullName != name)
         } catch {
             throw error as? EthereumNameServiceError ?? .ensUnknown
-        }
-    }
-
-}
-
-// MARK: - Deprecated
-extension EthereumNameService {
-    @available(*, deprecated, renamed: "resolve(address:mode:completionHandler:)")
-    public func resolve(address: EthereumAddress,
-                        mode: ResolutionMode,
-                        completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
-        resolve(address: address, mode: mode) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "resolve(ens:mode:completionHandler:)")
-    public func resolve(ens: String,
-                        mode: ResolutionMode,
-                        completion: @escaping ((EthereumNameServiceError?, EthereumAddress?) -> Void)) {
-        resolve(ens: ens, mode: mode) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
         }
     }
 }

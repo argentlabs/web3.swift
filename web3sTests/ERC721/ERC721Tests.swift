@@ -21,7 +21,7 @@ let nftImageURL = URL(string: "https://ipfs.io/ipfs/QmUDJMmiJEsueLbr6jxh7vhSSFAv
 let nftURL = URL(string: "https://ipfs.io/ipfs/QmUtKP7LnZnL2pWw2ERvNDndP9v5EPoJH7g566XNdgoRfE")!
 
 class ERC721Tests: XCTestCase {
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
     var erc721: ERC721!
     let address = EthereumAddress(TestConfig.erc721Contract)
 
@@ -100,7 +100,7 @@ class ERC721Tests: XCTestCase {
 }
 
 class ERC721MetadataTests: XCTestCase {
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
     var erc721: ERC721Metadata!
     let address = EthereumAddress(TestConfig.erc721Contract)
     let nftDetails = ERC721Metadata.Token(title: "Asset Metadata",
@@ -158,7 +158,7 @@ class ERC721MetadataTests: XCTestCase {
 }
 
 class ERC721EnumerableTests: XCTestCase {
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
     var erc721: ERC721Enumerable!
     let address = EthereumAddress(TestConfig.erc721Contract)
 
@@ -206,5 +206,26 @@ class ERC721EnumerableTests: XCTestCase {
         } catch {
             XCTFail("Expected tokenByIndex but failed \(error).")
         }
+    }
+}
+
+class ERC721WebSocketTests: ERC721Tests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: TestConfig.wssUrl, configuration: TestConfig.webSocketConfig)
+    }
+}
+
+class ERC721MetadataWebSocketTests: ERC721MetadataTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: TestConfig.wssUrl, configuration: TestConfig.webSocketConfig)
+    }
+}
+
+class ERC721EnumerableWebSocketTests: ERC721EnumerableTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: TestConfig.wssUrl, configuration: TestConfig.webSocketConfig)
     }
 }

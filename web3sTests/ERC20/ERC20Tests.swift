@@ -11,7 +11,7 @@ import BigInt
 @testable import web3
 
 class ERC20Tests: XCTestCase {
-    var client: EthereumClient?
+    var client: EthereumClientProtocol?
     var erc20: ERC20?
     let testContractAddress = EthereumAddress(TestConfig.erc20Contract)
 
@@ -115,3 +115,9 @@ class ERC20Tests: XCTestCase {
     }
 }
 
+class ERC20WebSocketTests: ERC20Tests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: TestConfig.wssUrl, configuration: TestConfig.webSocketConfig)
+    }
+}

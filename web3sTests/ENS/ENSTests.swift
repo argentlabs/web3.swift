@@ -11,7 +11,7 @@ import XCTest
 
 class ENSTests: XCTestCase {
     var account: EthereumAccount?
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
 
     override func setUp() {
         super.setUp()
@@ -30,7 +30,7 @@ class ENSTests: XCTestCase {
 
             let tx = try function.transaction()
 
-            let dataStr = try await client?.eth_call(tx, block: .Latest)
+            let dataStr = try await client?.eth_call(tx, resolution: .noOffchain(failOnExecutionError: true), block: .Latest)
             guard let dataStr = dataStr else {
                 XCTFail()
                 return
@@ -208,3 +208,12 @@ class ENSTests: XCTestCase {
     }
 }
 
+// TODO: Disable till feature implementation
+/*
+class ENSWebSocketTests: ENSTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: TestConfig.wssUrl, configuration: TestConfig.webSocketConfig)
+    }
+}
+*/

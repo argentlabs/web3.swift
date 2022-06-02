@@ -8,13 +8,13 @@
 
 import Foundation
 
-public enum EthereumNetwork: Equatable {
+public enum EthereumNetwork: Equatable, Decodable {
     case Mainnet
     case Ropsten
     case Rinkeby
     case Kovan
     case Custom(String)
-    
+
     static func fromString(_ networkId: String) -> EthereumNetwork {
         switch networkId {
         case "1":
@@ -29,7 +29,7 @@ public enum EthereumNetwork: Equatable {
             return .Custom(networkId)
         }
     }
-    
+
     var stringValue: String {
         switch self {
         case .Mainnet:
@@ -44,7 +44,7 @@ public enum EthereumNetwork: Equatable {
             return str
         }
     }
-    
+
     var intValue: Int {
         switch self {
         case .Mainnet:
@@ -63,5 +63,5 @@ public enum EthereumNetwork: Equatable {
 
 public func ==(lhs: EthereumNetwork, rhs: EthereumNetwork) -> Bool {
     return lhs.stringValue == rhs.stringValue
-    
+
 }
