@@ -15,25 +15,38 @@ public class ERC165 {
         self.client = client
     }
 
-    public func supportsInterface(contract: EthereumAddress, id: Data, completion: @escaping((Error?, Bool?) -> Void)) {
+    public func supportsInterface(contract: EthereumAddress, id: Data, completionHandler: @escaping(Result<Bool, Error>) -> Void) {
         let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
 
-        function.call(withClient: self.client, responseType: ERC165Responses.supportsInterfaceResponse.self) { (error, response) in
-            return completion(error, response?.supported)
+        function.call(withClient: self.client, responseType: ERC165Responses.supportsInterfaceResponse.self) { result in
+            switch result {
+            case .success(let data):
+                completionHandler(.success(data.supported))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
         }
     }
-
 }
 
+// MARK: - Async/Await
 extension ERC165 {
     public func supportsInterface(contract: EthereumAddress, id: Data) async throws -> Bool {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
-            supportsInterface(contract: contract, id: id) { error, supported in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else if let supported = supported {
-                    continuation.resume(returning: supported)
-                }
+            supportsInterface(contract: contract, id: id, completionHandler: continuation.resume)
+        }
+    }
+}
+
+// MARK: - Deprecated
+extension ERC165 {
+    public func supportsInterface(contract: EthereumAddress, id: Data, completion: @escaping((Error?, Bool?) -> Void)) {
+        supportsInterface(contract: contract, id: id) { result in
+            switch result {
+            case .success(let data):
+                completion(nil, data)
+            case .failure(let error):
+                completion(error, nil)
             }
         }
     }

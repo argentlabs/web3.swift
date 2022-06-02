@@ -77,7 +77,6 @@ public enum JSONRPCError: Error {
 
 public class EthereumRPC {
     // Swift4 warning bug - https://bugs.swift.org/browse/SR-6265
-    // static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, JSONRPCResult<U>?) -> Void)) -> Void {
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completionHandler:  @escaping(Result<Any, Error>) -> Void) {
         if type(of: params) == [Any].self {
             // If params are passed in with Array<Any> and not caught, runtime fatal error
