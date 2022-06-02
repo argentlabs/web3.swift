@@ -40,6 +40,7 @@ extension ERC165 {
 
 // MARK: - Deprecated
 extension ERC165 {
+    @available(*, deprecated, renamed: "supportsInterface(contract:id:completionHandler:)")
     public func supportsInterface(contract: EthereumAddress, id: Data, completion: @escaping((Error?, Bool?) -> Void)) {
         supportsInterface(contract: contract, id: id) { result in
             switch result {
