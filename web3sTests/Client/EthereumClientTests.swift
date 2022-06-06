@@ -337,8 +337,8 @@ class EthereumClientTests: XCTestCase {
                                          to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
                                          amount: 1,
                                          data: Data(),
-                                         gasPrice: 0,
-                                         gasLimit: 0)
+                                         gasPrice: nil,
+                                         gasLimit: nil)
 
             let value = try await client!.eth_estimateGas(try! function.transaction(), withAccount: account!)
             XCTAssert(value != 0)
