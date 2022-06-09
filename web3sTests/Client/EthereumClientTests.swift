@@ -75,7 +75,9 @@ class EthereumClientTests: XCTestCase {
             _ = try await client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .Latest)
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, .unexpectedReturnValue)
+            XCTAssertEqual(error as? EthereumClientError, .executionError(
+                .init(code: -32602, message: "invalid argument 0: hex string has length 10, want 40 for common.Address", data: nil)
+            ))
         }
     }
 
@@ -227,7 +229,9 @@ class EthereumClientTests: XCTestCase {
             let _ = try await client?.eth_getTransaction(byHash: "0x01234")
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, .unexpectedReturnValue)
+            XCTAssertEqual(error as? EthereumClientError, .executionError(
+                .init(code: -32602, message: "invalid argument 0: json: cannot unmarshal hex string of odd length into Go value of type common.Hash", data: nil)
+            ))
         }
     }
 
