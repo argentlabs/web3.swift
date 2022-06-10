@@ -240,16 +240,12 @@ public class EthereumClient: EthereumClientProtocol {
         struct CallParams: Encodable {
             let from: String?
             let to: String
-            let gas: String?
-            let gasPrice: String?
             let value: String?
             let data: String?
 
             enum TransactionCodingKeys: String, CodingKey {
                 case from
                 case to
-                case gas
-                case gasPrice
                 case value
                 case data
             }
@@ -266,12 +262,6 @@ public class EthereumClient: EthereumClientProtocol {
                     amount == "0x00" ? "0x0" : amount
                 }
 
-                if let gas = gas.map(jsonRPCAmount) {
-                    try nested.encode(gas, forKey: .gas)
-                }
-                if let gasPrice = gasPrice.map(jsonRPCAmount) {
-                    try nested.encode(gasPrice, forKey: .gasPrice)
-                }
                 if let value = value.map(jsonRPCAmount) {
                     try nested.encode(value, forKey: .value)
                 }
@@ -290,8 +280,6 @@ public class EthereumClient: EthereumClientProtocol {
 
         let params = CallParams(from: transaction.from?.value,
                                 to: transaction.to.value,
-                                gas: transaction.gasLimit?.web3.hexString,
-                                gasPrice: transaction.gasPrice?.web3.hexString,
                                 value: value?.web3.hexString,
                                 data: transaction.data?.web3.hexString)
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { result in
