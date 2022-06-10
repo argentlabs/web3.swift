@@ -39,10 +39,5 @@ class KeccakExtensionsTests: XCTestCase {
         XCTAssertEqual(keccak.web3.hexString, "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad")
     }
 
-    func test_toChecksumAddress() {
-        let val1 = "0x12ae66cdc592e10b60f9097a7b0d3c59fce29876"
-        let val2 = "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1"
-        XCTAssertEqual(val1.toChecksumAddress(), "0x12AE66CDc592e10B60f9097a7b0D3C59fce29876")
-        XCTAssertEqual(val2.toChecksumAddress(), "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1")
-    }
+    
 }
