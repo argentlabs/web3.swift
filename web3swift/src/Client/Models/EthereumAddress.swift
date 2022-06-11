@@ -37,9 +37,9 @@ public struct EthereumAddress: Codable, Hashable {
 
 public extension EthereumAddress {
     func toChecksumAddress() -> String {
-        let lowerCaseAddress = value.stripHexPrefix().lowercased()
+        let lowerCaseAddress = value.web3.noHexPrefix.lowercased()
         let arr = Array(lowerCaseAddress)
-        let keccaf = Array(lowerCaseAddress.web3.keccak256.web3.hexString.stripHexPrefix())
+        let keccaf = Array(lowerCaseAddress.web3.keccak256.web3.hexString.web3.noHexPrefix)
         var result = "0x"
         for i in 0 ... lowerCaseAddress.count - 1 {
             if let val = Int(String(keccaf[i]), radix: 16), val >= 8 {
