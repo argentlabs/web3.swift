@@ -344,7 +344,7 @@ class EthereumClientTests: XCTestCase {
                                          gasPrice: nil,
                                          gasLimit: nil)
 
-            let value = try await client!.eth_estimateGas(try! function.transaction(), withAccount: account!)
+            let value = try await client!.eth_estimateGas(try! function.transaction())
             XCTAssert(value != 0)
         } catch {
             XCTFail("Expected value but failed \(error).")

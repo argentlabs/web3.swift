@@ -28,7 +28,7 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_blockNumber(completionHandler: @escaping(Result<Int, EthereumClientError>) -> Void)
     func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completionHandler: @escaping(Result<BigUInt, EthereumClientError>) -> Void)
     func eth_getCode(address: EthereumAddress, block: EthereumBlock, completionHandler: @escaping(Result<String, EthereumClientError>) -> Void)
-    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completionHandler: @escaping(Result<BigUInt, EthereumClientError>) -> Void)
+    func eth_estimateGas(_ transaction: EthereumTransaction, completionHandler: @escaping(Result<BigUInt, EthereumClientError>) -> Void)
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completionHandler: @escaping(Result<String, EthereumClientError>) -> Void)
     func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completionHandler: @escaping(Result<Int, EthereumClientError>) -> Void)
     func eth_getTransaction(byHash txHash: String, completionHandler: @escaping(Result<EthereumTransaction, EthereumClientError>) -> Void)
@@ -48,7 +48,7 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_blockNumber() async throws -> Int
     func eth_getBalance(address: EthereumAddress, block: EthereumBlock) async throws -> BigUInt
     func eth_getCode(address: EthereumAddress, block: EthereumBlock) async throws -> String
-    func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol) async throws -> BigUInt
+    func eth_estimateGas(_ transaction: EthereumTransaction) async throws -> BigUInt
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol) async throws -> String
     func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int
     func eth_getTransaction(byHash txHash: String) async throws -> EthereumTransaction
@@ -236,7 +236,7 @@ public class EthereumClient: EthereumClientProtocol {
         }
     }
 
-    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
+    public func eth_estimateGas(_ transaction: EthereumTransaction, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
         struct CallParams: Encodable {
             let from: String?
             let to: String
@@ -502,9 +502,9 @@ extension EthereumClient {
         }
     }
 
-    public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol) async throws -> BigUInt {
+    public func eth_estimateGas(_ transaction: EthereumTransaction) async throws -> BigUInt {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
-            eth_estimateGas(transaction, withAccount: account, completionHandler: continuation.resume)
+            eth_estimateGas(transaction, completionHandler: continuation.resume)
         }
     }
 
@@ -613,9 +613,9 @@ extension EthereumClient {
         }
     }
 
-    @available(*, deprecated, renamed: "eth_estimateGas(_:withAccount:completionHandler:)")
+    @available(*, deprecated, renamed: "eth_estimateGas(_:completionHandler:)")
     public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
-        eth_estimateGas(transaction, withAccount: account) { result in
+        eth_estimateGas(transaction) { result in
             switch result {
             case .success(let data):
                 completion(nil, data)
