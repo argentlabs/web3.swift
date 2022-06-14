@@ -8,7 +8,7 @@
 
 Use Xcode to add to the project (**File -> Swift Packages**) or add this to your `Package.swift` file:
 ```swift
-.package(url: "https://github.com/argentlabs/web3.swift", from: "0.9.3")
+.package(url: "https://github.com/argentlabs/web3.swift", from: "1.1.0")
 ```
 ### CocoaPods
 
