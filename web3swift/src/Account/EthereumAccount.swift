@@ -66,7 +66,8 @@ public class EthereumAccount: EthereumAccountProtocol {
         
         do {
             try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
-            let address = KeyUtil.generateAddress(from: privateKey).value
+            let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
+            let address = KeyUtil.generateAddress(from: publicKey).value
             return try self.init(address: address, keyStorage: keyStorage, keystorePassword: password)
         } catch {
             throw EthereumAccountError.createAccountError
@@ -79,7 +80,8 @@ public class EthereumAccount: EthereumAccountProtocol {
         }
         do {
             try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
-            let address = KeyUtil.generateAddress(from: privateKey).value
+            let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
+            let address = KeyUtil.generateAddress(from: publicKey).value
             return try self.init(address: address, keyStorage: keyStorage, keystorePassword: password)
         } catch {
             throw EthereumAccountError.importAccountError

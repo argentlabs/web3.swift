@@ -3,7 +3,8 @@ import Foundation
 public extension EthereumKeyStorageProtocol {
     func encryptAndStorePrivateKey(key: Data, keystorePassword: String) throws {
         let encodedKey = try KeystoreUtil.encode(privateKey: key, password: keystorePassword)
-        let address = KeyUtil.generateAddress(from: key)
+        let publicKey = try KeyUtil.generatePublicKey(from: key)
+        let address = KeyUtil.generateAddress(from: publicKey)
         try storePrivateKey(key: encodedKey, with: address.value)
     }
 
