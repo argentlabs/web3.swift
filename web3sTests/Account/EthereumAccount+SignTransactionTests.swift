@@ -32,7 +32,7 @@ class EthereumAccount_SignTransactionTests: XCTestCase {
         
         let tx = EthereumTransaction(from: nil, to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainID)
         
-        let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
+        let account = try! EthereumAccount.init(address: to.value, keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
         let signed = try! account.sign(transaction: tx)
         
         let v = signed.v.web3.hexString

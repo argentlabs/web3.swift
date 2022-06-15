@@ -16,10 +16,10 @@ class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
         self.privateKey = privateKey
     }
     
-    func storePrivateKey(key: Data) throws -> Void {
+    func storePrivateKey(key: Data, with address: String) throws -> Void {
     }
     
-    func loadPrivateKey() throws -> Data {
+    func loadPrivateKey(for address: String) throws -> Data {
         return privateKey.web3.hexData!
     }
 }

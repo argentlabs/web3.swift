@@ -148,7 +148,7 @@ class OffchainLookupTests: XCTestCase {
     override func setUp() {
         super.setUp()
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
-        self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
+        self.account = try? EthereumAccount(address: TestConfig.publicKey, keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         print("Public address: \(self.account?.address.value ?? "NONE")")
     }
 

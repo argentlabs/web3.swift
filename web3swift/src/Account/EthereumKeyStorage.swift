@@ -9,8 +9,8 @@
 import Foundation
 
 public protocol EthereumKeyStorageProtocol {
-    func storePrivateKey(key: Data) throws -> Void
-    func loadPrivateKey() throws -> Data
+    func storePrivateKey(key: Data, with address: String) throws -> Void
+    func loadPrivateKey(for address: String) throws -> Data
 }
 
 public enum EthereumKeyStorageError: Error {
@@ -22,14 +22,23 @@ public enum EthereumKeyStorageError: Error {
 public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     public init() {}
     
+    private var address: String?
+    
     private var localPath: String? {
+        guard let address = address else { return nil }
         if let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
-            return url.appendingPathComponent("EthereumKey").path
+            return url.appendingPathComponent(address).path
         }
         return nil
     }
     
-    public func storePrivateKey(key: Data) throws -> Void {
+    public func storePrivateKey(key: Data, with address: String) throws -> Void {
+        self.address = address
+        
+        defer {
+            self.address = nil
+        }
+        
         guard let localPath = self.localPath else {
             throw EthereumKeyStorageError.failedToSave
         }
@@ -41,7 +50,13 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
         }
     }
     
-    public func loadPrivateKey() throws -> Data {
+    public func loadPrivateKey(for address: String) throws -> Data {
+        self.address = address
+        
+        defer {
+            self.address = nil
+        }
+        
         guard let localPath = self.localPath else {
             throw EthereumKeyStorageError.failedToLoad
         }

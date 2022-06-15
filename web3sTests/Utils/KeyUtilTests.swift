@@ -52,7 +52,7 @@ class KeyUtilTests: XCTestCase {
     }
   
     func testRecoverPublicKey() {
-        let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
+        let account = try! EthereumAccount(address: TestConfig.publicKey, keyStorage: TestEthereumKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
         let signature = try! account.sign(message: "Hello message!")
 
         let address = try! KeyUtil.recoverPublicKey(message: "Hello message!".web3.keccak256, signature: signature)

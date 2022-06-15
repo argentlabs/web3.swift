@@ -24,7 +24,7 @@ class EthereumKeyStorageTests: XCTestCase {
         let keyStorage = EthereumKeyLocalStorage()
         
         do {
-            try keyStorage.storePrivateKey(key: randomData)
+            try keyStorage.storePrivateKey(key: randomData, with: TestConfig.publicKey)
         } catch {
             XCTFail("Failed to save private key. Ensure key is valid in TestConfig.swift")
         }
@@ -35,8 +35,8 @@ class EthereumKeyStorageTests: XCTestCase {
         let keyStorage = EthereumKeyLocalStorage()
         
         do {
-            try keyStorage.storePrivateKey(key: randomData)
-            let storedData = try keyStorage.loadPrivateKey()
+            try keyStorage.storePrivateKey(key: randomData, with: TestConfig.publicKey)
+            let storedData = try keyStorage.loadPrivateKey(for: TestConfig.publicKey)
             XCTAssertEqual(randomData, storedData)
         } catch {
             XCTFail("Failed to save private key. Ensure key is valid in TestConfig.swift")
@@ -50,7 +50,7 @@ class EthereumKeyStorageTests: XCTestCase {
 
         do {
             try keyStorage.encryptAndStorePrivateKey(key: randomData, keystorePassword: password)
-            let decrypted = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
+            let decrypted = try keyStorage.loadAndDecryptPrivateKey(for: TestConfig.publicKey, keystorePassword: password)
             XCTAssertEqual(decrypted, randomData)
         } catch let error {
             XCTFail("Failed to encrypt and store private key with error: \(error)")
