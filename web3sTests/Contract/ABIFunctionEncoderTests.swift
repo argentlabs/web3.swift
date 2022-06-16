@@ -1,9 +1,6 @@
 //
-//  ABIFunctionEncoderTests.swift
-//  web3swift
-//
-//  Created by Miguel on 28/11/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import XCTest

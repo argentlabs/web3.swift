@@ -1,9 +1,6 @@
 //
-//  RecursiveLogCollector.swift
-//  web3swift
-//
-//  Created by David Rodrigues on 05/01/2021.
-//  Copyright © 2021 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation

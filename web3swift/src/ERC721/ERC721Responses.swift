@@ -1,9 +1,6 @@
 //
-//  ERC721Responses.swift
-//  web3swift
-//
-//  Created by Miguel on 09/05/2019.
-//  Copyright © 2019 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
