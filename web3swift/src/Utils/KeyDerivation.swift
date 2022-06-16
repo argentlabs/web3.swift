@@ -1,9 +1,6 @@
 //
-//  KeyDerivation.swift
-//  web3swift
-//
-//  Created by Julien Niset on 20/06/2017.
-//  Copyright © 2017 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation

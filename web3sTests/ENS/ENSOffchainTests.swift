@@ -1,8 +1,5 @@
 //
-//  ENSOffchainTests.swift
-//  web3sTests
-//
-//  Created by Miguel on 17/05/2022.
+//  web3.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
