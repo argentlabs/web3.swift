@@ -18,7 +18,7 @@ class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
     }
     
     func fetchStoredAddresses() throws -> [String] {
-        return ["first", "second"]
+        return []
     }
     
     func storePrivateKey(key: Data, with address: String) throws -> Void {
@@ -26,5 +26,8 @@ class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
     
     func loadPrivateKey(for address: String) throws -> Data {
         return privateKey.web3.hexData!
+    }
+    
+    func deletePrivateKey(for address: String) throws {
     }
 }

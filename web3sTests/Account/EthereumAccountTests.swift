@@ -41,6 +41,14 @@ class EthereumAccountTests: XCTestCase {
         XCTAssertTrue(accounts.contains(account.address.value))
     }
     
+    func testDeleteAccount() {
+        let storage = EthereumKeyLocalStorage()
+        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        try! storage.deletePrivateKey(for: "0x675f5810feb3b09528e5cd175061b4eb8de69075")
+        let accounts = try! EthereumAccount.fetchAccounts(keyStorage: EthereumKeyLocalStorage())
+        XCTAssertTrue(!accounts.contains(account.address.value))
+    }
+    
     func testSignMessage() {
         let account = try! EthereumAccount(address: TestConfig.publicKey, keyStorage: TestEthereumKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
         let signature = try! account.sign(message: "Hello message!")
