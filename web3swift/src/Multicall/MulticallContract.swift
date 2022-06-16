@@ -14,11 +14,11 @@ extension Multicall {
 
         public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
             switch network {
-            case .Ropsten:
+            case .ropsten:
                 return Self.ropstenAddress
-            case .Rinkeby:
+            case .rinkeby:
                 return Self.rinkebyAddress
-            case .Mainnet:
+            case .mainnet:
                 return Self.mainnetAddress
             default:
                 return nil
