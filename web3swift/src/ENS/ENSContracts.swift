@@ -14,9 +14,9 @@ public enum ENSContracts {
     
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {
-        case .Ropsten:
+        case .ropsten:
             return ENSContracts.RopstenAddress
-        case .Mainnet:
+        case .mainnet:
             return ENSContracts.MainnetAddress
         default:
             return nil

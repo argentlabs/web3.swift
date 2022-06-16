@@ -79,7 +79,7 @@ class EthereumClientTests: XCTestCase {
     func testNetVersion() async {
         do {
             let network = try await client?.net_version()
-            XCTAssertEqual(network, EthereumNetwork.Ropsten, "Network incorrect")
+            XCTAssertEqual(network, EthereumNetwork.ropsten, "Network incorrect")
         } catch {
             XCTFail("Expected network but failed \(error).")
         }
@@ -114,7 +114,7 @@ class EthereumClientTests: XCTestCase {
 
     func testEthSendRawTransaction() async {
         do {
-            let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(500000), chainId: EthereumNetwork.Ropsten.intValue)
+            let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(500000), chainId: EthereumNetwork.ropsten.intValue)
 
             let txHash = try await client?.eth_sendRawTransaction(tx, withAccount: self.account!)
             XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
@@ -135,7 +135,7 @@ class EthereumClientTests: XCTestCase {
 
     func testEthCall() async {
         do {
-            let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.Ropsten.intValue)
+            let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.ropsten.intValue)
             let txHash = try await client?.eth_call(tx, block: .Latest)
             XCTAssertNotNil(txHash, "Transaction hash not available")
         } catch {
