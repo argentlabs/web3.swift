@@ -26,7 +26,6 @@ let package = Package(
                     .target(name: "Internal_CryptoSwift_PBDKF2"),
                     "BigInt",
                     "GenericJSON",
-                    .product(name: "BigInt", package: "BigInt"),
                     "OpenCombine",
                     .product(name: "OpenCombineFoundation", package: "OpenCombine"),
                     .product(name: "secp256k1", package: "secp256k1.swift")
