@@ -10,10 +10,15 @@ import Foundation
 @testable import web3
 
 class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
+    
     private var privateKey: String
     
     init(privateKey: String) {
         self.privateKey = privateKey
+    }
+    
+    func fetchStoredAddresses() throws -> [String] {
+        return ["first", "second"]
     }
     
     func storePrivateKey(key: Data, with address: String) throws -> Void {

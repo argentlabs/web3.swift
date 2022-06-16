@@ -20,4 +20,31 @@ public extension Web3Extensions where Base == String {
         
         return base.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil
     }
+    
+    var isAddress: Bool {
+            let hexAddressPattern = #"(?=^0x[a-fA-F0-9]{40}$)"#
+            return checkRegexMatching(pattern: hexAddressPattern)
+    }
+    
+    private func checkRegexMatching(pattern: String) -> Bool {
+        do {
+            let passwordRegex = try NSRegularExpression(
+                pattern: pattern,
+                options: []
+            )
+            let sourceRange = NSRange(
+                self.base.startIndex..<self.base.endIndex,
+                in: self.base
+            )
+            let result = passwordRegex.matches(
+                in: self.base,
+                options: [],
+                range: sourceRange
+            )
+            return !result.isEmpty
+        } catch let error as NSError {
+            print("Error matching regex: \(error.description)")
+            return false
+        }
+    }
 }

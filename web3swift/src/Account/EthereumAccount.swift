@@ -59,6 +59,14 @@ public class EthereumAccount: EthereumAccountProtocol {
         }
     }
     
+    public static func fetchAccounts(keyStorage: EthereumKeyStorageProtocol) throws -> [String] {
+        do {
+            return try keyStorage.fetchStoredAddresses()
+        } catch {
+            throw EthereumAccountError.loadAccountError
+        }
+    }
+    
     public static func create(keyStorage: EthereumKeyStorageProtocol, keystorePassword password: String) throws -> EthereumAccount {
         guard let privateKey = KeyUtil.generatePrivateKeyData() else {
             throw EthereumAccountError.createAccountError

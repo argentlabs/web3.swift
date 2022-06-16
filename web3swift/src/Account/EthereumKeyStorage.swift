@@ -9,6 +9,7 @@
 import Foundation
 
 public protocol EthereumKeyStorageProtocol {
+    func fetchStoredAddresses() throws -> [String]
     func storePrivateKey(key: Data, with address: String) throws -> Void
     func loadPrivateKey(for address: String) throws -> Data
 }
@@ -30,6 +31,22 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
             return url.appendingPathComponent(address).path
         }
         return nil
+    }
+    
+    public func fetchStoredAddresses() throws -> [String] {
+        let documentURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+
+        do {
+            try FileManager.default.createDirectory(atPath: documentURL.relativePath, withIntermediateDirectories: true)
+            let directoryContents = try FileManager.default.contentsOfDirectory(at: documentURL, includingPropertiesForKeys: nil, options: [.skipsSubdirectoryDescendants])
+            
+            let files = directoryContents.filter { !$0.hasDirectoryPath}.map { $0.lastPathComponent }.filter { $0.web3.isAddress }
+            return (files)
+
+        } catch {
+            print(error.localizedDescription)
+            throw EthereumKeyStorageError.failedToLoad
+        }
     }
     
     public func storePrivateKey(key: Data, with address: String) throws -> Void {
