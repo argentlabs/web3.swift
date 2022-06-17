@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import secp256k1
+import Secp256k1Kit
 
 enum KeyUtilError: Error {
     case invalidContext
