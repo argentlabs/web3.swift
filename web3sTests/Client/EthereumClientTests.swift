@@ -75,7 +75,9 @@ class EthereumClientTests: XCTestCase {
             _ = try await client?.eth_getBalance(address: EthereumAddress("0xnig42niog2"), block: .Latest)
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, .unexpectedReturnValue)
+            XCTAssertEqual(error as? EthereumClientError, .executionError(
+                .init(code: -32602, message: "invalid argument 0: hex string has length 10, want 40 for common.Address", data: nil)
+            ))
         }
     }
 
@@ -227,7 +229,9 @@ class EthereumClientTests: XCTestCase {
             let _ = try await client?.eth_getTransaction(byHash: "0x01234")
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, .unexpectedReturnValue)
+            XCTAssertEqual(error as? EthereumClientError, .executionError(
+                .init(code: -32602, message: "invalid argument 0: json: cannot unmarshal hex string of odd length into Go value of type common.Hash", data: nil)
+            ))
         }
     }
 
@@ -337,10 +341,10 @@ class EthereumClientTests: XCTestCase {
                                          to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
                                          amount: 1,
                                          data: Data(),
-                                         gasPrice: 0,
-                                         gasLimit: 0)
+                                         gasPrice: nil,
+                                         gasLimit: nil)
 
-            let value = try await client!.eth_estimateGas(try! function.transaction(), withAccount: account!)
+            let value = try await client!.eth_estimateGas(try! function.transaction())
             XCTAssert(value != 0)
         } catch {
             XCTFail("Expected value but failed \(error).")
