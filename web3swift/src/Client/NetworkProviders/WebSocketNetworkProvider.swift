@@ -16,6 +16,10 @@ import NIOCore
 import NIOWebSocket
 import GenericJSON
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
     private struct WebSocketRequest {
         var payload: String

@@ -9,6 +9,10 @@
 import Foundation
 import Logging
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 public class EthereumHttpClient: EthereumClient {
     let networkQueue: OperationQueue
 

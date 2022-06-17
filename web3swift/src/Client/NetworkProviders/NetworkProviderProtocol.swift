@@ -9,6 +9,10 @@
 import Foundation
 import NIOWebSocket
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 internal protocol NetworkProviderProtocol {
     var session: URLSession { get }
     func send<T, P: Encodable, U: Decodable>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void)

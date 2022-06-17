@@ -16,6 +16,10 @@ import NIOCore
 import NIOWebSocket
 import GenericJSON
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 public enum WebSocketState {
     case connecting
     case open

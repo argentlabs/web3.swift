@@ -8,6 +8,10 @@
 
 import Foundation
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 class HttpNetworkProvider: NetworkProviderProtocol {
     let session: URLSession
     private let url: URL
