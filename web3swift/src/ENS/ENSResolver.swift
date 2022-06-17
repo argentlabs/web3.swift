@@ -13,7 +13,6 @@ class ENSResolver {
     let address: EthereumAddress
     let callResolution: CallResolution
     private (set) var supportsWildCard: Bool?
-    private let mustSupportWilcard: Bool
     
     private let client: EthereumClientProtocol
 
@@ -21,18 +20,17 @@ class ENSResolver {
         address: EthereumAddress,
         client: EthereumClientProtocol,
         callResolution: CallResolution,
-        supportsWildCard: Bool? = nil,
-        mustSupportWildcard: Bool = false
+        supportsWildCard: Bool? = nil
     ) {
         self.address = address
         self.callResolution = callResolution
         self.client = client
         self.supportsWildCard = supportsWildCard
-        self.mustSupportWilcard = mustSupportWildcard
     }
 
     func resolve(
-        name: String
+        name: String,
+        supportingWildcard mustSupportWildCard: Bool
     ) async throws -> EthereumAddress {
         let wildcardResolution: Bool
         if let supportsWildCard = self.supportsWildCard {
@@ -42,7 +40,7 @@ class ENSResolver {
         }
         self.supportsWildCard = wildcardResolution
 
-        if mustSupportWilcard && !wildcardResolution {
+        if mustSupportWildCard && !wildcardResolution {
             // Wildcard name resolution (ENSIP-10)
             throw EthereumNameServiceError.ensUnknown
         }

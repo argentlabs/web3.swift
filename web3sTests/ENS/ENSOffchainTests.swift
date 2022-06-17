@@ -83,5 +83,69 @@ class ENSOffchainTests: XCTestCase {
             XCTFail("Expected ens but failed \(error).")
         }
     }
+    
+    func testGivenRopstenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+
+            _ = try await nameService.resolve(
+                ens: "1.resolver.eth",
+                mode: .allowOffchainLookup
+            )
+
+            XCTFail("Expected error")
+        } catch {
+            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
+        }
+    }
+    
+    func testGivenRopstenRegistry_WhenTwoRequestsWithAndWithoutSubdomain_ThenBothResolveCorrectly() async {
+        let nameService = EthereumNameService(client: client!)
+        
+        do {
+            let ens = try await nameService.resolve(
+                ens: "resolver.eth",
+                mode: .allowOffchainLookup
+            )
+            XCTAssertEqual(EthereumAddress("0x42d63ae25990889e35f215bc95884039ba354115"), ens)
+        } catch {
+            XCTFail("Expected ens but failed \(error).")
+        }
+        do {
+            _ = try await nameService.resolve(
+                ens: "1.resolver.eth",
+                mode: .allowOffchainLookup
+            )
+
+            XCTFail("Expected error")
+        } catch {
+            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
+        }
+    }
+    
+    func testGivenRopstenRegistry_WhenTwoRequestsWithoutAndWithSubdomain_ThenBothResolveCorrectly() async {
+        let nameService = EthereumNameService(client: client!)
+        
+        do {
+            _ = try await nameService.resolve(
+                ens: "1.resolver.eth",
+                mode: .allowOffchainLookup
+            )
+
+            XCTFail("Expected error")
+        } catch {
+            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
+        }
+        
+        do {
+            let ens = try await nameService.resolve(
+                ens: "resolver.eth",
+                mode: .allowOffchainLookup
+            )
+            XCTAssertEqual(EthereumAddress("0x42d63ae25990889e35f215bc95884039ba354115"), ens)
+        } catch {
+            XCTFail("Expected ens but failed \(error).")
+        }
+    }
 }
 
