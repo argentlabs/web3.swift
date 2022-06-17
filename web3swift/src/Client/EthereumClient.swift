@@ -1,9 +1,6 @@
 //
-//  EthereumClient.swift
-//  web3swift
-//
-//  Created by Julien Niset on 15/02/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation

@@ -1,61 +1,72 @@
 //
-//  EthereumNetwork.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 09/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
 
 public enum EthereumNetwork: Equatable {
-    case Mainnet
-    case Ropsten
-    case Rinkeby
-    case Kovan
-    case Custom(String)
+    case mainnet
+    case ropsten
+    case rinkeby
+    case kovan
+    case goerli
+    case sepolia
+    case custom(String)
     
     static func fromString(_ networkId: String) -> EthereumNetwork {
         switch networkId {
         case "1":
-            return .Mainnet
+            return .mainnet
         case "3":
-            return .Ropsten
+            return .ropsten
         case "4":
-            return .Rinkeby
+            return .rinkeby
+        case "5":
+            return .goerli
         case "42":
-            return .Kovan
+            return .kovan
+        case "11155111":
+            return .sepolia
         default:
-            return .Custom(networkId)
+            return .custom(networkId)
         }
     }
     
     var stringValue: String {
         switch self {
-        case .Mainnet:
+        case .mainnet:
             return "1"
-        case .Ropsten:
+        case .ropsten:
             return "3"
-        case .Rinkeby:
+        case .rinkeby:
             return "4"
-        case .Kovan:
+        case .goerli:
+            return "5"
+        case .kovan:
             return "42"
-        case .Custom(let str):
+        case .sepolia:
+            return "11155111"
+        case .custom(let str):
             return str
         }
     }
     
     var intValue: Int {
         switch self {
-        case .Mainnet:
+        case .mainnet:
             return 1
-        case .Ropsten:
+        case .ropsten:
             return 3
-        case .Rinkeby:
+        case .rinkeby:
             return 4
-        case .Kovan:
+        case .goerli:
+            return 5
+        case .kovan:
             return 42
-        case .Custom(let str):
+        case .sepolia:
+            return 11155111
+        case .custom(let str):
             return Int(str) ?? 0
         }
     }
@@ -63,5 +74,4 @@ public enum EthereumNetwork: Equatable {
 
 public func ==(lhs: EthereumNetwork, rhs: EthereumNetwork) -> Bool {
     return lhs.stringValue == rhs.stringValue
-    
 }

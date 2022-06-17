@@ -1,9 +1,6 @@
 //
-//  RLP.swift
-//  web3swift
-//
-//  Created by Julien Niset on 29/06/2017.
-//  Copyright © 2017 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
