@@ -75,58 +75,49 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         self.maximumRedirections = maximumRedirections
     }
 
-    public func resolve(
-        address: EthereumAddress,
-        mode: ResolutionMode,
-        completion: @escaping ((EthereumNameServiceError?, String?) -> Void)
-    ) {
-        guard
-            let network = client.network,
-            let registryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
-                return completion(EthereumNameServiceError.noNetwork, nil)
-            }
+    public func resolve(address: EthereumAddress,
+                        mode: ResolutionMode,
+                        completionHandler: @escaping(Result<String, EthereumNameServiceError>) -> Void) {
+        guard let network = client.network,
+              let registryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
+            completionHandler(.failure(.noNetwork))
+            return
+        }
 
         Task {
             do {
-                let resolver = try await getResolver(
-                    for: address,
-                    registryAddress: registryAddress,
-                    mode: mode
-                )
+                let resolver = try await getResolver(for: address,
+                                                     registryAddress: registryAddress,
+                                                     mode: mode)
 
                 let name = try await resolver.resolve(address: address)
-                completion(nil, name)
+                completionHandler(.success(name))
             } catch let error {
-                completion(error as? EthereumNameServiceError ?? .ensUnknown, nil)
+                completionHandler(.failure(error as? EthereumNameServiceError ?? .ensUnknown))
             }
         }
     }
 
-    public func resolve(
-        ens: String,
-        mode: ResolutionMode,
-        completion: @escaping ((EthereumNameServiceError?, EthereumAddress?) -> Void)
-    ) {
-        guard
-            let network = client.network,
-            let registryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
-            return completion(EthereumNameServiceError.noNetwork, nil)
+    public func resolve(ens: String,
+                        mode: ResolutionMode,
+                        completionHandler: @escaping(Result<EthereumAddress, EthereumNameServiceError>) -> Void) {
+        guard let network = client.network,
+              let registryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network) else {
+            completionHandler(.failure(.noNetwork))
+            return
         }
         Task {
             do {
-                let resolver = try await getResolver(
-                    for: ens,
-                    fullName: ens,
-                    registryAddress: registryAddress,
-                    mode: mode
-                )
+                let (resolver, supportingWildCard) = try await getResolver(for: ens,
+                                                                           fullName: ens,
+                                                                           registryAddress: registryAddress,
+                                                                           mode: mode)
 
-                let address = try await resolver.resolve(
-                    name: ens
-                )
-                completion(nil, address)
+                let address = try await resolver.resolve(name: ens,
+                                                         supportingWildcard: supportingWildCard)
+                completionHandler(.success(address))
             } catch let error {
-                completion(error as? EthereumNameServiceError ?? .ensUnknown, nil)
+                completionHandler(.failure(error as? EthereumNameServiceError ?? .ensUnknown))
             }
         }
     }
@@ -142,22 +133,14 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     }
 }
 
+// MARK: - Async/Await
 extension EthereumNameService {
     public func resolve(
         address: EthereumAddress,
         mode: ResolutionMode
     ) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            resolve(
-                address: address,
-                mode: mode
-            ) { error, ensHex in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else if let ensHex = ensHex {
-                    continuation.resume(returning: ensHex)
-                }
-            }
+            resolve(address: address, mode: mode, completionHandler: continuation.resume)
         }
     }
 
@@ -166,16 +149,7 @@ extension EthereumNameService {
         mode: ResolutionMode
     ) async throws -> EthereumAddress {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumAddress, Error>) in
-            resolve(
-                ens: ens,
-                mode: mode
-            ) { error, address in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else if let address = address {
-                    continuation.resume(returning: address)
-                }
-            }
+            resolve(ens: ens, mode: mode, completionHandler: continuation.resume)
         }
     }
 }
@@ -229,7 +203,7 @@ extension EthereumNameService {
         fullName: String,
         registryAddress: EthereumAddress,
         mode: ResolutionMode
-    ) async throws -> ENSResolver {
+    ) async throws -> (ENSResolver, Bool) {
         let function = ENSContracts.ENSRegistryFunctions.resolver(
             contract: registryAddress,
             parameter: .name(name)
@@ -263,14 +237,44 @@ extension EthereumNameService {
             let resolver = resolversByAddress[resolverAddress] ?? ENSResolver(
                 address: resolverAddress,
                 client: client,
-                callResolution: mode.callResolution(maxRedirects: self.maximumRedirections),
-                mustSupportWildcard: fullName != name
+                callResolution: mode.callResolution(maxRedirects: self.maximumRedirections)
             )
             self.resolversByAddress[resolverAddress] = resolver
-            return resolver
+            return (resolver, fullName != name)
         } catch {
             throw error as? EthereumNameServiceError ?? .ensUnknown
         }
     }
 
+}
+
+// MARK: - Deprecated
+extension EthereumNameService {
+    @available(*, deprecated, renamed: "resolve(address:mode:completionHandler:)")
+    public func resolve(address: EthereumAddress,
+                        mode: ResolutionMode,
+                        completion: @escaping ((EthereumNameServiceError?, String?) -> Void)) {
+        resolve(address: address, mode: mode) { result in
+            switch result {
+            case .success(let data):
+                completion(nil, data)
+            case .failure(let error):
+                completion(error, nil)
+            }
+        }
+    }
+
+    @available(*, deprecated, renamed: "resolve(ens:mode:completionHandler:)")
+    public func resolve(ens: String,
+                        mode: ResolutionMode,
+                        completion: @escaping ((EthereumNameServiceError?, EthereumAddress?) -> Void)) {
+        resolve(ens: ens, mode: mode) { result in
+            switch result {
+            case .success(let data):
+                completion(nil, data)
+            case .failure(let error):
+                completion(error, nil)
+            }
+        }
+    }
 }

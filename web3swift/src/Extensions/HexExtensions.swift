@@ -6,8 +6,8 @@
 //  Copyright © 2018 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public extension BigUInt {
     init?(hex: String) {
@@ -70,28 +70,30 @@ public extension Web3Extensions where Base == String {
         }
         return base
     }
-    
+
     var withHexPrefix: String {
         if !base.hasPrefix("0x") {
             return "0x" + base
         }
         return base
     }
-    
+
     var stringValue: String {
         if let byteArray = try? HexUtil.byteArray(fromHex: base.web3.noHexPrefix), let str = String(bytes: byteArray, encoding: .utf8) {
             return str
         }
-        
+
         return base
     }
-    
+
     var hexData: Data? {
         let noHexPrefix = self.noHexPrefix
         if let bytes = try? HexUtil.byteArray(fromHex: noHexPrefix) {
-            return Data( bytes)
+            return Data(bytes)
         }
-        
+
         return nil
     }
 }
+
+

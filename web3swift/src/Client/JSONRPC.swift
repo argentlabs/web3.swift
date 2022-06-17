@@ -76,14 +76,11 @@ public enum JSONRPCError: Error {
 }
 
 public class EthereumRPC {
-
     // Swift4 warning bug - https://bugs.swift.org/browse/SR-6265
-    // static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, JSONRPCResult<U>?) -> Void)) -> Void {
-    public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, Any?) -> Void)) -> Void {
-
+    public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completionHandler:  @escaping(Result<Any, Error>) -> Void) {
         if type(of: params) == [Any].self {
             // If params are passed in with Array<Any> and not caught, runtime fatal error
-            completion(JSONRPCError.encodingError, nil)
+            completionHandler(.failure(JSONRPCError.encodingError))
             return
         }
 
@@ -94,7 +91,7 @@ public class EthereumRPC {
 
         let rpcRequest = JSONRPCRequest(jsonrpc: "2.0", method: method, params: params, id: id)
         guard let encoded = try? JSONEncoder().encode(rpcRequest) else {
-            completion(JSONRPCError.encodingError, nil)
+            completionHandler(.failure(JSONRPCError.encodingError))
             return
         }
         request.httpBody = encoded
@@ -102,37 +99,46 @@ public class EthereumRPC {
         let task = session.dataTask(with: request) { (data, response, error) in
             if let data = data {
                 if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
-                    return completion(nil, result.result)
+                    completionHandler(.success(result.result))
                 } else if let result = try? JSONDecoder().decode([JSONRPCResult<U>].self, from: data) {
                     let resultObjects = result.map{ return $0.result }
-                    return completion(nil, resultObjects)
+                    completionHandler(.success(resultObjects))
                 } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
-                    return completion(JSONRPCError.executionError(errorResult), nil)
+                    completionHandler(.failure(JSONRPCError.executionError(errorResult)))
                 } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
-                    return completion(JSONRPCError.requestRejected(data), nil)
+                    completionHandler(.failure(JSONRPCError.requestRejected(data)))
                 } else {
-                    return completion(JSONRPCError.noResult, nil)
+                    completionHandler(.failure(JSONRPCError.noResult))
                 }
+            } else {
+                completionHandler(.failure(JSONRPCError.unknownError))
             }
-
-            completion(JSONRPCError.unknownError, nil)
         }
 
         task.resume()
     }
 }
 
+// MARK: - Async/Await
 extension EthereumRPC {
     public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1) async throws -> Any {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
-            Self.execute(session: session, url: url, method: method, params: params, receive: receive, id: id) { error, result in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else if let result = result {
-                    continuation.resume(returning: result)
-                }
-            }
+            Self.execute(session: session, url: url, method: method, params: params, receive: receive, id: id, completionHandler: continuation.resume)
         }
     }
 }
 
+// MARK: - Deprecated
+extension EthereumRPC {
+    @available(*, deprecated, renamed: "execute(session:url:method:params:receive:id:completionHandler:)")
+    public static func execute<T: Encodable, U: Decodable>(session: URLSession, url: URL, method: String, params: T, receive: U.Type, id: Int = 1, completion: @escaping ((Error?, Any?) -> Void)) -> Void {
+        Self.execute(session: session, url: url, method: method, params: params, receive: receive, id: id) { result in
+            switch result {
+            case .success(let data):
+                completion(nil, data)
+            case .failure(let error):
+                completion(error, nil)
+            }
+        }
+    }
+}
