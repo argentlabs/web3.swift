@@ -3,9 +3,9 @@ Pod::Spec.new do |s|
   s.version = '1.2.0'
   s.license = 'MIT'
   s.summary = 'Ethereum API for Swift'
-  s.homepage = 'https://github.com/ismail9001/web3.swift'
+  s.homepage = 'https://github.com/argentlabs/web3.swift'
   s.authors = { 'Julien Niset' => 'julien@argent.xyz', 'Matt Marshall' => 'matt@argent.xyz', 'Miguel Angel Quiñones' => 'miguel@argent.xyz' }
-  s.source = { :git => 'https://github.com/ismail9001/web3.swift.git', :tag => s.version.to_s }
+  s.source = { :git => 'https://github.com/argentlabs/web3.swift.git', :tag => s.version.to_s }
   s.module_name = 'web3'
 
   s.swift_version = '5.5'
