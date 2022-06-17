@@ -23,6 +23,12 @@ public enum OffchainReadError: Error {
 }
 
 extension EthereumClient {
+    public func eth_call(_ transaction: EthereumTransaction,
+                         block: EthereumBlock = .Latest,
+                         completionHandler: @escaping (Result<String, EthereumClientError>) -> Void) {
+        eth_call(transaction, resolution: .noOffchain(failOnExecutionError: true), block: block, completionHandler: completionHandler)
+    }
+
     public func eth_call(
         _ transaction: EthereumTransaction,
         resolution: CallResolution = .noOffchain(failOnExecutionError: true),
@@ -65,11 +71,10 @@ extension EthereumClient {
             block: block.stringValue
         )
 
-        EthereumRPC.execute(session: session,
-                            url: url,
-                            method: "eth_call",
-                            params: params,
-                            receive: String.self) { result in
+        networkProvider.send(method: "eth_call",
+                             params: params,
+                             receive: String.self,
+                             completionHandler: completionHandler) { result in
             switch result {
             case .success(let data):
                 if let resDataString = data as? String {
@@ -187,7 +192,7 @@ extension EthereumClient {
         }
         request.addValue("application/json", forHTTPHeaderField: "Accept")
 
-        return session.dataTaskPublisher(for: request)
+        return networkProvider.session.dataTaskPublisher(for: request)
             .tryMap { data, response in
                 guard let res = response as? HTTPURLResponse else {
                     throw OffchainReadError.network
@@ -217,6 +222,11 @@ extension EthereumClient {
 // MARK: - Async/Await
 extension EthereumClient {
     public func eth_call(_ transaction: EthereumTransaction,
+                         block: EthereumBlock = .Latest) async throws -> String {
+        return try await eth_call(transaction, resolution: .noOffchain(failOnExecutionError: true), block: block)
+    }
+
+    public func eth_call(_ transaction: EthereumTransaction,
                          resolution: CallResolution = .noOffchain(failOnExecutionError: true),
                          block: EthereumBlock = .Latest) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
@@ -229,41 +239,22 @@ extension EthereumClient {
     }
 }
 
-// MARK: - Deprecated
-extension EthereumClient {
-    @available(*, deprecated, renamed: "eth_call(_:resolution:block:completionHandler:)")
-    public func eth_call( _ transaction: EthereumTransaction,
-                          resolution: CallResolution = .noOffchain(failOnExecutionError: true),
-                          block: EthereumBlock = .Latest,
-                          completion: @escaping ((EthereumClientError?, String?) -> Void)
-    ) {
-        eth_call(transaction, resolution: resolution, block: block) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-}
-
-fileprivate struct OffchainReadJSONBody: Encodable {
+private struct OffchainReadJSONBody: Encodable {
     let sender: EthereumAddress
     let data: String
 }
 
-fileprivate struct OffchainReadResponse: Decodable {
+private struct OffchainReadResponse: Decodable {
     @DataStr
     var data: Data
 }
 
-fileprivate struct OffchainReadErrorResponse: Decodable {
+private struct OffchainReadErrorResponse: Decodable {
     let message: String?
     let pathname: String
 }
 
-fileprivate var cancellables = Set<AnyCancellable>()
+private var cancellables = Set<AnyCancellable>()
 
 fileprivate extension OffchainReadError {
     var isNextURLAllowed: Bool {
@@ -277,4 +268,3 @@ fileprivate extension OffchainReadError {
         }
     }
 }
-

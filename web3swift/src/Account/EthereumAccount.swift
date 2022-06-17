@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Logging
 
 public protocol EthereumAccountProtocol {
     var address: EthereumAddress { get }
@@ -26,6 +27,7 @@ public enum EthereumAccountError: Error {
 public class EthereumAccount: EthereumAccountProtocol {
     private let privateKeyData: Data
     private let publicKeyData: Data
+    private let logger: Logger
     
     public lazy var publicKey: String = {
         return self.publicKeyData.web3.hexString
@@ -35,18 +37,20 @@ public class EthereumAccount: EthereumAccountProtocol {
         return KeyUtil.generateAddress(from: self.publicKeyData)
     }()
     
-    required public init(keyStorage: EthereumKeyStorageProtocol, keystorePassword password: String) throws {
+    required public init(keyStorage: EthereumKeyStorageProtocol, keystorePassword password: String, logger: Logger? = nil) throws {
+        self.logger = logger ?? Logger(label: "web3.swift.eth-account")
         do {
             let decodedKey = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
             self.privateKeyData = decodedKey
             self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
         } catch let error {
-            print("Error loading key data: \(error)")
+            self.logger.warning("Error loading key data: \(error)")
             throw EthereumAccountError.loadAccountError
         }
     }
     
-    required public init(keyStorage: EthereumKeyStorageProtocol) throws {
+    required public init(keyStorage: EthereumKeyStorageProtocol, logger: Logger? = nil) throws {
+        self.logger = logger ?? Logger(label: "web3.swift.eth-account")
         do {
             let data = try keyStorage.loadPrivateKey()
             self.privateKeyData = data

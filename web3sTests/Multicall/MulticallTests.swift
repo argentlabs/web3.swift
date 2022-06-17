@@ -7,13 +7,13 @@ import XCTest
 @testable import web3
 
 class MulticallTests: XCTestCase {
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
     var multicall: Multicall!
     let testContractAddress = EthereumAddress(TestConfig.erc20Contract)
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
         self.multicall = Multicall(client: client!)
     }
 
@@ -55,3 +55,9 @@ class MulticallTests: XCTestCase {
     }
 }
 
+class MulticallWebSocketTests: MulticallTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+    }
+}

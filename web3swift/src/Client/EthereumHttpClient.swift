@@ -1,0 +1,25 @@
+//
+//  EthereumHttpClient.swift
+//  web3swift
+//
+//  Created by Dionisios Karatzas on 16/6/22.
+//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//
+
+import Foundation
+import Logging
+
+public class EthereumHttpClient: EthereumClient {
+    let networkQueue: OperationQueue
+
+    public init(url: URL, sessionConfig: URLSessionConfiguration = URLSession.shared.configuration, logger: Logger? = nil) {
+        let networkQueue = OperationQueue()
+        networkQueue.name = "web3swift.client.networkQueue"
+        networkQueue.qualityOfService = .background
+        networkQueue.maxConcurrentOperationCount = 4
+        self.networkQueue = networkQueue
+
+        let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: networkQueue)
+        super.init(networkProvider: HttpNetworkProvider(session: session, url: url), url: url, logger: logger)
+    }
+}

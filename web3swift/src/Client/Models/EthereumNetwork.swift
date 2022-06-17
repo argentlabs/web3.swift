@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum EthereumNetwork: Equatable {
+public enum EthereumNetwork: Equatable, Decodable {
     case mainnet
     case ropsten
     case rinkeby
@@ -13,7 +13,6 @@ public enum EthereumNetwork: Equatable {
     case goerli
     case sepolia
     case custom(String)
-    
     static func fromString(_ networkId: String) -> EthereumNetwork {
         switch networkId {
         case "1":
@@ -32,7 +31,7 @@ public enum EthereumNetwork: Equatable {
             return .custom(networkId)
         }
     }
-    
+
     var stringValue: String {
         switch self {
         case .mainnet:
@@ -51,7 +50,7 @@ public enum EthereumNetwork: Equatable {
             return str
         }
     }
-    
+
     var intValue: Int {
         switch self {
         case .mainnet:

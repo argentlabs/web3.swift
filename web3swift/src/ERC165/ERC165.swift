@@ -35,21 +35,6 @@ extension ERC165 {
     }
 }
 
-// MARK: - Deprecated
-extension ERC165 {
-    @available(*, deprecated, renamed: "supportsInterface(contract:id:completionHandler:)")
-    public func supportsInterface(contract: EthereumAddress, id: Data, completion: @escaping((Error?, Bool?) -> Void)) {
-        supportsInterface(contract: contract, id: id) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-}
-
 public enum ERC165Functions {
     public static var interfaceId: Data {
         return "supportsInterface(bytes4)".web3.keccak256.web3.bytes4
