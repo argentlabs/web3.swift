@@ -22,7 +22,7 @@ public enum OffchainReadError: Error {
     case tooManyRedirections
 }
 
-extension EthereumClient {
+extension BaseEthereumClient {
     public func eth_call(_ transaction: EthereumTransaction,
                          block: EthereumBlock = .Latest,
                          completionHandler: @escaping (Result<String, EthereumClientError>) -> Void) {
@@ -220,7 +220,7 @@ extension EthereumClient {
 }
 
 // MARK: - Async/Await
-extension EthereumClient {
+extension BaseEthereumClient {
     public func eth_call(_ transaction: EthereumTransaction,
                          block: EthereumBlock = .Latest) async throws -> String {
         return try await eth_call(transaction, resolution: .noOffchain(failOnExecutionError: true), block: block)

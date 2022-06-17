@@ -11,7 +11,7 @@ import Logging
 import FoundationNetworking
 #endif
 
-public class EthereumClient: EthereumClientProtocol {
+public class BaseEthereumClient: EthereumClientProtocol {
     public let url: URL
 
     let concurrentQueue: OperationQueue
@@ -378,7 +378,7 @@ public class EthereumClient: EthereumClientProtocol {
 }
 
 // MARK: - Async/Await
-extension EthereumClient {
+extension BaseEthereumClient {
     public func net_version() async throws -> EthereumNetwork {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumNetwork, Error>) in
             net_version(completionHandler: continuation.resume)

@@ -1,9 +1,6 @@
 //
-//  EthereumWebSocketClient.swift
-//  web3swift
-//
-//  Created by Dionisios Karatzas on 1/6/22.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -26,7 +23,7 @@ public enum WebSocketState {
     case closed
 }
 
-public class EthereumWebSocketClient: EthereumClient, EthereumClientWebSocketProtocol {
+public class EthereumWebSocketClient: BaseEthereumClient, EthereumClientWebSocketProtocol {
     public var delegate: EthereumWebSocketClientDelegate? {
         get {
             return provider.delegate
