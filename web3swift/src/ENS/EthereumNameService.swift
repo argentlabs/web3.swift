@@ -16,12 +16,12 @@ protocol EthereumNameServiceProtocol {
         address: EthereumAddress,
         mode: ResolutionMode,
         completionHandler: @escaping(Result<String, EthereumNameServiceError>) -> Void
-    ) -> Void
+    )
     func resolve(
         ens: String,
         mode: ResolutionMode,
         completionHandler: @escaping(Result<EthereumAddress, EthereumNameServiceError>) -> Void
-    ) -> Void
+    )
 
     func resolve(
         address: EthereumAddress,
@@ -49,7 +49,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     private let syncQueue = DispatchQueue(label: "web3swift.ethereumNameService.syncQueue")
 
     private var _resolversByAddress = [EthereumAddress: ENSResolver]()
-    var resolversByAddress: [EthereumAddress : ENSResolver] {
+    var resolversByAddress: [EthereumAddress: ENSResolver] {
         get {
             var byAddress: [EthereumAddress: ENSResolver]!
             syncQueue.sync { byAddress = _resolversByAddress }
@@ -151,7 +151,6 @@ extension EthereumNameService {
     }
 }
 
-
 fileprivate extension ResolutionMode {
     func callResolution(maxRedirects: Int) -> CallResolution {
         switch self {
@@ -162,7 +161,6 @@ fileprivate extension ResolutionMode {
         }
     }
 }
-
 
 extension EthereumNameService {
     private func getResolver(

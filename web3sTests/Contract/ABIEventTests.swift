@@ -20,7 +20,7 @@ class ABIEventTests: XCTestCase {
             let encodedAddress = (try? ABIEncoder.encode(EthereumAddress("0x3B6Def16666a23905DD29071d13E7a9db08240E2")).bytes) ?? []
 
             let eventsResult = try await client.getEvents(addresses: nil,
-                                                          topics: [try? EnabledStaticCall.signature(),  String(hexFromBytes: encodedAddress), nil],
+                                                          topics: [try? EnabledStaticCall.signature(), String(hexFromBytes: encodedAddress), nil],
                                                           fromBlock: .Number(8386245),
                                                           toBlock: .Number(8386245),
                                                           eventTypes: [EnabledStaticCall.self])
@@ -66,8 +66,8 @@ class ABIEventWebSocketTests: ABIEventTests {
 
 struct EnabledStaticCall: ABIEvent {
     static let name = "EnabledStaticCall"
-    static let types: [ABIType.Type] = [EthereumAddress.self,Data4.self]
-    static let typesIndexed = [true,true]
+    static let types: [ABIType.Type] = [EthereumAddress.self, Data4.self]
+    static let typesIndexed = [true, true]
     let log: EthereumLog
 
     let module: EthereumAddress
@@ -85,8 +85,8 @@ struct EnabledStaticCall: ABIEvent {
 
 struct UpgraderRegistered: ABIEvent {
     static let name = "UpgraderRegistered"
-    static let types: [ABIType.Type] = [EthereumAddress.self,Data32.self]
-    static let typesIndexed = [true,false]
+    static let types: [ABIType.Type] = [EthereumAddress.self, Data32.self]
+    static let typesIndexed = [true, false]
     let log: EthereumLog
 
     let upgrader: EthereumAddress
@@ -100,4 +100,3 @@ struct UpgraderRegistered: ABIEvent {
         self.name = try data[0].decoded()
     }
 }
-

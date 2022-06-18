@@ -10,7 +10,7 @@ class ENSResolver {
     let address: EthereumAddress
     let callResolution: CallResolution
     private (set) var supportsWildCard: Bool?
-    
+
     private let client: EthereumClientProtocol
 
     init(

@@ -34,7 +34,7 @@ class ENSTests: XCTestCase {
             }
 
             let owner = String(dataStr[dataStr.index(dataStr.endIndex, offsetBy: -40)...])
-            XCTAssertEqual(owner.web3.noHexPrefix,"09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1")
+            XCTAssertEqual(owner.web3.noHexPrefix, "09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1")
         } catch {
             XCTFail("Expected dataStr but failed \(error).")
         }

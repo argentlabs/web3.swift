@@ -27,19 +27,19 @@ public final class SHA2 {
     @usableFromInline
     let digestLength: Int
 
-    private let k: Array<UInt64>
+    private let k: [UInt64]
 
     @usableFromInline
-    var accumulated = Array<UInt8>()
+    var accumulated = [UInt8]()
 
     @usableFromInline
     var processedBytesTotalCount: Int = 0
 
     @usableFromInline
-    var accumulatedHash32 = Array<UInt32>()
+    var accumulatedHash32 = [UInt32]()
 
     @usableFromInline
-    var accumulatedHash64 = Array<UInt64>()
+    var accumulatedHash64 = [UInt64]()
 
     @frozen
     public enum Variant: RawRepresentable {
@@ -80,7 +80,7 @@ public final class SHA2 {
         }
 
         @usableFromInline
-        var h: Array<UInt64> {
+        var h: [UInt64] {
             switch self {
             case .sha256:
                 return [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]
@@ -138,7 +138,7 @@ public final class SHA2 {
     }
 
     @inlinable
-    public func calculate(for bytes: Array<UInt8>) -> Array<UInt8> {
+    public func calculate(for bytes: [UInt8]) -> [UInt8] {
         do {
             return try update(withBytes: bytes.slice, isLast: true)
         } catch {
@@ -147,7 +147,7 @@ public final class SHA2 {
     }
 
     @usableFromInline
-    func process64(block chunk: ArraySlice<UInt8>, currentHash hh: inout Array<UInt64>) {
+    func process64(block chunk: ArraySlice<UInt8>, currentHash hh: inout [UInt64]) {
         // break chunk into sixteen 64-bit words M[j], 0 ≤ j ≤ 15, big-endian
         // Extend the sixteen 64-bit words into eighty 64-bit words:
         let M = UnsafeMutablePointer<UInt64>.allocate(capacity: self.k.count)
@@ -208,7 +208,7 @@ public final class SHA2 {
 
     // mutating currentHash in place is way faster than returning new result
     @usableFromInline
-    func process32(block chunk: ArraySlice<UInt8>, currentHash hh: inout Array<UInt32>) {
+    func process32(block chunk: ArraySlice<UInt8>, currentHash hh: inout [UInt32]) {
         // break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15, big-endian
         // Extend the sixteen 32-bit words into sixty-four 32-bit words:
         let M = UnsafeMutablePointer<UInt32>.allocate(capacity: self.k.count)
@@ -272,7 +272,7 @@ public final class SHA2 {
 extension SHA2 {
 
     @inlinable
-    public func update(withBytes bytes: ArraySlice<UInt8>, isLast: Bool = false) throws -> Array<UInt8> {
+    public func update(withBytes bytes: ArraySlice<UInt8>, isLast: Bool = false) throws -> [UInt8] {
         self.accumulated += bytes
 
         if isLast {
@@ -301,7 +301,7 @@ extension SHA2 {
         self.processedBytesTotalCount += processedBytes
 
         // output current hash
-        var result = Array<UInt8>(repeating: 0, count: variant.digestLength)
+        var result = [UInt8](repeating: 0, count: variant.digestLength)
         switch self.variant {
         case .sha256:
             var pos = 0

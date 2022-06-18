@@ -46,7 +46,7 @@ public extension ABIFunction {
             case .success(let data):
                 parseOrFail(data)
             case .failure(let error):
-                switch (error) {
+                switch error {
                 case (.executionError):
                     if resolution.failOnExecutionError {
                         completionHandler(.failure(error))
@@ -227,7 +227,7 @@ public extension EthereumClientProtocol {
 
 // MARK: - Async/Await
 public extension ABIFunction {
-    func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol) async throws -> String  {
+    func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             execute(withClient: client, account: account, completionHandler: continuation.resume)
         }

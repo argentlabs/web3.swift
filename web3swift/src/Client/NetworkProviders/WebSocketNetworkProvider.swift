@@ -148,7 +148,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         }
     }
 
-    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P : Encodable, U : Decodable {
+    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P: Encodable, U: Decodable {
         semaphore.wait()
 
         defer {

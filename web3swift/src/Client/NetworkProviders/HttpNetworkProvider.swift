@@ -22,7 +22,7 @@ class HttpNetworkProvider: NetworkProviderProtocol {
         session.invalidateAndCancel()
     }
 
-    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P : Encodable, U : Decodable {
+    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P: Encodable, U: Decodable {
         if type(of: params) == [Any].self {
             // If params are passed in with Array<Any> and not caught, runtime fatal error
             resultDecodeHandler(.failure(JSONRPCError.encodingError))

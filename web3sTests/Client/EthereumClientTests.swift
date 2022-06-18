@@ -10,7 +10,7 @@ import NIO
 
 struct TransferMatchingSignatureEvent: ABIEvent {
     public static let name = "Transfer"
-    public static let types: [ABIType.Type] = [ EthereumAddress.self , EthereumAddress.self , BigUInt.self]
+    public static let types: [ABIType.Type] = [ EthereumAddress.self, EthereumAddress.self, BigUInt.self]
     public static let typesIndexed = [true, true, false]
     public let log: EthereumLog
 
@@ -198,7 +198,7 @@ class EthereumClientTests: XCTestCase {
 
     func testGivenUnexistingBlockNumber_ThenGetBlockByNumberReturnsError() async {
         do {
-            let _ = try await client?.eth_getBlockByNumber(.Number(Int.max))
+            _ = try await client?.eth_getBlockByNumber(.Number(Int.max))
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
             XCTAssertEqual(error as? EthereumClientError, .unexpectedReturnValue)
@@ -223,7 +223,7 @@ class EthereumClientTests: XCTestCase {
 
     func testGivenUnexistingTransactionHash_ThenErrorsGetTransactionByHash() async {
         do {
-            let _ = try await client?.eth_getTransaction(byHash: "0x01234")
+            _ = try await client?.eth_getTransaction(byHash: "0x01234")
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
             XCTAssertEqual(error as? EthereumClientError, .executionError(
@@ -317,7 +317,7 @@ class EthereumClientTests: XCTestCase {
     func test_GivenUnimplementedMethod_WhenCallingContract_ThenFailsWithExecutionError() async {
         do {
             let function = InvalidMethodA(param: .zero)
-            let _ = try await function.call(
+            _ = try await function.call(
                 withClient: self.client!,
                 responseType: InvalidMethodA.BoolResponse.self)
             XCTFail("Expected to throw while awaiting, but succeeded")
@@ -486,7 +486,7 @@ class EthereumWebSocketClientTests: EthereumClientTests {
             }
 
             var expectation: XCTestExpectation? = self.expectation(description: "Pending Transaction")
-            let subscription = try await client.pendingTransactions { txHash in
+            let subscription = try await client.pendingTransactions { _ in
                 expectation?.fulfill()
                 expectation = nil
             }
@@ -508,7 +508,7 @@ class EthereumWebSocketClientTests: EthereumClientTests {
             }
 
             var expectation: XCTestExpectation? = self.expectation(description: "New Block Headers")
-            let subscription = try await client.newBlockHeaders { header in
+            let subscription = try await client.newBlockHeaders { _ in
                 expectation?.fulfill()
                 expectation = nil
             }

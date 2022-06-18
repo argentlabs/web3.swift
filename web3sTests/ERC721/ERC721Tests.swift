@@ -22,7 +22,6 @@ class ERC721Tests: XCTestCase {
     var erc721: ERC721!
     let address = EthereumAddress(TestConfig.erc721Contract)
 
-
     override func setUp() {
         super.setUp()
         self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
@@ -104,14 +103,13 @@ class ERC721MetadataTests: XCTestCase {
                                           type: "object",
                                           properties: ERC721Metadata.Token.Properties(name: ERC721Metadata.Token.Property(description: "Random Graph Token"),
                                                                                       description: ERC721Metadata.Token.Property(description: "NFT to represent Random Graph"),
-                                                                                      image:  ERC721Metadata.Token.Property(description: nftImageURL)))
+                                                                                      image: ERC721Metadata.Token.Property(description: nftImageURL)))
 
     override func setUp() {
         super.setUp()
         self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
         self.erc721 = ERC721Metadata(client: client, metadataSession: URLSession.shared)
     }
-
 
     func test_InterfaceIDMatch() {
         XCTAssertEqual(ERC721MetadataFunctions.interfaceId.web3.hexString, "0x5b5e139f")

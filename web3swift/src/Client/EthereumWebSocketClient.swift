@@ -41,7 +41,7 @@ public class EthereumWebSocketClient: BaseEthereumClient, EthereumClientWebSocke
             provider.onReconnectCallback = newValue
         }
     }
-    
+
     public var currentState: WebSocketState {
         return provider.currentState
     }
@@ -49,7 +49,7 @@ public class EthereumWebSocketClient: BaseEthereumClient, EthereumClientWebSocke
     private let networkQueue: OperationQueue
 
     private var provider: WebSocketNetworkProviderProtocol
-    
+
     public init(url: URL,
                 eventLoopGroupProvider: EventLoopGroupProvider = .createNew,
                 configuration: WebSocketConfiguration = .init(),
@@ -71,15 +71,15 @@ public class EthereumWebSocketClient: BaseEthereumClient, EthereumClientWebSocke
         self.provider = provider
         super.init(networkProvider: provider, url: url, logger: logger)
     }
-    
+
     public func connect() {
         provider.connect()
     }
-    
+
     public func disconnect(code: WebSocketErrorCode = .goingAway) {
         provider.disconnect(code: code)
     }
-    
+
     /// Additional public API method to refresh the connection if still open (close, re-open).
     /// For example, if the app suspects bad data / missed heart beats, it can try to refresh.
     public func refresh() {
@@ -104,7 +104,7 @@ extension EthereumWebSocketClient {
             }
         }
     }
-    
+
     public func unsubscribe(_ subscription: EthereumSubscription, completionHandler: @escaping (Result<Bool, EthereumClientError>) -> Void) {
         networkProvider.send(method: "eth_unsubscribe", params: [subscription.id], receive: Bool.self, completionHandler: completionHandler) { result in
             switch result {
@@ -120,7 +120,7 @@ extension EthereumWebSocketClient {
             }
         }
     }
-    
+
     public func pendingTransactions(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (String) -> Void) {
         networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.pendingTransactions.method], receive: String.self, completionHandler: onSubscribe) { result in
             switch result {
@@ -139,7 +139,7 @@ extension EthereumWebSocketClient {
             }
         }
     }
-    
+
     public func newBlockHeaders(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumHeader) -> Void) {
         networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.newBlockHeaders.method], receive: String.self, completionHandler: onSubscribe) { result in
             switch result {
@@ -158,7 +158,7 @@ extension EthereumWebSocketClient {
             }
         }
     }
-    
+
     public func syncing(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumSyncStatus) -> Void) {
         networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.syncing.method], receive: String.self, completionHandler: onSubscribe) { result in
             switch result {
@@ -186,25 +186,25 @@ extension EthereumWebSocketClient {
             subscribe(type: type, completionHandler: continuation.resume)
         }
     }
-    
+
     public func unsubscribe(_ subscription: EthereumSubscription) async throws -> Bool {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
             unsubscribe(subscription, completionHandler: continuation.resume)
         }
     }
-    
+
     public func pendingTransactions(onData: @escaping (String) -> Void) async throws -> EthereumSubscription {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumSubscription, Error>) in
             pendingTransactions(onSubscribe: continuation.resume, onData: onData)
         }
     }
-    
+
     public func newBlockHeaders(onData: @escaping (EthereumHeader) -> Void) async throws -> EthereumSubscription {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumSubscription, Error>) in
             newBlockHeaders(onSubscribe: continuation.resume, onData: onData)
         }
     }
-    
+
     public func syncing(onData: @escaping (EthereumSyncStatus) -> Void) async throws -> EthereumSubscription {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumSubscription, Error>) in
             syncing(onSubscribe: continuation.resume, onData: onData)

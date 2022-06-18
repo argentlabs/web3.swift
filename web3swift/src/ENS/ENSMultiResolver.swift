@@ -191,7 +191,6 @@ extension EthereumNameService {
                 let ensRegistryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network)
             else { return completion(.failure(.noNetwork)) }
 
-
             var aggegator = Multicall.Aggregator()
 
             do {

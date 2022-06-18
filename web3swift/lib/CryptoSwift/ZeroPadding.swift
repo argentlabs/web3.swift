@@ -19,16 +19,16 @@ struct ZeroPadding {
     }
 
     @inlinable
-    func add(to bytes: Array<UInt8>, blockSize: Int) -> Array<UInt8> {
+    func add(to bytes: [UInt8], blockSize: Int) -> [UInt8] {
         let paddingCount = blockSize - (bytes.count % blockSize)
         if paddingCount > 0 {
-            return bytes + Array<UInt8>(repeating: 0, count: paddingCount)
+            return bytes + [UInt8](repeating: 0, count: paddingCount)
         }
         return bytes
     }
 
     @inlinable
-    func remove(from bytes: Array<UInt8>, blockSize _: Int?) -> Array<UInt8> {
+    func remove(from bytes: [UInt8], blockSize _: Int?) -> [UInt8] {
         for (idx, value) in bytes.reversed().enumerated() {
             if value != 0 {
                 return Array(bytes[0..<bytes.count - idx])

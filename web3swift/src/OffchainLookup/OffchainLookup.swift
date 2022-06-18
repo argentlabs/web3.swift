@@ -15,7 +15,7 @@ public struct OffchainLookup: ABIRevertError {
             Data.self
         ]
     }
-    
+
     public static var name: String = "OffchainLookup"
 
     public var address: EthereumAddress
@@ -57,7 +57,7 @@ public struct OffchainLookup: ABIRevertError {
         else {
             return nil
         }
-        
+
         self.init(
             address: sender,
             urls: urls,
@@ -83,7 +83,7 @@ extension OffchainLookup {
     }
 }
 
-fileprivate let expected = OffchainLookup(
+private let expected = OffchainLookup(
     address: .zero,
     urls: [],
     callData: Data(),

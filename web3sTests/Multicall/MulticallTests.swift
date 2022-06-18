@@ -49,7 +49,6 @@ class MulticallTests: XCTestCase {
             XCTFail("Unexpected failure while handling output")
         }
 
-
         XCTAssertEqual(decimals, 18)
         XCTAssertEqual(name, "BokkyPooBah Test Token")
     }

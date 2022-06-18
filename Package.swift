@@ -8,7 +8,7 @@ let package = Package(
         .macOS(SupportedPlatform.MacOSVersion.v11)
     ],
     products: [
-        .library(name: "web3.swift", targets: ["web3"]),
+        .library(name: "web3.swift", targets: ["web3"])
     ],
     dependencies: [
         .package(name: "BigInt", url: "https://github.com/attaswift/BigInt", from: "5.0.0"),
@@ -16,7 +16,7 @@ let package = Package(
         .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", .upToNextMajor(from: "0.6.0")),
         .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.13.0"),
         .package(url: "https://github.com/vapor/websocket-kit.git", from: "2.0.0"),
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
     ],
     targets: [
         .target(
@@ -61,6 +61,6 @@ let package = Package(
                 .copy("Resources/rlptests.json"),
                 .copy("Account/cryptofights_712.json")
             ]
-        ),
+        )
     ]
 )

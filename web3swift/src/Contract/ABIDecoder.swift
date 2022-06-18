@@ -8,16 +8,16 @@ import BigInt
 
 public class ABIDecoder {
     typealias RawParsedABI = [[String]]
-    
+
     static func decodeData(_ data: RawABI, types: [ABIRawType], asArray: Bool = false) throws -> RawParsedABI {
         var result = RawParsedABI()
         var offset = 0
-        
+
         let expectingArray = asArray || types.count > 1
         if data == "0x" && expectingArray {
             return []
         }
-        
+
         for type in types {
             if data == "0x" && type.isArray {
                 result.append([])
@@ -30,7 +30,7 @@ public class ABIDecoder {
         }
         return result
     }
-    
+
     static func decode(_ data: [UInt8], forType type: ABIRawType, offset: Int = 0) throws -> ABIEntry {
         switch type {
         case .FixedBool:
@@ -65,7 +65,7 @@ public class ABIDecoder {
             guard data.count > upperRange else { throw ABIError.invalidValue }
             let hex = String(hexFromBytes: Array(data[lowerRange...upperRange]))
             return [hex]
-        case .FixedInt(_):
+        case .FixedInt:
             guard data.count > 0 else {
                 return [""]
             }
@@ -74,7 +74,7 @@ public class ABIDecoder {
             guard data.count > endIndex else { throw ABIError.invalidValue }
             let buf = Array(data[startIndex...endIndex])
             return [String(hexFromBytes: buf)]
-        case .FixedUInt(_):
+        case .FixedUInt:
             guard data.count > 0 else {
                 return [""]
             }
@@ -96,7 +96,7 @@ public class ABIDecoder {
             var result: [String] = []
             var size = type.size
             var newOffset = offset
-            
+
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)
             return result
         // NOTE: Needs analysis to confirm it can handle an inner `DynamicArray` too
@@ -127,12 +127,12 @@ public class ABIDecoder {
         case .DynamicArray(let arrayType):
             var result: [String] = []
             var newOffset = offset
-            
+
             guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first else {
                 throw ABIError.invalidValue
             }
             newOffset = Int(hex: offsetHex) ?? newOffset
-            
+
             guard let sizeHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first else {
                 throw ABIError.invalidValue
             }
@@ -140,12 +140,12 @@ public class ABIDecoder {
                 throw ABIError.invalidValue
             }
             newOffset += 32
-            
+
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)
             return result
         case .Tuple(let types):
             var result: [String] = []
-            
+
             if type.isDynamic {
                 guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first else {
                     throw ABIError.invalidValue
@@ -171,20 +171,20 @@ public class ABIDecoder {
                         offset: 0)
                     newOffset += type.memory
                 }
-                
+
                 return result
             }
         }
     }
-    
-    private static func deepDecode(data: [UInt8], type: ABIRawType, result: inout [String], offset: inout Int, size: inout Int) throws -> Void {
+
+    private static func deepDecode(data: [UInt8], type: ABIRawType, result: inout [String], offset: inout Int, size: inout Int) throws {
         if size < 1 { return }
-        
+
         let decoded = try decode(data, forType: type, offset: offset)
         result.append(contentsOf: decoded)
         offset += type.memory
         size -= 1
-        
+
         try deepDecode(data: data, type: type, result: &result, offset: &offset, size: &size)
     }
 }

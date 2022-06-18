@@ -47,7 +47,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     init(networkProvider: NetworkProviderProtocol, url: URL, logger: Logger? = nil) {
         self.url = url
-        
+
         let txQueue = OperationQueue()
         txQueue.name = "web3swift.client.rawTxQueue"
         txQueue.qualityOfService = .background
@@ -369,7 +369,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
     func failureHandler<T>(_ error: Error, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void) {
         if case let .executionError(result) = error as? JSONRPCError {
             completionHandler(.failure(.executionError(result.error)))
-        } else if case .executionError(_) = error as? EthereumClientError, let error = error as? EthereumClientError {
+        } else if case .executionError = error as? EthereumClientError, let error = error as? EthereumClientError {
             completionHandler(.failure(error))
         } else {
             completionHandler(.failure(.unexpectedReturnValue))

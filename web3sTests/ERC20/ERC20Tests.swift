@@ -89,7 +89,6 @@ class ERC20Tests: XCTestCase {
         }
     }
 
-
     func testGivenAddressWithOutgoingEvents_ThenGetsTheTransferEvents() async {
         do {
             let events = try await erc20?.transferEventsFrom(sender: EthereumAddress("0x2FB78FA9842f20bfD515A41C3196C4b368bDbC48"), fromBlock: .Earliest, toBlock: .Latest)
