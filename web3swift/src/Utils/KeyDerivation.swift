@@ -69,18 +69,18 @@ class KeyDerivator {
     func deriveKey(key: String, salt: Data, forceCryptoSwiftImplementation: Bool = false) -> Data? {
 
         let password = key
-        let keyByteCount = self.dklen
-        let rounds = self.round
+        let keyByteCount = dklen
+        let rounds = round
 
         // This is done so we can test this implementation on a macOS setup
         if forceCryptoSwiftImplementation {
-            return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+            return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
         }
 
         #if canImport(CommonCrypto)
-        return self.pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+        return pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
         #else
-        return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+        return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
         #endif
     }
 
@@ -88,18 +88,18 @@ class KeyDerivator {
 
         let password = key
         guard let saltData = salt.data(using: .utf8) else { return nil }
-        let keyByteCount = self.dklen
-        let rounds = self.round
+        let keyByteCount = dklen
+        let rounds = round
 
         // This is done so we can test this implementation on a macOS setup
         if forceCryptoSwiftImplementation {
-            return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+            return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
         }
 
         #if canImport(CommonCrypto)
-        return self.pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+        return pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
         #else
-        return self.pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+        return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
         #endif
 
     }

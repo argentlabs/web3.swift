@@ -70,16 +70,16 @@ public final class HMAC {
     // MARK: Authenticator
     public func authenticate(_ bytes: [UInt8]) throws -> [UInt8] {
         var opad = [UInt8](repeating: 0x5c, count: variant.blockSize())
-        for idx in self.key.indices {
-            opad[idx] = self.key[idx] ^ opad[idx]
+        for idx in key.indices {
+            opad[idx] = key[idx] ^ opad[idx]
         }
         var ipad = [UInt8](repeating: 0x36, count: variant.blockSize())
-        for idx in self.key.indices {
-            ipad[idx] = self.key[idx] ^ ipad[idx]
+        for idx in key.indices {
+            ipad[idx] = key[idx] ^ ipad[idx]
         }
 
-        let ipadAndMessageHash = self.variant.calculateHash(ipad + bytes)
-        let result = self.variant.calculateHash(opad + ipadAndMessageHash)
+        let ipadAndMessageHash = variant.calculateHash(ipad + bytes)
+        let result = variant.calculateHash(opad + ipadAndMessageHash)
 
         // return Array(result[0..<10]) // 80 bits
         return result

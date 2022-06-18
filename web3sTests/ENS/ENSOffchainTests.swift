@@ -12,7 +12,7 @@ class ENSOffchainTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func testDNSEncode() {
@@ -149,6 +149,6 @@ class ENSOffchainTests: XCTestCase {
 class ENSOffchainWebSocketTests: ENSOffchainTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }

@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 import BigInt
+import XCTest
 @testable import web3
 
 class ByteExtensionsTests: XCTestCase {

@@ -5,13 +5,13 @@
 
 import BigInt
 import Foundation
-import NIO
-import WebSocketKit
-import Logging
-import NIOSSL
-import NIOCore
-import NIOWebSocket
 import GenericJSON
+import Logging
+import NIO
+import NIOCore
+import NIOSSL
+import NIOWebSocket
+import WebSocketKit
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking

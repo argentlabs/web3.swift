@@ -27,7 +27,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     }
 
     public func storePrivateKey(key: Data) throws {
-        guard let localPath = self.localPath else {
+        guard let localPath = localPath else {
             throw EthereumKeyStorageError.failedToSave
         }
 
@@ -39,7 +39,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     }
 
     public func loadPrivateKey() throws -> Data {
-        guard let localPath = self.localPath else {
+        guard let localPath = localPath else {
             throw EthereumKeyStorageError.failedToLoad
         }
 

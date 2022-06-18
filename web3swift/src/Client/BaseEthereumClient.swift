@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 import Logging
 
 #if canImport(FoundationNetworking)
@@ -21,15 +21,15 @@ public class BaseEthereumClient: EthereumClientProtocol {
     private let logger: Logger
 
     public var network: EthereumNetwork? {
-        if let _ = self.retreivedNetwork {
-            return self.retreivedNetwork
+        if let _ = retreivedNetwork {
+            return retreivedNetwork
         }
 
         let group = DispatchGroup()
         group.enter()
 
         var network: EthereumNetwork?
-        self.net_version { result in
+        net_version { result in
             switch result {
             case .success(let data):
                 network = data

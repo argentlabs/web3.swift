@@ -12,7 +12,7 @@ class ENSTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func testGivenName_ThenResolvesNameHash() {
@@ -208,6 +208,6 @@ class ENSTests: XCTestCase {
 class ENSWebSocketTests: ENSTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }

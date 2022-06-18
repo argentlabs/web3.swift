@@ -3,9 +3,9 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+import BigInt
 import XCTest
 @testable import web3
-import BigInt
 
 class EthereumAccount_SignTransactionTests: XCTestCase {
 

@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import secp256k1
 import Logging
+import secp256k1
 
 enum KeyUtilError: Error {
     case invalidContext

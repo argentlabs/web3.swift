@@ -3,10 +3,10 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
-@testable import web3
 import BigInt
 import NIO
+import XCTest
+@testable import web3
 
 struct TransferMatchingSignatureEvent: ABIEvent {
     public static let name = "Transfer"
@@ -35,9 +35,9 @@ class EthereumClientTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        print("Public address: \(self.account?.address.value ?? "NONE")")
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
+        print("Public address: \(account?.address.value ?? "NONE")")
     }
 
     func testEthGetTransactionCount() async {
@@ -118,7 +118,7 @@ class EthereumClientTests: XCTestCase {
         do {
             let tx = EthereumTransaction(from: nil, to: EthereumAddress("0x3c1bd6b420448cf16a389c8b0115ccb3660bb854"), value: BigUInt(1600000), data: nil, nonce: 2, gasPrice: BigUInt(4000000), gasLimit: BigUInt(500000), chainId: EthereumNetwork.ropsten.intValue)
 
-            let txHash = try await client?.eth_sendRawTransaction(tx, withAccount: self.account!)
+            let txHash = try await client?.eth_sendRawTransaction(tx, withAccount: account!)
             XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
         } catch {
             XCTFail("Expected tx but failed \(error).")
@@ -307,7 +307,7 @@ class EthereumClientTests: XCTestCase {
         do {
             let function = GetGuardians(wallet: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"))
 
-            let response = try await function.call(withClient: self.client!, responseType: GetGuardians.Response.self)
+            let response = try await function.call(withClient: client!, responseType: GetGuardians.Response.self)
             XCTAssertEqual(response.guardians, [EthereumAddress("0x44fe11c90d2bcbc8267a0e56d55235ddc2b96c4f")])
         } catch {
             XCTFail("Expected response but failed \(error).")
@@ -318,7 +318,7 @@ class EthereumClientTests: XCTestCase {
         do {
             let function = InvalidMethodA(param: .zero)
             _ = try await function.call(
-                withClient: self.client!,
+                withClient: client!,
                 responseType: InvalidMethodA.BoolResponse.self)
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
@@ -446,7 +446,7 @@ class EthereumWebSocketClientTests: EthereumClientTests {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
 
     }
 #if os(Linux)

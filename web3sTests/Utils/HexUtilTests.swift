@@ -37,7 +37,7 @@ class HexUtilTests: XCTestCase {
         do {
             _ = try HexUtil.byteArray(fromHex: "B6AB54160")
         } catch {
-            XCTAssertEqual((error as? HexConversionError), HexConversionError.stringNotEven)
+            XCTAssertEqual(error as? HexConversionError, HexConversionError.stringNotEven)
         }
     }
 

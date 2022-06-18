@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public extension Web3Extensions where Base == BigUInt {
     var bytes: [UInt8] {
@@ -42,7 +42,7 @@ extension BigInt {
         }
 
         self = BigInt(signValue - BigUInt(Data(rest)))
-        self.negate()
+        negate()
     }
 }
 
@@ -55,7 +55,7 @@ public extension Web3Extensions where Base == BigInt {
             let len = base.magnitude.serialize().count + 1
             let maximum = BigUInt(2).power(len * 8)
             let (twosComplement, _) = maximum.subtractingReportingOverflow(base.magnitude)
-            data = (twosComplement).serialize()
+            data = twosComplement.serialize()
         }
 
         let bytes = data.web3.bytes
@@ -110,7 +110,7 @@ public extension Web3Extensions where Base == String {
     }
 
     var bytesFromHex: [UInt8]? {
-        let hex = self.noHexPrefix
+        let hex = noHexPrefix
         do {
             let byteArray = try HexUtil.byteArray(fromHex: hex)
             return byteArray

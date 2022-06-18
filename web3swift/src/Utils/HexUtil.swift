@@ -38,7 +38,7 @@ class HexUtil {
                 do {
                     let convertedMsn = try convert(hexDigit: msn)
                     let convertedLsn = try convert(hexDigit: lsn)
-                    byteArray += [ (convertedMsn << 4 | convertedLsn) ]
+                    byteArray += [ convertedMsn << 4 | convertedLsn ]
                 } catch {
                     throw error
                 }

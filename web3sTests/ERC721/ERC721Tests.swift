@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 import BigInt
+import XCTest
 @testable import web3
 
 #if canImport(FoundationNetworking)
@@ -24,8 +24,8 @@ class ERC721Tests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        self.erc721 = ERC721(client: client)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        erc721 = ERC721(client: client)
     }
 
     func test_GivenAccountWithNFT_ThenBalanceCorrect() async {
@@ -107,8 +107,8 @@ class ERC721MetadataTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        self.erc721 = ERC721Metadata(client: client, metadataSession: URLSession.shared)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        erc721 = ERC721Metadata(client: client, metadataSession: URLSession.shared)
     }
 
     func test_InterfaceIDMatch() {
@@ -145,7 +145,7 @@ class ERC721MetadataTests: XCTestCase {
     func test_ReturnsMetatada() async {
         do {
             let metadata = try await erc721.tokenMetadata(contract: address, tokenID: 23)
-            XCTAssertEqual(metadata, self.nftDetails)
+            XCTAssertEqual(metadata, nftDetails)
         } catch {
             XCTFail("Expected tokenMetadata but failed \(error).")
         }
@@ -159,8 +159,8 @@ class ERC721EnumerableTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        self.erc721 = ERC721Enumerable(client: client)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        erc721 = ERC721Enumerable(client: client)
     }
 
     func test_InterfaceIDMatch() {
@@ -207,20 +207,20 @@ class ERC721EnumerableTests: XCTestCase {
 class ERC721WebSocketTests: ERC721Tests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }
 
 class ERC721MetadataWebSocketTests: ERC721MetadataTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }
 
 class ERC721EnumerableWebSocketTests: ERC721EnumerableTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }

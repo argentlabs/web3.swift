@@ -40,7 +40,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
         let address = KeyUtil.generateAddress(from: publicKeyData)
 
         // derive encryption key for keystore
-        let keyDerivator = KeyDerivator(algorithm: .pbkdf2sha256, dklen: self.dklen, round: self.dkround)
+        let keyDerivator = KeyDerivator(algorithm: .pbkdf2sha256, dklen: dklen, round: dkround)
         guard let derivedKey = keyDerivator.deriveKey(key: password, salt: salt) else {
             throw KeystoreUtilError.unknown
         }
@@ -61,7 +61,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
             cipherparams: KeystoreFileCryptoCipherParams(iv: iv.web3.hexString.web3.noHexPrefix),
             ciphertext: ciphertext.web3.hexString.web3.noHexPrefix,
             kdf: keyDerivator.algorithm.function(),
-            kdfparams: KeystoreFileCryptoKdfParams(c: self.dkround, dklen: self.dklen, prf: keyDerivator.algorithm.hash(), salt: salt.web3.hexString.web3.noHexPrefix),
+            kdfparams: KeystoreFileCryptoKdfParams(c: dkround, dklen: dklen, prf: keyDerivator.algorithm.hash(), salt: salt.web3.hexString.web3.noHexPrefix),
             mac: mac.web3.hexString.web3.noHexPrefix)
 
         let keystore = KeystoreFile(crypto: crypto, address: address, version: 3)
@@ -85,7 +85,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
         guard let salt = Data(hex: keystore.crypto.kdfparams.salt) else {
             throw KeystoreUtilError.decodeFailed
         }
-        let keyDerivator = KeyDerivator(algorithm: .pbkdf2sha256, dklen: dklen, round: self.dkround)
+        let keyDerivator = KeyDerivator(algorithm: .pbkdf2sha256, dklen: dklen, round: dkround)
         guard let derivedKey = keyDerivator.deriveKey(key: password, salt: salt) else {
             throw KeystoreUtilError.decodeFailed
         }

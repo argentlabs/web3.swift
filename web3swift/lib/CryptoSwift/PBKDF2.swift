@@ -70,14 +70,14 @@ public struct PBKDF2 {
 
     public func calculate() throws -> [UInt8] {
         var ret = [UInt8]()
-        ret.reserveCapacity(self.numBlocks * self.prf.variant.digestLength)
-        for i in 1...self.numBlocks {
+        ret.reserveCapacity(numBlocks * prf.variant.digestLength)
+        for i in 1...numBlocks {
             // for each block T_i = U_1 ^ U_2 ^ ... ^ U_iter
-            if let value = try calculateBlock(self.salt, blockNum: i) {
+            if let value = try calculateBlock(salt, blockNum: i) {
                 ret.append(contentsOf: value)
             }
         }
-        return Array(ret.prefix(self.dkLen))
+        return Array(ret.prefix(dkLen))
     }
 }
 

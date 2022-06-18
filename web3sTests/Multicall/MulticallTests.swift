@@ -13,8 +13,8 @@ class MulticallTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        self.multicall = Multicall(client: client!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        multicall = Multicall(client: client!)
     }
 
     func testNameAndSymbol() async throws {
@@ -57,6 +57,6 @@ class MulticallTests: XCTestCase {
 class MulticallWebSocketTests: MulticallTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }

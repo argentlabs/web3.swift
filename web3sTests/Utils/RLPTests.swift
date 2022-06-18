@@ -6,9 +6,9 @@
 //  Copyright © 2018 Argent Labs. All rights reserved.
 //
 
+import BigInt
 import XCTest
 @testable import web3
-import BigInt
 
 class RLPTests: XCTestCase {
 
@@ -134,7 +134,7 @@ class RLPTests: XCTestCase {
         let data = try! Data(contentsOf: url)
         let json = try! JSONSerialization.jsonObject(with: data) as? [String: [String: Any]]
 
-        json?.forEach({ (key, value) in
+        json?.forEach({ key, value in
             var input = value["in"] as Any
             let output = value["out"] as! String
 

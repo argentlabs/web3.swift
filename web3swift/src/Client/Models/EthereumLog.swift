@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public struct EthereumLog: Equatable {
     public let logIndex: BigUInt?
@@ -63,19 +63,19 @@ extension EthereumLog: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(self.removed, forKey: .removed)
-        if let bytes = self.logIndex?.web3.bytes {
+        try container.encodeIfPresent(removed, forKey: .removed)
+        if let bytes = logIndex?.web3.bytes {
             try? container.encode(String(bytes: bytes).web3.withHexPrefix, forKey: .logIndex)
         }
-        if let bytes = self.transactionIndex?.web3.bytes {
+        if let bytes = transactionIndex?.web3.bytes {
             try? container.encode(String(bytes: bytes).web3.withHexPrefix, forKey: .transactionIndex)
         }
-        try? container.encode(self.transactionHash, forKey: .transactionHash)
-        try? container.encode(self.blockHash, forKey: .blockHash)
-        try container.encode(self.blockNumber.stringValue, forKey: .blockNumber)
-        try container.encode(self.address, forKey: .address)
-        try container.encode(self.data, forKey: .data)
-        try container.encode(self.topics, forKey: .topics)
+        try? container.encode(transactionHash, forKey: .transactionHash)
+        try? container.encode(blockHash, forKey: .blockHash)
+        try container.encode(blockNumber.stringValue, forKey: .blockNumber)
+        try container.encode(address, forKey: .address)
+        try container.encode(data, forKey: .data)
+        try container.encode(topics, forKey: .topics)
 
     }
 

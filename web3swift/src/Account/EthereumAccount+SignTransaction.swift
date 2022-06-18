@@ -26,7 +26,7 @@ public extension EthereumAccount {
             throw EthereumSignerError.emptyRawTransaction
         }
 
-        guard let signature = try? self.sign(data: raw) else {
+        guard let signature = try? sign(data: raw) else {
             throw EthereumSignerError.unknownError
         }
 

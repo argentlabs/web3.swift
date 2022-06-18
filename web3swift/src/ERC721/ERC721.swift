@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -216,7 +216,7 @@ public class ERC721Metadata: ERC721 {
             switch result {
             case .success(let baseURL):
                 let task = self?.session.dataTask(with: baseURL,
-                                                  completionHandler: { (data, _, error) in
+                                                  completionHandler: { data, _, error in
                     guard let data = data else {
                         completionHandler(.failure(EthereumClientError.unexpectedReturnValue))
                         return

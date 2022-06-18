@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public protocol ABIFunction: ABIFunctionEncodable {
     var gasPrice: BigUInt? { get }
@@ -22,7 +22,7 @@ extension ABIFunction {
         gasLimit: BigUInt? = nil
     ) throws -> EthereumTransaction {
         let encoder = ABIFunctionEncoder(Self.name)
-        try self.encode(to: encoder)
+        try encode(to: encoder)
         let data = try encoder.encoded()
 
         return EthereumTransaction(

@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 import BigInt
+import XCTest
 @testable import web3
 
 class ABIEventTests: XCTestCase {
@@ -12,7 +12,7 @@ class ABIEventTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func test_givenEventWithData4_ItParsesCorrectly() async {
@@ -60,7 +60,7 @@ class ABIEventTests: XCTestCase {
 class ABIEventWebSocketTests: ABIEventTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }
 

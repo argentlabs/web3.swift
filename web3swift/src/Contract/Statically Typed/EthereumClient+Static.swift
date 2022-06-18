@@ -7,7 +7,7 @@ import Foundation
 
 public extension ABIFunction {
     func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol, completionHandler: @escaping(Result<String, EthereumClientError>) -> Void) {
-        guard let tx = try? self.transaction() else {
+        guard let tx = try? transaction() else {
             completionHandler(.failure(.encodeIssue))
             return
         }
@@ -23,7 +23,7 @@ public extension ABIFunction {
         completionHandler: @escaping(Result<T, EthereumClientError>) -> Void
     ) {
 
-        guard let tx = try? self.transaction() else {
+        guard let tx = try? transaction() else {
             completionHandler(.failure(.encodeIssue))
             return
         }
@@ -47,7 +47,7 @@ public extension ABIFunction {
                 parseOrFail(data)
             case .failure(let error):
                 switch error {
-                case (.executionError):
+                case .executionError:
                     if resolution.failOnExecutionError {
                         completionHandler(.failure(error))
                         return
@@ -107,7 +107,7 @@ public extension EthereumClientProtocol {
                    toBlock: EthereumBlock,
                    matching matches: [EventFilter],
                    completionHandler: @escaping EventsCompletionHandler) {
-        self.eth_getLogs(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock) { [weak self] result in
+        eth_getLogs(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock) { [weak self] result in
             self?.handleLogs(result, matches, completionHandler)
         }
     }
@@ -119,7 +119,7 @@ public extension EthereumClientProtocol {
                    eventTypes: [ABIEvent.Type],
                    completionHandler: @escaping EventsCompletionHandler) {
         let unfiltered = eventTypes.map { EventFilter(type: $0, allowedSenders: []) }
-        self.eth_getLogs(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock) { [weak self] result in
+        eth_getLogs(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock) { [weak self] result in
             self?.handleLogs(result, unfiltered, completionHandler)
         }
     }
@@ -146,7 +146,7 @@ public extension EthereumClientProtocol {
                    matching matches: [EventFilter],
                    completionHandler: @escaping EventsCompletionHandler) {
 
-        self.eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock) { [weak self] result in
+        eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock) { [weak self] result in
             self?.handleLogs(result, matches, completionHandler)
         }
     }

@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import aes
+import Foundation
 
 class Aes128Util {
     var key: Data
@@ -21,9 +21,9 @@ class Aes128Util {
             ctx.deallocate()
         }
 
-        let keyPtr = (self.key as NSData).bytes.assumingMemoryBound(to: UInt8.self)
+        let keyPtr = (key as NSData).bytes.assumingMemoryBound(to: UInt8.self)
 
-        if let iv = self.iv {
+        if let iv = iv {
             let ivPtr = (iv as NSData).bytes.assumingMemoryBound(to: UInt8.self)
             AES_init_ctx_iv(ctx, keyPtr, ivPtr)
         } else {

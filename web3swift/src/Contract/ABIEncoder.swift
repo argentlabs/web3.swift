@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public class ABIEncoder {
     public enum EncodedValue {
@@ -151,7 +151,7 @@ public class ABIEncoder {
 
             let padUnits = type.isPaddedInDynamic
             var bytes = [UInt8]()
-            for i in (0..<size) {
+            for i in 0..<size {
                 let start =  stringValue.index(stringValue.startIndex, offsetBy: i * unitSize)
                 let end = stringValue.index(start, offsetBy: unitSize)
                 let unitValue = String(stringValue[start..<end])

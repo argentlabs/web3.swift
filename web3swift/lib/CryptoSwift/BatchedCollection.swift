@@ -48,27 +48,27 @@ struct BatchedCollection<Base: Collection>: Collection {
     typealias Index = BatchedCollectionIndex<Base>
 
     private func nextBreak(after idx: Base.Index) -> Base.Index {
-        self.base.index(idx, offsetBy: self.size, limitedBy: self.base.endIndex) ?? self.base.endIndex
+        base.index(idx, offsetBy: size, limitedBy: base.endIndex) ?? base.endIndex
     }
 
     @usableFromInline
     var startIndex: Index {
-        Index(range: self.base.startIndex..<self.nextBreak(after: self.base.startIndex))
+        Index(range: base.startIndex..<nextBreak(after: base.startIndex))
     }
 
     @usableFromInline
     var endIndex: Index {
-        Index(range: self.base.endIndex..<self.base.endIndex)
+        Index(range: base.endIndex..<base.endIndex)
     }
 
     @usableFromInline
     func index(after idx: Index) -> Index {
-        Index(range: idx.range.upperBound..<self.nextBreak(after: idx.range.upperBound))
+        Index(range: idx.range.upperBound..<nextBreak(after: idx.range.upperBound))
     }
 
     @usableFromInline
     subscript(idx: Index) -> Base.SubSequence {
-        self.base[idx.range]
+        base[idx.range]
     }
 }
 

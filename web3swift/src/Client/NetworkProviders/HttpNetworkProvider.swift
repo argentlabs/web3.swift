@@ -42,7 +42,7 @@ class HttpNetworkProvider: NetworkProviderProtocol {
         }
         request.httpBody = encoded
 
-        let task = session.dataTask(with: request) { (data, response, _) in
+        let task = session.dataTask(with: request) { data, response, _ in
             if let data = data {
                 if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
                     resultDecodeHandler(.success(result.result))

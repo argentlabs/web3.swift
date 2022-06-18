@@ -162,7 +162,7 @@ class EthereumAccount_SignTypedTests: XCTestCase {
     override func setUp() {
         let keyStorage = EthereumKeyLocalStorage()
         try! keyStorage.storePrivateKey(key: "cow".web3.keccak256)
-        self.account = try! EthereumAccount(keyStorage: keyStorage)
+        account = try! EthereumAccount(keyStorage: keyStorage)
     }
 
     func test_GivenExample_TypeHashIsCorrect() {

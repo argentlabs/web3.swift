@@ -86,12 +86,12 @@ public class EthereumAccount: EthereumAccountProtocol {
     }
 
     public func sign(data: Data) throws -> Data {
-        return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
+        return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
     public func sign(hex: String) throws -> Data {
         if let data = Data.init(hex: hex) {
-            return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
+            return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
         } else {
             throw EthereumAccountError.signError
         }
@@ -99,19 +99,19 @@ public class EthereumAccount: EthereumAccountProtocol {
 
     public func sign(hash: String) throws -> Data {
         if let data = hash.web3.hexData {
-            return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: false)
+            return try KeyUtil.sign(message: data, with: privateKeyData, hashing: false)
         } else {
             throw EthereumAccountError.signError
         }
     }
 
     public func sign(message: Data) throws -> Data {
-        return try KeyUtil.sign(message: message, with: self.privateKeyData, hashing: false)
+        return try KeyUtil.sign(message: message, with: privateKeyData, hashing: false)
     }
 
     public func sign(message: String) throws -> Data {
         if let data = message.data(using: .utf8) {
-            return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
+            return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
         } else {
             throw EthereumAccountError.signError
         }
@@ -125,7 +125,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         data.append(message)
         let hash = data.web3.keccak256
 
-        guard var signed = try? self.sign(message: hash) else {
+        guard var signed = try? sign(message: hash) else {
             throw EthereumAccountError.signError
 
         }
@@ -147,7 +147,7 @@ public class EthereumAccount: EthereumAccountProtocol {
     public func signMessage(message: TypedData) throws -> String {
         let hash = try message.signableHash()
 
-        guard var signed = try? self.sign(message: hash) else {
+        guard var signed = try? sign(message: hash) else {
             throw EthereumAccountError.signError
 
         }

@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-@testable import web3
 import XCTest
+@testable import web3
 
 class KeccakExtensionsTests: XCTestCase {
     override func setUp() {

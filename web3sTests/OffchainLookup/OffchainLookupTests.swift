@@ -3,9 +3,9 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-@testable import web3
-import XCTest
 import BigInt
+import XCTest
+@testable import web3
 
 struct DummyOffchainENSResolve: ABIFunction {
     static var name: String = "resolver"
@@ -121,7 +121,7 @@ enum EthersTestContract {
         let data: Data
 
         init?(values: [ABIDecoder.DecodedValue]) throws {
-            data = try values[0].decoded()
+            self.data = try values[0].decoded()
         }
     }
 }
@@ -144,9 +144,9 @@ class OffchainLookupTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        print("Public address: \(self.account?.address.value ?? "NONE")")
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
+        print("Public address: \(account?.address.value ?? "NONE")")
     }
 
     func test_GivenFunctionWithOffchainLookupError_ThenDecodesLookupParamsCorrectly() async throws {
@@ -331,6 +331,6 @@ private func expectedResponse(
 class OffchainLookupWebSocketTests: OffchainLookupTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }
