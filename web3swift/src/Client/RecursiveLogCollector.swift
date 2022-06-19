@@ -1,18 +1,15 @@
 //
-//  RecursiveLogCollector.swift
-//  web3swift
-//
-//  Created by David Rodrigues on 05/01/2021.
-//  Copyright © 2021 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
 
-enum Topics: Encodable {
+public enum Topics: Encodable {
     case plain([String?])
     case composed([[String]?])
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         switch self {
         case .plain(let values):
@@ -24,7 +21,7 @@ enum Topics: Encodable {
 }
 
 struct RecursiveLogCollector {
-    let ethClient: EthereumClient
+    let ethClient: EthereumClientProtocol
 
     func getAllLogs(
         addresses: [EthereumAddress]?,

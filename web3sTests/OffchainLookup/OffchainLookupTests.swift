@@ -1,8 +1,5 @@
 //
-//  OffchainLookupTests.swift
-//  web3sTests
-//
-//  Created by Miguel on 12/05/2022.
+//  web3.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -141,13 +138,13 @@ extension EthereumClientError {
 }
 
 class OffchainLookupTests: XCTestCase {
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
     var account: EthereumAccount!
     var offchainLookup = OffchainLookup(address: .zero, urls: [], callData: Data(), callbackFunction: Data(), extraData: Data())
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
         self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         print("Public address: \(self.account?.address.value ?? "NONE")")
     }
@@ -160,7 +157,7 @@ class OffchainLookupTests: XCTestCase {
         let tx = try! function.transaction()
 
         do {
-            let _ = try await client.eth_call(tx)
+            let _ = try await client.eth_call(tx, resolution: .noOffchain(failOnExecutionError: true), block: .Latest)
             XCTFail("Expecting error, not return value")
         } catch let error {
             let error = (error as? EthereumClientError)?.executionError
@@ -331,4 +328,11 @@ fileprivate func expectedResponse(
         ]
         .flatMap { $0 }
     ).web3.keccak256.web3.hexString
+}
+
+class OffchainLookupWebSocketTests: OffchainLookupTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+    }
 }

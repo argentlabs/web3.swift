@@ -1,9 +1,6 @@
 //
-//  ENSContracts.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 13/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -17,9 +14,9 @@ public enum ENSContracts {
     
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {
-        case .Ropsten:
+        case .ropsten:
             return ENSContracts.RopstenAddress
-        case .Mainnet:
+        case .mainnet:
             return ENSContracts.MainnetAddress
         default:
             return nil

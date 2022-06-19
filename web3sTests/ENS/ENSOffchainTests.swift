@@ -1,8 +1,5 @@
 //
-//  ENSOffchainTests.swift
-//  web3sTests
-//
-//  Created by Miguel on 17/05/2022.
+//  web3.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -11,11 +8,11 @@ import XCTest
 
 class ENSOffchainTests: XCTestCase {
     var account: EthereumAccount?
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func testDNSEncode() {
@@ -149,3 +146,9 @@ class ENSOffchainTests: XCTestCase {
     }
 }
 
+class ENSOffchainWebSocketTests: ENSOffchainTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+    }
+}

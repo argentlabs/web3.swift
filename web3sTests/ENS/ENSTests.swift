@@ -1,9 +1,6 @@
 //
-//  ENSTests.swift
-//  web3sTests
-//
-//  Created by Matt Marshall on 13/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import XCTest
@@ -11,11 +8,11 @@ import XCTest
 
 class ENSTests: XCTestCase {
     var account: EthereumAccount?
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func testGivenName_ThenResolvesNameHash() {
@@ -30,7 +27,7 @@ class ENSTests: XCTestCase {
 
             let tx = try function.transaction()
 
-            let dataStr = try await client?.eth_call(tx, block: .Latest)
+            let dataStr = try await client?.eth_call(tx, resolution: .noOffchain(failOnExecutionError: true), block: .Latest)
             guard let dataStr = dataStr else {
                 XCTFail()
                 return
@@ -208,3 +205,9 @@ class ENSTests: XCTestCase {
     }
 }
 
+class ENSWebSocketTests: ENSTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+    }
+}

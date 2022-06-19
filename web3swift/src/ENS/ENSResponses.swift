@@ -1,9 +1,6 @@
 //
-//  ENSRegistryResponses.swift
-//  web3swift
-//
-//  Created by David Rodrigues on 30/10/2020.
-//  Copyright © 2020 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation

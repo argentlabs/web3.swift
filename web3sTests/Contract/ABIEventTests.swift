@@ -1,9 +1,6 @@
 //
-//  ABIEventTests.swift
-//  web3swift
-//
-//  Created by Miguel on 29/07/2020.
-//  Copyright © 2020 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import XCTest
@@ -11,10 +8,11 @@ import BigInt
 @testable import web3
 
 class ABIEventTests: XCTestCase {
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
 
     override func setUp() {
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+        super.setUp()
+        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func test_givenEventWithData4_ItParsesCorrectly() async {
@@ -59,6 +57,13 @@ class ABIEventTests: XCTestCase {
     }
 }
 
+class ABIEventWebSocketTests: ABIEventTests {
+    override func setUp() {
+        super.setUp()
+        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+    }
+}
+
 struct EnabledStaticCall: ABIEvent {
     static let name = "EnabledStaticCall"
     static let types: [ABIType.Type] = [EthereumAddress.self,Data4.self]
@@ -95,3 +100,4 @@ struct UpgraderRegistered: ABIEvent {
         self.name = try data[0].decoded()
     }
 }
+
