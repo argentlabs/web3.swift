@@ -9,13 +9,13 @@ import XCTest
 @testable import web3
 
 final class ERC1271Tests: XCTestCase {
-    var mockClient: EthereumClientProtocol!
+    var client: EthereumClientProtocol!
     var erc1271: ERC1271!
 
     override func setUp() {
         super.setUp()
-        self.mockClient = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
-        self.erc1271 = ERC1271(client: self.mockClient)
+        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        self.erc1271 = ERC1271(client: self.client)
     }
 
     override func tearDown() {

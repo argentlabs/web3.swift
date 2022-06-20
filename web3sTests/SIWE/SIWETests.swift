@@ -11,7 +11,7 @@ import XCTest
 final class SIWETests: XCTestCase {
 
     func testEndToEnd() async {
-        let verifier = SiweVerifier(client: EthereumClient(url: URL(string: TestConfig.clientUrl)!))
+        let verifier = SiweVerifier(client: EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!))
         let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
         let message = try! SiweMessage(
             """

@@ -9,7 +9,7 @@ import XCTest
 @testable import web3
 
 final class SiweVerifierTests: XCTestCase {
-    let client: EthereumClient = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+    let client: EthereumHttpClient = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
 
     func testNetworkVerification() async {
         let verifier = SiweVerifier(client: client, dateProvider: { Date(timeIntervalSince1970: 1_655_110_800.0) })
