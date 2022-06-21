@@ -8,10 +8,20 @@
 import XCTest
 @testable import web3
 
-final class SIWETests: XCTestCase {
+class SIWETests: XCTestCase {
+
+    var client: EthereumClientProtocol!
+    var verifier: SiweVerifier!
+
+    override func setUp() {
+        super.setUp()
+        if self.client == nil {
+            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        }
+        self.verifier = SiweVerifier(client: self.client)
+    }
 
     func testEndToEnd() async {
-        let verifier = SiweVerifier(client: EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!))
         let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
         let message = try! SiweMessage(
             """
@@ -43,5 +53,15 @@ final class SIWETests: XCTestCase {
         } catch {
             XCTFail("Error thrown while verifying signature: \(error)")
         }
+    }
+}
+
+final class SIWEWSSTests: SIWETests {
+
+    override func setUp() {
+        if self.client == nil {
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!)
+        }
+        super.setUp()
     }
 }

@@ -8,13 +8,15 @@
 import XCTest
 @testable import web3
 
-final class ERC1271Tests: XCTestCase {
+class ERC1271Tests: XCTestCase {
     var client: EthereumClientProtocol!
     var erc1271: ERC1271!
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        if self.client == nil {
+            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        }
         self.erc1271 = ERC1271(client: self.client)
     }
 
@@ -98,5 +100,15 @@ final class ERC1271Tests: XCTestCase {
         } catch {
             XCTFail("Failed with: \(error)")
         }
+    }
+}
+
+final class ERC1271WSSTests: ERC1271Tests {
+
+    override func setUp() {
+        if self.client == nil {
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!)
+        }
+        super.setUp()
     }
 }

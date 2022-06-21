@@ -8,8 +8,16 @@
 import XCTest
 @testable import web3
 
-final class SiweVerifierTests: XCTestCase {
-    let client: EthereumHttpClient = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+class SiweVerifierTests: XCTestCase {
+
+    var client: EthereumClientProtocol!
+
+    override func setUp() {
+        super.setUp()
+        if self.client == nil {
+            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        }
+    }
 
     func testNetworkVerification() async {
         let verifier = SiweVerifier(client: client, dateProvider: { Date(timeIntervalSince1970: 1_655_110_800.0) })
@@ -213,5 +221,15 @@ final class SiweVerifierTests: XCTestCase {
         } catch {
             XCTFail("Failed with: \(error)")
         }
+    }
+}
+
+final class SiweVerifierWSSTests: SiweVerifierTests {
+
+    override func setUp() {
+        if self.client == nil {
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!)
+        }
+        super.setUp()
     }
 }
