@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public protocol ERC20Protocol {
     init(client: EthereumClientProtocol)
@@ -36,7 +36,7 @@ public class ERC20: ERC20Protocol {
 
     public func name(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void) {
         let function = ERC20Functions.name(contract: tokenContract)
-        function.call(withClient: self.client, responseType: ERC20Responses.nameResponse.self) { result in
+        function.call(withClient: client, responseType: ERC20Responses.nameResponse.self) { result in
             switch result {
             case .success(let data):
                 completionHandler(.success(data.value))
@@ -48,7 +48,7 @@ public class ERC20: ERC20Protocol {
 
     public func symbol(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void) {
         let function = ERC20Functions.symbol(contract: tokenContract)
-        function.call(withClient: self.client, responseType: ERC20Responses.symbolResponse.self) { result in
+        function.call(withClient: client, responseType: ERC20Responses.symbolResponse.self) { result in
             switch result {
             case .success(let data):
                 completionHandler(.success(data.value))
@@ -60,7 +60,7 @@ public class ERC20: ERC20Protocol {
 
     public func decimals(tokenContract: EthereumAddress, completionHandler: @escaping (Result<UInt8, Error>) -> Void) {
         let function = ERC20Functions.decimals(contract: tokenContract)
-        function.call(withClient: self.client,
+        function.call(withClient: client,
                       responseType: ERC20Responses.decimalsResponse.self,
                       resolution: .noOffchain(failOnExecutionError: false)) { result in
             switch result {
@@ -74,7 +74,7 @@ public class ERC20: ERC20Protocol {
 
     public func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void) {
         let function = ERC20Functions.balanceOf(contract: tokenContract, account: address)
-        function.call(withClient: self.client, responseType: ERC20Responses.balanceResponse.self) { result in
+        function.call(withClient: client, responseType: ERC20Responses.balanceResponse.self) { result in
             switch result {
             case .success(let data):
                 completionHandler(.success(data.value))
@@ -86,7 +86,7 @@ public class ERC20: ERC20Protocol {
 
     public func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void) {
         let function = ERC20Functions.allowance(contract: tokenContract, owner: address, spender: spender)
-        function.call(withClient: self.client, responseType: ERC20Responses.balanceResponse.self) { result in
+        function.call(withClient: client, responseType: ERC20Responses.balanceResponse.self) { result in
             switch result {
             case .success(let data):
                 completionHandler(.success(data.value))
@@ -102,7 +102,7 @@ public class ERC20: ERC20Protocol {
             return
         }
 
-        self.client.getEvents(addresses: nil,
+        client.getEvents(addresses: nil,
                               topics: [ sig, nil, String(hexFromBytes: result)],
                               fromBlock: fromBlock,
                               toBlock: toBlock,
@@ -126,7 +126,7 @@ public class ERC20: ERC20Protocol {
             return
         }
 
-        self.client.getEvents(addresses: nil,
+        client.getEvents(addresses: nil,
                               topics: [ sig, String(hexFromBytes: result), nil ],
                               fromBlock: fromBlock,
                               toBlock: toBlock,

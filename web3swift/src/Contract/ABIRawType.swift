@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public enum ABIError: Error {
     case invalidSignature
@@ -45,11 +45,11 @@ extension ABIRawType: RawRepresentable {
         } else if rawValue == "bytes" {
             self = ABIRawType.DynamicBytes
             return
-        }  else if rawValue == "string" {
+        } else if rawValue == "string" {
             self = ABIRawType.DynamicString
             return
         }
-        
+
         // Arrays
         let components = rawValue.components(separatedBy: CharacterSet(charactersIn: "[]"))
         if components.count == 3 && components[1].isEmpty {
@@ -65,7 +65,7 @@ extension ABIRawType: RawRepresentable {
                 return
             }
         }
-        
+
         // Variable sizes
         if rawValue.starts(with: "uint") {
             let num = String(rawValue.filter { "0"..."9" ~= $0 })
@@ -83,10 +83,10 @@ extension ABIRawType: RawRepresentable {
             self = ABIRawType.FixedBytes(int)
             return
         }
-        
+
         return nil
     }
-    
+
     public var rawValue: String {
         switch self {
         case .FixedUInt(let size): return "uint\(size)"
@@ -101,10 +101,10 @@ extension ABIRawType: RawRepresentable {
         case .Tuple(let types): return "(\(types.map(\.rawValue).joined(separator: ",")))"
         }
     }
-    
+
     var isDynamic: Bool {
         switch self {
-        case .DynamicBytes, .DynamicString, .DynamicArray(_):
+        case .DynamicBytes, .DynamicString, .DynamicArray:
             return true
         case .Tuple(let types):
             return types.filter(\.isDynamic).count > 0
@@ -112,16 +112,16 @@ extension ABIRawType: RawRepresentable {
             return false
         }
     }
-    
+
     var isArray: Bool {
         switch self {
-        case .FixedArray(_, _), .DynamicArray(_):
+        case .FixedArray, .DynamicArray:
             return true
         default:
             return false
         }
     }
-    
+
     var isTuple: Bool {
         switch self {
         case .Tuple:
@@ -130,7 +130,7 @@ extension ABIRawType: RawRepresentable {
             return false
         }
     }
-    
+
     var isPaddedInDynamic: Bool {
         switch self {
         case .FixedUInt, .FixedInt:
@@ -139,7 +139,7 @@ extension ABIRawType: RawRepresentable {
             return false
         }
     }
-    
+
     var size: Int {
         switch self {
         case .FixedBool:
@@ -150,13 +150,13 @@ extension ABIRawType: RawRepresentable {
             return size / 8
         case .FixedBytes(let size), .FixedArray(_, let size):
             return size
-        case .DynamicArray(_):
+        case .DynamicArray:
             return -1
         default:
             return 0
         }
     }
-    
+
     var memory: Int {
         switch self {
         case .FixedArray(let type, let size):

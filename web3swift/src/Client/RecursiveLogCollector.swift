@@ -106,7 +106,7 @@ struct RecursiveLogCollector {
         let sem = DispatchSemaphore(value: 0)
         var responseValue: EthereumBlock?
 
-        self.ethClient.eth_blockNumber { result in
+        ethClient.eth_blockNumber { result in
             switch result {
             case .success(let block):
                 responseValue = EthereumBlock(rawValue: block)

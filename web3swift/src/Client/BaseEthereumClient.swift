@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 import Logging
 
 #if canImport(FoundationNetworking)
@@ -21,15 +21,15 @@ public class BaseEthereumClient: EthereumClientProtocol {
     private let logger: Logger
 
     public var network: EthereumNetwork? {
-        if let _ = self.retreivedNetwork {
-            return self.retreivedNetwork
+        if let _ = retreivedNetwork {
+            return retreivedNetwork
         }
 
         let group = DispatchGroup()
         group.enter()
 
         var network: EthereumNetwork?
-        self.net_version { result in
+        net_version { result in
             switch result {
             case .success(let data):
                 network = data
@@ -47,7 +47,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     init(networkProvider: NetworkProviderProtocol, url: URL, logger: Logger? = nil) {
         self.url = url
-        
+
         let txQueue = OperationQueue()
         txQueue.name = "web3swift.client.rawTxQueue"
         txQueue.qualityOfService = .background
@@ -369,7 +369,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
     func failureHandler<T>(_ error: Error, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void) {
         if case let .executionError(result) = error as? JSONRPCError {
             completionHandler(.failure(.executionError(result.error)))
-        } else if case .executionError(_) = error as? EthereumClientError, let error = error as? EthereumClientError {
+        } else if case .executionError = error as? EthereumClientError, let error = error as? EthereumClientError {
             completionHandler(.failure(error))
         } else {
             completionHandler(.failure(.unexpectedReturnValue))

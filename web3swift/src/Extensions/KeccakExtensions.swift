@@ -24,10 +24,9 @@ public extension Web3Extensions where Base == String {
         let data = base.data(using: .utf8) ?? Data()
         return data.web3.keccak256
     }
-    
+
     var keccak256fromHex: Data {
         let data = base.web3.hexData!
         return data.web3.keccak256
     }
 }
-

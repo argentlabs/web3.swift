@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public protocol Web3Extendable {
     associatedtype T
@@ -26,6 +26,6 @@ public struct Web3Extensions<Base> {
 
 extension Data: Web3Extendable {}
 extension String: Web3Extendable {}
-extension BigUInt : Web3Extendable {}
-extension BigInt : Web3Extendable {}
-extension Int : Web3Extendable {}
+extension BigUInt: Web3Extendable {}
+extension BigInt: Web3Extendable {}
+extension Int: Web3Extendable {}

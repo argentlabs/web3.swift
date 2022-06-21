@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 import BigInt
+import XCTest
 @testable import web3
 
 class ERC165Tests: XCTestCase {
@@ -14,8 +14,8 @@ class ERC165Tests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        self.erc165 = ERC165(client: client)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        erc165 = ERC165(client: client)
     }
 
     func test_InterfaceIDMatch() {
@@ -44,6 +44,6 @@ class ERC165Tests: XCTestCase {
 class ERC165WebSocketTests: ERC165Tests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }
