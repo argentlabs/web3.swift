@@ -54,7 +54,8 @@ public class EthereumWebSocketClient: BaseEthereumClient, EthereumClientWebSocke
                 eventLoopGroupProvider: EventLoopGroupProvider = .createNew,
                 configuration: WebSocketConfiguration = .init(),
                 sessionConfig: URLSessionConfiguration = URLSession.shared.configuration,
-                logger: Logger? = nil) {
+                logger: Logger? = nil,
+                network: EthereumNetwork? = nil) {
         let networkQueue = OperationQueue()
         networkQueue.name = "web3swift.client.networkQueue"
         networkQueue.qualityOfService = .background
@@ -69,7 +70,7 @@ public class EthereumWebSocketClient: BaseEthereumClient, EthereumClientWebSocke
                                                 session: session,
                                                 logger: logger)
         self.provider = provider
-        super.init(networkProvider: provider, url: url, logger: logger)
+        super.init(networkProvider: provider, url: url, logger: logger, network: network)
     }
 
     public func connect() {
