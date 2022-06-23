@@ -15,7 +15,7 @@ public struct EthereumAddress: Codable, Hashable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        value = try container.decode(String.self).lowercased()
+        self.value = try container.decode(String.self).lowercased()
     }
 
     public func encode(to encoder: Encoder) throws {

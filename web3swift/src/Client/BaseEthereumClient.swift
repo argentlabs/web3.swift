@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 import Logging
 
 #if canImport(FoundationNetworking)
@@ -17,45 +17,28 @@ public class BaseEthereumClient: EthereumClientProtocol {
     let concurrentQueue: OperationQueue
     let networkProvider: NetworkProviderProtocol
 
-    private var retreivedNetwork: EthereumNetwork?
     private let logger: Logger
 
-    public var network: EthereumNetwork? {
-        if let _ = self.retreivedNetwork {
-            return self.retreivedNetwork
-        }
+    public var network: EthereumNetwork?
 
-        let group = DispatchGroup()
-        group.enter()
-
-        var network: EthereumNetwork?
-        self.net_version { result in
-            switch result {
-            case .success(let data):
-                network = data
-                self.retreivedNetwork = network
-            case .failure(let error):
-                self.logger.warning("Client has no network: \(error.localizedDescription)")
-            }
-
-            group.leave()
-        }
-
-        group.wait()
-        return network
-    }
-
-    init(networkProvider: NetworkProviderProtocol, url: URL, logger: Logger? = nil) {
+    init(networkProvider: NetworkProviderProtocol,
+         url: URL,
+         logger: Logger? = nil,
+         network: EthereumNetwork?) {
         self.url = url
-        
+
         let txQueue = OperationQueue()
         txQueue.name = "web3swift.client.rawTxQueue"
         txQueue.qualityOfService = .background
         txQueue.maxConcurrentOperationCount = 1
         self.concurrentQueue = txQueue
-
         self.networkProvider = networkProvider
         self.logger = logger ?? Logger(label: "web3.swift.eth-client")
+        self.network = network
+
+        if network == nil {
+            self.network = fetchNetwork()
+        }
     }
 
     public func net_version(completionHandler: @escaping (Result<EthereumNetwork, EthereumClientError>) -> Void) {
@@ -358,18 +341,38 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     private func eth_getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock from: EthereumBlock, toBlock to: EthereumBlock, completion: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void)) {
         DispatchQueue.global(qos: .default)
-                .async {
-                    let result = RecursiveLogCollector(ethClient: self)
-                            .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
+            .async {
+                let result = RecursiveLogCollector(ethClient: self)
+                    .getAllLogs(addresses: addresses, topics: topics, from: from, to: to)
 
-                    completion(result)
-                }
+                completion(result)
+            }
+    }
+
+    private func fetchNetwork() -> EthereumNetwork? {
+        let group = DispatchGroup()
+        group.enter()
+
+        var network: EthereumNetwork?
+        net_version { result in
+            switch result {
+            case .success(let data):
+                network = data
+            case .failure(let error):
+                self.logger.warning("Client has no network: \(error.localizedDescription)")
+            }
+
+            group.leave()
+        }
+
+        group.wait()
+        return network
     }
 
     func failureHandler<T>(_ error: Error, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void) {
         if case let .executionError(result) = error as? JSONRPCError {
             completionHandler(.failure(.executionError(result.error)))
-        } else if case .executionError(_) = error as? EthereumClientError, let error = error as? EthereumClientError {
+        } else if case .executionError = error as? EthereumClientError, let error = error as? EthereumClientError {
             completionHandler(.failure(error))
         } else {
             completionHandler(.failure(.unexpectedReturnValue))

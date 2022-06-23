@@ -10,7 +10,7 @@ class ENSResolver {
     let address: EthereumAddress
     let callResolution: CallResolution
     private (set) var supportsWildCard: Bool?
-    
+
     private let client: EthereumClientProtocol
 
     init(
@@ -30,12 +30,12 @@ class ENSResolver {
         supportingWildcard mustSupportWildCard: Bool
     ) async throws -> EthereumAddress {
         let wildcardResolution: Bool
-        if let supportsWildCard = self.supportsWildCard {
+        if let supportsWildCard = supportsWildCard {
             wildcardResolution = supportsWildCard
         } else {
             wildcardResolution = try await supportsWildcard()
         }
-        self.supportsWildCard = wildcardResolution
+        supportsWildCard = wildcardResolution
 
         if mustSupportWildCard && !wildcardResolution {
             // Wildcard name resolution (ENSIP-10)
@@ -69,12 +69,12 @@ class ENSResolver {
         address: EthereumAddress
     ) async throws -> String {
         let wildcardResolution: Bool
-        if let supportsWildCard = self.supportsWildCard {
+        if let supportsWildCard = supportsWildCard {
             wildcardResolution = supportsWildCard
         } else {
             wildcardResolution = try await supportsWildcard()
         }
-        self.supportsWildCard = wildcardResolution
+        supportsWildCard = wildcardResolution
 
         if wildcardResolution {
             let response = try await ENSContracts.ENSOffchainResolverFunctions.resolve(

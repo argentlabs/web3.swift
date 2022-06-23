@@ -5,13 +5,13 @@
 
 import BigInt
 import Foundation
-import NIO
-import WebSocketKit
-import Logging
-import NIOSSL
-import NIOCore
-import NIOWebSocket
 import GenericJSON
+import Logging
+import NIO
+import NIOCore
+import NIOSSL
+import NIOWebSocket
+import WebSocketKit
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -105,7 +105,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
     // WebSocket is need it for testing purposes
 #if DEBUG
     func exposeWebSocket() -> WebSocket? {
-        return self.webSocket
+        return webSocket
     }
 #endif
 
@@ -148,7 +148,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         }
     }
 
-    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P : Encodable, U : Decodable {
+    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P: Encodable, U: Decodable {
         semaphore.wait()
 
         defer {
@@ -190,7 +190,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         resources.addResponse(id, request: wsRequest)
         resources.removeRequest(id)
 
-        let sendPromise = self.eventLoopGroup.next().makePromise(of: Void.self)
+        let sendPromise = eventLoopGroup.next().makePromise(of: Void.self)
         sendPromise.futureResult.whenFailure({ error in
             completionHandler(.failure(.webSocketError(EquatableError(base: error))))
             self.resources.removeResponse(id)
@@ -207,7 +207,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             forcedClose = true
             try webSocket?.close(code: code).wait()
         } catch {
-            self.logger.warning("Clossing WebSocket failed:  \(error)")
+            logger.warning("Clossing WebSocket failed:  \(error)")
         }
     }
 
@@ -217,7 +217,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         do {
             try webSocket?.close(code: .goingAway).wait()
         } catch {
-            self.logger.warning("Failed to Close WebSocket: \(error)")
+            logger.warning("Failed to Close WebSocket: \(error)")
         }
     }
 
@@ -232,7 +232,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             delay = configuration.maxReconnectInterval
         }
 
-        self.logger.trace("WebSocket reconnecting... Delay: \(delay) ms")
+        logger.trace("WebSocket reconnecting... Delay: \(delay) ms")
 
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(delay), execute: {
             self.reconnectAttempts += 1
@@ -253,21 +253,21 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             return
         }
 
-        if reconnectAttempt, configuration.maxReconnectAttempts > 0, self.reconnectAttempts > configuration.maxReconnectAttempts {
-            self.logger.trace("WebSocket reached maxReconnectAttempts. Stop trying")
+        if reconnectAttempt, configuration.maxReconnectAttempts > 0, reconnectAttempts > configuration.maxReconnectAttempts {
+            logger.trace("WebSocket reached maxReconnectAttempts. Stop trying")
 
             for request in resources.requestQueue {
                 request.value.callback(.failure(.maxAttemptsReachedOnReconnecting))
                 resources.removeRequest(request.key)
             }
-            self.reconnectAttempts = 0
+            reconnectAttempts = 0
             return
         }
 
-        self.logger.trace("Requesting WebSocket connection")
+        logger.trace("Requesting WebSocket connection")
 
         do {
-            self.currentState = .connecting
+            currentState = .connecting
 
             _ = try WebSocket.connect(to: url,
                                       configuration: WebSocketClient.Configuration(tlsConfiguration: configuration.tlsConfiguration,
@@ -356,19 +356,19 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             }.wait()
         } catch {
             currentState = .closed
-            self.logger.error("WebSocket connection failed: \(error)")
+            logger.error("WebSocket connection failed: \(error)")
 
-            for request in self.resources.requestQueue {
+            for request in resources.requestQueue {
                 request.value.callback(.failure(.connectionNotOpen))
-                self.resources.removeRequest(request.key)
+                resources.removeRequest(request.key)
             }
 
-            for response in self.resources.responseQueue {
+            for response in resources.responseQueue {
                 response.value.callback(.failure(.connectionNotOpen))
-                self.resources.removeResponse(response.key)
+                resources.removeResponse(response.key)
             }
 
-            self.resources.cleanSubscriptions()
+            resources.cleanSubscriptions()
 
             if case ChannelError.connectTimeout = error {
                 reconnect()

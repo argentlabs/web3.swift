@@ -31,7 +31,7 @@ public final class HMAC {
             }
         }
 
-        func calculateHash(_ bytes: Array<UInt8>) -> Array<UInt8> {
+        func calculateHash(_ bytes: [UInt8]) -> [UInt8] {
             switch self {
             case .sha256:
                 return SHA2(variant: .sha256).calculate(for: bytes)
@@ -50,10 +50,10 @@ public final class HMAC {
         }
     }
 
-    var key: Array<UInt8>
+    var key: [UInt8]
     let variant: Variant
 
-    public init(key: Array<UInt8>, variant: HMAC.Variant = .sha256) {
+    public init(key: [UInt8], variant: HMAC.Variant = .sha256) {
         self.variant = variant
         self.key = key
 
@@ -68,18 +68,18 @@ public final class HMAC {
     }
 
     // MARK: Authenticator
-    public func authenticate(_ bytes: Array<UInt8>) throws -> Array<UInt8> {
-        var opad = Array<UInt8>(repeating: 0x5c, count: variant.blockSize())
-        for idx in self.key.indices {
-            opad[idx] = self.key[idx] ^ opad[idx]
+    public func authenticate(_ bytes: [UInt8]) throws -> [UInt8] {
+        var opad = [UInt8](repeating: 0x5c, count: variant.blockSize())
+        for idx in key.indices {
+            opad[idx] = key[idx] ^ opad[idx]
         }
-        var ipad = Array<UInt8>(repeating: 0x36, count: variant.blockSize())
-        for idx in self.key.indices {
-            ipad[idx] = self.key[idx] ^ ipad[idx]
+        var ipad = [UInt8](repeating: 0x36, count: variant.blockSize())
+        for idx in key.indices {
+            ipad[idx] = key[idx] ^ ipad[idx]
         }
 
-        let ipadAndMessageHash = self.variant.calculateHash(ipad + bytes)
-        let result = self.variant.calculateHash(opad + ipadAndMessageHash)
+        let ipadAndMessageHash = variant.calculateHash(ipad + bytes)
+        let result = variant.calculateHash(opad + ipadAndMessageHash)
 
         // return Array(result[0..<10]) // 80 bits
         return result

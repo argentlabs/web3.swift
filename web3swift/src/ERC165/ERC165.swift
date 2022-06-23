@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public class ERC165 {
     public let client: EthereumClientProtocol
@@ -15,7 +15,7 @@ public class ERC165 {
     public func supportsInterface(contract: EthereumAddress, id: Data, completionHandler: @escaping(Result<Bool, Error>) -> Void) {
         let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
 
-        function.call(withClient: self.client, responseType: ERC165Responses.supportsInterfaceResponse.self) { result in
+        function.call(withClient: client, responseType: ERC165Responses.supportsInterfaceResponse.self) { result in
             switch result {
             case .success(let data):
                 completionHandler(.success(data.supported))

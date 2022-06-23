@@ -48,7 +48,7 @@ public extension Data {
 
 public extension Web3Extensions where Base == Data {
     var hexString: String {
-        let bytes = Array<UInt8>(base)
+        let bytes = [UInt8](base)
         return "0x" + bytes.map { String(format: "%02hhx", $0) }.joined()
     }
 }
@@ -92,5 +92,3 @@ public extension Web3Extensions where Base == String {
         return nil
     }
 }
-
-

@@ -70,7 +70,7 @@ extension EthereumNameService {
             var intermediaryResponses: [ResolveOutput?]
 
             init(expectedResponsesCount: Int) {
-                intermediaryResponses = Array(repeating: nil, count: expectedResponsesCount)
+                self.intermediaryResponses = Array(repeating: nil, count: expectedResponsesCount)
             }
         }
 
@@ -188,9 +188,8 @@ extension EthereumNameService {
 
             guard
                 let network = client.network,
-                let ensRegistryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network)
+                let ensRegistryAddress = registryAddress ?? ENSContracts.registryAddress(for: network)
             else { return completion(.failure(.noNetwork)) }
-
 
             var aggegator = Multicall.Aggregator()
 

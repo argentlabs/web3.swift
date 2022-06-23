@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 import BigInt
+import XCTest
 @testable import web3
 
 class ABIEventTests: XCTestCase {
@@ -12,7 +12,7 @@ class ABIEventTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func test_givenEventWithData4_ItParsesCorrectly() async {
@@ -20,7 +20,7 @@ class ABIEventTests: XCTestCase {
             let encodedAddress = (try? ABIEncoder.encode(EthereumAddress("0x3B6Def16666a23905DD29071d13E7a9db08240E2")).bytes) ?? []
 
             let eventsResult = try await client.getEvents(addresses: nil,
-                                                          topics: [try? EnabledStaticCall.signature(),  String(hexFromBytes: encodedAddress), nil],
+                                                          topics: [try? EnabledStaticCall.signature(), String(hexFromBytes: encodedAddress), nil],
                                                           fromBlock: .Number(8386245),
                                                           toBlock: .Number(8386245),
                                                           eventTypes: [EnabledStaticCall.self])
@@ -60,14 +60,14 @@ class ABIEventTests: XCTestCase {
 class ABIEventWebSocketTests: ABIEventTests {
     override func setUp() {
         super.setUp()
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
     }
 }
 
 struct EnabledStaticCall: ABIEvent {
     static let name = "EnabledStaticCall"
-    static let types: [ABIType.Type] = [EthereumAddress.self,Data4.self]
-    static let typesIndexed = [true,true]
+    static let types: [ABIType.Type] = [EthereumAddress.self, Data4.self]
+    static let typesIndexed = [true, true]
     let log: EthereumLog
 
     let module: EthereumAddress
@@ -85,8 +85,8 @@ struct EnabledStaticCall: ABIEvent {
 
 struct UpgraderRegistered: ABIEvent {
     static let name = "UpgraderRegistered"
-    static let types: [ABIType.Type] = [EthereumAddress.self,Data32.self]
-    static let typesIndexed = [true,false]
+    static let types: [ABIType.Type] = [EthereumAddress.self, Data32.self]
+    static let typesIndexed = [true, false]
     let log: EthereumLog
 
     let upgrader: EthereumAddress
@@ -100,4 +100,3 @@ struct UpgraderRegistered: ABIEvent {
         self.name = try data[0].decoded()
     }
 }
-

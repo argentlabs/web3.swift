@@ -131,7 +131,7 @@ extension BaseEthereumClient {
 
         let url = lookup.urls[0]
 
-        return self.offchainRead(
+        return offchainRead(
             sender: lookup.address,
             data: lookup.callData,
             rawURL: url,
