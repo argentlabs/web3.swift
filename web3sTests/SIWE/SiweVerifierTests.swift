@@ -224,7 +224,7 @@ class SiweVerifierTests: XCTestCase {
     }
 }
 
-final class SiweVerifierWSSTests: SiweVerifierTests {
+final class SiweVerifierWebSocketTests: SiweVerifierTests {
 
     override func setUp() {
         if self.client == nil {
