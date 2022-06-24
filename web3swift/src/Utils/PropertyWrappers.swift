@@ -31,7 +31,7 @@ struct DataStr: Codable, Equatable, Hashable {
 
     public var wrappedValue: Data {
         get { value }
-        set { self.value = newValue }
+        set { value = newValue }
     }
 
 }

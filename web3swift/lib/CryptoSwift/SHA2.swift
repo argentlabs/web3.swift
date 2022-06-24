@@ -27,26 +27,26 @@ public final class SHA2 {
     @usableFromInline
     let digestLength: Int
 
-    private let k: Array<UInt64>
+    private let k: [UInt64]
 
     @usableFromInline
-    var accumulated = Array<UInt8>()
+    var accumulated = [UInt8]()
 
     @usableFromInline
     var processedBytesTotalCount: Int = 0
 
     @usableFromInline
-    var accumulatedHash32 = Array<UInt32>()
+    var accumulatedHash32 = [UInt32]()
 
     @usableFromInline
-    var accumulatedHash64 = Array<UInt64>()
+    var accumulatedHash64 = [UInt64]()
 
     @frozen
     public enum Variant: RawRepresentable {
         case sha256, sha512
 
         public var digestLength: Int {
-            self.rawValue / 8
+            rawValue / 8
         }
 
         public var blockSize: Int {
@@ -80,7 +80,7 @@ public final class SHA2 {
         }
 
         @usableFromInline
-        var h: Array<UInt64> {
+        var h: [UInt64] {
             switch self {
             case .sha256:
                 return [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]
@@ -138,7 +138,7 @@ public final class SHA2 {
     }
 
     @inlinable
-    public func calculate(for bytes: Array<UInt8>) -> Array<UInt8> {
+    public func calculate(for bytes: [UInt8]) -> [UInt8] {
         do {
             return try update(withBytes: bytes.slice, isLast: true)
         } catch {
@@ -147,16 +147,16 @@ public final class SHA2 {
     }
 
     @usableFromInline
-    func process64(block chunk: ArraySlice<UInt8>, currentHash hh: inout Array<UInt64>) {
+    func process64(block chunk: ArraySlice<UInt8>, currentHash hh: inout [UInt64]) {
         // break chunk into sixteen 64-bit words M[j], 0 ≤ j ≤ 15, big-endian
         // Extend the sixteen 64-bit words into eighty 64-bit words:
-        let M = UnsafeMutablePointer<UInt64>.allocate(capacity: self.k.count)
-        M.initialize(repeating: 0, count: self.k.count)
+        let M = UnsafeMutablePointer<UInt64>.allocate(capacity: k.count)
+        M.initialize(repeating: 0, count: k.count)
         defer {
             M.deinitialize(count: self.k.count)
             M.deallocate()
         }
-        for x in 0..<self.k.count {
+        for x in 0..<k.count {
             switch x {
             case 0...15:
                 let start = chunk.startIndex.advanced(by: x * 8) // * MemoryLayout<UInt64>.size
@@ -178,13 +178,13 @@ public final class SHA2 {
         var H = hh[7]
 
         // Main loop
-        for j in 0..<self.k.count {
+        for j in 0..<k.count {
             let s0 = rotateRight(A, by: 28) ^ rotateRight(A, by: 34) ^ rotateRight(A, by: 39)
             let maj = (A & B) ^ (A & C) ^ (B & C)
             let t2 = s0 &+ maj
             let s1 = rotateRight(E, by: 14) ^ rotateRight(E, by: 18) ^ rotateRight(E, by: 41)
             let ch = (E & F) ^ ((~E) & G)
-            let t1 = H &+ s1 &+ ch &+ self.k[j] &+ UInt64(M[j])
+            let t1 = H &+ s1 &+ ch &+ k[j] &+ UInt64(M[j])
 
             H = G
             G = F
@@ -208,17 +208,17 @@ public final class SHA2 {
 
     // mutating currentHash in place is way faster than returning new result
     @usableFromInline
-    func process32(block chunk: ArraySlice<UInt8>, currentHash hh: inout Array<UInt32>) {
+    func process32(block chunk: ArraySlice<UInt8>, currentHash hh: inout [UInt32]) {
         // break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15, big-endian
         // Extend the sixteen 32-bit words into sixty-four 32-bit words:
-        let M = UnsafeMutablePointer<UInt32>.allocate(capacity: self.k.count)
-        M.initialize(repeating: 0, count: self.k.count)
+        let M = UnsafeMutablePointer<UInt32>.allocate(capacity: k.count)
+        M.initialize(repeating: 0, count: k.count)
         defer {
             M.deinitialize(count: self.k.count)
             M.deallocate()
         }
 
-        for x in 0..<self.k.count {
+        for x in 0..<k.count {
             switch x {
             case 0...15:
                 let start = chunk.startIndex.advanced(by: x * 4) // * MemoryLayout<UInt32>.size
@@ -240,13 +240,13 @@ public final class SHA2 {
         var H = hh[7]
 
         // Main loop
-        for j in 0..<self.k.count {
+        for j in 0..<k.count {
             let s0 = rotateRight(A, by: 2) ^ rotateRight(A, by: 13) ^ rotateRight(A, by: 22)
             let maj = (A & B) ^ (A & C) ^ (B & C)
             let t2 = s0 &+ maj
             let s1 = rotateRight(E, by: 6) ^ rotateRight(E, by: 11) ^ rotateRight(E, by: 25)
             let ch = (E & F) ^ ((~E) & G)
-            let t1 = H &+ s1 &+ ch &+ UInt32(self.k[j]) &+ M[j]
+            let t1 = H &+ s1 &+ ch &+ UInt32(k[j]) &+ M[j]
 
             H = G
             G = F
@@ -272,40 +272,40 @@ public final class SHA2 {
 extension SHA2 {
 
     @inlinable
-    public func update(withBytes bytes: ArraySlice<UInt8>, isLast: Bool = false) throws -> Array<UInt8> {
-        self.accumulated += bytes
+    public func update(withBytes bytes: ArraySlice<UInt8>, isLast: Bool = false) throws -> [UInt8] {
+        accumulated += bytes
 
         if isLast {
-            let lengthInBits = (processedBytesTotalCount + self.accumulated.count) * 8
-            let lengthBytes = lengthInBits.bytes(totalBytes: self.blockSize / 8) // A 64-bit/128-bit representation of b. blockSize fit by accident.
+            let lengthInBits = (processedBytesTotalCount + accumulated.count) * 8
+            let lengthBytes = lengthInBits.bytes(totalBytes: blockSize / 8) // A 64-bit/128-bit representation of b. blockSize fit by accident.
                                                                                  // Step 1. Append padding
-            bitPadding(to: &self.accumulated, blockSize: self.blockSize, allowance: self.blockSize / 8)
+            bitPadding(to: &accumulated, blockSize: blockSize, allowance: blockSize / 8)
 
             // Step 2. Append Length a 64-bit representation of lengthInBits
-            self.accumulated += lengthBytes
+            accumulated += lengthBytes
         }
 
         var processedBytes = 0
-        for chunk in self.accumulated.batched(by: self.blockSize) {
-            if isLast || (self.accumulated.count - processedBytes) >= self.blockSize {
-                switch self.variant {
+        for chunk in accumulated.batched(by: blockSize) {
+            if isLast || (accumulated.count - processedBytes) >= blockSize {
+                switch variant {
                 case .sha256:
-                    self.process32(block: chunk, currentHash: &self.accumulatedHash32)
+                    process32(block: chunk, currentHash: &accumulatedHash32)
                 case .sha512:
-                    self.process64(block: chunk, currentHash: &self.accumulatedHash64)
+                    process64(block: chunk, currentHash: &accumulatedHash64)
                 }
                 processedBytes += chunk.count
             }
         }
-        self.accumulated.removeFirst(processedBytes)
-        self.processedBytesTotalCount += processedBytes
+        accumulated.removeFirst(processedBytes)
+        processedBytesTotalCount += processedBytes
 
         // output current hash
-        var result = Array<UInt8>(repeating: 0, count: variant.digestLength)
-        switch self.variant {
+        var result = [UInt8](repeating: 0, count: variant.digestLength)
+        switch variant {
         case .sha256:
             var pos = 0
-            for idx in 0..<self.accumulatedHash32.count where idx < self.variant.finalLength {
+            for idx in 0..<accumulatedHash32.count where idx < variant.finalLength {
                 let h = accumulatedHash32[idx]
                 result[pos + 0] = UInt8((h >> 24) & 0xff)
                 result[pos + 1] = UInt8((h >> 16) & 0xff)
@@ -315,7 +315,7 @@ extension SHA2 {
             }
         case .sha512:
             var pos = 0
-            for idx in 0..<self.accumulatedHash64.count where idx < self.variant.finalLength {
+            for idx in 0..<accumulatedHash64.count where idx < variant.finalLength {
                 let h = accumulatedHash64[idx]
                 result[pos + 0] = UInt8((h >> 56) & 0xff)
                 result[pos + 1] = UInt8((h >> 48) & 0xff)
@@ -331,11 +331,11 @@ extension SHA2 {
 
         // reset hash value for instance
         if isLast {
-            switch self.variant {
+            switch variant {
             case .sha256:
-                self.accumulatedHash32 = self.variant.h.lazy.map { UInt32($0) } // FIXME: UInt64 for process64
+                accumulatedHash32 = variant.h.lazy.map { UInt32($0) } // FIXME: UInt64 for process64
             case .sha512:
-                self.accumulatedHash64 = self.variant.h
+                accumulatedHash64 = variant.h
             }
         }
 
