@@ -50,7 +50,7 @@ public class SiweVerifier {
     /// - Returns: a `Bool` indicating if the pair message-signature is verified (whether or not the signature came from the address in the message)
     /// - Throws: `SiweVerifier.Error` if message is not verifiable;
     ///           might throw `KeyUtilError` in case recovering the address that signed the message fails
-    open func verify(message: SiweMessage, against signature: String) async throws -> Bool {
+    public func verify(message: SiweMessage, against signature: String) async throws -> Bool {
         let date = dateProvider()
 
         if let notBefore = message.notBefore {
