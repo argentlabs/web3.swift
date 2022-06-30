@@ -14,6 +14,8 @@ public protocol EthereumAccountProtocol {
     func sign(hex: String) throws -> Data
     func sign(message: Data) throws -> Data
     func sign(message: String) throws -> Data
+    func signMessage(message: Data) throws -> String
+    func signMessage(message: TypedData) throws -> String
     func sign(transaction: EthereumTransaction) throws -> SignedTransaction
 }
 
