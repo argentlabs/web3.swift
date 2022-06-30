@@ -15,7 +15,7 @@ public enum CallResolution {
     case offchainAllowed(maxRedirects: Int)
 }
 
-public protocol EthereumClientProtocol: AnyObject {
+public protocol EthereumClientProtocol: AnyObject, ZKSyncEthereumClient {
     init(url: URL, sessionConfig: URLSessionConfiguration)
     init(url: URL)
     var network: EthereumNetwork? { get }
@@ -87,8 +87,8 @@ public class EthereumClient: EthereumClientProtocol {
     public let url: URL
     private var retreivedNetwork: EthereumNetwork?
 
-    private let networkQueue: OperationQueue
-    private let concurrentQueue: OperationQueue
+    let networkQueue: OperationQueue
+    let concurrentQueue: OperationQueue
 
     public let session: URLSession
 

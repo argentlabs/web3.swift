@@ -23,4 +23,16 @@ struct TestConfig {
     
     // ERC165 compliant contract
     static let erc165Contract = "0x5c007a1d8051dfda60b3692008b9e10731b67fde"
+    
+    enum ZKSync {
+        static let chainId = 280
+        static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
+    }
+}
+
+
+@discardableResult public func with<Root>(_ root: Root, _ block: (inout Root) throws -> Void) rethrows -> Root {
+    var copy = root
+    try block(&copy)
+    return copy
 }

@@ -30,14 +30,6 @@ public extension EthereumAccount {
             throw EthereumSignerError.unknownError
         }
         
-        let r = signature.subdata(in: 0..<32)
-        let s = signature.subdata(in: 32..<64)
-        
-        var v = Int(signature[64])
-        if v < 37 {
-            v += (transaction.chainId ?? -1) * 2 + 35
-        }
-        
-        return SignedTransaction(transaction: transaction, v: v, r: r, s: s)
+        return SignedTransaction(transaction: transaction, signature: signature)
     }
 }

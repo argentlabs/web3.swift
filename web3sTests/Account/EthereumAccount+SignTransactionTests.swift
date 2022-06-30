@@ -49,17 +49,10 @@ class EthereumAccount_SignTransactionTests: XCTestCase {
         let gasLimit = BigUInt(hex: "0x5208")!
         let to = EthereumAddress("0x3535353535353535353535353535353535353535")
         let value = BigUInt(hex: "0x0")!
-        let v = Int(hex: "0x25")!
-        let r = Data(hex: "0x044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d")!
-        let s = Data(hex: "0x044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d")!
+        let signature = "0x044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d25".web3.hexData!
         
-        var chainId = v
-        if chainId >= 37 {
-            chainId = (chainId - 35) / 2
-        }
-        
-        let tx = EthereumTransaction(from: nil, to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainId)
-        let signed = SignedTransaction(transaction: tx, v: v, r: r, s: s)
+        let tx = EthereumTransaction(from: nil, to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: 37)
+        let signed = SignedTransaction(transaction: tx, signature: signature)
         
         let raw = signed.raw!.web3.hexString
         let hash = signed.hash!.web3.hexString
