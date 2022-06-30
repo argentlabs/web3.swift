@@ -155,15 +155,29 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
 
 public struct SignedTransaction {
     public let transaction: EthereumTransaction
-    let v: Int
-    let r: Data
-    let s: Data
+    public let signature: Signature
     
-    public init(transaction: EthereumTransaction, v: Int, r: Data, s: Data) {
+    public init(
+        transaction: EthereumTransaction,
+        signature raw: Data
+    ) {
         self.transaction = transaction
-        self.v = v
-        self.r = r.web3.strippingZeroesFromBytes
-        self.s = s.web3.strippingZeroesFromBytes
+        self.signature = .init(raw: raw)
+    }
+    
+    var r: Data {
+        signature.r
+    }
+    
+    var s: Data {
+        signature.s
+    }
+    
+    var v: Int {
+        guard signature.v < 37 else {
+            return signature.v
+        }
+        return signature.v + (transaction.chainId ?? -1) * 2 + 8
     }
     
     public var raw: Data? {
