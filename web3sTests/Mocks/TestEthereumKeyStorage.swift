@@ -17,17 +17,43 @@ class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
         self.privateKey = privateKey
     }
     
-    func fetchStoredAddresses() throws -> [String] {
-        return []
+    func storePrivateKey(key: Data) throws -> Void {
     }
     
-    func storePrivateKey(key: Data, with address: String) throws -> Void {
+    func loadPrivateKey() throws -> Data {
+        return privateKey.web3.hexData!
+    }
+}
+
+class TestEthereumMultipleKeyStorage: EthereumMultipleKeyStorageProtocol {
+    
+    private var privateKey: String
+    
+    init(privateKey: String) {
+        self.privateKey = privateKey
     }
     
-    func loadPrivateKey(for address: String) throws -> Data {
+    func storePrivateKey(key: Data) throws -> Void {
+    }
+
+    func loadPrivateKey() throws -> Data {
         return privateKey.web3.hexData!
     }
     
-    func deletePrivateKey(for address: String) throws {
+    func fetchAccounts() throws -> [EthereumAddress] {
+        return []
+    }
+
+    func storePrivateKey(key: Data, with address: EthereumAddress) throws -> Void {
+    }
+
+    func loadPrivateKey(for address: EthereumAddress) throws -> Data {
+        return privateKey.web3.hexData!
+    }
+
+    func deletePrivateKey(for address: EthereumAddress) throws {
+    }
+
+    func deleteAllKeys() throws {
     }
 }

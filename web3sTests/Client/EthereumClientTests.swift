@@ -35,11 +35,11 @@ struct TransferMatchingSignatureEvent: ABIEvent {
 class EthereumClientTests: XCTestCase {
     var client: EthereumClient?
     var account: EthereumAccount?
-
+    
     override func setUp() {
         super.setUp()
         self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
-        self.account = try? EthereumAccount(address: TestConfig.publicKey, keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
+        self.account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         print("Public address: \(self.account?.address.value ?? "NONE")")
     }
 
