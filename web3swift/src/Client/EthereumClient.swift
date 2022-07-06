@@ -201,50 +201,6 @@ public class EthereumClient: EthereumClientProtocol {
 
     public func eth_estimateGas(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
 
-        struct CallParams: Encodable {
-            let from: String?
-            let to: String
-            let gas: String?
-            let gasPrice: String?
-            let value: String?
-            let data: String?
-
-            enum TransactionCodingKeys: String, CodingKey {
-                case from
-                case to
-                case gas
-                case gasPrice
-                case value
-                case data
-            }
-
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.unkeyedContainer()
-                var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
-                if let from = from {
-                    try nested.encode(from, forKey: .from)
-                }
-                try nested.encode(to, forKey: .to)
-
-                let jsonRPCAmount: (String) -> String = { amount in
-                    amount == "0x00" ? "0x0" : amount
-                }
-
-                if let gas = gas.map(jsonRPCAmount) {
-                    try nested.encode(gas, forKey: .gas)
-                }
-                if let gasPrice = gasPrice.map(jsonRPCAmount) {
-                    try nested.encode(gasPrice, forKey: .gasPrice)
-                }
-                if let value = value.map(jsonRPCAmount) {
-                    try nested.encode(value, forKey: .value)
-                }
-                if let data = data {
-                    try nested.encode(data, forKey: .data)
-                }
-            }
-        }
-
         let value: BigUInt?
         if let txValue = transaction.value, txValue > .zero {
             value = txValue
@@ -252,7 +208,7 @@ public class EthereumClient: EthereumClientProtocol {
             value = nil
         }
 
-        let params = CallParams(from: transaction.from?.value,
+        let params = EstimateGasParams(from: transaction.from?.value,
                                 to: transaction.to.value,
                                 gas: transaction.gasLimit?.web3.hexString,
                                 gasPrice: transaction.gasPrice?.web3.hexString,
@@ -589,6 +545,50 @@ extension EthereumClient {
                     continuation.resume(returning: blockInfo)
                 }
             }
+        }
+    }
+}
+
+struct EstimateGasParams: Encodable {
+    let from: String?
+    let to: String
+    let gas: String?
+    let gasPrice: String?
+    let value: String?
+    let data: String?
+
+    enum TransactionCodingKeys: String, CodingKey {
+        case from
+        case to
+        case gas
+        case gasPrice
+        case value
+        case data
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
+        if let from = from {
+            try nested.encode(from, forKey: .from)
+        }
+        try nested.encode(to, forKey: .to)
+
+        let jsonRPCAmount: (String) -> String = { amount in
+            amount == "0x00" ? "0x0" : amount
+        }
+
+        if let gas = gas.map(jsonRPCAmount) {
+            try nested.encode(gas, forKey: .gas)
+        }
+        if let gasPrice = gasPrice.map(jsonRPCAmount) {
+            try nested.encode(gasPrice, forKey: .gasPrice)
+        }
+        if let value = value.map(jsonRPCAmount) {
+            try nested.encode(value, forKey: .value)
+        }
+        if let data = data {
+            try nested.encode(data, forKey: .data)
         }
     }
 }

@@ -57,6 +57,10 @@ public struct ZKSyncTransaction: Equatable {
         }
     }
     
+    public var from: EthereumAddress? {
+        aaParams?.from
+    }
+    
     public var eip712Representation: TypedData {
         let decoder = JSONDecoder()
         let eip712 = try! decoder.decode(TypedData.self, from: eip712JSON)

@@ -4,10 +4,16 @@
 //
 
 import Foundation
+import BigInt
 
 public protocol ZKSyncEthereumClient {
     func eth_sendRawZKSyncTransaction(_ transaction: ZKSyncTransaction, withAccount account: EthereumAccountProtocol, completionHandler: @escaping (Result<String, EthereumClientError>) -> Void)
+    func gasPrice(forToken token: EthereumAddress, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void)
+    func estimateGas(_ transaction: ZKSyncTransaction, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
+    
     func eth_sendRawZKSyncTransaction(_ transaction: ZKSyncTransaction, withAccount account: EthereumAccountProtocol) async throws -> String
+    func gasPrice(forToken token: EthereumAddress) async throws -> BigUInt
+    func estimateGas(_ transaction: ZKSyncTransaction) async throws -> BigUInt
 }
 
 extension EthereumClient {
@@ -53,9 +59,60 @@ extension EthereumClient {
             group.wait()
         }
     }
+    
+    public func gasPrice(forToken token: EthereumAddress, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
+        EthereumRPC.execute(session: session, url: url, method: "eth_gasPrice", params: [token], receive: String.self) { (error, response) in
+            if let value = (response as? String).flatMap(BigUInt.init(hex:)) {
+                completionHandler(.success(value))
+            } else {
+                completionHandler(.failure(EthereumClientError.unexpectedReturnValue))
+            }
+        }
+    }
+    
+    public func estimateGas(_ transaction: ZKSyncTransaction, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
+
+        let value = transaction.value > .zero ? transaction.value : nil
+        let params = EstimateGasParams(from: transaction.from?.value,
+                                to: transaction.to.value,
+                                gas: transaction.gasLimit?.web3.hexString,
+                                gasPrice: transaction.gasPrice?.web3.hexString,
+                                value: value?.web3.hexString,
+                                data: transaction.data.web3.hexString)
+        EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { (error, response) in
+            if let gasHex = response as? String, let gas = BigUInt(hex: gasHex) {
+                completion(nil, gas)
+            } else if case let .executionError(result) = error as? JSONRPCError {
+                completion(.executionError(result.error), nil)
+            } else {
+                completion(.unexpectedReturnValue, nil)
+            }
+        }
+    }
+}
+    // MARK: - Async functions
+extension EthereumClientProtocol {
     public func eth_sendRawZKSyncTransaction(_ transaction: ZKSyncTransaction, withAccount account: EthereumAccountProtocol) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             eth_sendRawZKSyncTransaction(transaction, withAccount: account, completionHandler: continuation.resume)
+        }
+    }
+    
+    public func gasPrice(forToken token: EthereumAddress) async throws -> BigUInt {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
+            gasPrice(forToken: token, completionHandler: continuation.resume)
+        }
+    }
+    
+    public func estimateGas(_ transaction: ZKSyncTransaction) async throws -> BigUInt {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
+            estimateGas(transaction) { error, gas in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let gas = gas {
+                    continuation.resume(returning: gas)
+                }
+            }
         }
     }
 }

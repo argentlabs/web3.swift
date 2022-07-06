@@ -73,4 +73,44 @@ final class EthereumClientZKSyncTests: XCTestCase {
             XCTFail("Expected tx but failed \(error).")
         }
     }
+    
+    func test_gasPrice() async {
+        do {
+            let priceEth = try await client.gasPrice(forToken: .zero)
+            let priceUSDC = try await client.gasPrice(forToken: EthereumAddress("0x54a14D7559BAF2C8e8Fa504E019d32479739018c"))
+            XCTAssertNotEqual(priceEth, 0)
+            XCTAssertNotEqual(priceUSDC, 0)
+            XCTAssertNotEqual(priceEth, priceUSDC)
+        } catch {
+            XCTFail("Expected value but failed \(error).")
+        }
+    }
+    
+    func test_GivenEOATransaction_gasEstimationCorrect() async {
+        do {
+            let estimate = try await client.estimateGas(
+                with(eoaEthTransfer) {
+                    $0.gasPrice = nil
+                    $0.gasLimit = nil
+                }
+            )
+            XCTAssertGreaterThan(estimate, 1000)
+        } catch {
+            XCTFail("Expected value but failed \(error).")
+        }
+    }
+    
+    func test_GivenAATransaction_gasEstimationCorrect() async {
+        do {
+            let estimate = try await client.estimateGas(
+                with(aaEthTransfer) {
+                    $0.gasPrice = nil
+                    $0.gasLimit = nil
+                }
+            )
+            XCTAssertGreaterThan(estimate, 1000)
+        } catch {
+            XCTFail("Expected value but failed \(error).")
+        }
+    }
 }
