@@ -17,8 +17,8 @@ public struct ZKSyncTransaction: Equatable {
     public var data: Data
     public var chainId: Int?
     public var nonce: Int?
-    public var gasPrice: BigUInt
-    public var gasLimit: BigUInt
+    public var gasPrice: BigUInt?
+    public var gasLimit: BigUInt?
     public var egsPerPubdata: BigUInt
     public var feeToken: EthereumAddress
     public var aaParams: AAParams?
@@ -29,8 +29,8 @@ public struct ZKSyncTransaction: Equatable {
         data: Data,
         chainId: Int? = nil,
         nonce: Int? = nil,
-        gasPrice: BigUInt,
-        gasLimit: BigUInt,
+        gasPrice: BigUInt? = nil,
+        gasLimit: BigUInt? = nil,
         egsPerPubdata: BigUInt = 0,
         feeToken: EthereumAddress = .zero,
         aaParams: AAParams? = nil
@@ -96,8 +96,8 @@ public struct ZKSyncTransaction: Equatable {
                 "value" : "\(value.web3.hexString)",
                 "data" : "\(data.web3.hexString)",
                 "feeToken" : "\(feeToken.asBigInt.web3.hexString)",
-                "ergsLimit" : "\(gasLimit.web3.hexString)",
-                "ergsPrice" : "\(gasPrice.web3.hexString)",
+                "ergsLimit" : "\(gasLimit!.web3.hexString)",
+                "ergsPrice" : "\(gasPrice!.web3.hexString)",
                 "ergsPerPubdataByteLimit" : \(egsPerPubdata.description),
                 "nonce" : \(nonce!)
             }
@@ -133,7 +133,8 @@ public struct ZKSyncSignedTransaction {
     }
     
     public var raw: Data? {
-        guard transaction.nonce != nil, transaction.chainId != nil else {
+        guard transaction.nonce != nil, transaction.chainId != nil,
+              transaction.gasPrice != nil, transaction.gasLimit != nil else {
             return nil
         }
         
