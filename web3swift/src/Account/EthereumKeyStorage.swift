@@ -1,9 +1,6 @@
 //
-//  EthereumKeyStorage.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 06/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -113,9 +110,9 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
         guard let localPath = self.addressPath else {
             throw EthereumKeyStorageError.failedToSave
         }
-        
+
         let success = NSKeyedArchiver.archiveRootObject(key, toFile: localPath)
-        
+
         if !success {
             throw EthereumKeyStorageError.failedToSave
         }
@@ -131,7 +128,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
         guard let localPath = self.addressPath else {
             throw EthereumKeyStorageError.failedToLoad
         }
-        
+
         guard let data = NSKeyedUnarchiver.unarchiveObject(withFile: localPath) as? Data else {
             throw EthereumKeyStorageError.failedToLoad
         }

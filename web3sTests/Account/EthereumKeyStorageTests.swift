@@ -1,28 +1,25 @@
 //
-//  EthereumKeyStorageTests.swift
-//  web3sTests
-//
-//  Created by Matt Marshall on 13/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import XCTest
 @testable import web3
 
 class EthereumKeyStorageTests: XCTestCase {
-    
+
     override func setUp() {
         super.setUp()
     }
-    
+
     override func tearDown() {
         super.tearDown()
     }
-    
+
     func testStoreLocalPrivateKey() {
         let randomData = Data.randomOfLength(256)!
         let keyStorage = EthereumKeyLocalStorage()
-        
+
         do {
             let ethereumAddress = EthereumAddress(TestConfig.publicKey)
             try keyStorage.storePrivateKey(key: randomData, with: ethereumAddress)
@@ -30,7 +27,7 @@ class EthereumKeyStorageTests: XCTestCase {
             XCTFail("Failed to save private key. Ensure key is valid in TestConfig.swift")
         }
     }
-    
+
     func testStoreAndLoadLocalPrivateKey() {
         let randomData = Data.randomOfLength(256)!
         let keyStorage = EthereumKeyLocalStorage()

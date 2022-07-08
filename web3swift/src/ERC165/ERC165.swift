@@ -1,13 +1,10 @@
 //
-//  ERC165.swift
-//  web3swift
-//
-//  Created by Miguel on 09/05/2019.
-//  Copyright © 2019 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public class ERC165 {
     public let client: EthereumClientProtocol
@@ -18,7 +15,7 @@ public class ERC165 {
     public func supportsInterface(contract: EthereumAddress, id: Data, completionHandler: @escaping(Result<Bool, Error>) -> Void) {
         let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
 
-        function.call(withClient: self.client, responseType: ERC165Responses.supportsInterfaceResponse.self) { result in
+        function.call(withClient: client, responseType: ERC165Responses.supportsInterfaceResponse.self) { result in
             switch result {
             case .success(let data):
                 completionHandler(.success(data.supported))
@@ -34,21 +31,6 @@ extension ERC165 {
     public func supportsInterface(contract: EthereumAddress, id: Data) async throws -> Bool {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
             supportsInterface(contract: contract, id: id, completionHandler: continuation.resume)
-        }
-    }
-}
-
-// MARK: - Deprecated
-extension ERC165 {
-    @available(*, deprecated, renamed: "supportsInterface(contract:id:completionHandler:)")
-    public func supportsInterface(contract: EthereumAddress, id: Data, completion: @escaping((Error?, Bool?) -> Void)) {
-        supportsInterface(contract: contract, id: id) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
         }
     }
 }

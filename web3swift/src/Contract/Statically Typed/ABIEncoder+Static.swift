@@ -1,13 +1,10 @@
 //
-//  ABIEncoder+Static.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 10/04/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 extension ABIEncoder {
     public static func encode(_ value: ABIType,
@@ -39,19 +36,19 @@ extension ABIEncoder {
             } else {
                 return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: type, padded: !packed)
             }
-        
+
         case let value as ABITuple:
             return try encodeTuple(value, type: type)
         default:
             throw ABIError.notCurrentlySupported
         }
     }
-    
+
     public static func encode<T: ABIType>(_ values: [T],
                               staticSize: Int? = nil) throws -> EncodedValue {
         return try ABIEncoder.encodeArray(elements: values.map { (value: $0, size: nil) }, isDynamic: staticSize == nil, size: values.count)
     }
-    
+
     private typealias ValueAndSize = (value: ABIType, size: Int?)
     private static func encodeArray(elements: [ValueAndSize], isDynamic: Bool, size: Int?) throws -> EncodedValue {
         let values: [EncodedValue] = try elements.map {
@@ -60,7 +57,7 @@ extension ABIEncoder {
 
         return .container(values: values, isDynamic: isDynamic, size: size)
     }
-    
+
     private static func encodeTuple(_ tuple: ABITuple, type: ABIRawType) throws -> EncodedValue {
         let encoder = ABIFunctionEncoder("")
         try tuple.encode(to: encoder)

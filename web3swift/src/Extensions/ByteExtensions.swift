@@ -1,13 +1,10 @@
 //
-//  ByteExtensions.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 13/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public extension Web3Extensions where Base == BigUInt {
     var bytes: [UInt8] {
@@ -15,11 +12,11 @@ public extension Web3Extensions where Base == BigUInt {
         let bytes = data.web3.bytes
         let lastIndex = bytes.count - 1
         let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
-        
+
         if lastIndex < 0 {
             return Array([0])
         }
-        
+
         return Array(bytes[firstIndex...lastIndex])
     }
 }
@@ -30,7 +27,7 @@ extension BigInt {
             self.init(0)
             return
         }
-        
+
         let isNegative = data[0] & 0x80 == 0x80
         guard isNegative else {
             self = BigInt(BigUInt(data))
@@ -45,7 +42,7 @@ extension BigInt {
         }
 
         self = BigInt(signValue - BigUInt(Data(rest)))
-        self.negate()
+        negate()
     }
 }
 
@@ -58,18 +55,17 @@ public extension Web3Extensions where Base == BigInt {
             let len = base.magnitude.serialize().count + 1
             let maximum = BigUInt(2).power(len * 8)
             let (twosComplement, _) = maximum.subtractingReportingOverflow(base.magnitude)
-            data = (twosComplement).serialize()
+            data = twosComplement.serialize()
         }
-        
-        
+
         let bytes = data.web3.bytes
         let lastIndex = bytes.count - 1
         let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
-        
+
         if lastIndex < 0 {
             return Array([0])
         }
-        
+
         return Array(bytes[firstIndex...lastIndex])
     }
 }
@@ -79,7 +75,7 @@ public extension Data {
         let bytes = zip(lhs.web3.bytes, rhs.web3.bytes).map { lhsByte, rhsByte in
             return lhsByte ^ rhsByte
         }
-        
+
         return Data(bytes)
     }
 }
@@ -88,7 +84,7 @@ public extension Web3Extensions where Base == Data {
     var bytes: [UInt8] {
         return Array(base)
     }
-    
+
     var strippingZeroesFromBytes: Data {
         var bytes = self.bytes
         while bytes.first == 0 {
@@ -96,7 +92,7 @@ public extension Web3Extensions where Base == Data {
         }
         return Data.init(bytes)
     }
-    
+
     var bytes4: Data {
         return base.prefix(4)
     }
@@ -104,7 +100,7 @@ public extension Web3Extensions where Base == Data {
 
 public extension String {
     init(hexFromBytes bytes: [UInt8]) {
-        self.init("0x" + bytes.map() { String(format: "%02x", $0) }.reduce("", +))
+        self.init("0x" + bytes.map { String(format: "%02x", $0) }.reduce("", +))
     }
 }
 
@@ -112,9 +108,9 @@ public extension Web3Extensions where Base == String {
     var bytes: [UInt8] {
         return [UInt8](base.utf8)
     }
-    
+
     var bytesFromHex: [UInt8]? {
-        let hex = self.noHexPrefix
+        let hex = noHexPrefix
         do {
             let byteArray = try HexUtil.byteArray(fromHex: hex)
             return byteArray

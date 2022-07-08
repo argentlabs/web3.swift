@@ -1,13 +1,10 @@
 //
-//  Multicall.swift
-//  web3swift
-//
-//  Created by David Rodrigues on 28/10/2020.
-//  Copyright © 2020 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public typealias MulticallResponse = Multicall.Response
 
@@ -76,8 +73,8 @@ extension Multicall {
         public let outputs: [Output]
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
-            block = try values[0].decoded()
-            outputs = values[1].entry.map { result in
+            self.block = try values[0].decoded()
+            self.outputs = values[1].entry.map { result in
                 guard result != Self.multicallFailedError
                 else { return .failure(.contractFailure) }
 

@@ -1,24 +1,21 @@
 //
-//  ERC20Tests.swift
-//  web3swiftTests
-//
-//  Created by Matt Marshall on 13/04/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 import BigInt
+import XCTest
 @testable import web3
 
 class ERC20Tests: XCTestCase {
-    var client: EthereumClient?
+    var client: EthereumClientProtocol?
     var erc20: ERC20?
     let testContractAddress = EthereumAddress(TestConfig.erc20Contract)
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
-        self.erc20 = ERC20(client: client!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        erc20 = ERC20(client: client!)
     }
 
     override func tearDown() {
@@ -27,7 +24,7 @@ class ERC20Tests: XCTestCase {
 
     func testName() async {
         do {
-            let name = try await erc20?.name(tokenContract: self.testContractAddress)
+            let name = try await erc20?.name(tokenContract: testContractAddress)
             XCTAssertEqual(name, "BokkyPooBah Test Token")
         } catch {
             XCTFail("Expected name but failed \(error).")
@@ -36,7 +33,7 @@ class ERC20Tests: XCTestCase {
 
     func testNonZeroDecimals() async {
         do {
-            let decimals = try await erc20?.decimals(tokenContract: self.testContractAddress)
+            let decimals = try await erc20?.decimals(tokenContract: testContractAddress)
             XCTAssertEqual(decimals, 18)
         } catch {
             XCTFail("Expected decimals but failed \(error).")
@@ -54,7 +51,7 @@ class ERC20Tests: XCTestCase {
 
     func testSymbol() async {
         do {
-            let symbol = try await erc20?.symbol(tokenContract: self.testContractAddress)
+            let symbol = try await erc20?.symbol(tokenContract: testContractAddress)
             XCTAssertEqual(symbol, "BOKKY")
         } catch {
             XCTFail("Expected symbol but failed \(error).")
@@ -67,7 +64,7 @@ class ERC20Tests: XCTestCase {
             let sig = try! ERC20Events.Transfer.signature()
             let topics = [ sig, result.hexString]
 
-            let eventResults = try await self.client?.getEvents(addresses: nil, topics: topics, fromBlock: .Earliest, toBlock: .Latest, eventTypes: [ERC20Events.Transfer.self])
+            let eventResults = try await client?.getEvents(addresses: nil, topics: topics, fromBlock: .Earliest, toBlock: .Latest, eventTypes: [ERC20Events.Transfer.self])
             XCTAssert(eventResults!.events.count > 0)
         } catch {
             XCTFail("Expected eventResults but failed \(error).")
@@ -92,7 +89,6 @@ class ERC20Tests: XCTestCase {
         }
     }
 
-
     func testGivenAddressWithOutgoingEvents_ThenGetsTheTransferEvents() async {
         do {
             let events = try await erc20?.transferEventsFrom(sender: EthereumAddress("0x2FB78FA9842f20bfD515A41C3196C4b368bDbC48"), fromBlock: .Earliest, toBlock: .Latest)
@@ -115,3 +111,9 @@ class ERC20Tests: XCTestCase {
     }
 }
 
+class ERC20WebSocketTests: ERC20Tests {
+    override func setUp() {
+        super.setUp()
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+    }
+}

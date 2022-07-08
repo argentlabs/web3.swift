@@ -1,9 +1,6 @@
 //
-//  HexExtensions.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 09/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -51,7 +48,7 @@ public extension Data {
 
 public extension Web3Extensions where Base == Data {
     var hexString: String {
-        let bytes = Array<UInt8>(base)
+        let bytes = [UInt8](base)
         return "0x" + bytes.map { String(format: "%02hhx", $0) }.joined()
     }
 }
@@ -95,5 +92,3 @@ public extension Web3Extensions where Base == String {
         return nil
     }
 }
-
-

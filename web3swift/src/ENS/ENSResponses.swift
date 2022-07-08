@@ -1,9 +1,6 @@
 //
-//  ENSRegistryResponses.swift
-//  web3swift
-//
-//  Created by David Rodrigues on 30/10/2020.
-//  Copyright © 2020 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -21,7 +18,7 @@ extension ENSContracts {
                 let idx = data.index(data.endIndex, offsetBy: -40)
                 self.value = EthereumAddress(String(data[idx...]).web3.withHexPrefix)
 
-                guard self.value != .zero else {
+                guard value != .zero else {
                     throw EthereumNameServiceError.ensUnknown
                 }
             }

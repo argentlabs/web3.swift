@@ -1,9 +1,6 @@
 //
-//  KeccakExtensions.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 13/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -27,10 +24,9 @@ public extension Web3Extensions where Base == String {
         let data = base.data(using: .utf8) ?? Data()
         return data.web3.keccak256
     }
-    
+
     var keccak256fromHex: Data {
         let data = base.web3.hexData!
         return data.web3.keccak256
     }
 }
-

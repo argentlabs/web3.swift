@@ -1,13 +1,10 @@
 //
-//  TypedData.swift
-//  web3swift
-//
-//  Created by Miguel on 19/06/2020.
-//  Copyright © 2020 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 import GenericJSON
 
 /// A type value description
@@ -29,7 +26,7 @@ public struct TypedData: Codable, Equatable {
     public let domain: JSON
     public let message: JSON
 
-    public init(types: [String : [TypedVariable]],
+    public init(types: [String: [TypedVariable]],
                 primaryType: String,
                 domain: JSON,
                 message: JSON) {
@@ -49,7 +46,7 @@ extension TypedData: CustomStringConvertible {
             let string = String(data: encoded, encoding: .utf8) else {
                 return ""
         }
-        
+
         return string
     }
 }
@@ -80,11 +77,11 @@ extension TypedData {
     /// Object encoding as per EIP712
     public func encodeData(data: JSON, type: String) throws -> Data {
         var encoded = try ABIEncoder.encode(encodeType(primaryType: type).web3.keccak256, staticSize: 32).bytes
-        
+
         guard let valueTypes = types[type] else {
             throw ABIError.invalidType
         }
-        
+
         let recursiveEncoded: [UInt8] = try valueTypes.flatMap { variable -> [UInt8] in
             if types[variable.type] != nil {
                 guard let json = data[variable.name] else {
@@ -97,12 +94,12 @@ extension TypedData {
                 return []
             }
         }
-        
+
         encoded.append(contentsOf: recursiveEncoded)
-        
+
         return Data(encoded)
     }
-    
+
     private func findDependencies(primaryType: String, dependencies: Set<String> = Set<String>()) -> Set<String> {
         var found = dependencies
         guard !found.contains(primaryType),
@@ -121,7 +118,7 @@ extension TypedData {
         guard let abiType = ABIRawType(rawValue: type) else {
             throw ABIError.invalidValue
         }
-        
+
         switch abiType {
         case .DynamicString:
             guard let value = data.stringValue?.web3.keccak256 else {
@@ -150,24 +147,24 @@ extension TypedData {
             guard let value = data.boolValue else {
                 throw ABIError.invalidValue
             }
-            
+
             return try ABIEncoder.encode(BigUInt(value ? 1 : 0)).bytes
         case .DynamicArray(let nested):
             guard let value = data.arrayValue else {
                 throw ABIError.invalidValue
             }
-            
+
             let encoded = try value.flatMap { try parseAtomicType($0, type: nested.rawValue) }
             return Data(encoded).web3.keccak256.web3.bytes
         case .FixedArray(let nested, let count):
             guard let value = data.arrayValue else {
                 throw ABIError.invalidValue
             }
-            
+
             guard value.count == count else {
                 throw ABIError.invalidValue
             }
-            
+
             let encoded = try value.flatMap { try parseAtomicType($0, type: nested.rawValue) }
             return Data(encoded).web3.keccak256.web3.bytes
         case .Tuple:
