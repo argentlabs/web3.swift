@@ -12,6 +12,10 @@ public struct Signature: Equatable {
     public let recoveryParam: Int
     let raw: Data
     
+    public var flattened: Data {
+        raw
+    }
+    
     public init(
         r: Data,
         s: Data,
@@ -38,7 +42,7 @@ public struct Signature: Equatable {
 
 extension Data {
     func extractRSV() -> (Data, Data, Int) {
-        guard count == 65 else {
+        guard count >= 65 else {
             fatalError("Invalid usage: Need a correctly sized signature")
         }
         
