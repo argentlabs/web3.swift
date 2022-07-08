@@ -32,6 +32,8 @@ public struct Signature: Equatable {
         (self.r, self.s, self.v) = raw.extractRSV()
         self.recoveryParam = 1 - (self.v % 2)
     }
+    
+    public static let zero: Signature = .init(raw: Data(repeating: 0, count: 65))
 }
 
 extension Data {

@@ -10,7 +10,7 @@ enum EthereumSignerError: Error {
     case unknownError
 }
 
-public extension EthereumAccount {
+public extension EthereumAccountProtocol {
     
     func signRaw(_ transaction: EthereumTransaction) throws -> Data {
         let signed: SignedTransaction = try sign(transaction: transaction)
