@@ -76,8 +76,8 @@ class EthereumAccountTests: XCTestCase {
     }
 
     func test_toChecksumAddress() {
-        let add1 = EthereumAddress("0x12ae66cdc592e10b60f9097a7b0d3c59fce29876")
-        let add2 = EthereumAddress("0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1")
+        let add1: EthereumAddress = "0x12ae66cdc592e10b60f9097a7b0d3c59fce29876"
+        let add2: EthereumAddress = "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1"
         XCTAssertEqual(add1.toChecksumAddress(), "0x12AE66CDc592e10B60f9097a7b0D3C59fce29876")
         XCTAssertEqual(add2.toChecksumAddress(), "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1")
     }

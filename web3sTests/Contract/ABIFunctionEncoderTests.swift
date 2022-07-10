@@ -99,11 +99,11 @@ class ABIFunctionEncoderTests: XCTestCase {
     }
 
     func testGivenArrayOfAddressses_ThenEncodesCorrectly() {
-        let addresses = ["0x26fc876db425b44bf6c377a7beef65e9ebad0ec3",
+        let addresses: [EthereumAddress] = ["0x26fc876db425b44bf6c377a7beef65e9ebad0ec3",
                          "0x25a01a05c188dacbcf1d61af55d4a5b4021f7eed",
                          "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                          "0x8c2dc702371d73febc50c6e6ced100bf9dbcb029",
-                         "0x007eedb5044ed5512ed7b9f8b42fe3113452491e"].map(EthereumAddress.init)
+                         "0x007eedb5044ed5512ed7b9f8b42fe3113452491e"]
 
         XCTAssertNoThrow(try encoder.encode(addresses))
         let encoded = try! encoder.encoded()
@@ -141,7 +141,7 @@ class ABIFunctionEncoderTests: XCTestCase {
     }
 
     func testGivenSimpleTuple_ThenEncodesCorrectly() {
-        let tuple = SimpleTuple(address: EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793"), amount: BigUInt(30))
+        let tuple = SimpleTuple(address: "0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793", amount: BigUInt(30))
 
         do {
             try encoder.encode(tuple)
@@ -208,8 +208,8 @@ class ABIFunctionEncoderTests: XCTestCase {
 
     func testGivenArrayOfTuples_ThenEncodesCorrectly() {
         let tuples = [
-            SimpleTuple(address: EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"), amount: 30),
-            SimpleTuple(address: EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"), amount: 120)]
+            SimpleTuple(address: "0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793", amount: 30),
+            SimpleTuple(address: "0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", amount: 120)]
 
         do {
             try encoder.encode(tuples)
@@ -239,7 +239,7 @@ class ABIFunctionEncoderTests: XCTestCase {
 
     func test_GivenArrayOfComplexTuples_WhenEncodesOneEntry_ThenEncodesCorrectly() {
         do {
-            let tuple = ComplexTupleWithArray(address: EthereumAddress("0xdF136715f7bafD40881cFb16eAa5595C2562972b"), amount: 2, owners: [SimpleTuple(address: EthereumAddress("0xdF136715f7bafD40881cFb16eAa5595C2562972b"), amount: 100)])
+            let tuple = ComplexTupleWithArray(address: "0xdF136715f7bafD40881cFb16eAa5595C2562972b", amount: 2, owners: [SimpleTuple(address: "0xdF136715f7bafD40881cFb16eAa5595C2562972b", amount: 100)])
 
             try encoder.encode([tuple])
             XCTAssertEqual(try encoder.encoded().web3.hexString,
@@ -251,8 +251,8 @@ class ABIFunctionEncoderTests: XCTestCase {
 
     func test_GivenArrayOfComplexTuples_WhenEncodesTwoEntries_ThenEncodesCorrectly() {
         do {
-            let tuple1 = ComplexTupleWithArray(address: EthereumAddress("0xdF136715f7bafD40881cFb16eAa5595C2562972b"), amount: 2, owners: [SimpleTuple(address: EthereumAddress("0x4bf21a47b608841e974ff4147fd1a005da7fdf9b"), amount: 100)])
-            let tuple2 = ComplexTupleWithArray(address: EthereumAddress("0x69F84b91E7107206E841748C2B52294A1176D45e"), amount: 3, owners: [SimpleTuple(address: EthereumAddress("0xc07d381fFadB957e0FC9218AaBa88556f5C4BB7a"), amount: 200)])
+            let tuple1 = ComplexTupleWithArray(address: "0xdF136715f7bafD40881cFb16eAa5595C2562972b", amount: 2, owners: [SimpleTuple(address: "0x4bf21a47b608841e974ff4147fd1a005da7fdf9b", amount: 100)])
+            let tuple2 = ComplexTupleWithArray(address: "0x69F84b91E7107206E841748C2B52294A1176D45e", amount: 3, owners: [SimpleTuple(address: "0xc07d381fFadB957e0FC9218AaBa88556f5C4BB7a", amount: 200)])
             try encoder.encode([tuple1, tuple2])
             XCTAssertEqual(try encoder.encoded().web3.hexString,
                            "0x07e0fd750000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000100000000000000000000000000df136715f7bafd40881cfb16eaa5595c2562972b0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000010000000000000000000000004bf21a47b608841e974ff4147fd1a005da7fdf9b000000000000000000000000000000000000000000000000000000000000006400000000000000000000000069f84b91e7107206e841748c2b52294a1176d45e000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c07d381ffadb957e0fc9218aaba88556f5c4bb7a00000000000000000000000000000000000000000000000000000000000000c8")
