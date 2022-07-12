@@ -9,8 +9,8 @@ import Foundation
 public typealias ENSRegistryResolverParameter = ENSContracts.ResolveParameter
 
 public enum ENSContracts {
-    static let RopstenAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
-    static let MainnetAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
+    static let RopstenAddress: EthereumAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+    static let MainnetAddress: EthereumAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
 
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {

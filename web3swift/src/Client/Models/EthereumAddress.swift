@@ -7,7 +7,7 @@ import Foundation
 
 public struct EthereumAddress: Codable, Hashable {
     public let value: String
-    public static let zero = EthereumAddress("0x0000000000000000000000000000000000000000")
+    public static let zero: Self = "0x0000000000000000000000000000000000000000"
 
     public init(_ value: String) {
         self.value = value.lowercased()
@@ -46,5 +46,12 @@ public extension EthereumAddress {
             }
         }
         return result
+    }
+}
+
+extension EthereumAddress: ExpressibleByStringLiteral {
+    
+    public init(stringLiteral value: String) {
+        self.init(value)
     }
 }
