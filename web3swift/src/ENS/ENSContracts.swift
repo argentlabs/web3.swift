@@ -9,15 +9,16 @@ import BigInt
 public typealias ENSRegistryResolverParameter = ENSContracts.ResolveParameter
 
 public enum ENSContracts {
-    static let RopstenAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
-    static let MainnetAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
-    
+    static let RegistryAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
+
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {
         case .ropsten:
-            return ENSContracts.RopstenAddress
+            return ENSContracts.RegistryAddress
         case .mainnet:
-            return ENSContracts.MainnetAddress
+            return ENSContracts.RegistryAddress
+        case .goerli:
+            return ENSContracts.RegistryAddress
         default:
             return nil
         }
