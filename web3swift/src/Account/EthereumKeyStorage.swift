@@ -158,7 +158,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
                 try fileManager.removeItem(at: filePathName)
             }
         } catch {
-            print("Could not delete address: \(error)")
+            print("Could not delete address \(address): \(error)")
             throw EthereumKeyStorageError.failedToDelete
         }
     }
