@@ -23,7 +23,7 @@ class ENSTests: XCTestCase {
 
     func testGivenRopstenRegistry_WhenExistingDomainName_ResolvesOwnerAddressCorrectly() async {
         do {
-            let function = ENSContracts.ENSRegistryFunctions.owner(contract: ENSContracts.RopstenAddress, _node: EthereumNameService.nameHash(name: "test").web3.hexData ?? Data())
+            let function = ENSContracts.ENSRegistryFunctions.owner(contract: ENSContracts.RegistryAddress, _node: EthereumNameService.nameHash(name: "test").web3.hexData ?? Data())
 
             let tx = try function.transaction()
 
