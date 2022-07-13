@@ -30,7 +30,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     public init() {}
     
     private var address: String?
-    private let localFileName = "EthereumKey"
+    private let localFileName = "ethereumkey"
     
     private var addressPath: String? {
         guard let address = address else { return nil }
