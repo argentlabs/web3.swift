@@ -105,7 +105,7 @@ public struct Transfer: ABIFunction {
 
 This function can be used to generate contract call transactions to send with the client:
 ```swift
-let function = transfer(contract: EthereumAddress("0xtokenaddress"), from: EthereumAddress("0xfrom"), to: EthereumAddress("0xto"), value: 100)
+let function = transfer(contract: "0xtokenaddress", from: "0xfrom", to: "0xto", value: 100)
 let transaction = try function.transaction()
 
 client.eth_sendRawTransaction(transaction, withAccount: account) { (error, txHash) in

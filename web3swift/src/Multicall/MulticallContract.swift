@@ -9,9 +9,10 @@ import Foundation
 extension Multicall {
     public enum Contract {
 
-        static let ropstenAddress = EthereumAddress("0x604D19Ba889A223693B0E78bC1269760B291b9Df")
-        static let rinkebyAddress = EthereumAddress("0xF20A5837Eb2D9F1F7cdf9D635f3Bc68C47B8B8fF")
-        static let mainnetAddress = EthereumAddress("0xF34D2Cb31175a51B23fb6e08cA06d7208FaD379F")
+        static let goerliAddress: EthereumAddress = "0x77dCa2C955b15e9dE4dbBCf1246B4B85b651e50e"
+        static let ropstenAddress: EthereumAddress = "0x604D19Ba889A223693B0E78bC1269760B291b9Df"
+        static let rinkebyAddress: EthereumAddress = "0xF20A5837Eb2D9F1F7cdf9D635f3Bc68C47B8B8fF"
+        static let mainnetAddress: EthereumAddress = "0xF34D2Cb31175a51B23fb6e08cA06d7208FaD379F"
 
         public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
             switch network {
@@ -21,6 +22,8 @@ extension Multicall {
                 return Self.rinkebyAddress
             case .mainnet:
                 return Self.mainnetAddress
+            case .goerli:
+                return Self.goerliAddress
             default:
                 return nil
             }

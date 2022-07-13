@@ -12,7 +12,7 @@ struct DummyOffchainENSResolve: ABIFunction {
     var gasPrice: BigUInt?
     var gasLimit: BigUInt?
 
-    var contract = EthereumAddress("0x7A876E79a89b9B6dF935F2C1e832E15930FEf3f6")
+    var contract: EthereumAddress = "0x7A876E79a89b9B6dF935F2C1e832E15930FEf3f6"
 
     var from: EthereumAddress?
     var node: Data
@@ -28,7 +28,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract = EthereumAddress("0xAe375B05A08204C809b3cA67C680765661998886")
+        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
 
         var from: EthereumAddress?
         var data: Data
@@ -43,7 +43,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract = EthereumAddress("0xAe375B05A08204C809b3cA67C680765661998886")
+        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
 
         var from: EthereumAddress?
         var data: Data
@@ -58,7 +58,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract = EthereumAddress("0xAe375B05A08204C809b3cA67C680765661998886")
+        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
 
         var from: EthereumAddress?
         var data: Data
@@ -73,7 +73,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract = EthereumAddress("0xAe375B05A08204C809b3cA67C680765661998886")
+        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
 
         var from: EthereumAddress?
         var data: Data
@@ -88,7 +88,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract = EthereumAddress("0xAe375B05A08204C809b3cA67C680765661998886")
+        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
 
         var from: EthereumAddress?
         var data: Data
@@ -103,7 +103,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract = EthereumAddress("0xAe375B05A08204C809b3cA67C680765661998886")
+        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
 
         var from: EthereumAddress?
         var data: Data

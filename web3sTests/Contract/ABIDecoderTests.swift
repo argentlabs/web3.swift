@@ -212,11 +212,11 @@ class ABIDecoderTests: XCTestCase {
 
     func test_GivenDynamicArrayOfAddresses_ThenDecodesCorrectly() {
         do {
-            let addresses = ["0x26fc876db425b44bf6c377a7beef65e9ebad0ec3",
-                             "0x25a01a05c188dacbcf1d61af55d4a5b4021f7eed",
-                             "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-                             "0x8c2dc702371d73febc50c6e6ced100bf9dbcb029",
-                             "0x007eedb5044ed5512ed7b9f8b42fe3113452491e"].map { EthereumAddress($0) }
+            let addresses: [EthereumAddress] = ["0x26fc876db425b44bf6c377a7beef65e9ebad0ec3",
+                                                "0x25a01a05c188dacbcf1d61af55d4a5b4021f7eed",
+                                                "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                                                "0x8c2dc702371d73febc50c6e6ced100bf9dbcb029",
+                                                "0x007eedb5044ed5512ed7b9f8b42fe3113452491e"]
 
             let result = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000500000000000000000000000026fc876db425b44bf6c377a7beef65e9ebad0ec300000000000000000000000025a01a05c188dacbcf1d61af55d4a5b4021f7eed000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000008c2dc702371d73febc50c6e6ced100bf9dbcb029000000000000000000000000007eedb5044ed5512ed7b9f8b42fe3113452491e", types: [ABIArray<EthereumAddress>.self])
             XCTAssertEqual(try result[0].decodedArray(), addresses)
@@ -328,7 +328,7 @@ class ABIDecoderTests: XCTestCase {
         do {
             let value = try ABIDecoder.decodeData("0x00000000000000000000000064d0ea4fc60f27e74f1a70aa6f39d403bbe56793000000000000000000000000000000000000000000000000000000000000001e", types: [SimpleTuple.self])
 
-            XCTAssertEqual(try value[0].decoded(), SimpleTuple(address: EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793"), amount: BigUInt(30)))
+            XCTAssertEqual(try value[0].decoded(), SimpleTuple(address: "0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793", amount: BigUInt(30)))
         } catch {
             print(error.localizedDescription)
             XCTFail()
@@ -365,8 +365,8 @@ class ABIDecoderTests: XCTestCase {
             let value = try ABIDecoder.decodeData("0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000064d0ea4fc60f27e74f1a70aa6f39d403bbe56793000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000003c1bd6b420448cf16a389c8b0115ccb3660bb8540000000000000000000000000000000000000000000000000000000000000078", types: [ABIArray<SimpleTuple>.self])
 
             XCTAssertEqual(try value[0].decodedTupleArray(), [
-                            SimpleTuple(address: EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"), amount: 30),
-                            SimpleTuple(address: EthereumAddress("0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854"), amount: 120)])
+                            SimpleTuple(address: "0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793", amount: 30),
+                            SimpleTuple(address: "0x3C1Bd6B420448Cf16A389C8b0115CCB3660bB854", amount: 120)])
         } catch {
             print(error.localizedDescription)
             XCTFail()

@@ -11,7 +11,7 @@ struct Deposit_NoParameter: ABIFunction {
     static let name = "deposit"
     let gasPrice: BigUInt? = nil
     let gasLimit: BigUInt? = nil
-    var contract = EthereumAddress("0xFFB9239F43673068E3c8D7664382Dd6Fdd6e40cb")
+    var contract: EthereumAddress = "0xFFB9239F43673068E3c8D7664382Dd6Fdd6e40cb"
     let from: EthereumAddress? = nil
 
     func encode(to encoder: ABIFunctionEncoder) throws {
@@ -22,7 +22,7 @@ struct BalanceOf_Parameter: ABIFunction {
     static let name = "balanceOf"
     let gasPrice: BigUInt? = nil
     let gasLimit: BigUInt? = nil
-    var contract = EthereumAddress("0xFFB9239F43673068E3c8D7664382Dd6Fdd6e40cb")
+    var contract: EthereumAddress = "0xFFB9239F43673068E3c8D7664382Dd6Fdd6e40cb"
     let account: EthereumAddress
     let from: EthereumAddress? = nil
 
