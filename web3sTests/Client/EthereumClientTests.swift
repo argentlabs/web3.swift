@@ -347,6 +347,21 @@ class EthereumClientTests: XCTestCase {
             XCTFail("Expected value but failed \(error).")
         }
     }
+
+    func test_ValueWithLeadingZero_EstimatesGas() async {
+        do {
+            let tx = EthereumTransaction(from: EthereumAddress("0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F"),
+                                         to: EthereumAddress("0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd"),
+                                         value: BigUInt(5000000000),
+                                         data: Data(),
+                                         gasPrice: BigUInt(0),
+                                         gasLimit: BigUInt(0))
+            let value = try await client!.eth_estimateGas(tx)
+            XCTAssert(value != 0)
+        } catch {
+            XCTFail("Expected value but failed \(error).")
+        }
+    }
 }
 
 struct GetGuardians: ABIFunction {

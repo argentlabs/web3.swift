@@ -46,6 +46,10 @@ class HexExtensionsTests: XCTestCase {
         XCTAssertEqual(BigInt(hex: "0x2A521C551E7F200D")!, 3049531049592692749)
     }
 
+    func testBigIntToHexStringNoLeadingZeros() {
+        XCTAssertEqual(BigUInt(5000000000).web3.hexStringNoLeadingZeroes, "0x12a05f200")
+    }
+
     func testDataToHexString() {
         let string = "0x68656c6c6f20776f726c64"
         let data = string.web3.hexData!
