@@ -16,6 +16,10 @@ public extension Web3Extensions where Base == BigUInt {
     var hexString: String {
         return String(bytes: base.web3.bytes)
     }
+
+    var hexStringNoLeadingZeroes: String {
+        return base.web3.hexString.replacingOccurrences(of: "(?<=0x)0+", with: "", options: .regularExpression)
+    }
 }
 
 public extension BigInt {
