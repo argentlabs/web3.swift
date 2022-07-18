@@ -168,7 +168,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
         let params = CallParams(from: transaction.from?.value,
                                 to: transaction.to.value,
-                                value: value?.web3.hexString,
+                                value: value?.web3.hexStringNoLeadingZeroes,
                                 data: transaction.data?.web3.hexString)
         networkProvider.send(method: "eth_estimateGas", params: params, receive: String.self, completionHandler: completionHandler) { result in
             switch result {
