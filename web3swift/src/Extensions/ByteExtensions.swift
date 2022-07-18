@@ -96,6 +96,10 @@ public extension Web3Extensions where Base == Data {
     var bytes4: Data {
         return base.prefix(4)
     }
+
+    var bytes32: Data {
+        return base.prefix(32)
+    }
 }
 
 public extension String {
