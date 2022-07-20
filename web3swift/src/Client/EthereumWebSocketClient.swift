@@ -90,7 +90,7 @@ public class EthereumWebSocketClient: BaseEthereumClient, EthereumClientWebSocke
 
 extension EthereumWebSocketClient {
     public func subscribe(type: EthereumSubscriptionType, completionHandler: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void) {
-        networkProvider.send(method: "eth_subscribe", params: [type.method, type.params].compactMap { $0 }, receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_subscribe", params: [type.method, type.params].compactMap { $0 }, receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resDataString = data as? String {
@@ -107,7 +107,7 @@ extension EthereumWebSocketClient {
     }
 
     public func unsubscribe(_ subscription: EthereumSubscription, completionHandler: @escaping (Result<Bool, EthereumClientError>) -> Void) {
-        networkProvider.send(method: "eth_unsubscribe", params: [subscription.id], receive: Bool.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_unsubscribe", params: [subscription.id], receive: Bool.self) { result in
             switch result {
             case .success(let data):
                 if let resDataBool = data as? Bool {
@@ -123,7 +123,7 @@ extension EthereumWebSocketClient {
     }
 
     public func pendingTransactions(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (String) -> Void) {
-        networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.pendingTransactions.method], receive: String.self, completionHandler: onSubscribe) { result in
+        networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.pendingTransactions.method], receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resDataString = data as? String {
@@ -142,7 +142,7 @@ extension EthereumWebSocketClient {
     }
 
     public func newBlockHeaders(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumHeader) -> Void) {
-        networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.newBlockHeaders.method], receive: String.self, completionHandler: onSubscribe) { result in
+        networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.newBlockHeaders.method], receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resDataString = data as? String {
@@ -161,7 +161,7 @@ extension EthereumWebSocketClient {
     }
 
     public func syncing(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumSyncStatus) -> Void) {
-        networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.syncing.method], receive: String.self, completionHandler: onSubscribe) { result in
+        networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.syncing.method], receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resDataString = data as? String {

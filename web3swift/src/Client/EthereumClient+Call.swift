@@ -73,8 +73,7 @@ extension BaseEthereumClient {
 
         networkProvider.send(method: "eth_call",
                              params: params,
-                             receive: String.self,
-                             completionHandler: completionHandler) { result in
+                             receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resDataString = data as? String {

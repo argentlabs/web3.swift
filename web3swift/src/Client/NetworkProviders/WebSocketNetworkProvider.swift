@@ -148,7 +148,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         }
     }
 
-    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P: Encodable, U: Decodable {
+    func send<T: Encodable, U: Decodable>(method: String, params: T, receive: U.Type, completionHandler: @escaping (Result<Any, Error>) -> Void) {
         semaphore.wait()
 
         defer {
@@ -162,12 +162,12 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         do {
             requestString = try encodeRequest(method: method, params: params, id: id)
         } catch {
-            completionHandler(.failure(.encodeIssue))
+            completionHandler(.failure(EthereumClientError.encodeIssue))
             return
         }
 
         let wsRequest = WebSocketRequest(payload: requestString, callback: decoding(receive.self) { result in
-            resultDecodeHandler(result.mapError({ error in
+            completionHandler(result.mapError({ error in
                 return error
             }))
         })
@@ -183,7 +183,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         // and return failure
         if currentState != .open {
             resources.removeRequest(id)
-            completionHandler(.failure(.connectionNotOpen))
+            completionHandler(.failure(EthereumClientError.connectionNotOpen))
             return
         }
 
@@ -192,7 +192,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
 
         let sendPromise = eventLoopGroup.next().makePromise(of: Void.self)
         sendPromise.futureResult.whenFailure({ error in
-            completionHandler(.failure(.webSocketError(EquatableError(base: error))))
+            completionHandler(.failure(EthereumClientError.webSocketError(EquatableError(base: error))))
             self.resources.removeResponse(id)
         })
         webSocket?.send(requestString, promise: sendPromise)

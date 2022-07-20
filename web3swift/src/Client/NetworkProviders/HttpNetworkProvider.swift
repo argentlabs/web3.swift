@@ -22,10 +22,10 @@ class HttpNetworkProvider: NetworkProviderProtocol {
         session.invalidateAndCancel()
     }
 
-    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P: Encodable, U: Decodable {
+    func send<T: Encodable, U: Decodable>(method: String, params: T, receive: U.Type, completionHandler: @escaping (Result<Any, Error>) -> Void) {
         if type(of: params) == [Any].self {
             // If params are passed in with Array<Any> and not caught, runtime fatal error
-            resultDecodeHandler(.failure(JSONRPCError.encodingError))
+            completionHandler(.failure(JSONRPCError.encodingError))
             return
         }
 
@@ -37,7 +37,7 @@ class HttpNetworkProvider: NetworkProviderProtocol {
         let id: Int = 1
         let rpcRequest = JSONRPCRequest(jsonrpc: "2.0", method: method, params: params, id: id)
         guard let encoded = try? JSONEncoder().encode(rpcRequest) else {
-            resultDecodeHandler(.failure(JSONRPCError.encodingError))
+            completionHandler(.failure(JSONRPCError.encodingError))
             return
         }
         request.httpBody = encoded
@@ -45,19 +45,19 @@ class HttpNetworkProvider: NetworkProviderProtocol {
         let task = session.dataTask(with: request) { data, response, _ in
             if let data = data {
                 if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
-                    resultDecodeHandler(.success(result.result))
+                    completionHandler(.success(result.result))
                 } else if let result = try? JSONDecoder().decode([JSONRPCResult<U>].self, from: data) {
                     let resultObjects = result.map { return $0.result }
-                    resultDecodeHandler(.success(resultObjects))
+                    completionHandler(.success(resultObjects))
                 } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
-                    resultDecodeHandler(.failure(JSONRPCError.executionError(errorResult)))
+                    completionHandler(.failure(JSONRPCError.executionError(errorResult)))
                 } else if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode > 299 {
-                    resultDecodeHandler(.failure(JSONRPCError.requestRejected(data)))
+                    completionHandler(.failure(JSONRPCError.requestRejected(data)))
                 } else {
-                    resultDecodeHandler(.failure(JSONRPCError.noResult))
+                    completionHandler(.failure(JSONRPCError.noResult))
                 }
             } else {
-                resultDecodeHandler(.failure(JSONRPCError.unknownError))
+                completionHandler(.failure(JSONRPCError.unknownError))
             }
         }
 

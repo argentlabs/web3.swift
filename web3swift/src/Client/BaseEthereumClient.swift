@@ -43,7 +43,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public func net_version(completionHandler: @escaping (Result<EthereumNetwork, EthereumClientError>) -> Void) {
         let emptyParams: [Bool] = []
-        networkProvider.send(method: "net_version", params: emptyParams, receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "net_version", params: emptyParams, receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resString = data as? String {
@@ -60,7 +60,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public func eth_gasPrice(completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
         let emptyParams: [Bool] = []
-        networkProvider.send(method: "eth_gasPrice", params: emptyParams, receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_gasPrice", params: emptyParams, receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let hexString = data as? String, let bigUInt = BigUInt(hex: hexString) {
@@ -76,7 +76,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public func eth_blockNumber(completionHandler: @escaping (Result<Int, EthereumClientError>) -> Void) {
         let emptyParams: [Bool] = []
-        networkProvider.send(method: "eth_blockNumber", params: emptyParams, receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_blockNumber", params: emptyParams, receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let hexString = data as? String {
@@ -95,7 +95,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
-        networkProvider.send(method: "eth_getBalance", params: [address.value, block.stringValue], receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_getBalance", params: [address.value, block.stringValue], receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resString = data as? String, let balanceInt = BigUInt(hex: resString.web3.noHexPrefix) {
@@ -110,7 +110,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest, completionHandler: @escaping (Result<String, EthereumClientError>) -> Void) {
-        networkProvider.send(method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resDataString = data as? String {
@@ -170,7 +170,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
                                 to: transaction.to.value,
                                 value: value?.web3.hexStringNoLeadingZeroes,
                                 data: transaction.data?.web3.hexString)
-        networkProvider.send(method: "eth_estimateGas", params: params, receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_estimateGas", params: params, receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let gasHex = data as? String, let gas = BigUInt(hex: gasHex) {
@@ -205,7 +205,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
                     return
                 }
 
-                self.networkProvider.send(method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self, completionHandler: completionHandler) { result in
+                self.networkProvider.send(method: "eth_sendRawTransaction", params: [transactionHex], receive: String.self) { result in
                     group.leave()
                     switch result {
                     case .success(let data):
@@ -228,7 +228,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completionHandler: @escaping (Result<Int, EthereumClientError>) -> Void) {
-        networkProvider.send(method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self) { result in
             switch result {
             case .success(let data):
                 if let resString = data as? String, let count = Int(hex: resString) {
@@ -243,7 +243,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getTransaction(byHash txHash: String, completionHandler: @escaping (Result<EthereumTransaction, EthereumClientError>) -> Void) {
-        networkProvider.send(method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self) { result in
             switch result {
             case .success(let data):
                 if let transaction = data as? EthereumTransaction {
@@ -258,7 +258,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getTransactionReceipt(txHash: String, completionHandler: @escaping (Result<EthereumTransactionReceipt, EthereumClientError>) -> Void) {
-        networkProvider.send(method: "eth_getTransactionReceipt", params: [txHash], receive: EthereumTransactionReceipt.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_getTransactionReceipt", params: [txHash], receive: EthereumTransactionReceipt.self) { result in
             switch result {
             case .success(let data):
                 if let receipt = data as? EthereumTransactionReceipt {
@@ -294,7 +294,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
         let params = CallParams(block: block, fullTransactions: false)
 
-        networkProvider.send(method: "eth_getBlockByNumber", params: params, receive: EthereumBlockInfo.self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_getBlockByNumber", params: params, receive: EthereumBlockInfo.self) { result in
             switch result {
             case .success(let data):
                 if let blockData = data as? EthereumBlockInfo {
@@ -319,7 +319,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
         let params = CallParams(fromBlock: fromBlock.stringValue, toBlock: toBlock.stringValue, address: addresses, topics: topics)
 
-        networkProvider.send(method: "eth_getLogs", params: [params], receive: [EthereumLog].self, completionHandler: completionHandler) { result in
+        networkProvider.send(method: "eth_getLogs", params: [params], receive: [EthereumLog].self) { result in
             switch result {
             case .success(let data):
                 if let logs = data as? [EthereumLog] {
