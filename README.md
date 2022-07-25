@@ -1,6 +1,6 @@
 ![web3.swift: Ethereum API for Swift](https://raw.github.com/argentlabs/web3.swift/master/web3swift.png)
 
-[![Build Status](https://app.bitrise.io/app/c65202fce1ab4f66/status.svg?token=3G01KrQCcivwF5puzFd0PA&branch=develop)](https://app.bitrise.io/app/c65202fce1ab4f66)
+[![Swift](https://github.com/argentlabs/web3.swift/actions/workflows/swift.yml/badge.svg?branch=develop)](https://github.com/argentlabs/web3.swift/actions/workflows/swift.yml)
 
 ## Installation
 
@@ -8,7 +8,7 @@
 
 Use Xcode to add to the project (**File -> Swift Packages**) or add this to your `Package.swift` file:
 ```swift
-.package(url: "https://github.com/argentlabs/web3.swift", from: "0.7.0")
+.package(url: "https://github.com/argentlabs/web3.swift", from: "1.1.0")
 ```
 ### CocoaPods
 
@@ -51,6 +51,10 @@ You can then interact with the client methods, such as to get the current gas pr
 client.eth_gasPrice { (error, currentPrice) in
     print("The current gas price is \(currentPrice)")
 }
+```
+If using `async/await` you can `await` on the result
+```swift
+let gasPrice = try await client.eth_gasPrice()
 ```
 
 ### Smart contracts: Static types
@@ -95,9 +99,13 @@ This function can be used to generate contract call transactions to send with th
 let function = transfer(contract: EthereumAddress("0xtokenaddress"), from: EthereumAddress("0xfrom"), to: EthereumAddress("0xto"), value: 100)
 let transaction = try function.transaction()
 
-client.eth_sendRawTransaction(transacton, withAccount: account) { (error, txHash) in
+client.eth_sendRawTransaction(transaction, withAccount: account) { (error, txHash) in
     print("TX Hash: \(txHash)")
 }
+```
+If using `async/await` you can `await` on the result
+```swift
+let txHash = try await client.eth_sendRawTransaction(transaction, withAccount: account)
 ```
 
 ### Data types
@@ -162,9 +170,7 @@ There are some features that have yet to be fully implemented! Not every RPC met
 - Batch support for JSONRPC interface
 - Use a Hex struct for values to be more explicit in expected types
 - Use [Truffle](https://github.com/trufflesuite/ganache-cli) for running tests
-- Add support for Swift Package Manager
 - Bloom Filter support
-- Full ERC20 token support of totalSupply, allowance, transfer, approve, transferFrom, and Transfer/Approval events
 
 ## Contributors
 

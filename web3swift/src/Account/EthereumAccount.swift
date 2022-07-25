@@ -21,6 +21,7 @@ public protocol EthereumAccountProtocol {
 
 public enum EthereumAccountError: Error {
     case createAccountError
+    case importAccountError
     case loadAccountError
     case signError
 }
@@ -38,18 +39,13 @@ public class EthereumAccount: EthereumAccountProtocol {
     }()
     
     required public init(keyStorage: EthereumKeyStorageProtocol, keystorePassword password: String) throws {
-        
         do {
-            let data = try keyStorage.loadPrivateKey()
-            if let decodedKey = try? KeystoreUtil.decode(data: data, password: password) {
-                self.privateKeyData = decodedKey
-                self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
-            } else {
-                print("Error decrypting key data")
-                throw EthereumAccountError.loadAccountError
-            }
-        } catch {
-           throw EthereumAccountError.loadAccountError
+            let decodedKey = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
+            self.privateKeyData = decodedKey
+            self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
+        } catch let error {
+            print("Error loading key data: \(error)")
+            throw EthereumAccountError.loadAccountError
         }
     }
     
@@ -69,14 +65,25 @@ public class EthereumAccount: EthereumAccountProtocol {
         }
         
         do {
-            let encodedData = try KeystoreUtil.encode(privateKey: privateKey, password: password)
-            try keyStorage.storePrivateKey(key: encodedData)
+            try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
             return try self.init(keyStorage: keyStorage, keystorePassword: password)
         } catch {
             throw EthereumAccountError.createAccountError
         }
     }
-    
+
+    public static func importAccount(keyStorage: EthereumKeyStorageProtocol, privateKey: String, keystorePassword password: String) throws -> EthereumAccount {
+        guard let privateKey = privateKey.web3.hexData else {
+            throw EthereumAccountError.importAccountError
+        }
+        do {
+            try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
+            return try self.init(keyStorage: keyStorage, keystorePassword: password)
+        } catch {
+            throw EthereumAccountError.importAccountError
+        }
+    }
+
     public func sign(data: Data) throws -> Data {
         return try KeyUtil.sign(message: data, with: self.privateKeyData, hashing: true)
     }

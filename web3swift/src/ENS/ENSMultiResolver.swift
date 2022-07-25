@@ -32,6 +32,24 @@ extension EthereumNameService {
 }
 
 extension EthereumNameService {
+    public func resolve(addresses: [EthereumAddress]) async -> Result<[AddressResolveOutput], EthereumNameServiceError> {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Result<[AddressResolveOutput], EthereumNameServiceError>, Never>) in
+            MultiResolver(client: client, registryAddress: registryAddress).resolve(addresses: addresses) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
+    public func resolve(names: [String]) async -> Result<[NameResolveOutput], EthereumNameServiceError> {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Result<[NameResolveOutput], EthereumNameServiceError>, Never>) in
+            MultiResolver(client: client, registryAddress: registryAddress).resolve(names: names) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+}
+
+extension EthereumNameService {
 
     public enum ResolveOutput<Value: Equatable>: Equatable {
         case couldNotBeResolved(EthereumNameServiceError)
@@ -88,7 +106,6 @@ extension EthereumNameService {
             resolveRegistry(
                 parameters: addresses.map(ENSRegistryResolverParameter.address),
                 handler: { index, parameter, result in
-                    // TODO: Temporary solution
                     guard let address = parameter.address else { return }
                     switch result {
                     case .success(let resolverAddress):
@@ -132,7 +149,6 @@ extension EthereumNameService {
             resolveRegistry(
                 parameters: names.map(ENSRegistryResolverParameter.name),
                 handler: { index, parameter, result in
-                    // TODO: Temporary solution
                     guard let name = parameter.name else { return }
                     switch result {
                     case .success(let resolverAddress):
@@ -215,11 +231,11 @@ extension EthereumNameService {
                 switch query.parameter {
                 case .address(let address):
                     guard let registryOutput = registryOutput as? RegistryOutput<AddressResolveOutput>
-                        else { fatalError("Invalid registry output provided") }
+                    else { fatalError("Invalid registry output provided") }
                     resolveAddress(query, address: address, aggegator: &aggegator, registryOutput: registryOutput)
                 case .name(let name):
                     guard let registryOutput = registryOutput as? RegistryOutput<NameResolveOutput>
-                        else { fatalError("Invalid registry output provided") }
+                    else { fatalError("Invalid registry output provided") }
                     resolveName(query, ens: name, aggegator: &aggegator, registryOutput: registryOutput)
                 }
             }
