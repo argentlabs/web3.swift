@@ -280,7 +280,7 @@ public class EthereumClient: EthereumClientProtocol {
 
         let params = CallParams(from: transaction.from?.value,
                                 to: transaction.to.value,
-                                value: value?.web3.hexString,
+                                value: value?.web3.hexStringNoLeadingZeroes,
                                 data: transaction.data?.web3.hexString)
         EthereumRPC.execute(session: session, url: url, method: "eth_estimateGas", params: params, receive: String.self) { result in
             switch result {
