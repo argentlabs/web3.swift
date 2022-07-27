@@ -84,9 +84,10 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_getBlockByNumber(_ block: EthereumBlock, completion: @escaping((EthereumClientError?, EthereumBlockInfo?) -> Void))
 }
 
-public enum EthereumClientError: Error, Equatable {
+public enum EthereumClientError: Error {
     case tooManyResults
     case executionError(JSONRPCErrorDetail)
+    case signError(Swift.Error)
     case unexpectedReturnValue
     case noResultFound
     case decodeIssue
@@ -304,14 +305,31 @@ public class EthereumClient: EthereumClientProtocol {
             // Inject pending nonce
             self.eth_getTransactionCount(address: account.address, block: .Pending) { result in switch result {
             case .success(let nonce):
+                
                 var transaction = transaction
                 transaction.nonce = nonce
 
                 if transaction.chainId == nil, let network = self.network {
                     transaction.chainId = network.intValue
                 }
+                
+                guard let _ = transaction.chainId else {
+                    group.leave()
+                    completionHandler(.failure(.encodeIssue))
+                    return
+                }
+                
+                let signedTx: SignedTransaction
+                
+                do {
+                    signedTx = try account.sign(transaction: transaction)
+                } catch {
+                    group.leave()
+                    completionHandler(.failure(.signError(error)))
+                    return
+                }
 
-                guard let _ = transaction.chainId, let signedTx = (try? account.sign(transaction: transaction)), let transactionHex = signedTx.raw?.web3.hexString else {
+                guard let transactionHex = signedTx.raw?.web3.hexString else {
                     group.leave()
                     completionHandler(.failure(.encodeIssue))
                     return
