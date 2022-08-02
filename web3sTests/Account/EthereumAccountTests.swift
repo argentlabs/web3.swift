@@ -14,23 +14,60 @@ class EthereumAccountTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
     }
-
+    
     func testLoadAccountAndAddress() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         XCTAssertEqual(account.address.value.lowercased(), TestConfig.publicKey.lowercased(), "Failed to load private key. Ensure key is valid in TestConfig.swift")
     }
 
+    func testLoadAccountAndAddressMultiple() {
+        let storage = TestEthereumMultipleKeyStorage(privateKey: TestConfig.privateKey)
+        let account = try! EthereumAccount(addressString: TestConfig.publicKey, keyStorage: storage)
+        XCTAssertEqual(account.address.value.lowercased(), TestConfig.publicKey.lowercased(), "Failed to load private key. Ensure key is valid in TestConfig.swift")
+    }
+
     func testCreateAccount() {
-        let account = try? EthereumAccount.create(keyStorage: EthereumKeyLocalStorage(), keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage() as EthereumKeyStorageProtocol
+        let account = try? EthereumAccount.create(keyStorage: storage, keystorePassword: "PASSWORD")
+        XCTAssertNotNil(account, "Failed to create account. Ensure key is valid in TestConfig.swift")
+    }
+    
+    func testCreateAccountMultiple() {
+        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
+        let account = try? EthereumAccount.create(keyStorage: storage, keystorePassword: "PASSWORD")
         XCTAssertNotNil(account, "Failed to create account. Ensure key is valid in TestConfig.swift")
     }
 
     func testImportAccount() {
-        let account = try! EthereumAccount.importAccount(keyStorage: EthereumKeyLocalStorage(), privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage() as EthereumKeyStorageProtocol
+        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
 
         XCTAssertEqual(account.address.value, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
     }
+    
+    func testImportAccountMultiple() {
+        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
+        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
 
+        XCTAssertEqual(account.address.value, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
+    }
+    
+    func testFetchAccounts() {
+        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
+        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        let accounts = try! storage.fetchAccounts()
+        XCTAssertTrue(accounts.contains(account.address))
+    }
+    
+    func testDeleteAccount() {
+        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
+        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        let ethereumAddress = EthereumAddress("0x675f5810feb3b09528e5cd175061b4eb8de69075")
+        try! storage.deletePrivateKey(for: ethereumAddress)
+        let accounts = try! storage.fetchAccounts()
+        XCTAssertTrue(!accounts.contains(account.address))
+    }
+    
     func testSignMessage() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
         let signature = try! account.sign(message: "Hello message!")
@@ -39,7 +76,7 @@ class EthereumAccountTests: XCTestCase {
 
         XCTAssertEqual(signature.web3.hexString.web3.noHexPrefix, expectedSignature)
     }
-
+    
     func testSignData() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
         let signature = try! account.sign(data: "Hello message!".data(using: .utf8)!)
@@ -48,7 +85,7 @@ class EthereumAccountTests: XCTestCase {
 
         XCTAssertEqual(signature.web3.hexString.web3.noHexPrefix, expectedSignature)
     }
-
+    
     func testSignHash() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "774681694ad86635346b6e9b92fa8aa4806265336dc6766623029a6264a162c1"))
         let signature = try! account.sign(hash: "0x9dd2c369a187b4e6b9c402f030e50743e619301ea62aa4c0737d4ef7e10a3d49")
@@ -57,7 +94,7 @@ class EthereumAccountTests: XCTestCase {
 
         XCTAssertEqual(signature.web3.hexString.web3.noHexPrefix, expectedSignature)
     }
-
+    
     func testSignHex() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
         let signature = try! account.sign(hex: "0xe5808504a817c80082520894f59fc5a335e75060ff18beed2d6c8fbbbdab0dc2843b9aca0080")
@@ -74,7 +111,7 @@ class EthereumAccountTests: XCTestCase {
 
         XCTAssertEqual(signature.web3.hexString.web3.noHexPrefix, expectedSignature)
     }
-
+    
     func test_toChecksumAddress() {
         let add1: EthereumAddress = "0x12ae66cdc592e10b60f9097a7b0d3c59fce29876"
         let add2: EthereumAddress = "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1"

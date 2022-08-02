@@ -32,7 +32,7 @@ struct TransferMatchingSignatureEvent: ABIEvent {
 class EthereumClientTests: XCTestCase {
     var client: EthereumClientProtocol?
     var account: EthereumAccount?
-
+    
     override func setUp() {
         super.setUp()
         client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)

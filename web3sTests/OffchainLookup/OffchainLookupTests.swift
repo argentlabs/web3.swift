@@ -141,7 +141,7 @@ class OffchainLookupTests: XCTestCase {
     var client: EthereumClientProtocol!
     var account: EthereumAccount!
     var offchainLookup = OffchainLookup(address: .zero, urls: [], callData: Data(), callbackFunction: Data(), extraData: Data())
-
+    
     override func setUp() {
         super.setUp()
         client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)

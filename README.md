@@ -108,13 +108,13 @@ This function can be used to generate contract call transactions to send with th
 let function = transfer(contract: "0xtokenaddress", from: "0xfrom", to: "0xto", value: 100)
 let transaction = try function.transaction()
 
-client.eth_sendRawTransaction(transacton, withAccount: account) { (error, txHash) in
+client.eth_sendRawTransaction(transaction, withAccount: account) { (error, txHash) in
     print("TX Hash: \(txHash)")
 }
 ```
 If using `async/await` you can `await` on the result
 ```swift
-let txHash = try await client.eth_sendRawTransaction(transacton, withAccount: account)
+let txHash = try await client.eth_sendRawTransaction(transaction, withAccount: account)
 ```
 
 ### Data types
