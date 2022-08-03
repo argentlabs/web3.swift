@@ -36,15 +36,10 @@ class MulticallTests: XCTestCase {
 
         try aggregator.append(ERC20Functions.symbol(contract: testContractAddress))
 
-        let result = await multicall.aggregate(calls: aggregator.calls)
         do {
-            switch result {
-            case .failure(let error):
-                XCTFail("Multicall failed with error: \(error)")
-            case .success(let response):
-                let symbol = try ERC20Responses.symbolResponse(data: try response.outputs[2].get())?.value
-                XCTAssertEqual(symbol, "BOKKY")
-            }
+            let response = try await multicall.aggregate(calls: aggregator.calls)
+            let symbol = try ERC20Responses.symbolResponse(data: try response.outputs[2].get())?.value
+            XCTAssertEqual(symbol, "BOKKY")
         } catch {
             XCTFail("Unexpected failure while handling output")
         }

@@ -20,15 +20,6 @@
         }
       },
       {
-        "package": "OpenCombine",
-        "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
-        "state": {
-          "branch": null,
-          "revision": "9cf67e363738dbab61b47fb5eaed78d3db31e5ee",
-          "version": "0.13.0"
-        }
-      },
-      {
         "package": "secp256k1",
         "repositoryURL": "https://github.com/GigaBitcoin/secp256k1.swift.git",
         "state": {

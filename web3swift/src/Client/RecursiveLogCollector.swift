@@ -23,100 +23,51 @@ public enum Topics: Encodable {
 struct RecursiveLogCollector {
     let ethClient: EthereumClientProtocol
 
-    func getAllLogs(
-        addresses: [EthereumAddress]?,
-        topics: Topics?,
-        from: EthereumBlock,
-        to: EthereumBlock
-    ) -> Result<[EthereumLog], EthereumClientError> {
+    func getAllLogs(addresses: [EthereumAddress]?, topics: Topics?, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
+        do {
+            return try await getLogs(addresses: addresses, topics: topics, from: from, to: to)
+        } catch {
+            if let error = error as? EthereumClientError, error == .tooManyResults {
+                guard let middleBlock = await getMiddleBlock(from: from, to: to) else {
+                    throw EthereumClientError.unexpectedReturnValue
+                }
 
-        switch getLogs(addresses: addresses, topics: topics, from: from, to: to) {
-        case .success(let logs):
-            return .success(logs)
-        case.failure(.tooManyResults):
-            guard let middleBlock = getMiddleBlock(from: from, to: to)
-                else { return .failure(.unexpectedReturnValue) }
-
-            guard
-                case let .success(lhs) = getAllLogs(
-                    addresses: addresses,
-                    topics: topics,
-                    from: from,
-                    to: middleBlock
-                ),
-                case let .success(rhs) = getAllLogs(
-                    addresses: addresses,
-                    topics: topics,
-                    from: middleBlock,
-                    to: to
-                )
-            else { return .failure(.unexpectedReturnValue) }
-
-            return .success(lhs + rhs)
-        case .failure(let error):
-            return .failure(error)
+                guard let lhs = try? await getAllLogs(addresses: addresses, topics: topics, from: from, to: middleBlock),
+                      let rhs = try? await getAllLogs(addresses: addresses, topics: topics, from: middleBlock, to: to)
+                else { throw EthereumClientError.unexpectedReturnValue }
+                return lhs + rhs
+            }
         }
+        return []
     }
 
-    private func getLogs(
-        addresses: [EthereumAddress]?,
-        topics: Topics? = nil,
-        from: EthereumBlock,
-        to: EthereumBlock
-    ) -> Result<[EthereumLog], EthereumClientError> {
-
-        let sem = DispatchSemaphore(value: 0)
-
-        var response: Result<[EthereumLog], EthereumClientError>!
-
-        ethClient.getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to) { result in
-            response = result
-            sem.signal()
-        }
-
-        sem.wait()
-
-        return response
+    private func getLogs(addresses: [EthereumAddress]?, topics: Topics? = nil, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
+        return try await ethClient.getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
     }
 
-    private func getMiddleBlock(
-        from: EthereumBlock,
-        to: EthereumBlock
-    ) -> EthereumBlock? {
+    private func getMiddleBlock(from: EthereumBlock, to: EthereumBlock) async -> EthereumBlock? {
 
-        func toBlockNumber() -> Int? {
+        func toBlockNumber() async -> Int? {
             if let toBlockNumber = to.intValue {
                 return toBlockNumber
-            } else if case let .success(currentBlock) = getCurrentBlock(), let currentBlockNumber = currentBlock.intValue {
+            } else if let currentBlock = try? await getCurrentBlock(), let currentBlockNumber = currentBlock.intValue {
                 return currentBlockNumber
             } else {
                 return nil
             }
         }
 
-        guard
-            let fromBlockNumber = from.intValue,
-            let toBlockNumber = toBlockNumber()
-        else { return nil }
+        guard let fromBlockNumber = from.intValue, let toBlockNumber = await toBlockNumber() else { return nil }
 
         return EthereumBlock(rawValue: fromBlockNumber + (toBlockNumber - fromBlockNumber) / 2)
     }
 
-    private func getCurrentBlock() -> Result<EthereumBlock, EthereumClientError> {
-        let sem = DispatchSemaphore(value: 0)
-        var responseValue: EthereumBlock?
-
-        ethClient.eth_blockNumber { result in
-            switch result {
-            case .success(let block):
-                responseValue = EthereumBlock(rawValue: block)
-            default:
-                break
-            }
-            sem.signal()
+    private func getCurrentBlock() async throws -> EthereumBlock {
+        do {
+            let block = try await ethClient.eth_blockNumber()
+            return EthereumBlock(rawValue: block)
+        } catch {
+            throw EthereumClientError.unexpectedReturnValue
         }
-        sem.wait()
-
-        return responseValue.map(Result.success) ?? .failure(.unexpectedReturnValue)
     }
 }

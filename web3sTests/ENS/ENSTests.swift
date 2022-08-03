@@ -119,59 +119,56 @@ class ENSTests: XCTestCase {
     }
 
     func testGivenRopstenRegistry_ThenResolvesMultipleAddressesInOneCall() async {
-        let nameService = EthereumNameService(client: client!)
+        do {
+            let nameService = EthereumNameService(client: client!)
 
-        var results: [EthereumNameService.ResolveOutput<String>]?
+            var results: [EthereumNameService.ResolveOutput<String>]?
 
-        let result = await nameService.resolve(addresses: [
-            "0xb0b874220ff95d62a676f58d186c832b3e6529c8",
-            "0x09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1",
-            "0x7e691d7ffb007abe91d8a24d7f22fc74307dab06"
-        ])
+            let resolutions = try await nameService.resolve(addresses: [
+                "0xb0b874220ff95d62a676f58d186c832b3e6529c8",
+                "0x09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1",
+                "0x7e691d7ffb007abe91d8a24d7f22fc74307dab06"
+            ])
 
-        switch result {
-        case .success(let resolutions):
             results = resolutions.map { $0.output }
-        case .failure:
-            break
-        }
 
-        XCTAssertEqual(
-            results,
-            [
-                .resolved("julien.argent.test"),
-                .couldNotBeResolved(.ensUnknown),
-                .resolved("davidtests.argent.xyz")
-            ]
-        )
+            XCTAssertEqual(
+                results,
+                [
+                    .resolved("julien.argent.test"),
+                    .couldNotBeResolved(.ensUnknown),
+                    .resolved("davidtests.argent.xyz")
+                ]
+            ) } catch {
+                XCTFail("Expected resolutions but failed \(error).")
+            }
     }
 
     func testGivenRopstenRegistry_ThenResolvesMultipleNamesInOneCall() async {
-        let nameService = EthereumNameService(client: client!)
+        do {
+            let nameService = EthereumNameService(client: client!)
 
-        var results: [EthereumNameService.ResolveOutput<EthereumAddress>]?
+            var results: [EthereumNameService.ResolveOutput<EthereumAddress>]?
 
-        let result = await nameService.resolve(names: [
-            "julien.argent.test",
-            "davidtests.argent.xyz",
-            "somefakeens.argent.xyz"
-        ])
+            let resolutions = try await nameService.resolve(names: [
+                "julien.argent.test",
+                "davidtests.argent.xyz",
+                "somefakeens.argent.xyz"
+            ])
 
-        switch result {
-        case .success(let resolutions):
             results = resolutions.map { $0.output }
-        case .failure:
-            break
-        }
 
-        XCTAssertEqual(
-            results,
-            [
-                .resolved("0xb0b874220ff95d62a676f58d186c832b3e6529c8"),
-                .resolved("0x7e691d7ffb007abe91d8a24d7f22fc74307dab06"),
-                .couldNotBeResolved(.ensUnknown)
-            ]
-        )
+            XCTAssertEqual(
+                results,
+                [
+                    .resolved("0xb0b874220ff95d62a676f58d186c832b3e6529c8"),
+                    .resolved("0x7e691d7ffb007abe91d8a24d7f22fc74307dab06"),
+                    .couldNotBeResolved(.ensUnknown)
+                ]
+            )
+        } catch {
+            XCTFail("Expected resolutions but failed \(error).")
+        }
     }
 
     func testGivenRopstenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesExampleCorrectly() async {

@@ -1,8 +1,6 @@
 //
-//  SiweMessage.swift
-//  
-//
-//  Created by Rodrigo Kreutz on 13/06/22.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +25,7 @@ public struct SiweMessage: Hashable {
     /// Current version of the message.
     public var version: String
 
-    ///EIP-155 Chain ID to which the session is bound, and the network where Contract Accounts must be resolved.
+    /// EIP-155 Chain ID to which the session is bound, and the network where Contract Accounts must be resolved.
     public var chainId: Int
 
     /// Randomized token used to prevent replay attacks, at least 8 alphanumeric characters.

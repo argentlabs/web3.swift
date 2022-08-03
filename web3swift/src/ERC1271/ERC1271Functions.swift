@@ -1,8 +1,6 @@
 //
-//  ERC1271Functions.swift
-//  
-//
-//  Created by Rodrigo Kreutz on 15/06/22.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +9,7 @@ import BigInt
 public enum ERC1271Functions {
 
     public struct isValidSignature: ABIFunction {
-        
+
         public static let name = "isValidSignature"
         public let gasPrice: BigUInt? = nil
         public let gasLimit: BigUInt? = nil

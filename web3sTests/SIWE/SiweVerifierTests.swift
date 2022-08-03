@@ -1,8 +1,6 @@
 //
-//  SiweVerifierTests.swift
-//  
-//
-//  Created by Rodrigo Kreutz on 15/06/22.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import XCTest
