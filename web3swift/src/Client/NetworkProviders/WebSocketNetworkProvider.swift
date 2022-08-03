@@ -32,6 +32,10 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         // List with current subscriptions
         private(set) var subscriptions: [EthereumSubscription: (Any) -> Void] = [:]
 
+        private(set) var reconnectAttempts = 0
+        private(set) var forcedClose = false
+        private(set) var timedOut = false
+
         private(set) var counter: Int = 0 {
             didSet {
                 if counter == Int.max {
@@ -68,6 +72,22 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             exclusiveAccess(counter += 1)
         }
 
+        func incrementReconnectAttempts() {
+            exclusiveAccess(reconnectAttempts += 1)
+        }
+
+        func resetReconnectAttempts() {
+            exclusiveAccess(reconnectAttempts = 0)
+        }
+
+        func toggleForcedClosed(closed: Bool) {
+            exclusiveAccess(forcedClose = closed)
+        }
+
+        func toggleTimedOut(timedOut: Bool) {
+            exclusiveAccess(self.timedOut = timedOut)
+        }
+
         func cleanSubscriptions() {
             exclusiveAccess(subscriptions.removeAll())
         }
@@ -92,11 +112,6 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
     private let logger: Logger
     private let configuration: WebSocketConfiguration
     private let resources = SharedResources()
-    private let semaphore = DispatchSemaphore(value: 1)
-
-    private var reconnectAttempts = 0
-    private var forcedClose = false
-    private var timedOut = false
 
     private var retreivedNetwork: EthereumNetwork?
     private var webSocket: WebSocket?
@@ -148,54 +163,49 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         }
     }
 
-    func send<T, P, U>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void) where P: Encodable, U: Decodable {
-        semaphore.wait()
+    func send<P, U>(method: String, params: P, receive: U.Type) async throws -> Any where P: Encodable, U: Decodable {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
+            resources.incrementCounter()
+            let id = resources.counter
 
-        defer {
-            semaphore.signal()
-        }
-        resources.incrementCounter()
-        let id = resources.counter
+            let requestString: String
 
-        let requestString: String
+            do {
+                requestString = try encodeRequest(method: method, params: params, id: id)
+            } catch {
+                continuation.resume(throwing: EthereumClientError.encodeIssue)
+                return
+            }
 
-        do {
-            requestString = try encodeRequest(method: method, params: params, id: id)
-        } catch {
-            completionHandler(.failure(.encodeIssue))
-            return
-        }
+            let wsRequest = WebSocketRequest(payload: requestString, callback: decoding(receive.self) { result in
+                continuation.resume(with: result)
+            })
 
-        let wsRequest = WebSocketRequest(payload: requestString, callback: decoding(receive.self) { result in
-            resultDecodeHandler(result.mapError({ error in
-                return error
-            }))
-        })
+            // if socket is not connected yet or reconnecting
+            // add request to the queue
+            if currentState == .connecting {
+                resources.addRequest(id, request: wsRequest)
+                return
+            }
 
-        // if socket is not connected yet or reconnecting
-        // add request to the queue
-        if currentState == .connecting {
-            resources.addRequest(id, request: wsRequest)
-            return
-        }
+            // if socket is closed remove pending request
+            // and return failure
+            if currentState != .open {
+                resources.removeRequest(id)
+                continuation.resume(throwing: EthereumClientError.connectionNotOpen)
+                return
+            }
 
-        // if socket is closed remove pending request
-        // and return failure
-        if currentState != .open {
+            resources.addResponse(id, request: wsRequest)
             resources.removeRequest(id)
-            completionHandler(.failure(.connectionNotOpen))
-            return
+
+            let sendPromise = eventLoopGroup.next().makePromise(of: Void.self)
+            sendPromise.futureResult.whenFailure({ error in
+                continuation.resume(throwing: EthereumClientError.webSocketError(EquatableError(base: error)))
+                self.resources.removeResponse(id)
+            })
+            webSocket?.send(requestString, promise: sendPromise)
         }
-
-        resources.addResponse(id, request: wsRequest)
-        resources.removeRequest(id)
-
-        let sendPromise = eventLoopGroup.next().makePromise(of: Void.self)
-        sendPromise.futureResult.whenFailure({ error in
-            completionHandler(.failure(.webSocketError(EquatableError(base: error))))
-            self.resources.removeResponse(id)
-        })
-        webSocket?.send(requestString, promise: sendPromise)
     }
 
     func connect() {
@@ -204,7 +214,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
 
     func disconnect(code: WebSocketErrorCode = .goingAway) {
         do {
-            forcedClose = true
+            resources.toggleForcedClosed(closed: true)
             try webSocket?.close(code: code).wait()
         } catch {
             logger.warning("Clossing WebSocket failed:  \(error)")
@@ -227,17 +237,17 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             resources.removeResponse(response.key)
         }
 
-        var delay = configuration.reconnectInterval * Int(pow(configuration.reconnectDecay, Double(reconnectAttempts)))
+        var delay = configuration.reconnectInterval * Int(pow(configuration.reconnectDecay, Double(resources.reconnectAttempts)))
         if delay > configuration.maxReconnectInterval {
             delay = configuration.maxReconnectInterval
         }
 
         logger.trace("WebSocket reconnecting... Delay: \(delay) ms")
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(delay), execute: {
-            self.reconnectAttempts += 1
-            self.connect(reconnectAttempt: true)
-        })
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(delay)) { [weak self] in
+            self?.resources.incrementReconnectAttempts()
+            self?.connect(reconnectAttempt: true)
+        }
     }
 
     func addSubscription(_ subscription: EthereumSubscription, callback: @escaping (Any) -> Void) {
@@ -253,14 +263,14 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             return
         }
 
-        if reconnectAttempt, configuration.maxReconnectAttempts > 0, reconnectAttempts > configuration.maxReconnectAttempts {
+        if reconnectAttempt, configuration.maxReconnectAttempts > 0, resources.reconnectAttempts > configuration.maxReconnectAttempts {
             logger.trace("WebSocket reached maxReconnectAttempts. Stop trying")
 
             for request in resources.requestQueue {
                 request.value.callback(.failure(.maxAttemptsReachedOnReconnecting))
                 resources.removeRequest(request.key)
             }
-            reconnectAttempts = 0
+            resources.resetReconnectAttempts()
             return
         }
 
@@ -272,7 +282,9 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
             _ = try WebSocket.connect(to: url,
                                       configuration: WebSocketClient.Configuration(tlsConfiguration: configuration.tlsConfiguration,
                                                                                    maxFrameSize: configuration.maxFrameSize),
-                                      on: eventLoopGroup) { ws in
+                                      on: eventLoopGroup) { [weak self] ws in
+                guard let self = self else { return }
+                
                 self.logger.trace("WebSocket connected")
 
                 if reconnectAttempt {
@@ -282,7 +294,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
 
                 self.webSocket = ws
                 self.currentState = .open
-                self.reconnectAttempts = 0
+                self.resources.resetReconnectAttempts()
 
                 // Send pending requests and delete
                 for request in self.resources.requestQueue {
@@ -325,7 +337,9 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
                     }
                 }
 
-                ws.onClose.whenComplete { value in
+                ws.onClose.whenComplete { [weak self] value in
+                    guard let self = self else { return }
+
                     if let code = ws.closeCode {
                         self.logger.trace("WebSocket closed. Code: \(code)")
                     } else {
@@ -344,7 +358,7 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
 
                     self.resources.cleanSubscriptions()
 
-                    if self.forcedClose {
+                    if self.resources.forcedClose {
                         self.currentState = .closed
                     } else {
                         self.currentState = .connecting

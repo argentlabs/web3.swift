@@ -1,9 +1,6 @@
 //
-//  RLPTests.swift
-//  web3sTests
-//
-//  Created by Julien Niset on 23/02/2018.
-//  Copyright © 2018 Argent Labs. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import BigInt

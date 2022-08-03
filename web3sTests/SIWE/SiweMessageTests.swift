@@ -1,8 +1,6 @@
 //
-//  SiweMessageTests.swift
-//  
-//
-//  Created by Rodrigo Kreutz on 13/06/22.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import XCTest
@@ -247,7 +245,7 @@ final class SiweMessageTests: XCTestCase {
             login.xyz wants you to sign in with your Ethereum account:
             0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F
 
-            
+
             URI: https://login.xyz/demo#login
             Version: 1
             Chain ID: 1

@@ -15,37 +15,38 @@ public struct Multicall {
         self.client = client
     }
 
-    public func aggregate(calls: [Call],
-                          completionHandler: @escaping (Result<MulticallResponse, MulticallError>) -> Void) {
-        guard let network = client.network,
-              let contract = Contract.registryAddress(for: network)
-        else { return completionHandler(.failure(MulticallError.contractUnavailable)) }
+    public func aggregate(calls: [Call]) async throws -> MulticallResponse {
+        guard let network = client.network, let contract = Contract.registryAddress(for: network) else {
+            throw MulticallError.contractUnavailable
+        }
 
         let function = Contract.Functions.aggregate(contract: contract, calls: calls)
 
-        function.call(withClient: client, responseType: Response.self) { result in
-            switch result {
-            case .success(let data):
-                guard calls.count == data.outputs.count
-                else { fatalError("Outputs do not match the number of calls done") }
+        do {
+            let data = try await function.call(withClient: client, responseType: Response.self)
+            guard calls.count == data.outputs.count
+            else { fatalError("Outputs do not match the number of calls done") }
 
-                zip(calls, data.outputs)
-                    .forEach { call, output in
-                        try? call.handler?(output)
-                    }
-                completionHandler(.success(data))
-            case .failure(let error):
-                completionHandler(.failure(MulticallError.executionFailed(error)))
-            }
+            zip(calls, data.outputs)
+                .forEach { call, output in
+                    try? call.handler?(output)
+                }
+            return data
+        } catch {
+            throw MulticallError.executionFailed(error)
         }
     }
 }
 
-// MARK: - Async/Await
 extension Multicall {
-    public func aggregate(calls: [Call]) async -> Result<MulticallResponse, MulticallError> {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<Result<MulticallResponse, MulticallError>, Never>) in
-            aggregate(calls: calls, completionHandler: continuation.resume)
+    public func aggregate(calls: [Call], completionHandler: @escaping (Result<MulticallResponse, MulticallError>) -> Void) {
+        Task {
+            do {
+                let res = try await aggregate(calls: calls)
+                completionHandler(.success(res))
+            } catch let error as MulticallError {
+                completionHandler(.failure(error))
+            }
         }
     }
 }

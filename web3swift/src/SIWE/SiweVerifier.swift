@@ -1,8 +1,6 @@
 //
-//  SiweVerifier.swift
-//  
-//
-//  Created by Rodrigo Kreutz on 14/06/22.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation

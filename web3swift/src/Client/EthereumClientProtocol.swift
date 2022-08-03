@@ -58,7 +58,7 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping(Result<[EthereumLog], EthereumClientError>) -> Void)
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping(Result<[EthereumLog], EthereumClientError>) -> Void)
     func eth_getBlockByNumber(_ block: EthereumBlock, completionHandler: @escaping(Result<EthereumBlockInfo, EthereumClientError>) -> Void)
-    func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping((Result<[EthereumLog], EthereumClientError>) -> Void))
+    func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
 
     // Async/Await
     func net_version() async throws -> EthereumNetwork

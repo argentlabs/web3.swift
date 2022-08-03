@@ -12,7 +12,7 @@ import FoundationNetworking
 
 internal protocol NetworkProviderProtocol {
     var session: URLSession { get }
-    func send<T, P: Encodable, U: Decodable>(method: String, params: P, receive: U.Type, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void, resultDecodeHandler: @escaping (Result<Any, Error>) -> Void)
+    func send<P: Encodable, U: Decodable>(method: String, params: P, receive: U.Type) async throws -> Any
 }
 
 internal protocol WebSocketNetworkProviderProtocol: NetworkProviderProtocol {
