@@ -85,8 +85,8 @@ public struct EventFilter {
 }
 
 public struct Events {
-    let events: [ABIEvent]
-    let logs: [EthereumLog]
+    public let events: [ABIEvent]
+    public let logs: [EthereumLog]
 }
 
 public extension EthereumClientProtocol {
