@@ -28,7 +28,7 @@ public protocol ERC20Protocol {
 
 }
 
-public class ERC20: ERC20Protocol {
+open class ERC20: ERC20Protocol {
     let client: EthereumClientProtocol
 
     required public init(client: EthereumClientProtocol) {

@@ -6,7 +6,7 @@
 import BigInt
 import Foundation
 
-public class ERC165 {
+open class ERC165 {
     public let client: EthereumClientProtocol
 
     required public init(client: EthereumClientProtocol) {
