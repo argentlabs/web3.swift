@@ -9,8 +9,8 @@ import GenericJSON
 
 /// A type value description
 public struct TypedVariable: Codable, Equatable {
-    let name: String
-    let type: String
+    var name: String
+    var type: String
 
     public init(name: String,
                 type: String) {
@@ -21,10 +21,10 @@ public struct TypedVariable: Codable, Equatable {
 
 /// Typed data as per EIP712
 public struct TypedData: Codable, Equatable {
-    public let types: [String: [TypedVariable]]
-    public let primaryType: String
-    public let domain: JSON
-    public let message: JSON
+    public var types: [String: [TypedVariable]]
+    public var primaryType: String
+    public var domain: JSON
+    public var message: JSON
 
     public init(types: [String: [TypedVariable]],
                 primaryType: String,
