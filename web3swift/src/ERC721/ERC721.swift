@@ -10,7 +10,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-public class ERC721: ERC165 {
+open class ERC721: ERC165 {
     public func balanceOf(contract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt {
         let function = ERC721Functions.balanceOf(contract: contract, owner: address)
         let data = try await function.call(withClient: client, responseType: ERC721Responses.balanceResponse.self)
