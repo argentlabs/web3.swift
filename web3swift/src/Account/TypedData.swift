@@ -9,8 +9,8 @@ import GenericJSON
 
 /// A type value description
 public struct TypedVariable: Codable, Equatable {
-    var name: String
-    var type: String
+    public var name: String
+    public var type: String
 
     public init(name: String,
                 type: String) {
