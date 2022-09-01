@@ -8,11 +8,11 @@ import BigInt
 
 public protocol ZKSyncEthereumClient {
     func eth_sendRawZKSyncTransaction(_ transaction: ZKSyncTransaction, withAccount account: EthereumAccountProtocol, completionHandler: @escaping (Result<String, EthereumClientError>) -> Void)
-    func gasPrice(forToken token: EthereumAddress, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void)
+    func gasPrice(completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void)
     func estimateGas(_ transaction: ZKSyncTransaction, completion: @escaping((EthereumClientError?, BigUInt?) -> Void))
     
     func eth_sendRawZKSyncTransaction(_ transaction: ZKSyncTransaction, withAccount account: EthereumAccountProtocol) async throws -> String
-    func gasPrice(forToken token: EthereumAddress) async throws -> BigUInt
+    func gasPrice() async throws -> BigUInt
     func estimateGas(_ transaction: ZKSyncTransaction) async throws -> BigUInt
 }
 
@@ -23,7 +23,7 @@ extension EthereumClient {
             group.enter()
 
             // Inject pending nonce
-            self.eth_getTransactionCount(address: transaction.aaParams?.from ?? account.address, block: .Pending) { (error, count) in
+            self.eth_getTransactionCount(address: account.address, block: .Pending) { (error, count) in
                 guard let nonce = count else {
                     group.leave()
                     return completionHandler(.failure(.unexpectedReturnValue))
@@ -60,8 +60,9 @@ extension EthereumClient {
         }
     }
     
-    public func gasPrice(forToken token: EthereumAddress, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_gasPrice", params: [token], receive: String.self) { (error, response) in
+    public func gasPrice(completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
+        let emptyParams: Array<Bool> = []
+        EthereumRPC.execute(session: session, url: url, method: "eth_gasPrice", params: emptyParams, receive: String.self) { (error, response) in
             if let value = (response as? String).flatMap(BigUInt.init(hex:)) {
                 completionHandler(.success(value))
             } else {
@@ -73,7 +74,7 @@ extension EthereumClient {
     public func estimateGas(_ transaction: ZKSyncTransaction, completion: @escaping((EthereumClientError?, BigUInt?) -> Void)) {
 
         let value = transaction.value > .zero ? transaction.value : nil
-        let params = EstimateGasParams(from: transaction.from?.value,
+        let params = EstimateGasParams(from: transaction.from.value,
                                 to: transaction.to.value,
                                 gas: transaction.gasLimit?.web3.hexString,
                                 gasPrice: transaction.gasPrice?.web3.hexString,
@@ -98,9 +99,9 @@ extension EthereumClientProtocol {
         }
     }
     
-    public func gasPrice(forToken token: EthereumAddress) async throws -> BigUInt {
+    public func gasPrice() async throws -> BigUInt {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
-            gasPrice(forToken: token, completionHandler: continuation.resume)
+            gasPrice(completionHandler: continuation.resume)
         }
     }
     

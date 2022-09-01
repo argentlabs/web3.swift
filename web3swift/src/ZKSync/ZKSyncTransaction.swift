@@ -10,8 +10,11 @@ import GenericJSON
 // to be filled in by client
 public struct ZKSyncTransaction: Equatable {
     public static let eip712Type: UInt8 = 0x71
+    public static let gasPerPubDataByte: BigUInt = 16;
+    public static let defaultErgsPerPubDataLimit: BigUInt = gasPerPubDataByte * 10_000
     
     public let txType: UInt8 = Self.eip712Type
+    public var from: EthereumAddress
     public var to: EthereumAddress
     public var value: BigUInt
     public var data: Data
@@ -19,11 +22,13 @@ public struct ZKSyncTransaction: Equatable {
     public var nonce: Int?
     public var gasPrice: BigUInt?
     public var gasLimit: BigUInt?
-    public var egsPerPubdata: BigUInt
-    public var feeToken: EthereumAddress
-    public var aaParams: AAParams?
+    public var ergsPerPubdata: BigUInt
+    public var maxFeePerGas: BigUInt?
+    public var maxPriorityFeePerGas: BigUInt?
+    public var paymasterParams: PaymasterParams
     
     public init(
+        from: EthereumAddress,
         to: EthereumAddress,
         value: BigUInt,
         data: Data,
@@ -31,10 +36,12 @@ public struct ZKSyncTransaction: Equatable {
         nonce: Int? = nil,
         gasPrice: BigUInt? = nil,
         gasLimit: BigUInt? = nil,
-        egsPerPubdata: BigUInt = 0,
-        feeToken: EthereumAddress = .zero,
-        aaParams: AAParams? = nil
+        ergsPerPubData: BigUInt = ZKSyncTransaction.defaultErgsPerPubDataLimit,
+        maxFeePerGas: BigUInt? = nil,
+        maxPriorityFeePerGas: BigUInt? = nil,
+        paymasterParams: PaymasterParams = .none
     ) {
+        self.from = from
         self.to = to
         self.value = value
         self.data = data
@@ -42,23 +49,44 @@ public struct ZKSyncTransaction: Equatable {
         self.nonce = nonce
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
-        self.egsPerPubdata = egsPerPubdata
-        self.feeToken = feeToken
-        self.aaParams = aaParams
+        self.ergsPerPubdata = ergsPerPubData
+        self.maxFeePerGas = maxFeePerGas
+        self.maxPriorityFeePerGas = maxPriorityFeePerGas
+        self.paymasterParams = paymasterParams
     }
     
-    public struct AAParams: Equatable {
-        public var from: EthereumAddress
-        
+    public struct PaymasterParams: Equatable {
+        public var paymaster: EthereumAddress
+        public var input: Data
         public init(
-            from: EthereumAddress
+            paymaster: EthereumAddress,
+            input: Data
         ) {
-            self.from = from
+            self.paymaster = paymaster
+            self.input = input
         }
+        
+        public var isEmpty: Bool {
+            self.paymaster == .zero
+        }
+        
+        public static let none: PaymasterParams = .init(paymaster: .zero, input: Data())
     }
     
-    public var from: EthereumAddress? {
-        aaParams?.from
+    public var maxFeePerErg: BigUInt {
+        maxFeePerGas ?? gasPrice ?? 0
+    }
+    
+    public var maxPriorityFeePerErg: BigUInt {
+        maxPriorityFeePerGas ?? maxFeePerErg
+    }
+    
+    var paymaster: EthereumAddress {
+        paymasterParams.paymaster
+    }
+    
+    var paymasterInput: Data {
+        paymasterParams.input
     }
     
     public var eip712Representation: TypedData {
@@ -77,15 +105,19 @@ public struct ZKSyncTransaction: Equatable {
                   {"name": "chainId", "type": "uint256"}
                 ],
                 "Transaction": [
-                    {"name": "txType","type": "uint8"},
+                    {"name": "txType","type": "uint256"},
+                    {"name": "from","type": "uint256"},
                     {"name": "to","type": "uint256"},
-                    {"name": "value","type": "uint256"},
-                    {"name": "data","type": "bytes"},
-                    {"name": "feeToken","type": "uint256"},
                     {"name": "ergsLimit","type": "uint256"},
                     {"name": "ergsPerPubdataByteLimit","type": "uint256"},
-                    {"name": "ergsPrice","type": "uint256"},
-                    {"name": "nonce","type": "uint256"}
+                    {"name": "maxFeePerErg", "type": "uint256"},
+                    {"name": "maxPriorityFeePerErg", "type": "uint256"},
+                    {"name": "paymaster", "type": "uint256"},
+                    {"name": "nonce","type": "uint256"},
+                    {"name": "value","type": "uint256"},
+                    {"name": "data","type": "bytes"},
+                    {"name": "factoryDeps","type": "bytes32[]"},
+                    {"name": "paymasterInput", "type": "bytes"}
                 ]
             },
             "primaryType": "Transaction",
@@ -96,14 +128,18 @@ public struct ZKSyncTransaction: Equatable {
             },
             "message": {
                 "txType" : \(txType),
+                "from" : "\(from.asBigInt.web3.hexString)",
                 "to" : "\(to.asBigInt.web3.hexString)",
+                "ergsLimit" : "\(gasLimit!.web3.hexString)",
+                "ergsPerPubdataByteLimit" : "\(ergsPerPubdata.web3.hexString)",
+                "maxFeePerErg" : "\(maxFeePerErg.web3.hexString)",
+                "maxPriorityFeePerErg" : "\(maxPriorityFeePerErg.web3.hexString)",
+                "paymaster" : "\(paymaster.asBigInt.web3.hexString)",
+                "nonce" : \(nonce!),
                 "value" : "\(value.web3.hexString)",
                 "data" : "\(data.web3.hexString)",
-                "feeToken" : "\(feeToken.asBigInt.web3.hexString)",
-                "ergsLimit" : "\(gasLimit!.web3.hexString)",
-                "ergsPrice" : "\(gasPrice!.web3.hexString)",
-                "ergsPerPubdataByteLimit" : \(egsPerPubdata.description),
-                "nonce" : \(nonce!)
+                "factoryDeps" : [],
+                "paymasterInput" : "\(paymasterInput.web3.hexString)"
             }
         }
         """.data(using: .utf8)!
@@ -111,29 +147,15 @@ public struct ZKSyncTransaction: Equatable {
 }
 
 public struct ZKSyncSignedTransaction {
-    public enum SignatureParam {
-        case eoa(Signature)
-        case aa(signature: Signature, from: EthereumAddress)
-        
-        public var signature: Signature {
-            switch self {
-            case .aa(let signature, _):
-                return signature
-            case .eoa(let signature):
-                return signature
-            }
-        }
-    }
-    
     public let transaction: ZKSyncTransaction
-    public let sigParam: SignatureParam
+    public let signature: Signature
     
     public init(
         transaction: ZKSyncTransaction,
-        sigParam: SignatureParam
+        signature: Signature
     ) {
         self.transaction = transaction
-        self.sigParam = sigParam
+        self.signature = signature
     }
     
     public var raw: Data? {
@@ -144,40 +166,34 @@ public struct ZKSyncSignedTransaction {
         
         var txArray: [Any?] = [
             transaction.nonce,
-            transaction.gasPrice,
+            transaction.maxPriorityFeePerErg,
+            transaction.maxFeePerErg,
             transaction.gasLimit,
-            transaction.to.value.web3.noHexPrefix,
+            transaction.to.value,
             transaction.value,
             transaction.data
         ]
         
-        switch sigParam {
-        case .eoa(let signature):
-            txArray.append(signature.recoveryParam)
-            txArray.append(signature.r)
-            txArray.append(signature.s)
-        case .aa:
-            txArray.append(transaction.chainId)
-            txArray.append(Data())
-            txArray.append(Data())
-        }
+        txArray.append(transaction.chainId)
+        txArray.append(Data())
+        txArray.append(Data())
         
         txArray.append(transaction.chainId)
-        txArray.append(transaction.feeToken.value.web3.noHexPrefix)
-        txArray.append(transaction.egsPerPubdata)
+        txArray.append(transaction.from.value)
+        
+        txArray.append(transaction.ergsPerPubdata)
         // TODO factorydeps
         txArray.append([])
         
-        switch sigParam {
-        case .eoa:
+        txArray.append(signature.raw)
+        
+        if transaction.paymasterParams.isEmpty {
             txArray.append([])
-        case .aa(let signature, let from):
-            txArray.append(
-                [
-                    from.value.web3.noHexPrefix,
-                    signature.raw
-                ]
-            )
+        } else {
+            txArray.append([
+                transaction.paymaster,
+                transaction.paymasterInput
+            ])
         }
 
         return RLP.encode(txArray).flatMap {
@@ -187,10 +203,6 @@ public struct ZKSyncSignedTransaction {
     
     public var hash: Data? {
         return raw?.web3.keccak256
-    }
-    
-    private var signature: Signature {
-        sigParam.signature
     }
 }
 
@@ -203,11 +215,10 @@ fileprivate extension EthereumAddress {
 
 extension ABIFunction {
     public func zkTransaction(
-        from: EthereumAddress? = nil,
+        from: EthereumAddress,
         value: BigUInt? = nil,
         gasPrice: BigUInt? = nil,
         gasLimit: BigUInt? = nil,
-        ergsPerPubData: BigUInt = 0, // TODO,
         feeToken: EthereumAddress = .zero
     ) throws -> ZKSyncTransaction {
         let encoder = ABIFunctionEncoder(Self.name)
@@ -215,14 +226,12 @@ extension ABIFunction {
         let data = try encoder.encoded()
 
         return ZKSyncTransaction(
+            from: from,
             to: contract,
             value: value ?? 0,
             data: data,
             gasPrice: self.gasPrice ?? gasPrice ?? 0,
-            gasLimit: self.gasLimit ?? gasLimit ?? 0,
-            egsPerPubdata: ergsPerPubData,
-            feeToken: feeToken,
-            aaParams: from.map(ZKSyncTransaction.AAParams.init)
+            gasLimit: self.gasLimit ?? gasLimit ?? 0
         )
     }
 }
