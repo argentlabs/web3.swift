@@ -191,7 +191,7 @@ public struct ZKSyncSignedTransaction {
             txArray.append([])
         } else {
             txArray.append([
-                transaction.paymaster,
+                transaction.paymaster.value,
                 transaction.paymasterInput
             ])
         }
