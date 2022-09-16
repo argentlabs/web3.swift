@@ -38,6 +38,7 @@ extension EthereumClient {
 
                 guard let signedTx = try? account.sign(zkTransaction: transaction),
                       let transactionHex = signedTx.raw?.web3.hexString else {
+                    group.leave()
                     return completionHandler(.failure(.encodeIssue))
                 }
 
