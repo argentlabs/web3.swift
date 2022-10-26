@@ -58,7 +58,6 @@ public class EthereumWebSocketClient: BaseEthereumClient {
                 network: EthereumNetwork? = nil) {
         let networkQueue = OperationQueue()
         networkQueue.name = "web3swift.client.networkQueue"
-        networkQueue.qualityOfService = .background
         networkQueue.maxConcurrentOperationCount = 4
         self.networkQueue = networkQueue
 
