@@ -120,13 +120,11 @@ public class EthereumClient: EthereumClientProtocol {
         self.url = url
         let networkQueue = OperationQueue()
         networkQueue.name = "web3swift.client.networkQueue"
-        networkQueue.qualityOfService = .background
         networkQueue.maxConcurrentOperationCount = 4
         self.networkQueue = networkQueue
 
         let txQueue = OperationQueue()
         txQueue.name = "web3swift.client.rawTxQueue"
-        txQueue.qualityOfService = .background
         txQueue.maxConcurrentOperationCount = 1
         self.concurrentQueue = txQueue
 
