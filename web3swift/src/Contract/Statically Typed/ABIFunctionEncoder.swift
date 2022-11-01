@@ -36,10 +36,10 @@ public class ABIFunctionEncoder {
         }
     }
 
-    public func encode<T: ABIType>(_ values: [T], staticSize: Int? = nil) throws {
-        let encoded = try ABIEncoder.encode(values, staticSize: staticSize)
+    public func encode<T: ABIType>(_ values: [T], staticSize: Int? = nil, elementRawType: ABIRawType? = nil) throws {
+        let encoded = try ABIEncoder.encode(values, staticSize: staticSize, elementRawType: elementRawType)
         encodedValues.append(encoded)
-        types.append(.DynamicArray(T.rawType))
+        types.append(.DynamicArray(elementRawType != nil ? elementRawType! : T.rawType))
     }
 
     internal var encodedValues = [ABIEncoder.EncodedValue]()

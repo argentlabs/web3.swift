@@ -45,8 +45,11 @@ extension ABIEncoder {
     }
 
     public static func encode<T: ABIType>(_ values: [T],
-                              staticSize: Int? = nil) throws -> EncodedValue {
-        return try ABIEncoder.encodeArray(elements: values.map { (value: $0, size: nil) }, isDynamic: staticSize == nil, size: values.count)
+                                          staticSize: Int? = nil,
+                                          elementRawType: ABIRawType? = nil) throws -> EncodedValue {
+        return try ABIEncoder.encodeArray(elements: values.map { (value: $0, size: elementRawType != nil ? elementRawType!.size : nil) },
+                                          isDynamic: staticSize == nil,
+                                          size: values.count)
     }
 
     private typealias ValueAndSize = (value: ABIType, size: Int?)
