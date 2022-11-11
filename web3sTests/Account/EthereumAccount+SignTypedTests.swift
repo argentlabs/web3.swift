@@ -231,6 +231,18 @@ class EthereumAccount_SignTypedTests: XCTestCase {
         let typedData = try! decoder.decode(TypedData.self, from: data)
         XCTAssertEqual(try! typedData.signableHash().web3.hexString, "0xdb12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c")
     }
+    
+    func test_GivenCustomTypeArray_V4_ItHashesCorrectly() {
+        let simpleUrl = Bundle.module.url(forResource: "ethermail_signTypedDataV4", withExtension: "json")!
+        let simpleData = try! Data(contentsOf: simpleUrl)
+        let simpleTypedData = try! decoder.decode(TypedData.self, from: simpleData)
+        XCTAssertEqual(try! simpleTypedData.signableHash().web3.hexString, "0x8a2c45f690057d91a9738b313da3f65916327e1d5b9a1348b9fc1cff0dc4091e")
+//        
+        let realWorldUrl = Bundle.module.url(forResource: "real_word_opensea_signTypedDataV4", withExtension: "json")!
+        let realWorldData = try! Data(contentsOf: realWorldUrl)
+        let realWorldTypedData = try! decoder.decode(TypedData.self, from: realWorldData)
+        XCTAssertEqual(try! realWorldTypedData.signableHash().web3.hexString, "0x76a61293096587b582305a07a60785f92b99ae6c8647c4bcf46d6651db0bd778")
+    }
 
     func test_givenExampleWithDynamicData_ItHashesCorrectly() {
         let typedData = try! decoder.decode(TypedData.self, from: example4)
