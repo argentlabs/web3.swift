@@ -1,102 +1,63 @@
 //
-//  ERC721.swift
-//  web3swift
-//
-//  Created by Miguel on 09/05/2019.
-//  Copyright © 2019 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
 
-public class ERC721: ERC165 {
-    public func balanceOf(contract: EthereumAddress,
-                          address: EthereumAddress,
-                          completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
+open class ERC721: ERC165 {
+    public func balanceOf(contract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt {
         let function = ERC721Functions.balanceOf(contract: contract, owner: address)
-        function.call(withClient: client,
-                      responseType: ERC721Responses.balanceResponse.self) { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+        let data = try await function.call(withClient: client, responseType: ERC721Responses.balanceResponse.self)
+
+        return data.value
     }
 
-    public func ownerOf(contract: EthereumAddress,
-                        tokenId: BigUInt,
-                        completionHandler: @escaping(Result<EthereumAddress, Error>) -> Void) {
+    public func ownerOf(contract: EthereumAddress, tokenId: BigUInt) async throws -> EthereumAddress {
         let function = ERC721Functions.ownerOf(contract: contract, tokenId: tokenId)
-        function.call(withClient: client,
-                      responseType: ERC721Responses.ownerResponse.self)  { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+        let data = try await function.call(withClient: client, responseType: ERC721Responses.ownerResponse.self)
+
+        return data.value
     }
 
-    public func transferEventsTo(recipient: EthereumAddress,
-                                 fromBlock: EthereumBlock,
-                                 toBlock: EthereumBlock,
-                                 completionHandler: @escaping(Result<[ERC721Events.Transfer], Error>) -> Void) {
+    public func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC721Events.Transfer] {
         guard let result = try? ABIEncoder.encode(recipient).bytes, let sig = try? ERC721Events.Transfer.signature() else {
-            completionHandler(.failure(EthereumSignerError.unknownError))
-            return
+            throw EthereumSignerError.unknownError
         }
 
-        client.getEvents(addresses: nil,
+        let data = try await client.getEvents(addresses: nil,
                          topics: [ sig, nil, String(hexFromBytes: result)],
                          fromBlock: fromBlock,
                          toBlock: toBlock,
-                         eventTypes: [ERC721Events.Transfer.self]) { result in
+                         eventTypes: [ERC721Events.Transfer.self])
 
-            switch result {
-            case .success(let data):
-                if let events = data.events as? [ERC721Events.Transfer] {
-                    completionHandler(.success(events))
-                } else {
-                    completionHandler(.failure(EthereumClientError.decodeIssue))
-                }
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
+        if let events = data.events as? [ERC721Events.Transfer] {
+            return events
+        } else {
+            throw EthereumClientError.decodeIssue
         }
     }
 
-    public func transferEventsFrom(sender: EthereumAddress,
-                                   fromBlock: EthereumBlock,
-                                   toBlock: EthereumBlock,
-                                   completionHandler: @escaping(Result<[ERC721Events.Transfer], Error>) -> Void) {
+    public func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC721Events.Transfer] {
         guard let result = try? ABIEncoder.encode(sender).bytes, let sig = try? ERC721Events.Transfer.signature() else {
-            completionHandler(.failure(EthereumSignerError.unknownError))
-            return
+            throw EthereumSignerError.unknownError
         }
 
-        client.getEvents(addresses: nil,
+        let data = try await client.getEvents(addresses: nil,
                          topics: [ sig, String(hexFromBytes: result)],
                          fromBlock: fromBlock,
                          toBlock: toBlock,
-                         eventTypes: [ERC721Events.Transfer.self]) { result in
+                         eventTypes: [ERC721Events.Transfer.self])
 
-            switch result {
-            case .success(let data):
-                if let events = data.events as? [ERC721Events.Transfer] {
-                    completionHandler(.success(events))
-                } else {
-                    completionHandler(.failure(EthereumClientError.decodeIssue))
-                }
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
+        if let events = data.events as? [ERC721Events.Transfer] {
+            return events
+        } else {
+            throw EthereumClientError.decodeIssue
         }
     }
 }
@@ -170,14 +131,137 @@ public class ERC721Metadata: ERC721 {
         fatalError("init(client:) has not been implemented")
     }
 
+    public func name(contract: EthereumAddress) async throws -> String {
+        let function = ERC721MetadataFunctions.name(contract: contract)
+        let data = try await function.call(withClient: client, responseType: ERC721MetadataResponses.nameResponse.self)
+
+        return data.value
+    }
+
+    public func symbol(contract: EthereumAddress) async throws -> String {
+        let function = ERC721MetadataFunctions.symbol(contract: contract)
+        let data = try await function.call(withClient: client, responseType: ERC721MetadataResponses.symbolResponse.self)
+
+        return data.value
+    }
+
+    public func tokenURI(contract: EthereumAddress, tokenID: BigUInt) async throws -> URL {
+        let function = ERC721MetadataFunctions.tokenURI(contract: contract, tokenID: tokenID)
+        let data = try await function.call(withClient: client, responseType: ERC721MetadataResponses.tokenURIResponse.self)
+
+        return data.value
+    }
+
+    public func tokenMetadata(contract: EthereumAddress, tokenID: BigUInt) async throws -> Token {
+        let baseURL = try await tokenURI(contract: contract, tokenID: tokenID)
+
+        guard let (data, _) = try? await session.data(from: baseURL) else {
+            throw EthereumClientError.unexpectedReturnValue
+        }
+
+        do {
+            var metadata = try JSONDecoder().decode(Token.self, from: data)
+
+            if let image = metadata.properties?.image.description, image.host == nil, let relative = URL(string: image.absoluteString, relativeTo: baseURL) {
+                metadata.properties?.image = Token.Property(description: relative)
+            }
+            return metadata
+        } catch let decodeError {
+            throw decodeError
+        }
+    }
+
+}
+
+public class ERC721Enumerable: ERC721 {
+    public func totalSupply(contract: EthereumAddress) async throws -> BigUInt {
+        let function = ERC721EnumerableFunctions.totalSupply(contract: contract)
+        let data = try await function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self)
+
+        return data.value
+    }
+
+    public func tokenByIndex(contract: EthereumAddress, index: BigUInt) async throws -> BigUInt {
+        let function = ERC721EnumerableFunctions.tokenByIndex(contract: contract, index: index)
+        let data = try await function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self)
+
+        return data.value
+    }
+
+    public func tokenOfOwnerByIndex(contract: EthereumAddress, owner: EthereumAddress, index: BigUInt) async throws -> BigUInt {
+        let function = ERC721EnumerableFunctions.tokenOfOwnerByIndex(contract: contract, address: owner, index: index)
+        let data = try await function.call(withClient: client,
+                      responseType: ERC721EnumerableResponses.numberResponse.self,
+                      resolution: .noOffchain(failOnExecutionError: false))
+
+        return data.value
+    }
+}
+
+extension ERC721 {
+    public func balanceOf(contract: EthereumAddress,
+                          address: EthereumAddress,
+                          completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
+        Task {
+            do {
+                let balance = try await balanceOf(contract: contract, address: address)
+                completionHandler(.success(balance))
+            } catch {
+                completionHandler(.failure(error))
+            }
+        }
+    }
+
+    public func ownerOf(contract: EthereumAddress,
+                        tokenId: BigUInt,
+                        completionHandler: @escaping(Result<EthereumAddress, Error>) -> Void) {
+        Task {
+            do {
+                let ownerOf = try await ownerOf(contract: contract, tokenId: tokenId)
+                completionHandler(.success(ownerOf))
+            } catch {
+                completionHandler(.failure(error))
+            }
+        }
+    }
+
+    public func transferEventsTo(recipient: EthereumAddress,
+                                 fromBlock: EthereumBlock,
+                                 toBlock: EthereumBlock,
+                                 completionHandler: @escaping(Result<[ERC721Events.Transfer], Error>) -> Void) {
+        Task {
+            do {
+                let result = try await transferEventsTo(recipient: recipient, fromBlock: fromBlock, toBlock: toBlock)
+                completionHandler(.success(result))
+            } catch {
+                completionHandler(.failure(error))
+            }
+        }
+    }
+
+    public func transferEventsFrom(sender: EthereumAddress,
+                                   fromBlock: EthereumBlock,
+                                   toBlock: EthereumBlock,
+                                   completionHandler: @escaping(Result<[ERC721Events.Transfer], Error>) -> Void) {
+        Task {
+            do {
+                let result = try await transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock)
+                completionHandler(.success(result))
+            } catch {
+                completionHandler(.failure(error))
+            }
+        }
+    }
+}
+
+extension ERC721Metadata {
     public func name(contract: EthereumAddress,
                      completionHandler: @escaping(Result<String, Error>) -> Void) {
-        let function = ERC721MetadataFunctions.name(contract: contract)
-        function.call(withClient: client, responseType: ERC721MetadataResponses.nameResponse.self) { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
+        Task {
+            do {
+                let result = try await name(contract: contract)
+                completionHandler(.success(result))
+            } catch {
                 completionHandler(.failure(error))
             }
         }
@@ -185,12 +269,11 @@ public class ERC721Metadata: ERC721 {
 
     public func symbol(contract: EthereumAddress,
                        completionHandler: @escaping(Result<String, Error>) -> Void) {
-        let function = ERC721MetadataFunctions.symbol(contract: contract)
-        function.call(withClient: client, responseType: ERC721MetadataResponses.symbolResponse.self) { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
+        Task {
+            do {
+                let result = try await symbol(contract: contract)
+                completionHandler(.success(result))
+            } catch {
                 completionHandler(.failure(error))
             }
         }
@@ -199,13 +282,11 @@ public class ERC721Metadata: ERC721 {
     public func tokenURI(contract: EthereumAddress,
                          tokenID: BigUInt,
                          completionHandler: @escaping(Result<URL, Error>) -> Void) {
-        let function = ERC721MetadataFunctions.tokenURI(contract: contract,
-                                                        tokenID: tokenID)
-        function.call(withClient: client, responseType: ERC721MetadataResponses.tokenURIResponse.self) { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
+        Task {
+            do {
+                let result = try await tokenURI(contract: contract, tokenID: tokenID)
+                completionHandler(.success(result))
+            } catch {
                 completionHandler(.failure(error))
             }
         }
@@ -214,50 +295,25 @@ public class ERC721Metadata: ERC721 {
     public func tokenMetadata(contract: EthereumAddress,
                               tokenID: BigUInt,
                               completionHandler: @escaping(Result<Token, Error>) -> Void) {
-        tokenURI(contract: contract,
-                 tokenID: tokenID) { [weak self] result in
-            switch result {
-            case .success(let baseURL):
-                let task = self?.session.dataTask(with: baseURL,
-                                                  completionHandler: { (data, response, error) in
-                    guard let data = data else {
-                        completionHandler(.failure(EthereumClientError.unexpectedReturnValue))
-                        return
-                    }
-                    if let error = error {
-                        completionHandler(.failure(error))
-                        return
-                    }
-
-                    do {
-                        var metadata = try JSONDecoder().decode(Token.self, from: data)
-
-                        if let image = metadata.properties?.image.description, image.host == nil, let relative = URL(string: image.absoluteString, relativeTo: baseURL) {
-                            metadata.properties?.image = Token.Property(description: relative)
-                        }
-                        completionHandler(.success(metadata))
-                    } catch let decodeError {
-                        completionHandler(.failure(decodeError))
-                    }
-                })
-
-                task?.resume()
-            case .failure(let error):
+        Task {
+            do {
+                let result = try await tokenMetadata(contract: contract, tokenID: tokenID)
+                completionHandler(.success(result))
+            } catch {
                 completionHandler(.failure(error))
             }
         }
     }
 }
 
-public class ERC721Enumerable: ERC721 {
+extension ERC721Enumerable {
     public func totalSupply(contract: EthereumAddress,
                             completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
-        let function = ERC721EnumerableFunctions.totalSupply(contract: contract)
-        function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self) { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
+        Task {
+            do {
+                let result = try await totalSupply(contract: contract)
+                completionHandler(.success(result))
+            } catch {
                 completionHandler(.failure(error))
             }
         }
@@ -266,12 +322,11 @@ public class ERC721Enumerable: ERC721 {
     public func tokenByIndex(contract: EthereumAddress,
                              index: BigUInt,
                              completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
-        let function = ERC721EnumerableFunctions.tokenByIndex(contract: contract, index: index)
-        function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self) { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
+        Task {
+            do {
+                let result = try await tokenByIndex(contract: contract, index: index)
+                completionHandler(.success(result))
+            } catch {
                 completionHandler(.failure(error))
             }
         }
@@ -281,249 +336,12 @@ public class ERC721Enumerable: ERC721 {
                                     owner: EthereumAddress,
                                     index: BigUInt,
                                     completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
-        let function = ERC721EnumerableFunctions.tokenOfOwnerByIndex(contract: contract, address: owner, index: index)
-        function.call(withClient: client,
-                      responseType: ERC721EnumerableResponses.numberResponse.self,
-                      resolution: .noOffchain(failOnExecutionError: false)) { result in
-            switch result {
-            case .success(let data):
-                completionHandler(.success(data.value))
-            case .failure(let error):
+        Task {
+            do {
+                let result = try await tokenOfOwnerByIndex(contract: contract, owner: owner, index: index)
+                completionHandler(.success(result))
+            } catch {
                 completionHandler(.failure(error))
-            }
-        }
-    }
-}
-
-// MARK: - Async/Await
-extension ERC721 {
-    public func balanceOf(contract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
-            balanceOf(contract: contract, address: address, completionHandler: continuation.resume)
-        }
-    }
-
-    public func ownerOf(contract: EthereumAddress, tokenId: BigUInt) async throws -> EthereumAddress {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<EthereumAddress, Error>) in
-            ownerOf(contract: contract, tokenId: tokenId, completionHandler: continuation.resume)
-        }
-    }
-
-    public func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC721Events.Transfer] {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[ERC721Events.Transfer], Error>) in
-            transferEventsTo(recipient: recipient, fromBlock: fromBlock, toBlock: toBlock, completionHandler: continuation.resume)
-        }
-    }
-
-    public func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC721Events.Transfer] {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[ERC721Events.Transfer], Error>) in
-            transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock, completionHandler: continuation.resume)
-        }
-    }
-}
-
-extension ERC721Metadata {
-    public func name(contract: EthereumAddress) async throws -> String {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            name(contract: contract, completionHandler: continuation.resume)
-        }
-    }
-
-    public func symbol(contract: EthereumAddress) async throws -> String {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            symbol(contract: contract, completionHandler: continuation.resume)
-        }
-    }
-
-    public func tokenURI(contract: EthereumAddress, tokenID: BigUInt) async throws -> URL {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<URL, Error>) in
-            tokenURI(contract: contract, tokenID: tokenID, completionHandler: continuation.resume)
-        }
-    }
-
-    public func tokenMetadata(contract: EthereumAddress, tokenID: BigUInt) async throws -> Token {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Token, Error>) in
-            tokenMetadata(contract: contract, tokenID: tokenID, completionHandler: continuation.resume)
-        }
-    }
-}
-
-extension ERC721Enumerable {
-    public func totalSupply(contract: EthereumAddress) async throws -> BigUInt {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
-            totalSupply(contract: contract, completionHandler: continuation.resume)
-        }
-    }
-
-    public func tokenByIndex(contract: EthereumAddress, index: BigUInt) async throws -> BigUInt {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
-            tokenByIndex(contract: contract, index: index, completionHandler: continuation.resume)
-        }
-    }
-
-    public func tokenOfOwnerByIndex(contract: EthereumAddress, owner: EthereumAddress, index: BigUInt) async throws -> BigUInt {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<BigUInt, Error>) in
-            tokenOfOwnerByIndex(contract: contract, owner: owner, index: index, completionHandler: continuation.resume)
-        }
-    }
-}
-
-// MARK: - Deprecated
-extension ERC721 {
-    @available(*, deprecated, renamed: "balanceOf(contract:address:completionHandler:)")
-    public func balanceOf(contract: EthereumAddress,
-                          address: EthereumAddress,
-                          completion: @escaping((Error?, BigUInt?) -> Void)) {
-        balanceOf(contract: contract, address: address) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "ownerOf(contract:tokenId:completionHandler:)")
-    public func ownerOf(contract: EthereumAddress,
-                        tokenId: BigUInt,
-                        completion: @escaping((Error?, EthereumAddress?) -> Void)) {
-        ownerOf(contract: contract, tokenId: tokenId) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "transferEventsTo(recipient:fromBlock:toBlock:completionHandler:)")
-    public func transferEventsTo(recipient: EthereumAddress,
-                                 fromBlock: EthereumBlock,
-                                 toBlock: EthereumBlock,
-                                 completion: @escaping((Error?, [ERC721Events.Transfer]?) -> Void)) {
-        transferEventsTo(recipient: recipient, fromBlock: fromBlock, toBlock: toBlock) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "transferEventsFrom(sender:fromBlock:toBlock:completionHandler:)")
-    public func transferEventsFrom(sender: EthereumAddress,
-                                   fromBlock: EthereumBlock,
-                                   toBlock: EthereumBlock,
-                                   completion: @escaping((Error?, [ERC721Events.Transfer]?) -> Void)) {
-        transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-}
-
-extension ERC721Metadata {
-    @available(*, deprecated, renamed: "name(contract:completionHandler:)")
-    public func name(contract: EthereumAddress,
-                     completion: @escaping((Error?, String?) -> Void)) {
-        name(contract: contract) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "symbol(contract:completionHandler:)")
-    public func symbol(contract: EthereumAddress,
-                       completion: @escaping((Error?, String?) -> Void)) {
-        symbol(contract: contract) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "tokenURI(contract:tokenID:completionHandler:)")
-    public func tokenURI(contract: EthereumAddress,
-                         tokenID: BigUInt,
-                         completion: @escaping((Error?, URL?) -> Void)) {
-        tokenURI(contract: contract, tokenID: tokenID) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "tokenMetadata(contract:tokenID:completionHandler:)")
-    public func tokenMetadata(contract: EthereumAddress,
-                              tokenID: BigUInt,
-                              completion: @escaping((Error?, Token?) -> Void)) {
-        tokenMetadata(contract: contract, tokenID: tokenID) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-}
-
-extension ERC721Enumerable {
-    @available(*, deprecated, renamed: "totalSupply(contract:completionHandler:)")
-    public func totalSupply(contract: EthereumAddress,
-                            completion: @escaping((Error?, BigUInt?) -> Void)) {
-        totalSupply(contract: contract) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "tokenByIndex(contract:index:completionHandler:)")
-    public func tokenByIndex(contract: EthereumAddress,
-                             index: BigUInt,
-                             completion: @escaping((Error?, BigUInt?) -> Void)) {
-        tokenByIndex(contract: contract, index: index) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
-            }
-        }
-    }
-
-    @available(*, deprecated, renamed: "tokenOfOwnerByIndex(contract:owner:index:completionHandler:)")
-    public func tokenOfOwnerByIndex(contract: EthereumAddress,
-                                    owner: EthereumAddress,
-                                    index: BigUInt,
-                                    completion: @escaping((Error?, BigUInt?) -> Void)) {
-        tokenOfOwnerByIndex(contract: contract, owner: owner, index: index) { result in
-            switch result {
-            case .success(let data):
-                completion(nil, data)
-            case .failure(let error):
-                completion(error, nil)
             }
         }
     }

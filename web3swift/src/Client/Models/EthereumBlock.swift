@@ -1,9 +1,6 @@
 //
-//  EthereumBlock.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 20/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +10,7 @@ public enum EthereumBlock: Hashable {
     case Earliest
     case Pending
     case Number(Int)
-    
+
     public var stringValue: String {
         switch self {
         case .Latest:
@@ -26,7 +23,7 @@ public enum EthereumBlock: Hashable {
             return int.web3.hexString
         }
     }
-    
+
     public var intValue: Int? {
         switch self {
         case .Number(let int):
@@ -35,11 +32,11 @@ public enum EthereumBlock: Hashable {
             return nil
         }
     }
-    
+
     public init(rawValue: Int) {
         self = .Number(rawValue)
     }
-    
+
     public init(rawValue: String) {
         if rawValue == "latest" {
             self = .Latest
@@ -59,10 +56,10 @@ extension EthereumBlock: Codable {
         let strValue = try value.decode(String.self)
         self = EthereumBlock(rawValue: strValue)
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(self.stringValue)
+        try container.encode(stringValue)
     }
 }
 
@@ -70,7 +67,7 @@ extension EthereumBlock: Comparable {
     static public func == (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
         return lhs.stringValue == rhs.stringValue
     }
-    
+
     static public func < (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
         switch lhs {
         case .Earliest:
@@ -91,6 +88,6 @@ extension EthereumBlock: Comparable {
                 return lhsInt < rhsInt
             }
         }
-        
+
     }
 }

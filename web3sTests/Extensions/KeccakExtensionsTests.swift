@@ -1,13 +1,10 @@
 //
-//  KeccakExtensionsTests.swift
-//  web3sTests
-//
-//  Created by Matt Marshall on 13/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-@testable import web3
 import XCTest
+@testable import web3
 
 class KeccakExtensionsTests: XCTestCase {
     override func setUp() {
@@ -39,5 +36,4 @@ class KeccakExtensionsTests: XCTestCase {
         XCTAssertEqual(keccak.web3.hexString, "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad")
     }
 
-    
 }

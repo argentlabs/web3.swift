@@ -1,9 +1,6 @@
 //
-//  ABITuple.swift
-//  web3swift
-//
-//  Created by Miguel on 21/07/2020.
-//  Copyright © 2020 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -27,4 +24,3 @@ public protocol ABITupleEncodable {
 }
 
 public protocol ABITuple: ABIType, ABITupleEncodable, ABITupleDecodable {}
-

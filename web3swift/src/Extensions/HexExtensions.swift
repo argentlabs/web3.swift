@@ -1,9 +1,6 @@
 //
-//  HexExtensions.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 09/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -18,6 +15,10 @@ public extension BigUInt {
 public extension Web3Extensions where Base == BigUInt {
     var hexString: String {
         return String(bytes: base.web3.bytes)
+    }
+
+    var hexStringNoLeadingZeroes: String {
+        return base.web3.hexString.replacingOccurrences(of: "(?<=0x)0+", with: "", options: .regularExpression)
     }
 }
 
@@ -51,7 +52,7 @@ public extension Data {
 
 public extension Web3Extensions where Base == Data {
     var hexString: String {
-        let bytes = Array<UInt8>(base)
+        let bytes = [UInt8](base)
         return "0x" + bytes.map { String(format: "%02hhx", $0) }.joined()
     }
 }
@@ -95,5 +96,3 @@ public extension Web3Extensions where Base == String {
         return nil
     }
 }
-
-

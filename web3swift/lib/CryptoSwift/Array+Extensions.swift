@@ -15,6 +15,6 @@
 extension Array {
     @inlinable
     var slice: ArraySlice<Element> {
-        self[self.startIndex ..< self.endIndex]
+        self[startIndex ..< endIndex]
     }
 }

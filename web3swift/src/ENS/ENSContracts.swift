@@ -1,26 +1,24 @@
 //
-//  ENSContracts.swift
-//  web3swift
-//
-//  Created by Matt Marshall on 13/03/2018.
-//  Copyright © 2018 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public typealias ENSRegistryResolverParameter = ENSContracts.ResolveParameter
 
 public enum ENSContracts {
-    static let RopstenAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
-    static let MainnetAddress = EthereumAddress("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e")
-    
+    static let RegistryAddress: EthereumAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {
-        case .Ropsten:
-            return ENSContracts.RopstenAddress
-        case .Mainnet:
-            return ENSContracts.MainnetAddress
+        case .ropsten:
+            return ENSContracts.RegistryAddress
+        case .mainnet:
+            return ENSContracts.RegistryAddress
+        case .goerli:
+            return ENSContracts.RegistryAddress
         default:
             return nil
         }
@@ -72,7 +70,7 @@ public enum ENSContracts {
             }
         }
     }
-    
+
     public enum ENSResolverFunctions {
         public struct addr: ABIFunction {
             public static let name = "addr"
@@ -80,9 +78,9 @@ public enum ENSContracts {
             public let gasLimit: BigUInt?
             public var contract: EthereumAddress
             public let from: EthereumAddress?
-            
+
             public let _node: Data
-            
+
             public init(
                 contract: EthereumAddress,
                 from: EthereumAddress? = nil,
@@ -110,21 +108,21 @@ public enum ENSContracts {
                 self.gasLimit = gasLimit
                 self._node = parameter.nameHash
             }
-            
+
             public func encode(to encoder: ABIFunctionEncoder) throws {
                 try encoder.encode(_node, staticSize: 32)
             }
         }
-        
+
         public struct name: ABIFunction {
             public static let name = "name"
             public let gasPrice: BigUInt?
             public let gasLimit: BigUInt?
             public var contract: EthereumAddress
             public let from: EthereumAddress?
-            
+
             public let _node: Data
-            
+
             init(
                 contract: EthereumAddress,
                  from: EthereumAddress? = nil,
@@ -152,7 +150,7 @@ public enum ENSContracts {
                 self.gasLimit = gasLimit
                 self._node = parameter.nameHash
             }
-            
+
             public func encode(to encoder: ABIFunctionEncoder) throws {
                 try encoder.encode(_node, staticSize: 32)
             }
@@ -228,7 +226,7 @@ public enum ENSContracts {
             }
         }
     }
-    
+
     public enum ENSRegistryFunctions {
         public struct resolver: ABIFunction {
             public static let name = "resolver"
@@ -236,9 +234,9 @@ public enum ENSContracts {
             public let gasLimit: BigUInt?
             public var contract: EthereumAddress
             public let from: EthereumAddress?
-            
+
             let _node: Data
-            
+
             init(
                 contract: EthereumAddress,
                 from: EthereumAddress? = nil,
@@ -268,21 +266,21 @@ public enum ENSContracts {
                     _node: parameter.nameHash
                 )
             }
-            
+
             public func encode(to encoder: ABIFunctionEncoder) throws {
                 try encoder.encode(_node, staticSize: 32)
             }
         }
-        
+
         struct owner: ABIFunction {
             static let name = "owner"
             let gasPrice: BigUInt?
             let gasLimit: BigUInt?
             var contract: EthereumAddress
             let from: EthereumAddress?
-            
+
             let _node: Data
-            
+
             init(
                 contract: EthereumAddress,
                 from: EthereumAddress? = nil,
@@ -310,7 +308,7 @@ public enum ENSContracts {
                 self.gasLimit = gasLimit
                 self._node = parameter.nameHash
             }
-            
+
             public func encode(to encoder: ABIFunctionEncoder) throws {
                 try encoder.encode(_node, staticSize: 32)
             }

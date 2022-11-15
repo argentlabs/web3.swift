@@ -38,11 +38,20 @@ let keyStorage = EthereumKeyLocalStorage()
 let account = try? EthereumAccount.create(keyStorage: keyStorage, keystorePassword: "MY_PASSWORD")
 ```
 
-Create an instance of `EthereumClient`. This will then provide you access to a set of functions for interacting with the Blockchain.
+Create an instance of `EthereumHttpClient` or `EthereumWebSocketClient`. This will then provide you access to a set of functions for interacting with the Blockchain.
 
+`EthereumHttpClient`
 ```swift
 guard let clientUrl = URL(string: "https://an-infura-or-similar-url.com/123") else { return }
 let client = EthereumClient(url: clientUrl)
+```
+
+OR
+
+`EthereumWebSocketClient`
+```swift
+guard let clientUrl = URL(string: "wss://ropsten.infura.io/ws/v3//123") else { return }
+let client = EthereumWebSocketClient(url: clientUrl)
 ```
 
 You can then interact with the client methods, such as to get the current gas price:
@@ -96,7 +105,7 @@ public struct Transfer: ABIFunction {
 
 This function can be used to generate contract call transactions to send with the client:
 ```swift
-let function = transfer(contract: EthereumAddress("0xtokenaddress"), from: EthereumAddress("0xfrom"), to: EthereumAddress("0xto"), value: 100)
+let function = transfer(contract: "0xtokenaddress", from: "0xfrom", to: "0xto", value: 100)
 let transaction = try function.transaction()
 
 client.eth_sendRawTransaction(transaction, withAccount: account) { (error, txHash) in

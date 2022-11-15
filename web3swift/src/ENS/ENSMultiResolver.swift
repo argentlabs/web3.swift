@@ -1,56 +1,53 @@
 //
-//  ENSMultiResolver.swift
-//  web3swift
-//
-//  Created by David Rodrigues on 03/11/2020.
-//  Copyright © 2020 Argent Labs Limited. All rights reserved.
+//  web3.swift
+//  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
 
 extension EthereumNameService {
+    public func resolve(addresses: [EthereumAddress]) async throws -> [AddressResolveOutput] {
+        return try await MultiResolver(client: client, registryAddress: registryAddress)
+            .resolve(addresses: addresses)
+    }
 
+    public func resolve(names: [String]) async throws -> [NameResolveOutput] {
+        return try await MultiResolver(client: client, registryAddress: registryAddress)
+            .resolve(names: names)
+    }
+}
+
+extension EthereumNameService {
     public func resolve(
         addresses: [EthereumAddress],
-        completion: @escaping (Result<[AddressResolveOutput], EthereumNameServiceError>) -> Void
+        completion: @escaping (Result<[AddressResolveOutput], Error>) -> Void
     ) {
-        MultiResolver(
-            client: client,
-            registryAddress: registryAddress
-        ).resolve(addresses: addresses, completion: completion)
+        Task {
+            do {
+                let result = try await resolve(addresses: addresses)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     public func resolve(
         names: [String],
-        completion: @escaping (Result<[NameResolveOutput], EthereumNameServiceError>) -> Void
+        completion: @escaping (Result<[NameResolveOutput], Error>) -> Void
     ) {
-        MultiResolver(
-            client: client,
-            registryAddress: registryAddress
-        ).resolve(names: names, completion: completion)
-    }
-}
-
-extension EthereumNameService {
-    public func resolve(addresses: [EthereumAddress]) async -> Result<[AddressResolveOutput], EthereumNameServiceError> {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<Result<[AddressResolveOutput], EthereumNameServiceError>, Never>) in
-            MultiResolver(client: client, registryAddress: registryAddress).resolve(addresses: addresses) { result in
-                continuation.resume(returning: result)
-            }
-        }
-    }
-
-    public func resolve(names: [String]) async -> Result<[NameResolveOutput], EthereumNameServiceError> {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<Result<[NameResolveOutput], EthereumNameServiceError>, Never>) in
-            MultiResolver(client: client, registryAddress: registryAddress).resolve(names: names) { result in
-                continuation.resume(returning: result)
+        Task {
+            do {
+                let result = try await resolve(names: names)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
             }
         }
     }
 }
 
 extension EthereumNameService {
-
     public enum ResolveOutput<Value: Equatable>: Equatable {
         case couldNotBeResolved(EthereumNameServiceError)
         case resolved(Value)
@@ -73,7 +70,7 @@ extension EthereumNameService {
             var intermediaryResponses: [ResolveOutput?]
 
             init(expectedResponsesCount: Int) {
-                intermediaryResponses = Array(repeating: nil, count: expectedResponsesCount)
+                self.intermediaryResponses = Array(repeating: nil, count: expectedResponsesCount)
             }
         }
 
@@ -88,112 +85,72 @@ extension EthereumNameService {
         let registryAddress: EthereumAddress?
         let multicall: Multicall
 
-        init(
-            client: EthereumClientProtocol,
-            registryAddress: EthereumAddress? = nil
-        ) {
+        init(client: EthereumClientProtocol,
+             registryAddress: EthereumAddress? = nil) {
             self.client = client
             self.registryAddress = registryAddress
             self.multicall = Multicall(client: client)
         }
 
-        func resolve(
-            addresses: [EthereumAddress],
-            completion: @escaping (Result<[AddressResolveOutput], EthereumNameServiceError>) -> Void
-        ) {
+        func resolve(addresses: [EthereumAddress]) async throws -> [AddressResolveOutput] {
             let output = RegistryOutput<AddressResolveOutput>(expectedResponsesCount: addresses.count)
 
-            resolveRegistry(
-                parameters: addresses.map(ENSRegistryResolverParameter.address),
-                handler: { index, parameter, result in
-                    guard let address = parameter.address else { return }
-                    switch result {
-                    case .success(let resolverAddress):
-                        output.queries.append(
-                            ResolverQuery(
-                                index: index,
-                                parameter: parameter,
-                                resolverAddress: resolverAddress,
-                                nameHash: parameter.nameHash
-                            )
+            try await resolveRegistry(parameters: addresses.map(ENSRegistryResolverParameter.address), handler: { index, parameter, result in
+                guard let address = parameter.address else { return }
+                switch result {
+                case .success(let resolverAddress):
+                    output.queries.append(
+                        ResolverQuery(
+                            index: index,
+                            parameter: parameter,
+                            resolverAddress: resolverAddress,
+                            nameHash: parameter.nameHash
                         )
-                    case .failure(let error):
-                        output.intermediaryResponses[index] = AddressResolveOutput(
-                            address: address,
-                            output: Self.output(from: error)
-                        )
-                    }
-                }, completion: { result  in
-                    switch result {
-                    case .success:
-                        self.resolveQueries(registryOutput: output) { result in
-                            switch result {
-                            case .success(let output):
-                                completion(.success(output))
-                            case .failure:
-                                completion(result)
-                            }
-                        }
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                })
+                    )
+                case .failure(let error):
+                    output.intermediaryResponses[index] = AddressResolveOutput(
+                        address: address,
+                        output: Self.output(from: error)
+                    )
+                }
+            })
+
+            let result = try await resolveQueries(registryOutput: output)
+            return result
         }
 
-        func resolve(
-            names: [String],
-            completion: @escaping (Result<[NameResolveOutput], EthereumNameServiceError>) -> Void
-        ) {
+        func resolve(names: [String]) async throws -> [NameResolveOutput] {
             let output = RegistryOutput<NameResolveOutput>(expectedResponsesCount: names.count)
 
-            resolveRegistry(
-                parameters: names.map(ENSRegistryResolverParameter.name),
-                handler: { index, parameter, result in
-                    guard let name = parameter.name else { return }
-                    switch result {
-                    case .success(let resolverAddress):
-                        output.queries.append(
-                            ResolverQuery(
-                                index: index,
-                                parameter: parameter,
-                                resolverAddress: resolverAddress,
-                                nameHash: parameter.nameHash
-                            )
+            try await resolveRegistry(parameters: names.map(ENSRegistryResolverParameter.name), handler: { index, parameter, result in
+                guard let name = parameter.name else { return }
+                switch result {
+                case .success(let resolverAddress):
+                    output.queries.append(
+                        ResolverQuery(
+                            index: index,
+                            parameter: parameter,
+                            resolverAddress: resolverAddress,
+                            nameHash: parameter.nameHash
                         )
-                    case .failure(let error):
-                        output.intermediaryResponses[index] = NameResolveOutput(
-                            ens: name,
-                            output: Self.output(from: error)
-                        )
-                    }
-                }, completion: { result  in
-                    switch result {
-                    case .success:
-                        self.resolveQueries(registryOutput: output) { result in
-                            switch result {
-                            case .success(let output):
-                                completion(.success(output))
-                            case .failure:
-                                completion(result)
-                            }
-                        }
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                })
+                    )
+                case .failure(let error):
+                    output.intermediaryResponses[index] = NameResolveOutput(
+                        ens: name,
+                        output: Self.output(from: error)
+                    )
+                }
+            })
+
+            return try await resolveQueries(registryOutput: output)
         }
 
-        private func resolveRegistry(
-            parameters: [ENSRegistryResolverParameter],
-            handler: @escaping (Int, ENSRegistryResolverParameter, Result<EthereumAddress, Multicall.CallError>) -> Void,
-            completion: @escaping (Result<Void, EthereumNameServiceError>) -> Void
-        ) {
+        private func resolveRegistry(parameters: [ENSRegistryResolverParameter],
+                                     handler: @escaping (Int, ENSRegistryResolverParameter, Result<EthereumAddress, Multicall.CallError>) -> Void) async throws {
 
-            guard
-                let network = client.network,
-                let ensRegistryAddress = self.registryAddress ?? ENSContracts.registryAddress(for: network)
-            else { return completion(.failure(.noNetwork)) }
-
+            guard let network = client.network, let ensRegistryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
+                throw EthereumNameServiceError.noNetwork
+            }
 
             var aggegator = Multicall.Aggregator()
 
@@ -202,29 +159,23 @@ extension EthereumNameService {
 
                     let function = ENSContracts.ENSRegistryFunctions.resolver(contract: ensRegistryAddress, parameter: parameter)
 
-                    try aggegator.append(
-                        function: function,
-                        response: ENSContracts.ENSRegistryResponses.RegistryResponse.self
-                    ) { result in handler(index, parameter, result) }
-                }
-
-                multicall.aggregate(calls: aggegator.calls) { result in
-                    switch result {
-                    case .success:
-                        completion(.success(()))
-                    case .failure:
-                        completion(.failure(.noNetwork))
+                    try aggegator.append(function: function,
+                                         response: ENSContracts.ENSRegistryResponses.RegistryResponse.self) {
+                        result in handler(index, parameter, result)
                     }
                 }
+
+                do {
+                    _ = try await multicall.aggregate(calls: aggegator.calls)
+                } catch {
+                    throw EthereumNameServiceError.noNetwork
+                }
             } catch {
-                completion(.failure(.invalidInput))
+                throw EthereumNameServiceError.invalidInput
             }
         }
 
-        private func resolveQueries<ResolverOutput>(
-            registryOutput: RegistryOutput<ResolverOutput>,
-            completion: @escaping (Result<[ResolverOutput], EthereumNameServiceError>) -> Void
-        ) {
+        private func resolveQueries<ResolverOutput>(registryOutput: RegistryOutput<ResolverOutput>) async throws -> [ResolverOutput] {
             var aggegator = Multicall.Aggregator()
 
             registryOutput.queries.forEach { query in
@@ -240,13 +191,11 @@ extension EthereumNameService {
                 }
             }
 
-            multicall.aggregate(calls: aggegator.calls) { result in
-                switch result {
-                case .success:
-                    completion(.success(registryOutput.intermediaryResponses.compactMap { $0 }))
-                case .failure:
-                    completion(.failure(.noNetwork))
-                }
+            do {
+                _ = try await multicall.aggregate(calls: aggegator.calls)
+                return registryOutput.intermediaryResponses.compactMap { $0 }
+            } catch {
+                throw EthereumNameServiceError.noNetwork
             }
         }
 

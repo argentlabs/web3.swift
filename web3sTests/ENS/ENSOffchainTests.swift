@@ -1,8 +1,5 @@
 //
-//  ENSOffchainTests.swift
-//  web3sTests
-//
-//  Created by Miguel on 17/05/2022.
+//  web3.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -11,11 +8,11 @@ import XCTest
 
 class ENSOffchainTests: XCTestCase {
     var account: EthereumAccount?
-    var client: EthereumClient!
+    var client: EthereumClientProtocol!
 
     override func setUp() {
         super.setUp()
-        self.client = EthereumClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
     }
 
     func testDNSEncode() {
@@ -46,7 +43,7 @@ class ENSOffchainTests: XCTestCase {
     func testGivenRopstenRegistry_WhenResolvingOffchainENSAndDisabled_ThenFails() async {
         do {
             let nameService = EthereumNameService(client: client!)
-            let _ = try await nameService.resolve(
+            _ = try await nameService.resolve(
                 ens: "offchainexample.eth",
                 mode: .onchain
             )
@@ -68,7 +65,7 @@ class ENSOffchainTests: XCTestCase {
             XCTFail("Expected ens but failed \(error).")
         }
     }
-    
+
     func testGivenRopstenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
@@ -83,7 +80,7 @@ class ENSOffchainTests: XCTestCase {
             XCTFail("Expected ens but failed \(error).")
         }
     }
-    
+
     func testGivenRopstenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
         do {
             let nameService = EthereumNameService(client: client!)
@@ -98,10 +95,10 @@ class ENSOffchainTests: XCTestCase {
             XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
         }
     }
-    
+
     func testGivenRopstenRegistry_WhenTwoRequestsWithAndWithoutSubdomain_ThenBothResolveCorrectly() async {
         let nameService = EthereumNameService(client: client!)
-        
+
         do {
             let ens = try await nameService.resolve(
                 ens: "resolver.eth",
@@ -122,10 +119,10 @@ class ENSOffchainTests: XCTestCase {
             XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
         }
     }
-    
+
     func testGivenRopstenRegistry_WhenTwoRequestsWithoutAndWithSubdomain_ThenBothResolveCorrectly() async {
         let nameService = EthereumNameService(client: client!)
-        
+
         do {
             _ = try await nameService.resolve(
                 ens: "1.resolver.eth",
@@ -136,7 +133,7 @@ class ENSOffchainTests: XCTestCase {
         } catch {
             XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
         }
-        
+
         do {
             let ens = try await nameService.resolve(
                 ens: "resolver.eth",
@@ -149,3 +146,9 @@ class ENSOffchainTests: XCTestCase {
     }
 }
 
+class ENSOffchainWebSocketTests: ENSOffchainTests {
+    override func setUp() {
+        super.setUp()
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+    }
+}

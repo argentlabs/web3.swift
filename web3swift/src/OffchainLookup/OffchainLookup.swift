@@ -1,8 +1,5 @@
 //
-//  OffchainLookup.swift
-//  web3swift
-//
-//  Created by Miguel on 12/05/2022.
+//  web3.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -18,7 +15,7 @@ public struct OffchainLookup: ABIRevertError {
             Data.self
         ]
     }
-    
+
     public static var name: String = "OffchainLookup"
 
     public var address: EthereumAddress
@@ -60,7 +57,7 @@ public struct OffchainLookup: ABIRevertError {
         else {
             return nil
         }
-        
+
         self.init(
             address: sender,
             urls: urls,
@@ -86,7 +83,7 @@ extension OffchainLookup {
     }
 }
 
-fileprivate let expected = OffchainLookup(
+private let expected = OffchainLookup(
     address: .zero,
     urls: [],
     callData: Data(),
