@@ -13,7 +13,7 @@ class SiweVerifierTests: XCTestCase {
     override func setUp() {
         super.setUp()
         if self.client == nil {
-            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: .goerli)
         }
     }
 
@@ -55,7 +55,7 @@ class SiweVerifierTests: XCTestCase {
             statement: "You abide to our T&C",
             uri: URL(string: "https://login.xyz/demo#login")!,
             version: "1",
-            chainId: 3,
+            chainId: 5,
             nonce: "qwerty123456",
             issuedAt: Date(timeIntervalSince1970: 1_655_082_630.023),
             expirationTime: Date(timeIntervalSince1970: 1_657_674_629.0),
@@ -85,7 +85,7 @@ class SiweVerifierTests: XCTestCase {
             statement: "You abide to our T&C",
             uri: URL(string: "https://login.xyz/demo#login")!,
             version: "1",
-            chainId: 3,
+            chainId: 5,
             nonce: "qwerty123456",
             issuedAt: Date(timeIntervalSince1970: 1_655_082_630.023),
             expirationTime: Date(timeIntervalSince1970: 1_657_674_629.0),
@@ -113,13 +113,13 @@ class SiweVerifierTests: XCTestCase {
             let isVerified = try await verifier.verify(
                 """
                 login.xyz wants you to sign in with your Ethereum account:
-                0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F
+                0x719561fee351F7aC6560D0302aE415FfBEEc0B51
 
                 Please sign this 🙏
 
                 URI: https://login.xyz/demo#login
                 Version: 1
-                Chain ID: 3
+                Chain ID: 5
                 Nonce: qwerty123456
                 Issued At: 2022-06-16T12:09:07.937Z
                 Request ID: some-request-id
@@ -127,7 +127,7 @@ class SiweVerifierTests: XCTestCase {
                 - https://docs.login.xyz
                 - https://login.xyz
                 """,
-                against: "0x14ff8392ce953be96f3e57d8519d94f4b19f98cf42d0dca8961c3fa70a12c9857e95f4732839d39e883d26abf0fcdd4602f50acde7721274ea4c31f26981e4b41b"
+                against: "0x22694f51b1eda4559b117ac0bdbf40f774b17bbb76f763b1c30e1adaab42ce1a406a02c38158c6b500f4f5d803774907d231020867d376e05f3a6eea7041aff31b"
             )
             XCTAssertTrue(isVerified)
         } catch {
@@ -147,7 +147,7 @@ class SiweVerifierTests: XCTestCase {
 
                 URI: https://login.xyz/demo#login
                 Version: 1
-                Chain ID: 3
+                Chain ID: 5
                 Nonce: qwerty123456
                 Issued At: 2022-06-16T12:09:07.937Z
                 Request ID: some-request-id
@@ -170,13 +170,13 @@ class SiweVerifierTests: XCTestCase {
             let isVerified = try await verifier.verify(
                 """
                 login.xyz wants you to sign in with your Ethereum account:
-                0x2bD85c85666a29bD453918B20b9E5ef7603d9007
+                0x72602FE1F2CaBAbCfFB51eb84741AFaE04AF10ca
 
                 Please sign this 🙏
 
                 URI: https://login.xyz/demo#login
                 Version: 1
-                Chain ID: 3
+                Chain ID: 5
                 Nonce: qwerty123456
                 Issued At: 2022-06-16T12:09:07.937Z
                 Request ID: some-request-id
@@ -184,7 +184,7 @@ class SiweVerifierTests: XCTestCase {
                 - https://docs.login.xyz
                 - https://login.xyz
                 """,
-                against: "0x0217550201eb35af7048e32dbf05201de1440eb079e1046f16cce27463fb5bf56f8c9c33a93845b1e891afdcf60608255433b18435c9cdabca6625fb1bcc41841b"
+                against: "0x4f49c1a24513ad1b677546c2dfc3be361d861c9d595d47ebf97aac57497f7971184e31f997f67466690becacd5aac5d3716db457329ba392c81ba5836a26449c1b"
             )
             XCTAssertTrue(isVerified)
         } catch {
@@ -199,13 +199,13 @@ class SiweVerifierTests: XCTestCase {
             let isVerified = try await verifier.verify(
                 """
                 login.xyz wants you to sign in with your Ethereum account:
-                0x2bD85c85666a29bD453918B20b9E5ef7603d9007
+                0x72602FE1F2CaBAbCfFB51eb84741AFaE04AF10ca
 
                 Please sign this 🙏
 
                 URI: https://login.xyz/demo#login
                 Version: 1
-                Chain ID: 3
+                Chain ID: 5
                 Nonce: qwerty123456
                 Issued At: 2022-06-16T12:09:07.937Z
                 Request ID: some-request-id

@@ -40,9 +40,9 @@ class TransactionTests: XCTestCase {
                                               nonce: 1,
                                               gasPrice: 10,
                                               gasLimit: 400000,
-                                              chainId: 3)
+                                              chainId: 5)
 
-        XCTAssertEqual(transaction.hash?.web3.hexString, "0xec010a83061a80a01639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde71748080038080")
+        XCTAssertEqual(transaction.hash?.web3.hexString, "0xec010a83061a80a01639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde71748080058080")
     }
 
     func test_GivenLocalTransaction_WhenTransactionWithoutChainID_HashIsNil() {

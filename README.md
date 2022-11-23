@@ -50,7 +50,7 @@ OR
 
 `EthereumWebSocketClient`
 ```swift
-guard let clientUrl = URL(string: "wss://ropsten.infura.io/ws/v3//123") else { return }
+guard let clientUrl = URL(string: "wss://goerli.infura.io/ws/v3//123") else { return }
 let client = EthereumWebSocketClient(url: clientUrl)
 ```
 
@@ -159,7 +159,7 @@ We support querying ERC721 token data via the `ERC721` struct. Including:
 
 ### Running Tests
 
-The tests will all pass when running against Ropsten. You will need to provide a URL for the blockchain proxy (e.g. on Infura), and a key-pair in `TestConfig.swift`. Some of the account signing tests will fail, given the signature assertions are against a specific (unprovided) key.
+The tests will all pass when running against Goerli. You will need to provide a URL for the blockchain proxy (e.g. on Infura), and a key-pair in `TestConfig.swift`. Some of the account signing tests will fail, given the signature assertions are against a specific (unprovided) key.
 
 ## Dependencies
 

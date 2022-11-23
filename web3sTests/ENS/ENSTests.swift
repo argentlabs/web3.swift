@@ -21,9 +21,9 @@ class ENSTests: XCTestCase {
         XCTAssertEqual(nameHash, "0x3e58ef7a2e196baf0b9d36a65cc590ac9edafb3395b7cdeb8f39206049b4534c")
     }
 
-    func testGivenRopstenRegistry_WhenExistingDomainName_ResolvesOwnerAddressCorrectly() async {
+    func testGivenRegistry_WhenExistingDomainName_ResolvesOwnerAddressCorrectly() async {
         do {
-            let function = ENSContracts.ENSRegistryFunctions.owner(contract: ENSContracts.RegistryAddress, _node: EthereumNameService.nameHash(name: "test").web3.hexData ?? Data())
+            let function = ENSContracts.ENSRegistryFunctions.owner(contract: ENSContracts.RegistryAddress, _node: EthereumNameService.nameHash(name: "eth").web3.hexData ?? Data())
 
             let tx = try function.transaction()
 
@@ -34,26 +34,26 @@ class ENSTests: XCTestCase {
             }
 
             let owner = String(dataStr[dataStr.index(dataStr.endIndex, offsetBy: -40)...])
-            XCTAssertEqual(owner.web3.noHexPrefix, "09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1")
+            XCTAssertEqual(owner.web3.noHexPrefix, "57f1887a8bf19b14fc0df6fd9b2acc9af147ea85")
         } catch {
             XCTFail("Expected dataStr but failed \(error).")
         }
     }
 
-    func testGivenRopstenRegistry_WhenExistingAddress_ThenResolvesCorrectly() async {
+    func testGivenRegistry_WhenExistingAddress_ThenResolvesCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
             let ens = try await nameService.resolve(
-                address: "0xb0b874220ff95d62a676f58d186c832b3e6529c8",
+                address: "0x162142f0508F557C02bEB7C473682D7C91Bcef41",
                 mode: .onchain
             )
-            XCTAssertEqual("julien.argent.test", ens)
+            XCTAssertEqual("darhmike.eth", ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
     }
 
-    func testGivenRopstenRegistry_WhenNotExistingAddress_ThenFailsCorrectly() async {
+    func testGivenRegistry_WhenNotExistingAddress_ThenFailsCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
             _ = try await nameService.resolve(
@@ -66,33 +66,20 @@ class ENSTests: XCTestCase {
         }
     }
 
-    func testGivenCustomRegistry_WhenNotExistingAddress_ThenResolvesFailsCorrectly() async {
-        do {
-            let nameService = EthereumNameService(client: client!, registryAddress: "0x7D7C04B7A05539a92541105806e0971E45969F85")
-            _ = try await nameService.resolve(
-                address: "0xb0b874220ff95d62a676f58d186c832b3e6529c9",
-                mode: .onchain
-            )
-            XCTFail("Expected to throw while awaiting, but succeeded")
-        } catch {
-            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
-        }
-    }
-
-    func testGivenRopstenRegistry_WhenExistingENS_ThenResolvesAddressCorrectly() async {
+    func testGivenRegistry_WhenExistingENS_ThenResolvesAddressCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
             let ens = try await nameService.resolve(
-                ens: "julien.argent.test",
+                ens: "darhmike.eth",
                 mode: .onchain
             )
-            XCTAssertEqual(EthereumAddress("0xb0b874220ff95d62a676f58d186c832b3e6529c8"), ens)
+            XCTAssertEqual(EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
     }
 
-    func testGivenRopstenRegistry_WhenInvalidENS_ThenErrorsRequest() async {
+    func testGivenRegistry_WhenInvalidENS_ThenErrorsRequest() async {
         do {
             let nameService = EthereumNameService(client: client!)
             _ = try await nameService.resolve(
@@ -105,29 +92,16 @@ class ENSTests: XCTestCase {
         }
     }
 
-    func testGivenCustomRegistry_WhenInvalidENS_ThenErrorsRequest() async {
-        do {
-            let nameService = EthereumNameService(client: client!, registryAddress: "0x7D7C04B7A05539a92541105806e0971E45969F85")
-            _ = try await nameService.resolve(
-                ens: "**somegarbage)_!!",
-                mode: .onchain
-            )
-            XCTFail("Expected to throw while awaiting, but succeeded")
-        } catch {
-            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
-        }
-    }
-
-    func testGivenRopstenRegistry_ThenResolvesMultipleAddressesInOneCall() async {
+    func testGivenRegistry_ThenResolvesMultipleAddressesInOneCall() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
             var results: [EthereumNameService.ResolveOutput<String>]?
 
             let resolutions = try await nameService.resolve(addresses: [
-                "0xb0b874220ff95d62a676f58d186c832b3e6529c8",
+                "0x162142f0508F557C02bEB7C473682D7C91Bcef41",
                 "0x09b5bd82f3351a4c8437fc6d7772a9e6cd5d25a1",
-                "0x7e691d7ffb007abe91d8a24d7f22fc74307dab06"
+                "0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"
             ])
 
             results = resolutions.map { $0.output }
@@ -135,24 +109,24 @@ class ENSTests: XCTestCase {
             XCTAssertEqual(
                 results,
                 [
-                    .resolved("julien.argent.test"),
+                    .resolved("darhmike.eth"),
                     .couldNotBeResolved(.ensUnknown),
-                    .resolved("davidtests.argent.xyz")
+                    .resolved("darthmike.eth")
                 ]
             ) } catch {
                 XCTFail("Expected resolutions but failed \(error).")
             }
     }
 
-    func testGivenRopstenRegistry_ThenResolvesMultipleNamesInOneCall() async {
+    func testGivenRegistry_ThenResolvesMultipleNamesInOneCall() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
             var results: [EthereumNameService.ResolveOutput<EthereumAddress>]?
 
             let resolutions = try await nameService.resolve(names: [
-                "julien.argent.test",
-                "davidtests.argent.xyz",
+                "darhmike.eth",
+                "darthmike.eth",
                 "somefakeens.argent.xyz"
             ])
 
@@ -161,8 +135,8 @@ class ENSTests: XCTestCase {
             XCTAssertEqual(
                 results,
                 [
-                    .resolved("0xb0b874220ff95d62a676f58d186c832b3e6529c8"),
-                    .resolved("0x7e691d7ffb007abe91d8a24d7f22fc74307dab06"),
+                    .resolved("0x162142f0508F557C02bEB7C473682D7C91Bcef41"),
+                    .resolved("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"),
                     .couldNotBeResolved(.ensUnknown)
                 ]
             )
@@ -171,7 +145,7 @@ class ENSTests: XCTestCase {
         }
     }
 
-    func testGivenRopstenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesExampleCorrectly() async {
+    func testGivenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesExampleCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
@@ -180,13 +154,13 @@ class ENSTests: XCTestCase {
                 mode: .onchain
             )
 
-            XCTAssertEqual(address, EthereumAddress("0x4FaBE0A3a4DDd9968A7b4565184Ad0eFA7BE5411"))
+            XCTAssertEqual(address, EthereumAddress("0x4b711a377b1b3534749fbe5e59bcf7f94d92ea98"))
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
     }
 
-    func testGivenRopstenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
+    func testGivenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
