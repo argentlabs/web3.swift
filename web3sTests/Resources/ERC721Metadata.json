@@ -1,0 +1,7 @@
+{
+    "title": "Test token metadata",
+    "type": "object",
+    "name": "Unnamed",
+    "description": "Test ERC721 token",
+    "image": "https://camo.githubusercontent.com/337987fd840686af3ccd336ecb6f76c8d9682539086a5b77f565cb71e6ad167c/68747470733a2f2f7261772e6769746875622e636f6d2f617267656e746c6162732f776562332e73776966742f6d61737465722f7765623373776966742e706e67"
+}

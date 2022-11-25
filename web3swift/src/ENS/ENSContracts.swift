@@ -13,8 +13,6 @@ public enum ENSContracts {
 
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {
-        case .ropsten:
-            return ENSContracts.RegistryAddress
         case .mainnet:
             return ENSContracts.RegistryAddress
         case .goerli:
