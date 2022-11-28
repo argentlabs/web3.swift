@@ -27,7 +27,7 @@ class EthereumAccountTests: XCTestCase {
     }
 
     func testCreateAccount() {
-        let storage = EthereumKeyLocalStorage() as EthereumKeyStorageProtocol
+        let storage = EthereumKeyLocalStorage()
         let account = try? EthereumAccount.create(keyStorage: storage, keystorePassword: "PASSWORD")
         XCTAssertNotNil(account, "Failed to create account. Ensure key is valid in TestConfig.swift")
     }
@@ -39,7 +39,7 @@ class EthereumAccountTests: XCTestCase {
     }
 
     func testImportAccount() {
-        let storage = EthereumKeyLocalStorage() as EthereumKeyStorageProtocol
+        let storage = EthereumKeyLocalStorage() as EthereumSingleKeyStorageProtocol
         let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
 
         XCTAssertEqual(account.address.value, "0x675f5810feb3b09528e5cd175061b4eb8de69075")

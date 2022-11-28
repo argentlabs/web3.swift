@@ -5,7 +5,7 @@
 
 import Foundation
 
-public protocol EthereumKeyStorageProtocol {
+public protocol EthereumSingleKeyStorageProtocol {
     func storePrivateKey(key: Data) throws
     func loadPrivateKey() throws -> Data
 }
@@ -25,7 +25,7 @@ public enum EthereumKeyStorageError: Error {
     case failedToDelete
 }
 
-public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
+public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
     
     public init() {}
     
