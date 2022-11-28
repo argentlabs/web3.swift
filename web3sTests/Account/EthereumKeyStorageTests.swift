@@ -73,11 +73,11 @@ class EthereumKeyStorageTests: XCTestCase {
     }
     
     func testDeleteAllPrivateKeys() {
-        let keyStorage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
+        let keyStorage = EthereumKeyLocalStorage()
         do {
-            _ = try EthereumAccount.create(keyStorage: keyStorage, keystorePassword: "PASSWORD")
-            _ = try EthereumAccount.create(keyStorage: keyStorage, keystorePassword: "PASSWORD")
-            _ = try EthereumAccount.create(keyStorage: keyStorage, keystorePassword: "PASSWORD")
+            _ = try EthereumAccount.create(addingTo: keyStorage, keystorePassword: "PASSWORD")
+            _ = try EthereumAccount.create(addingTo: keyStorage, keystorePassword: "PASSWORD")
+            _ = try EthereumAccount.create(addingTo: keyStorage, keystorePassword: "PASSWORD")
             try keyStorage.deleteAllKeys()
             let countAfterDeleting = try keyStorage.fetchAccounts()
             XCTAssertEqual(countAfterDeleting.count, 0)
