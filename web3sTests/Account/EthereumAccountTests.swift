@@ -27,41 +27,41 @@ class EthereumAccountTests: XCTestCase {
     }
 
     func testCreateAccount() {
-        let storage = EthereumKeyLocalStorage() as EthereumKeyStorageProtocol
-        let account = try? EthereumAccount.create(keyStorage: storage, keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage()
+        let account = try? EthereumAccount.create(replacing: storage, keystorePassword: "PASSWORD")
         XCTAssertNotNil(account, "Failed to create account. Ensure key is valid in TestConfig.swift")
     }
     
     func testCreateAccountMultiple() {
-        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
-        let account = try? EthereumAccount.create(keyStorage: storage, keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage()
+        let account = try? EthereumAccount.create(addingTo: storage, keystorePassword: "PASSWORD")
         XCTAssertNotNil(account, "Failed to create account. Ensure key is valid in TestConfig.swift")
     }
 
     func testImportAccount() {
-        let storage = EthereumKeyLocalStorage() as EthereumKeyStorageProtocol
-        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage()
+        let account = try! EthereumAccount.importAccount(replacing: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
 
         XCTAssertEqual(account.address.value, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
     }
     
     func testImportAccountMultiple() {
-        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
-        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage()
+        let account = try! EthereumAccount.importAccount(addingTo: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
 
         XCTAssertEqual(account.address.value, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
     }
     
     func testFetchAccounts() {
-        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
-        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage()
+        let account = try! EthereumAccount.importAccount(addingTo: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
         let accounts = try! storage.fetchAccounts()
         XCTAssertTrue(accounts.contains(account.address))
     }
     
     func testDeleteAccount() {
-        let storage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
-        let account = try! EthereumAccount.importAccount(keyStorage: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
+        let storage = EthereumKeyLocalStorage()
+        let account = try! EthereumAccount.importAccount(addingTo: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
         let ethereumAddress = EthereumAddress("0x675f5810feb3b09528e5cd175061b4eb8de69075")
         try! storage.deletePrivateKey(for: ethereumAddress)
         let accounts = try! storage.fetchAccounts()

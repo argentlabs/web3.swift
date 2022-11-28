@@ -28,14 +28,14 @@ $ pod install
 
 ### Getting Started
 
-Create an instance of `EthereumAccount`  with a `EthereumKeyStorage` provider. This provides a wrapper around your key for web3.swift to use. **NOTE** We recommend you implement your own KeyStorage provider, instead of relying on the provided `EthereumKeyLocalStorage` class. This is provided as an example for conformity to the `EthereumKeyStorageProtocol`.
+Create an instance of `EthereumAccount`  with a `EthereumKeyStorage` provider. This provides a wrapper around your key for web3.swift to use. **NOTE We recommend you implement your own KeyStorage provider, instead of relying on the provided `EthereumKeyLocalStorage` class. This is provided as an example for conformity to the `EthereumSingleKeyStorageProtocol`.**
 
 ```swift
 import web3
 
-
+// This is just an example. EthereumKeyLocalStorage should not be used in production code
 let keyStorage = EthereumKeyLocalStorage()
-let account = try? EthereumAccount.create(keyStorage: keyStorage, keystorePassword: "MY_PASSWORD")
+let account = try? EthereumAccount.create(replacing: keyStorage, keystorePassword: "MY_PASSWORD")
 ```
 
 Create an instance of `EthereumHttpClient` or `EthereumWebSocketClient`. This will then provide you access to a set of functions for interacting with the Blockchain.
