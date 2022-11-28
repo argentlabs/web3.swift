@@ -53,6 +53,45 @@ class ENSTests: XCTestCase {
         }
     }
 
+    func testGivenRegistry_WhenExistingAddressHasSubdomain_ThenResolvesCorrectly() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+            let ens = try await nameService.resolve(
+                address: "0xB1037eB3268f942715c999EA6697ce33Febd70A7",
+                mode: .onchain
+            )
+            XCTAssertEqual("subdomain.darhmike.eth", ens)
+        } catch {
+            XCTFail("Expected ens but failed \(error).")
+        }
+    }
+
+    func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenDoesNotResolveCorrectly() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+            let ens = try await nameService.resolve(
+                address: "0x787411394Ccb38483a6F303FDee075f3EA67D65F",
+                mode: .onchain
+            )
+            XCTFail("Resolved but expected failure")
+        } catch {
+            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
+        }
+    }
+
+    func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenResolvesENS() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+            let address = try await nameService.resolve(
+                ens: "another.darhmike.eth",
+                mode: .onchain
+            )
+            XCTAssertEqual(address, "0x787411394Ccb38483a6F303FDee075f3EA67D65F")
+        } catch {
+            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
+        }
+    }
+
     func testGivenRegistry_WhenNotExistingAddress_ThenFailsCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
@@ -92,7 +131,7 @@ class ENSTests: XCTestCase {
         }
     }
 
-    func testGivenRegistry_ThenResolvesMultipleAddressesInOneCall() async {
+    func testGivenRegistry_ThenResolvesMultipleAddressesWithMultiCall() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
@@ -118,7 +157,90 @@ class ENSTests: XCTestCase {
             }
     }
 
-    func testGivenRegistry_ThenResolvesMultipleNamesInOneCall() async {
+    func testGivenRegistry_ThenResolvesSingleAddressWithMultiCall() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+
+            var results: [EthereumNameService.ResolveOutput<String>]?
+
+            let resolutions = try await nameService.resolve(addresses: [
+                "0x162142f0508F557C02bEB7C473682D7C91Bcef41"
+            ])
+
+            results = resolutions.map { $0.output }
+
+            XCTAssertEqual(
+                results,
+                [
+                    .resolved("darhmike.eth")
+                ]
+            ) } catch {
+                XCTFail("Expected resolutions but failed \(error).")
+            }
+    }
+
+    func testGivenRegistry_WhenAddressHasSubdomain_ThenResolvesSingleAddressWithMultiCall() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+
+            var results: [EthereumNameService.ResolveOutput<String>]?
+
+            let resolutions = try await nameService.resolve(addresses: [
+                "0xB1037eB3268f942715c999EA6697ce33Febd70A7"
+            ])
+
+            results = resolutions.map { $0.output }
+
+            XCTAssertEqual(
+                results,
+                [
+                    .resolved("subdomain.darhmike.eth")
+                ]
+            ) } catch {
+                XCTFail("Expected resolutions but failed \(error).")
+            }
+    }
+
+    func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenDoesNotResolveSingleAddressWithMultiCall() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+
+            var results: [EthereumNameService.ResolveOutput<String>]?
+
+            let resolutions = try await nameService.resolve(addresses: [
+                "0x787411394Ccb38483a6F303FDee075f3EA67D65F"
+            ])
+
+            results = resolutions.map { $0.output }
+
+            XCTAssertEqual(
+                results,
+                [
+                    .couldNotBeResolved(.ensUnknown)
+                ]
+            ) } catch {
+                XCTFail("Expected resolutions but failed \(error).")
+            }
+    }
+
+    func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenResolvesENSWithMultiCall() async {
+        do {
+            let nameService = EthereumNameService(client: client!)
+            let results = try await nameService.resolve(
+                names: ["another.darhmike.eth"]
+            )
+            XCTAssertEqual(
+                results.map(\.output),
+                [
+                    .resolved("0x787411394Ccb38483a6F303FDee075f3EA67D65F")
+                ]
+            )
+        } catch {
+            XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
+        }
+    }
+
+    func testGivenRegistry_ThenResolvesMultipleNamesWithMultiCall() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
