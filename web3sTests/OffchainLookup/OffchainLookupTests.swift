@@ -12,7 +12,7 @@ struct DummyOffchainENSResolve: ABIFunction {
     var gasPrice: BigUInt?
     var gasLimit: BigUInt?
 
-    var contract: EthereumAddress = "0x7A876E79a89b9B6dF935F2C1e832E15930FEf3f6"
+    var contract: EthereumAddress = "0x5d3B57647E36a95AFb3d6F04c2587571B4cfF3cc"
 
     var from: EthereumAddress?
     var node: Data
@@ -22,13 +22,14 @@ struct DummyOffchainENSResolve: ABIFunction {
     }
 }
 
+// https://github.com/ethers-io/ethers.js/blob/master/packages/tests/src.ts/test-providers.ts
 enum EthersTestContract {
     struct TestGet: ABIFunction {
         static var name: String = "testGet"
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
+        var contract: EthereumAddress = "0x6C5ed35574a9b4d163f75bBf0595F7540D8FCc2d"
 
         var from: EthereumAddress?
         var data: Data
@@ -43,7 +44,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
+        var contract: EthereumAddress = "0x6C5ed35574a9b4d163f75bBf0595F7540D8FCc2d"
 
         var from: EthereumAddress?
         var data: Data
@@ -58,7 +59,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
+        var contract: EthereumAddress = "0x6C5ed35574a9b4d163f75bBf0595F7540D8FCc2d"
 
         var from: EthereumAddress?
         var data: Data
@@ -73,7 +74,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
+        var contract: EthereumAddress = "0x6C5ed35574a9b4d163f75bBf0595F7540D8FCc2d"
 
         var from: EthereumAddress?
         var data: Data
@@ -88,7 +89,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
+        var contract: EthereumAddress = "0x6C5ed35574a9b4d163f75bBf0595F7540D8FCc2d"
 
         var from: EthereumAddress?
         var data: Data
@@ -103,7 +104,7 @@ enum EthersTestContract {
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
-        var contract: EthereumAddress = "0xAe375B05A08204C809b3cA67C680765661998886"
+        var contract: EthereumAddress = "0x6C5ed35574a9b4d163f75bBf0595F7540D8FCc2d"
 
         var from: EthereumAddress?
         var data: Data
@@ -164,7 +165,7 @@ class OffchainLookupTests: XCTestCase {
             let decoded = try? error?.decode(error: offchainLookup)
 
             XCTAssertEqual(error?.code, JSONRPCErrorCode.contractExecution)
-            XCTAssertEqual(try? decoded?[0].decoded(), EthereumAddress("0x7a876e79a89b9b6df935f2c1e832e15930fef3f6"))
+            XCTAssertEqual(try? decoded?[0].decoded(), EthereumAddress("0x5d3b57647e36a95afb3d6f04c2587571b4cff3cc"))
             XCTAssertEqual(try? decoded?[1].decodedArray(), ["https://argent.xyz"])
             XCTAssertEqual(try? decoded?[2].decoded(), Data(hex: "0x35b8485202b076a4e2d0173bf3d7e69546db3eb92389469473b2680c3cdb4427cafbcf2a")!)
             XCTAssertEqual(try? decoded?[3].decoded(), Data(hex: "0xd2479f3e")!)

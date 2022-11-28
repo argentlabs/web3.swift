@@ -7,8 +7,6 @@ import Foundation
 
 public enum EthereumNetwork: Equatable, Decodable {
     case mainnet
-    case ropsten
-    case rinkeby
     case kovan
     case goerli
     case sepolia
@@ -17,10 +15,6 @@ public enum EthereumNetwork: Equatable, Decodable {
         switch networkId {
         case "1":
             return .mainnet
-        case "3":
-            return .ropsten
-        case "4":
-            return .rinkeby
         case "5":
             return .goerli
         case "42":
@@ -36,10 +30,6 @@ public enum EthereumNetwork: Equatable, Decodable {
         switch self {
         case .mainnet:
             return "1"
-        case .ropsten:
-            return "3"
-        case .rinkeby:
-            return "4"
         case .goerli:
             return "5"
         case .kovan:
@@ -55,10 +45,6 @@ public enum EthereumNetwork: Equatable, Decodable {
         switch self {
         case .mainnet:
             return 1
-        case .ropsten:
-            return 3
-        case .rinkeby:
-            return 4
         case .goerli:
             return 5
         case .kovan:
