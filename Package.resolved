@@ -12,11 +12,11 @@
       },
       {
         "package": "GenericJSON",
-        "repositoryURL": "https://github.com/zoul/generic-json-swift",
+        "repositoryURL": "https://github.com/iwill/generic-json-swift",
         "state": {
           "branch": null,
-          "revision": "a137894b2a217abe489cdf1ea287e6f7819b1051",
-          "version": "2.0.1"
+          "revision": "0a06575f4038b504e78ac330913d920f1630f510",
+          "version": "2.0.2"
         }
       },
       {
