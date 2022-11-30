@@ -8,6 +8,7 @@ import Foundation
 import XCTest
 import BigInt
 
+
 final class EthereumClientZKSyncTests: XCTestCase {
     let eoaAccount = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
     let client = EthereumClient(url: TestConfig.ZKSync.clientURL)
@@ -16,7 +17,7 @@ final class EthereumClientZKSyncTests: XCTestCase {
         to: .init("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"),
         value: BigUInt(hex: "0xe8d4a51000")!,
         data: Data(),
-        gasLimit: 600000
+        gasLimit: 5000000
     )
     
     func test_GivenEOAAccount_WhenSendETH_ThenSendsCorrectly() async {
