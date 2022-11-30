@@ -27,7 +27,7 @@ class ENSOffchainTests: XCTestCase {
 
     }
 
-    func testGivenRopstenRegistry_WhenResolvingOffchainENS_ResolvesCorrectly() async {
+    func testGivenRegistry_WhenResolvingOffchainENS_ResolvesCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
             let ens = try await nameService.resolve(
@@ -40,7 +40,7 @@ class ENSOffchainTests: XCTestCase {
         }
     }
 
-    func testGivenRopstenRegistry_WhenResolvingOffchainENSAndDisabled_ThenFails() async {
+    func testGivenRegistry_WhenResolvingOffchainENSAndDisabled_ThenFails() async {
         do {
             let nameService = EthereumNameService(client: client!)
             _ = try await nameService.resolve(
@@ -53,20 +53,20 @@ class ENSOffchainTests: XCTestCase {
         }
     }
 
-    func testGivenRopstenRegistry_WhenResolvingNonOffchainENS_ThenResolves() async {
+    func testGivenRegistry_WhenResolvingNonOffchainENS_ThenResolves() async {
         do {
             let nameService = EthereumNameService(client: client!)
             let ens = try await nameService.resolve(
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0x42d63ae25990889e35f215bc95884039ba354115"), ens)
+            XCTAssertEqual(EthereumAddress("0xe264d5bb84ba3b8061adc38d3d76e6674ab91852"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
     }
 
-    func testGivenRopstenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesCorrectly() async {
+    func testGivenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
@@ -81,7 +81,7 @@ class ENSOffchainTests: XCTestCase {
         }
     }
 
-    func testGivenRopstenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
+    func testGivenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
         do {
             let nameService = EthereumNameService(client: client!)
 
@@ -96,7 +96,7 @@ class ENSOffchainTests: XCTestCase {
         }
     }
 
-    func testGivenRopstenRegistry_WhenTwoRequestsWithAndWithoutSubdomain_ThenBothResolveCorrectly() async {
+    func testGivenRegistry_WhenTwoRequestsWithAndWithoutSubdomain_ThenBothResolveCorrectly() async {
         let nameService = EthereumNameService(client: client!)
 
         do {
@@ -104,7 +104,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0x42d63ae25990889e35f215bc95884039ba354115"), ens)
+            XCTAssertEqual(EthereumAddress("0xe264d5bb84ba3b8061adc38d3d76e6674ab91852"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
@@ -120,7 +120,7 @@ class ENSOffchainTests: XCTestCase {
         }
     }
 
-    func testGivenRopstenRegistry_WhenTwoRequestsWithoutAndWithSubdomain_ThenBothResolveCorrectly() async {
+    func testGivenRegistry_WhenTwoRequestsWithoutAndWithSubdomain_ThenBothResolveCorrectly() async {
         let nameService = EthereumNameService(client: client!)
 
         do {
@@ -139,7 +139,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0x42d63ae25990889e35f215bc95884039ba354115"), ens)
+            XCTAssertEqual(EthereumAddress("0xe264d5bb84ba3b8061adc38d3d76e6674ab91852"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }

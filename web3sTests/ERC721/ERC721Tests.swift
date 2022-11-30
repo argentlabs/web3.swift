@@ -11,11 +11,11 @@ import XCTest
 import FoundationNetworking
 #endif
 
-let tokenOwner = EthereumAddress("0x69F84b91E7107206E841748C2B52294A1176D45e")
+let tokenOwner = EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41")
 let previousOwner = EthereumAddress("0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793")
 let nonOwner = EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56792")
-let nftImageURL = URL(string: "https://ipfs.io/ipfs/QmUDJMmiJEsueLbr6jxh7vhSSFAvjfYTLC64hgkQm1vH2C/graph.svg")!
-let nftURL = URL(string: "https://ipfs.io/ipfs/QmUtKP7LnZnL2pWw2ERvNDndP9v5EPoJH7g566XNdgoRfE")!
+let nftImageURL = URL(string: "https://camo.githubusercontent.com/337987fd840686af3ccd336ecb6f76c8d9682539086a5b77f565cb71e6ad167c/68747470733a2f2f7261772e6769746875622e636f6d2f617267656e746c6162732f776562332e73776966742f6d61737465722f7765623373776966742e706e67")!
+let nftURL = URL(string: "https://raw.githubusercontent.com/argentlabs/web3.swift/tech/migrate-goerli/web3sTests/Resources/ERC721Metadata.json")!
 
 class ERC721Tests: XCTestCase {
     var client: EthereumClientProtocol!
@@ -48,7 +48,7 @@ class ERC721Tests: XCTestCase {
 
     func test_GivenAccountWithNFT_ThenOwnerOfNFTIsAccount() async {
         do {
-            let balance = try await erc721.ownerOf(contract: address, tokenId: 23)
+            let balance = try await erc721.ownerOf(contract: address, tokenId: 1)
             XCTAssertEqual(balance, tokenOwner)
         } catch {
             XCTFail("Expected OwnerOf but failed \(error).")
@@ -57,7 +57,7 @@ class ERC721Tests: XCTestCase {
 
     func test_GivenAccountWithNFT_ThenOwnerOfAnotherNFTIsNotAccount() async {
         do {
-            let balance = try await erc721.ownerOf(contract: address, tokenId: 22)
+            let balance = try await erc721.ownerOf(contract: address, tokenId: 3)
             XCTAssertNotEqual(balance, tokenOwner)
         } catch {
             XCTFail("Expected OwnerOf but failed \(error).")
@@ -68,12 +68,12 @@ class ERC721Tests: XCTestCase {
         do {
             let events = try await erc721.transferEventsTo(recipient: tokenOwner,
                                                            fromBlock: .Number(
-                                                            6948276),
+                                                            8011670  ),
                                                            toBlock: .Number(
-                                                            6948276))
+                                                            8011670 ))
             XCTAssertEqual(events.first?.from, previousOwner)
             XCTAssertEqual(events.first?.to, tokenOwner)
-            XCTAssertEqual(events.first?.tokenId, 23)
+            XCTAssertEqual(events.first?.tokenId, 2)
         } catch {
             XCTFail("Expected Events but failed \(error).")
         }
@@ -83,12 +83,12 @@ class ERC721Tests: XCTestCase {
         do {
             let events = try await erc721.transferEventsFrom(sender: previousOwner,
                                                              fromBlock: .Number(
-                                                                6948276),
+                                                                8011670),
                                                              toBlock: .Number(
-                                                                6948276))
+                                                                8011670))
             XCTAssertEqual(events.first?.to, tokenOwner)
             XCTAssertEqual(events.first?.from, previousOwner)
-            XCTAssertEqual(events.first?.tokenId, 23)
+            XCTAssertEqual(events.first?.tokenId, 2)
         } catch {
             XCTFail("Expected Events but failed \(error).")
         }
@@ -99,11 +99,15 @@ class ERC721MetadataTests: XCTestCase {
     var client: EthereumClientProtocol!
     var erc721: ERC721Metadata!
     let address = EthereumAddress(TestConfig.erc721Contract)
-    let nftDetails = ERC721Metadata.Token(title: "Asset Metadata",
-                                          type: "object",
-                                          properties: ERC721Metadata.Token.Properties(name: ERC721Metadata.Token.Property(description: "Random Graph Token"),
-                                                                                      description: ERC721Metadata.Token.Property(description: "NFT to represent Random Graph"),
-                                                                                      image: ERC721Metadata.Token.Property(description: nftImageURL)))
+    let nftDetails = ERC721Metadata.Token(
+        title: "Test token metadata",
+        type: "object",
+        properties: ERC721Metadata.Token.Properties(
+            name: ERC721Metadata.Token.Property(description: "Unnamed"),
+            description: ERC721Metadata.Token.Property(description: "Test ERC721 token"),
+            image: ERC721Metadata.Token.Property(description: nftImageURL)
+        )
+    )
 
     override func setUp() {
         super.setUp()
@@ -118,7 +122,7 @@ class ERC721MetadataTests: XCTestCase {
     func test_ReturnsName() async {
         do {
             let name = try await erc721.name(contract: address)
-            XCTAssertEqual(name, "Graph Art Token")
+            XCTAssertEqual(name, "web3.swift token")
         } catch {
             XCTFail("Expected name but failed \(error).")
         }
@@ -127,7 +131,7 @@ class ERC721MetadataTests: XCTestCase {
     func test_ReturnsSymbol() async {
         do {
             let symbol = try await erc721.symbol(contract: address)
-            XCTAssertEqual(symbol, "GAT")
+            XCTAssertEqual(symbol, "WEB3T")
         } catch {
             XCTFail("Expected symbol but failed \(error).")
         }
@@ -170,7 +174,7 @@ class ERC721EnumerableTests: XCTestCase {
     func test_returnsTotalSupply() async {
         do {
             let supply = try await erc721.totalSupply(contract: address)
-            XCTAssertGreaterThan(supply, 22)
+            XCTAssertGreaterThan(supply, 1)
         } catch {
             XCTFail("Expected totalSupply but failed \(error).")
         }
@@ -178,8 +182,8 @@ class ERC721EnumerableTests: XCTestCase {
 
     func test_returnsTokenByIndex() async {
         do {
-            let index = try await erc721.tokenByIndex(contract: address, index: 22)
-            XCTAssertEqual(index, 23)
+            let index = try await erc721.tokenByIndex(contract: address, index: 2)
+            XCTAssertEqual(index, 2)
         } catch {
             XCTFail("Expected tokenByIndex but failed \(error).")
         }
@@ -188,7 +192,7 @@ class ERC721EnumerableTests: XCTestCase {
     func test_GivenAddressWithNFT_returnsTokenOfOwnerByIndex() async {
         do {
             let tokenID = try await erc721.tokenOfOwnerByIndex(contract: address, owner: tokenOwner, index: 2)
-            XCTAssertEqual(tokenID, 23)
+            XCTAssertEqual(tokenID, 2)
         } catch {
             XCTFail("Expected tokenByIndex but failed \(error).")
         }

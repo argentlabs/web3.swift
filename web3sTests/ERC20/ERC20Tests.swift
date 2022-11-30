@@ -25,7 +25,7 @@ class ERC20Tests: XCTestCase {
     func testName() async {
         do {
             let name = try await erc20?.name(tokenContract: testContractAddress)
-            XCTAssertEqual(name, "BokkyPooBah Test Token")
+            XCTAssertEqual(name, "Uniswap")
         } catch {
             XCTFail("Expected name but failed \(error).")
         }
@@ -52,7 +52,7 @@ class ERC20Tests: XCTestCase {
     func testSymbol() async {
         do {
             let symbol = try await erc20?.symbol(tokenContract: testContractAddress)
-            XCTAssertEqual(symbol, "BOKKY")
+            XCTAssertEqual(symbol, "UNI")
         } catch {
             XCTFail("Expected symbol but failed \(error).")
         }
@@ -60,7 +60,7 @@ class ERC20Tests: XCTestCase {
 
     func testTransferRawEvent() async {
         do {
-            let result = try! ABIEncoder.encode(EthereumAddress("0x72e3b687805ef66bf2a1e6d9f03faf8b33f0267a"))
+            let result = try! ABIEncoder.encode(EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"))
             let sig = try! ERC20Events.Transfer.signature()
             let topics = [ sig, result.hexString]
 
@@ -73,7 +73,7 @@ class ERC20Tests: XCTestCase {
 
     func testGivenAddressWithInTransfers_ThenGetsTheTransferEvents() async {
         do {
-            let events = try await erc20?.transferEventsTo(recipient: "0x72e3b687805ef66bf2a1e6d9f03faf8b33f0267a", fromBlock: .Earliest, toBlock: .Latest)
+            let events = try await erc20?.transferEventsTo(recipient: "0x162142f0508F557C02bEB7C473682D7C91Bcef41", fromBlock: .Earliest, toBlock: .Latest)
             XCTAssert(events!.count > 0)
         } catch {
             XCTFail("Expected events but failed \(error).")
@@ -91,11 +91,11 @@ class ERC20Tests: XCTestCase {
 
     func testGivenAddressWithOutgoingEvents_ThenGetsTheTransferEvents() async {
         do {
-            let events = try await erc20?.transferEventsFrom(sender: "0x2FB78FA9842f20bfD515A41C3196C4b368bDbC48", fromBlock: .Earliest, toBlock: .Latest)
-            XCTAssertEqual(events?.first?.log.transactionHash, "0xfb6e0d7fdf8f9b97fe9b634cb5abc7041ee47a396191f23425955f9fda008efe")
-            XCTAssertEqual(events?.first?.to, EthereumAddress("0xFe325C1E3396b2285d517B0CE2E3ffA472260Bce"))
-            XCTAssertEqual(events?.first?.value, BigUInt(10).power(18))
-            XCTAssertEqual(events?.first?.log.address, EthereumAddress("0xdb0040451f373949a4be60dcd7b6b8d6e42658b6"))
+            let events = try await erc20?.transferEventsFrom(sender: "0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793", fromBlock: .Earliest, toBlock: .Latest)
+            XCTAssertEqual(events?.first?.log.transactionHash, "0x706bbe6f2593235942b8e76c2f37af3824d47a64caf65f7ae5e0c5ee1e886132")
+            XCTAssertEqual(events?.first?.to, EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"))
+            XCTAssertEqual(events?.first?.value, 20000000000000000)
+            XCTAssertEqual(events?.first?.log.address, EthereumAddress(TestConfig.erc20Contract))
         } catch {
             XCTFail("Expected events but failed \(error).")
         }

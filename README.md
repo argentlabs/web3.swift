@@ -28,14 +28,14 @@ $ pod install
 
 ### Getting Started
 
-Create an instance of `EthereumAccount`  with a `EthereumKeyStorage` provider. This provides a wrapper around your key for web3.swift to use. **NOTE** We recommend you implement your own KeyStorage provider, instead of relying on the provided `EthereumKeyLocalStorage` class. This is provided as an example for conformity to the `EthereumKeyStorageProtocol`.
+Create an instance of `EthereumAccount`  with a `EthereumKeyStorage` provider. This provides a wrapper around your key for web3.swift to use. **NOTE We recommend you implement your own KeyStorage provider, instead of relying on the provided `EthereumKeyLocalStorage` class. This is provided as an example for conformity to the `EthereumSingleKeyStorageProtocol`.**
 
 ```swift
 import web3
 
-
+// This is just an example. EthereumKeyLocalStorage should not be used in production code
 let keyStorage = EthereumKeyLocalStorage()
-let account = try? EthereumAccount.create(keyStorage: keyStorage, keystorePassword: "MY_PASSWORD")
+let account = try? EthereumAccount.create(replacing: keyStorage, keystorePassword: "MY_PASSWORD")
 ```
 
 Create an instance of `EthereumHttpClient` or `EthereumWebSocketClient`. This will then provide you access to a set of functions for interacting with the Blockchain.
@@ -50,7 +50,7 @@ OR
 
 `EthereumWebSocketClient`
 ```swift
-guard let clientUrl = URL(string: "wss://ropsten.infura.io/ws/v3//123") else { return }
+guard let clientUrl = URL(string: "wss://goerli.infura.io/ws/v3//123") else { return }
 let client = EthereumWebSocketClient(url: clientUrl)
 ```
 
@@ -159,7 +159,7 @@ We support querying ERC721 token data via the `ERC721` struct. Including:
 
 ### Running Tests
 
-The tests will all pass when running against Ropsten. You will need to provide a URL for the blockchain proxy (e.g. on Infura), and a key-pair in `TestConfig.swift`. Some of the account signing tests will fail, given the signature assertions are against a specific (unprovided) key.
+The tests will all pass when running against Goerli. You will need to provide a URL for the blockchain proxy (e.g. on Infura), and a key-pair in `TestConfig.swift`. Some of the account signing tests will fail, given the signature assertions are against a specific (unprovided) key.
 
 ## Dependencies
 
