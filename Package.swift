@@ -5,7 +5,8 @@ let package = Package(
     name: "web3.swift",
     platforms: [
         .iOS(SupportedPlatform.IOSVersion.v13),
-        .macOS(SupportedPlatform.MacOSVersion.v11)
+        .macOS(SupportedPlatform.MacOSVersion.v11),
+        .watchOS(.v7)
     ],
     products: [
         .library(name: "web3.swift", targets: ["web3"])
