@@ -3,6 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+#if canImport(NIO)
+
 import BigInt
 import Foundation
 import GenericJSON
@@ -421,3 +423,5 @@ class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         }
     }
 }
+
+#endif
