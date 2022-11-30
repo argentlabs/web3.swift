@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import web3
 
 extension EthereumAccountProtocol {
     func sign(zkTransaction: ZKSyncTransaction) throws -> ZKSyncSignedTransaction {

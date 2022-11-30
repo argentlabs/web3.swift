@@ -11,7 +11,7 @@ import Foundation
     import FoundationNetworking
 #endif
 
-public class BaseEthereumClient: EthereumClientProtocol {
+open class BaseEthereumClient: EthereumClientProtocol {
     public let url: URL
 
     public let networkProvider: NetworkProviderProtocol
@@ -20,7 +20,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public var network: EthereumNetwork?
 
-    init(
+    public init(
         networkProvider: NetworkProviderProtocol,
         url: URL,
         logger: Logger? = nil,

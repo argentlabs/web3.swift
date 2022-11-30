@@ -9,7 +9,8 @@ let package = Package(
         .watchOS(.v7)
     ],
     products: [
-        .library(name: "web3.swift", targets: ["web3"])
+        .library(name: "web3.swift", targets: ["web3"]),
+        .library(name: "web3-zksync.swift", targets: ["web3-zksync"])
     ],
     dependencies: [
         .package(name: "BigInt", url: "https://github.com/attaswift/BigInt", from: "5.0.0"),
@@ -32,7 +33,16 @@ let package = Package(
                     .product(name: "WebSocketKit", package: "websocket-kit"),
                     .product(name: "Logging", package: "swift-log")
                 ],
-            path: "web3swift/src"
+            path: "web3swift/src",
+            exclude: ["ZKSync"]
+        ),
+         .target(
+            name: "web3-zksync",
+            dependencies:
+                [
+                    .target(name: "web3")
+                ],
+            path: "web3swift/src/ZKSync"
         ),
         .target(
             name: "keccaktiny",
@@ -53,7 +63,7 @@ let package = Package(
         ),
         .testTarget(
             name: "web3swiftTests",
-            dependencies: ["web3"],
+            dependencies: ["web3", "web3-zksync"],
             path: "web3sTests",
             resources: [
                 .copy("Resources/rlptests.json"),

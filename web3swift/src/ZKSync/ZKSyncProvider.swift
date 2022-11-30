@@ -6,6 +6,7 @@
 import Foundation
 import BigInt
 import Logging
+import web3
 
 public protocol ZKSyncClientProtocol: EthereumRPCProtocol {
     func eth_sendRawZKSyncTransaction(_ transaction: ZKSyncTransaction, withAccount account: EthereumAccountProtocol) async throws -> String

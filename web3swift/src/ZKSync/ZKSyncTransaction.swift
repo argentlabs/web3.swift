@@ -6,6 +6,7 @@
 import Foundation
 import BigInt
 import GenericJSON
+import web3
 
 // to be filled in by client
 public struct ZKSyncTransaction: Equatable {
@@ -185,7 +186,7 @@ public struct ZKSyncSignedTransaction {
         // TODO factorydeps
         txArray.append([])
         
-        txArray.append(signature.raw)
+        txArray.append(signature.flattened)
         
         if transaction.paymasterParams.isEmpty {
             txArray.append([])

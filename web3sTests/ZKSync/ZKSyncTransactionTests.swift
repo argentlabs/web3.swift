@@ -4,6 +4,7 @@
 //
 
 import XCTest
+@testable import web3_zksync
 @testable import web3
 import BigInt
 
