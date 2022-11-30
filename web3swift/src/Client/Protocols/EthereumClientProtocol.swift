@@ -11,28 +11,7 @@ public enum CallResolution {
     case offchainAllowed(maxRedirects: Int)
 }
 
-public struct EquatableError: Error, Equatable {
-    let base: Error
-
-    public static func == (lhs: EquatableError, rhs: EquatableError) -> Bool {
-        type(of: lhs.base) == type(of: rhs.base) &&
-            lhs.base.localizedDescription == rhs.base.localizedDescription
-    }
-}
-
-public enum EthereumClientError: Error, Equatable {
-    case tooManyResults
-    case executionError(JSONRPCErrorDetail)
-    case unexpectedReturnValue
-    case noResultFound
-    case decodeIssue
-    case encodeIssue
-    case noInputData
-    case webSocketError(EquatableError)
-    case connectionNotOpen
-}
-
-public protocol EthereumClientProtocol: AnyObject {
+public protocol EthereumClientProtocol: EthereumRPCProtocol, AnyObject {
     var network: EthereumNetwork? { get }
 
     func net_version(completionHandler: @escaping (Result<EthereumNetwork, EthereumClientError>) -> Void)
@@ -69,7 +48,6 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_getCode(address: EthereumAddress, block: EthereumBlock) async throws -> String
     func eth_estimateGas(_ transaction: EthereumTransaction) async throws -> BigUInt
     func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol) async throws -> String
-    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int
     func eth_getTransaction(byHash txHash: String) async throws -> EthereumTransaction
     func eth_getTransactionReceipt(txHash: String) async throws -> EthereumTransactionReceipt
     func eth_call(
