@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'web3.swift'
-  s.version = '1.4.0'
+  s.version = '1.4.1'
   s.license = 'MIT'
   s.summary = 'Ethereum API for Swift'
   s.homepage = 'https://github.com/argentlabs/web3.swift'
@@ -22,5 +22,6 @@ Pod::Spec.new do |s|
   s.dependency 'BigInt', '~> 5.0.0'
   s.dependency 'secp256k1.swift', '~> 0.1'
   s.dependency 'GenericJSON', '~> 2.0'
+  s.dependency 'Logging', '~> 1.0.0'
 
 end

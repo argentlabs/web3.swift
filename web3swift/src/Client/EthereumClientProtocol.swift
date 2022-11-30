@@ -5,7 +5,6 @@
 
 import BigInt
 import Foundation
-import NIOWebSocket
 
 public enum CallResolution {
     case noOffchain(failOnExecutionError: Bool)
@@ -85,6 +84,9 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo
 }
 
+#if canImport(NIO)
+import NIOWebSocket
+
 public protocol EthereumClientWebSocketProtocol: EthereumClientProtocol {
     var delegate: EthereumWebSocketClientDelegate? { get set }
     var currentState: WebSocketState { get }
@@ -125,3 +127,5 @@ extension EthereumWebSocketClientDelegate {
 
     func onWebSocketReconnect() {}
 }
+
+#endif

@@ -3,6 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+#if canImport(NIO)
+
 import Foundation
 import NIOSSL
 
@@ -38,3 +40,5 @@ public struct WebSocketConfiguration {
         self.maxReconnectAttempts = maxReconnectAttempts
     }
 }
+
+#endif
