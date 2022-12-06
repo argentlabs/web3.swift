@@ -27,7 +27,7 @@ public enum EthereumSubscriptionType: Equatable, Hashable {
     }
 
     var params: String? {
-        return nil
+        nil
     }
 }
 

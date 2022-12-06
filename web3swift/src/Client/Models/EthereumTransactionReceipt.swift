@@ -24,16 +24,16 @@ public struct EthereumTransactionReceipt: Decodable {
     public var status: EthereumTransactionReceiptStatus
 
     enum CodingKeys: String, CodingKey {
-        case transactionHash    // Data
-        case transactionIndex   // Quantity
-        case blockHash          // Data
-        case blockNumber        // Quantity
-        case cumulativeGasUsed  // Quantity
-        case gasUsed            // Quantity
-        case contractAddress    // Data or null
-        case logs               // Array
-        case logsBloom          // Data
-        case status             // Quantity (success 1 or failure 0)
+        case transactionHash // Data
+        case transactionIndex // Quantity
+        case blockHash // Data
+        case blockNumber // Quantity
+        case cumulativeGasUsed // Quantity
+        case gasUsed // Quantity
+        case contractAddress // Data or null
+        case logs // Array
+        case logsBloom // Data
+        case status // Quantity (success 1 or failure 0)
     }
 
     public init(from decoder: Decoder) throws {
@@ -61,5 +61,4 @@ public struct EthereumTransactionReceipt: Decodable {
 
         self.logs = try values.decode([EthereumLog].self, forKey: .logs)
     }
-
 }

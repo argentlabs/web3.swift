@@ -6,7 +6,7 @@
 import Foundation
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 class HttpNetworkProvider: NetworkProviderProtocol {
@@ -33,7 +33,7 @@ class HttpNetworkProvider: NetworkProviderProtocol {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
 
-        let id: Int = 1
+        let id = 1
         let rpcRequest = JSONRPCRequest(jsonrpc: "2.0", method: method, params: params, id: id)
         guard let encoded = try? JSONEncoder().encode(rpcRequest) else {
             throw JSONRPCError.encodingError
@@ -46,7 +46,7 @@ class HttpNetworkProvider: NetworkProviderProtocol {
         if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
             return result.result
         } else if let result = try? JSONDecoder().decode([JSONRPCResult<U>].self, from: data) {
-            let resultObjects = result.map { return $0.result }
+            let resultObjects = result.map { $0.result }
             return resultObjects
         } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
             throw JSONRPCError.executionError(errorResult)

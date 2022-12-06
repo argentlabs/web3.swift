@@ -7,7 +7,7 @@ import BigInt
 import Foundation
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 open class ERC721: ERC165 {
@@ -30,11 +30,13 @@ open class ERC721: ERC165 {
             throw EthereumSignerError.unknownError
         }
 
-        let data = try await client.getEvents(addresses: nil,
-                         topics: [ sig, nil, String(hexFromBytes: result)],
-                         fromBlock: fromBlock,
-                         toBlock: toBlock,
-                         eventTypes: [ERC721Events.Transfer.self])
+        let data = try await client.getEvents(
+            addresses: nil,
+            topics: [sig, nil, String(hexFromBytes: result)],
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            eventTypes: [ERC721Events.Transfer.self]
+        )
 
         if let events = data.events as? [ERC721Events.Transfer] {
             return events
@@ -48,11 +50,13 @@ open class ERC721: ERC165 {
             throw EthereumSignerError.unknownError
         }
 
-        let data = try await client.getEvents(addresses: nil,
-                         topics: [ sig, String(hexFromBytes: result)],
-                         fromBlock: fromBlock,
-                         toBlock: toBlock,
-                         eventTypes: [ERC721Events.Transfer.self])
+        let data = try await client.getEvents(
+            addresses: nil,
+            topics: [sig, String(hexFromBytes: result)],
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            eventTypes: [ERC721Events.Transfer.self]
+        )
 
         if let events = data.events as? [ERC721Events.Transfer] {
             return events
@@ -78,9 +82,11 @@ public class ERC721Metadata: ERC721 {
             case fallback_property_name = "name"
         }
 
-        public init(title: String?,
-                    type: String?,
-                    properties: Properties?) {
+        public init(
+            title: String?,
+            type: String?,
+            properties: Properties?
+        ) {
             self.title = title
             self.type = type
             self.properties = properties
@@ -100,9 +106,11 @@ public class ERC721Metadata: ERC721 {
                 let image = try? container.decode(URL.self, forKey: .fallback_property_image)
                 let description = try? container.decode(String.self, forKey: .fallback_property_description)
                 if name != nil || image != nil || description != nil {
-                    self.properties = Properties(name: Property(description: name),
-                                                 description: Property(description: description),
-                                                 image: Property(description: image))
+                    self.properties = Properties(
+                        name: Property(description: name),
+                        description: Property(description: description),
+                        image: Property(description: image)
+                    )
                 } else {
                     self.properties = nil
                 }
@@ -170,7 +178,6 @@ public class ERC721Metadata: ERC721 {
             throw decodeError
         }
     }
-
 }
 
 public class ERC721Enumerable: ERC721 {
@@ -190,18 +197,22 @@ public class ERC721Enumerable: ERC721 {
 
     public func tokenOfOwnerByIndex(contract: EthereumAddress, owner: EthereumAddress, index: BigUInt) async throws -> BigUInt {
         let function = ERC721EnumerableFunctions.tokenOfOwnerByIndex(contract: contract, address: owner, index: index)
-        let data = try await function.call(withClient: client,
-                      responseType: ERC721EnumerableResponses.numberResponse.self,
-                      resolution: .noOffchain(failOnExecutionError: false))
+        let data = try await function.call(
+            withClient: client,
+            responseType: ERC721EnumerableResponses.numberResponse.self,
+            resolution: .noOffchain(failOnExecutionError: false)
+        )
 
         return data.value
     }
 }
 
 extension ERC721 {
-    public func balanceOf(contract: EthereumAddress,
-                          address: EthereumAddress,
-                          completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
+    public func balanceOf(
+        contract: EthereumAddress,
+        address: EthereumAddress,
+        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+    ) {
         Task {
             do {
                 let balance = try await balanceOf(contract: contract, address: address)
@@ -212,9 +223,11 @@ extension ERC721 {
         }
     }
 
-    public func ownerOf(contract: EthereumAddress,
-                        tokenId: BigUInt,
-                        completionHandler: @escaping(Result<EthereumAddress, Error>) -> Void) {
+    public func ownerOf(
+        contract: EthereumAddress,
+        tokenId: BigUInt,
+        completionHandler: @escaping (Result<EthereumAddress, Error>) -> Void
+    ) {
         Task {
             do {
                 let ownerOf = try await ownerOf(contract: contract, tokenId: tokenId)
@@ -225,10 +238,12 @@ extension ERC721 {
         }
     }
 
-    public func transferEventsTo(recipient: EthereumAddress,
-                                 fromBlock: EthereumBlock,
-                                 toBlock: EthereumBlock,
-                                 completionHandler: @escaping(Result<[ERC721Events.Transfer], Error>) -> Void) {
+    public func transferEventsTo(
+        recipient: EthereumAddress,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        completionHandler: @escaping (Result<[ERC721Events.Transfer], Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await transferEventsTo(recipient: recipient, fromBlock: fromBlock, toBlock: toBlock)
@@ -239,10 +254,12 @@ extension ERC721 {
         }
     }
 
-    public func transferEventsFrom(sender: EthereumAddress,
-                                   fromBlock: EthereumBlock,
-                                   toBlock: EthereumBlock,
-                                   completionHandler: @escaping(Result<[ERC721Events.Transfer], Error>) -> Void) {
+    public func transferEventsFrom(
+        sender: EthereumAddress,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        completionHandler: @escaping (Result<[ERC721Events.Transfer], Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock)
@@ -255,8 +272,10 @@ extension ERC721 {
 }
 
 extension ERC721Metadata {
-    public func name(contract: EthereumAddress,
-                     completionHandler: @escaping(Result<String, Error>) -> Void) {
+    public func name(
+        contract: EthereumAddress,
+        completionHandler: @escaping (Result<String, Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await name(contract: contract)
@@ -267,8 +286,10 @@ extension ERC721Metadata {
         }
     }
 
-    public func symbol(contract: EthereumAddress,
-                       completionHandler: @escaping(Result<String, Error>) -> Void) {
+    public func symbol(
+        contract: EthereumAddress,
+        completionHandler: @escaping (Result<String, Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await symbol(contract: contract)
@@ -279,9 +300,11 @@ extension ERC721Metadata {
         }
     }
 
-    public func tokenURI(contract: EthereumAddress,
-                         tokenID: BigUInt,
-                         completionHandler: @escaping(Result<URL, Error>) -> Void) {
+    public func tokenURI(
+        contract: EthereumAddress,
+        tokenID: BigUInt,
+        completionHandler: @escaping (Result<URL, Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await tokenURI(contract: contract, tokenID: tokenID)
@@ -292,9 +315,11 @@ extension ERC721Metadata {
         }
     }
 
-    public func tokenMetadata(contract: EthereumAddress,
-                              tokenID: BigUInt,
-                              completionHandler: @escaping(Result<Token, Error>) -> Void) {
+    public func tokenMetadata(
+        contract: EthereumAddress,
+        tokenID: BigUInt,
+        completionHandler: @escaping (Result<Token, Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await tokenMetadata(contract: contract, tokenID: tokenID)
@@ -307,8 +332,10 @@ extension ERC721Metadata {
 }
 
 extension ERC721Enumerable {
-    public func totalSupply(contract: EthereumAddress,
-                            completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
+    public func totalSupply(
+        contract: EthereumAddress,
+        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await totalSupply(contract: contract)
@@ -319,9 +346,11 @@ extension ERC721Enumerable {
         }
     }
 
-    public func tokenByIndex(contract: EthereumAddress,
-                             index: BigUInt,
-                             completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
+    public func tokenByIndex(
+        contract: EthereumAddress,
+        index: BigUInt,
+        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await tokenByIndex(contract: contract, index: index)
@@ -332,10 +361,12 @@ extension ERC721Enumerable {
         }
     }
 
-    public func tokenOfOwnerByIndex(contract: EthereumAddress,
-                                    owner: EthereumAddress,
-                                    index: BigUInt,
-                                    completionHandler: @escaping(Result<BigUInt, Error>) -> Void) {
+    public func tokenOfOwnerByIndex(
+        contract: EthereumAddress,
+        owner: EthereumAddress,
+        index: BigUInt,
+        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await tokenOfOwnerByIndex(contract: contract, owner: owner, index: index)

@@ -20,15 +20,15 @@ public struct EthereumLog: Equatable {
 
 extension EthereumLog: Codable {
     enum CodingKeys: String, CodingKey {
-        case removed            // Bool
-        case logIndex           // Quantity or null
-        case transactionIndex   // Quantity or null
-        case transactionHash    // Data or null
-        case blockHash          // Data or null
-        case blockNumber        // Data or null
-        case address            // Data
-        case data               // Data
-        case topics             // Array of Data
+        case removed // Bool
+        case logIndex // Quantity or null
+        case transactionIndex // Quantity or null
+        case transactionHash // Data or null
+        case blockHash // Data or null
+        case blockNumber // Data or null
+        case address // Data
+        case data // Data
+        case topics // Array of Data
     }
 
     public init(from decoder: Decoder) throws {
@@ -76,16 +76,14 @@ extension EthereumLog: Codable {
         try container.encode(address, forKey: .address)
         try container.encode(data, forKey: .data)
         try container.encode(topics, forKey: .topics)
-
     }
-
 }
 
 extension EthereumLog: Comparable {
     public static func < (lhs: EthereumLog, rhs: EthereumLog) -> Bool {
         if lhs.blockNumber == rhs.blockNumber,
-            let lhsIndex = lhs.logIndex,
-            let rhsIndex = rhs.logIndex {
+           let lhsIndex = lhs.logIndex,
+           let rhsIndex = rhs.logIndex {
             return lhsIndex < rhsIndex
         }
 

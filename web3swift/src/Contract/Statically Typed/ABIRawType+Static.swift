@@ -17,7 +17,7 @@ extension String: ABIType {
     public static var rawType: ABIRawType { .DynamicString }
 
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: String.self)
         }
@@ -27,7 +27,7 @@ extension String: ABIType {
 extension Bool: ABIType {
     public static var rawType: ABIRawType { .FixedBool }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: Bool.self)
         }
@@ -37,16 +37,17 @@ extension Bool: ABIType {
 extension EthereumAddress: ABIType {
     public static var rawType: ABIRawType { .FixedAddress }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: EthereumAddress.self)
         }
-      }
+    }
 }
+
 extension BigInt: ABIType {
     public static var rawType: ABIRawType { .FixedInt(256) }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: BigInt.self)
         }
@@ -56,7 +57,7 @@ extension BigInt: ABIType {
 extension BigUInt: ABIType {
     public static var rawType: ABIRawType { .FixedUInt(256) }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: BigUInt.self)
         }
@@ -65,9 +66,11 @@ extension BigUInt: ABIType {
 
 extension UInt8: ABIType {
     public static var rawType: ABIRawType {
-    .FixedUInt(8) }
+        .FixedUInt(8)
+    }
+
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: UInt8.self)
         }
@@ -77,7 +80,7 @@ extension UInt8: ABIType {
 extension UInt16: ABIType {
     public static var rawType: ABIRawType { .FixedUInt(16) }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: UInt16.self)
         }
@@ -87,7 +90,7 @@ extension UInt16: ABIType {
 extension UInt32: ABIType {
     public static var rawType: ABIRawType { .FixedUInt(32) }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: UInt32.self)
         }
@@ -97,7 +100,7 @@ extension UInt32: ABIType {
 extension UInt64: ABIType {
     public static var rawType: ABIRawType { .FixedUInt(64) }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: UInt64.self)
         }
@@ -107,7 +110,7 @@ extension UInt64: ABIType {
 extension URL: ABIType {
     public static var rawType: ABIRawType { .DynamicBytes }
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let first = data.first ?? ""
             return try ABIDecoder.decode(first, to: URL.self)
         }
@@ -118,8 +121,9 @@ extension ABITuple {
     public static var rawType: ABIRawType {
         .Tuple(Self.types.map { $0.rawType })
     }
+
     public static var parser: ParserFunction {
-        return { data in
+        { data in
             let values = data.map { ABIDecoder.DecodedValue(entry: [$0]) }
             guard let decoded = try? self.init(values: values) else {
                 throw ABIError.invalidValue
@@ -600,11 +604,12 @@ public struct ABIArray<T: ABIType>: ABIType {
     public init(values: [T]) {
         self.values = values
     }
+
     public static var rawType: ABIRawType {
         .DynamicArray(T.rawType)
     }
 
     public static var parser: ParserFunction {
-        return T.parser
+        T.parser
     }
 }

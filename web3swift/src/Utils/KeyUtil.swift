@@ -3,9 +3,9 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import Logging
 import secp256k1
+import Foundation
 
 enum KeyUtilError: Error {
     case invalidContext
@@ -22,7 +22,7 @@ class KeyUtil {
     }
 
     static func generatePrivateKeyData() -> Data? {
-        return Data.randomOfLength(32)
+        Data.randomOfLength(32)
     }
 
     static func generatePublicKey(from privateKey: Data) throws -> Data {
@@ -57,14 +57,14 @@ class KeyUtil {
         }
         secp256k1_ec_pubkey_serialize(ctx, outputPtr, &publicKeyLength, publicKeyPtr, UInt32(SECP256K1_EC_UNCOMPRESSED))
 
-        let publicKey = Data(bytes: outputPtr, count: publicKeyLength).subdata(in: 1..<publicKeyLength)
+        let publicKey = Data(bytes: outputPtr, count: publicKeyLength).subdata(in: 1 ..< publicKeyLength)
 
         return publicKey
     }
 
     static func generateAddress(from publicKey: Data) -> EthereumAddress {
         let hash = publicKey.web3.keccak256
-        let address = hash.subdata(in: 12..<hash.count)
+        let address = hash.subdata(in: 12 ..< hash.count)
         return EthereumAddress(address.web3.hexString)
     }
 
@@ -124,13 +124,13 @@ class KeyUtil {
         let signaturePtr = UnsafeMutablePointer<secp256k1_ecdsa_recoverable_signature>.allocate(capacity: 1)
         defer { signaturePtr.deallocate() }
 
-        let serializedSignature = Data(signature[0..<64])
+        let serializedSignature = Data(signature[0 ..< 64])
         var v = Int32(signature[64])
-        if v >= 27 && v <= 30 {
+        if v >= 27, v <= 30 {
             v -= 27
-        } else if v >= 31 && v <= 34 {
+        } else if v >= 31, v <= 34 {
             v -= 31
-        } else if v >= 35 && v <= 38 {
+        } else if v >= 35, v <= 38 {
             v -= 35
         }
 
@@ -148,11 +148,10 @@ class KeyUtil {
                 throw KeyUtilError.signatureFailure
             }
         }
-        var size: Int = 65
+        var size = 65
         var rv = Data(count: size)
         rv.withUnsafeMutableBytes {
             secp256k1_ec_pubkey_serialize(ctx, $0.bindMemory(to: UInt8.self).baseAddress!, &size, pubkey, UInt32(SECP256K1_EC_UNCOMPRESSED))
-            return
         }
         return "0x\(rv[1...].web3.keccak256.web3.hexString.suffix(40))"
     }

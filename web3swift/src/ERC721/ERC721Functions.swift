@@ -8,7 +8,7 @@ import Foundation
 
 public enum ERC721Functions {
     public static var interfaceId: Data {
-        return "0x80ac58cd".web3.hexData!
+        "0x80ac58cd".web3.hexData!
     }
 
     public struct balanceOf: ABIFunction {
@@ -20,11 +20,13 @@ public enum ERC721Functions {
 
         public let owner: EthereumAddress
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    owner: EthereumAddress,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            owner: EthereumAddress,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.owner = owner
@@ -46,11 +48,13 @@ public enum ERC721Functions {
 
         public let tokenId: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    tokenId: BigUInt,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            tokenId: BigUInt,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.tokenId = tokenId
@@ -74,13 +78,15 @@ public enum ERC721Functions {
         public let to: EthereumAddress
         public let tokenId: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    sender: EthereumAddress,
-                    to: EthereumAddress,
-                    tokenId: BigUInt) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            sender: EthereumAddress,
+            to: EthereumAddress,
+            tokenId: BigUInt
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
@@ -108,13 +114,15 @@ public enum ERC721Functions {
         public let to: EthereumAddress
         public let tokenId: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    sender: EthereumAddress,
-                    to: EthereumAddress,
-                    tokenId: BigUInt) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            sender: EthereumAddress,
+            to: EthereumAddress,
+            tokenId: BigUInt
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
@@ -143,14 +151,16 @@ public enum ERC721Functions {
         public let tokenId: BigUInt
         public let data: Data
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    sender: EthereumAddress,
-                    to: EthereumAddress,
-                    tokenId: BigUInt,
-                    data: Data) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            sender: EthereumAddress,
+            to: EthereumAddress,
+            tokenId: BigUInt,
+            data: Data
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
@@ -172,7 +182,7 @@ public enum ERC721Functions {
 
 public enum ERC721MetadataFunctions {
     public static var interfaceId: Data {
-        return "name()".web3.keccak256.web3.bytes4 ^
+        "name()".web3.keccak256.web3.bytes4 ^
             "symbol()".web3.keccak256.web3.bytes4 ^
             "tokenURI(uint256)".web3.keccak256.web3.bytes4
     }
@@ -184,17 +194,19 @@ public enum ERC721MetadataFunctions {
         public var contract: EthereumAddress
         public let from: EthereumAddress?
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
             self.gasLimit = gasLimit
         }
 
-        public func encode(to encoder: ABIFunctionEncoder) throws { }
+        public func encode(to encoder: ABIFunctionEncoder) throws {}
     }
 
     public struct symbol: ABIFunction {
@@ -204,17 +216,19 @@ public enum ERC721MetadataFunctions {
         public var contract: EthereumAddress
         public let from: EthereumAddress?
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
             self.gasLimit = gasLimit
         }
 
-        public func encode(to encoder: ABIFunctionEncoder) throws { }
+        public func encode(to encoder: ABIFunctionEncoder) throws {}
     }
 
     public struct tokenURI: ABIFunction {
@@ -226,11 +240,13 @@ public enum ERC721MetadataFunctions {
 
         public let tokenID: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    tokenID: BigUInt,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            tokenID: BigUInt,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.tokenID = tokenID
@@ -246,7 +262,7 @@ public enum ERC721MetadataFunctions {
 
 public enum ERC721EnumerableFunctions {
     public static var interfaceId: Data {
-        return "totalSupply()".web3.keccak256.web3.bytes4 ^
+        "totalSupply()".web3.keccak256.web3.bytes4 ^
             "tokenByIndex(uint256)".web3.keccak256.web3.bytes4 ^
             "tokenOfOwnerByIndex(address,uint256)".web3.keccak256.web3.bytes4
     }
@@ -258,17 +274,19 @@ public enum ERC721EnumerableFunctions {
         public var contract: EthereumAddress
         public let from: EthereumAddress?
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
             self.gasLimit = gasLimit
         }
 
-        public func encode(to encoder: ABIFunctionEncoder) throws { }
+        public func encode(to encoder: ABIFunctionEncoder) throws {}
     }
 
     public struct tokenByIndex: ABIFunction {
@@ -280,11 +298,13 @@ public enum ERC721EnumerableFunctions {
 
         public let index: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    index: BigUInt,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            index: BigUInt,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.index = index
@@ -307,12 +327,14 @@ public enum ERC721EnumerableFunctions {
         public let address: EthereumAddress
         public let index: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    address: EthereumAddress,
-                    index: BigUInt,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            address: EthereumAddress,
+            index: BigUInt,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.address = address

@@ -14,15 +14,17 @@ public class ABIDecoder {
         var offset = 0
 
         let expectingArray = asArray || types.count > 1
-        if data == "0x" && expectingArray {
+        if data == "0x", expectingArray {
             return []
         }
 
         for type in types {
-            if data == "0x" && type.isArray {
+            if data == "0x", type.isArray {
                 result.append([])
             } else {
-                guard let bytes = data.web3.bytesFromHex else { throw ABIError.invalidValue }
+                guard let bytes = data.web3.bytesFromHex else {
+                    throw ABIError.invalidValue
+                }
                 let decoded = try decode(bytes, forType: type, offset: offset)
                 result.append(decoded)
             }
@@ -34,19 +36,19 @@ public class ABIDecoder {
     static func decode(_ data: [UInt8], forType type: ABIRawType, offset: Int = 0) throws -> ABIEntry {
         switch type {
         case .FixedBool:
-            guard data.count > 0 else {
+            guard !data.isEmpty else {
                 throw ABIError.invalidValue
             }
             return try decode(data, forType: ABIRawType.FixedUInt(type.size), offset: offset)
         case .FixedAddress:
-            guard data.count > 0 else {
+            guard !data.isEmpty else {
                 throw ABIError.invalidValue
             }
             return try decode(data, forType: ABIRawType.FixedUInt(type.size), offset: offset)
         case .DynamicString:
             return try decode(data, forType: ABIRawType.DynamicBytes, offset: offset)
         case .DynamicBytes:
-            guard data.count > 0 else {
+            guard !data.isEmpty else {
                 return [""]
             }
             guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first, let newOffset = Int(hex: offsetHex) else {
@@ -61,38 +63,48 @@ public class ABIDecoder {
             }
             let lowerRange = newOffset + 32
             let upperRange = newOffset + 32 + size - 1
-            guard lowerRange <= upperRange else { throw ABIError.invalidValue }
-            guard data.count > upperRange else { throw ABIError.invalidValue }
-            let hex = String(hexFromBytes: Array(data[lowerRange...upperRange]))
+            guard lowerRange <= upperRange else {
+                throw ABIError.invalidValue
+            }
+            guard data.count > upperRange else {
+                throw ABIError.invalidValue
+            }
+            let hex = String(hexFromBytes: Array(data[lowerRange ... upperRange]))
             return [hex]
         case .FixedInt:
-            guard data.count > 0 else {
+            guard !data.isEmpty else {
                 return [""]
             }
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
-            guard data.count > endIndex else { throw ABIError.invalidValue }
-            let buf = Array(data[startIndex...endIndex])
+            guard data.count > endIndex else {
+                throw ABIError.invalidValue
+            }
+            let buf = Array(data[startIndex ... endIndex])
             return [String(hexFromBytes: buf)]
         case .FixedUInt:
-            guard data.count > 0 else {
+            guard !data.isEmpty else {
                 return [""]
             }
             let startIndex = offset + 32 - type.size
             let endIndex = offset + 31
-            guard data.count > endIndex else { throw ABIError.invalidValue }
-            let hex = String(hexFromBytes: Array(data[startIndex...endIndex])) // Do not use BInt because address is treated as uint160 and BInt is based on 64 bits (160/64 = 2.5)
+            guard data.count > endIndex else {
+                throw ABIError.invalidValue
+            }
+            let hex = String(hexFromBytes: Array(data[startIndex ... endIndex])) // Do not use BInt because address is treated as uint160 and BInt is based on 64 bits (160/64 = 2.5)
             return [hex]
-        case .FixedBytes(let size):
-            guard data.count > 0 else {
+        case let .FixedBytes(size):
+            guard !data.isEmpty else {
                 return [""]
             }
             let startIndex = offset
             let endIndex = offset + size - 1
-            guard data.count > endIndex else { throw ABIError.invalidValue }
-            let hex = String(hexFromBytes: Array(data[startIndex...endIndex]))
+            guard data.count > endIndex else {
+                throw ABIError.invalidValue
+            }
+            let hex = String(hexFromBytes: Array(data[startIndex ... endIndex]))
             return [hex]
-        case .FixedArray(let arrayType, _):
+        case let .FixedArray(arrayType, _):
             var result: [String] = []
             var size = type.size
             var newOffset = offset
@@ -100,7 +112,7 @@ public class ABIDecoder {
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)
             return result
         // NOTE: Needs analysis to confirm it can handle an inner `DynamicArray` too
-        case .DynamicArray(let arrayType) where arrayType.isDynamic:
+        case let .DynamicArray(arrayType) where arrayType.isDynamic:
             var result: [String] = []
             var currentOffset = offset
 
@@ -124,7 +136,7 @@ public class ABIDecoder {
             }
 
             return result
-        case .DynamicArray(let arrayType):
+        case let .DynamicArray(arrayType):
             var result: [String] = []
             var newOffset = offset
 
@@ -143,7 +155,7 @@ public class ABIDecoder {
 
             try deepDecode(data: data, type: arrayType, result: &result, offset: &newOffset, size: &size)
             return result
-        case .Tuple(let types):
+        case let .Tuple(types):
             var result: [String] = []
 
             if type.isDynamic {
@@ -157,7 +169,8 @@ public class ABIDecoder {
                     result += try decode(
                         tail,
                         forType: type,
-                        offset: newOffset)
+                        offset: newOffset
+                    )
                     newOffset += type.memory
                 }
 
@@ -168,7 +181,8 @@ public class ABIDecoder {
                     result += try decode(
                         Array(data.dropFirst(newOffset)),
                         forType: type,
-                        offset: 0)
+                        offset: 0
+                    )
                     newOffset += type.memory
                 }
 
@@ -178,7 +192,9 @@ public class ABIDecoder {
     }
 
     private static func deepDecode(data: [UInt8], type: ABIRawType, result: inout [String], offset: inout Int, size: inout Int) throws {
-        if size < 1 { return }
+        if size < 1 {
+            return
+        }
 
         let decoded = try decode(data, forType: type, offset: offset)
         result.append(contentsOf: decoded)

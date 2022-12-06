@@ -14,11 +14,12 @@ public extension ABIFunction {
         return try await client.eth_sendRawTransaction(tx, withAccount: account)
     }
 
-    func call<T: ABIResponse>(withClient client: EthereumClientProtocol,
-                              responseType: T.Type,
-                              block: EthereumBlock = .Latest,
-                              resolution: CallResolution = .noOffchain(failOnExecutionError: true)) async throws -> T {
-
+    func call<T: ABIResponse>(
+        withClient client: EthereumClientProtocol,
+        responseType: T.Type,
+        block: EthereumBlock = .Latest,
+        resolution: CallResolution = .noOffchain(failOnExecutionError: true)
+    ) async throws -> T {
         guard let tx = try? transaction() else {
             throw EthereumClientError.encodeIssue
         }
@@ -56,7 +57,7 @@ public extension ABIFunction {
 extension CallResolution {
     var failOnExecutionError: Bool {
         switch self {
-        case .noOffchain(let fail):
+        case let .noOffchain(fail):
             return fail
         case .offchainAllowed:
             return true
@@ -77,8 +78,10 @@ public struct EventFilter {
     public let type: ABIEvent.Type
     public let allowedSenders: [EthereumAddress]
 
-    public init(type: ABIEvent.Type,
-                allowedSenders: [EthereumAddress]) {
+    public init(
+        type: ABIEvent.Type,
+        allowedSenders: [EthereumAddress]
+    ) {
         self.type = type
         self.allowedSenders = allowedSenders
     }
@@ -90,47 +93,55 @@ public struct Events {
 }
 
 public extension EthereumClientProtocol {
-    func getEvents(addresses: [EthereumAddress]?,
-                   orTopics: [[String]?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   matching matches: [EventFilter]) async throws -> Events {
-
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        orTopics: [[String]?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        matching matches: [EventFilter]
+    ) async throws -> Events {
         let logs = try await eth_getLogs(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock)
         return handleLogs(logs, matches)
     }
 
-    func getEvents(addresses: [EthereumAddress]?,
-                   orTopics: [[String]?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   eventTypes: [ABIEvent.Type]) async throws -> Events {
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        orTopics: [[String]?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        eventTypes: [ABIEvent.Type]
+    ) async throws -> Events {
         let unfiltered = eventTypes.map { EventFilter(type: $0, allowedSenders: []) }
         let logs = try await eth_getLogs(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock)
         return handleLogs(logs, unfiltered)
     }
 
-    func getEvents(addresses: [EthereumAddress]?,
-                   topics: [String?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   eventTypes: [ABIEvent.Type]) async throws -> Events {
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        topics: [String?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        eventTypes: [ABIEvent.Type]
+    ) async throws -> Events {
         let unfiltered = eventTypes.map { EventFilter(type: $0, allowedSenders: []) }
         return try await getEvents(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, matching: unfiltered)
     }
 
-    func getEvents(addresses: [EthereumAddress]?,
-                   topics: [String?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   matching matches: [EventFilter]) async throws -> Events {
-
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        topics: [String?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        matching matches: [EventFilter]
+    ) async throws -> Events {
         let logs = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock)
         return handleLogs(logs, matches)
     }
 
-    func handleLogs(_ logs: [EthereumLog],
-                    _ matches: [EventFilter]) -> Events {
+    func handleLogs(
+        _ logs: [EthereumLog],
+        _ matches: [EventFilter]
+    ) -> Events {
         var events: [ABIEvent] = []
         var unprocessed: [EthereumLog] = []
 
@@ -184,7 +195,7 @@ public extension EthereumClientProtocol {
 
             for filter in filters {
                 let allowedSenders = Set(filter.allowedSenders)
-                if allowedSenders.count > 0 && !allowedSenders.contains(log.address) {
+                if !allowedSenders.isEmpty, !allowedSenders.contains(log.address) {
                     unprocessed.append(log)
                 } else if let event = parseEvent(log, filter.type) {
                     events.append(event)
@@ -200,12 +211,14 @@ public extension EthereumClientProtocol {
 public extension EthereumClientProtocol {
     typealias EventsCompletionHandler = (Result<Events, Error>) -> Void
 
-    func getEvents(addresses: [EthereumAddress]?,
-                   orTopics: [[String]?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   matching matches: [EventFilter],
-                   completionHandler: @escaping EventsCompletionHandler) {
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        orTopics: [[String]?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        matching matches: [EventFilter],
+        completionHandler: @escaping EventsCompletionHandler
+    ) {
         Task {
             do {
                 let result = try await getEvents(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock, matching: matches)
@@ -216,12 +229,14 @@ public extension EthereumClientProtocol {
         }
     }
 
-    func getEvents(addresses: [EthereumAddress]?,
-                   orTopics: [[String]?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   eventTypes: [ABIEvent.Type],
-                   completionHandler: @escaping EventsCompletionHandler) {
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        orTopics: [[String]?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        eventTypes: [ABIEvent.Type],
+        completionHandler: @escaping EventsCompletionHandler
+    ) {
         Task {
             do {
                 let result = try await getEvents(addresses: addresses, orTopics: orTopics, fromBlock: fromBlock, toBlock: toBlock, eventTypes: eventTypes)
@@ -232,12 +247,14 @@ public extension EthereumClientProtocol {
         }
     }
 
-    func getEvents(addresses: [EthereumAddress]?,
-                   topics: [String?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   eventTypes: [ABIEvent.Type],
-                   completionHandler: @escaping EventsCompletionHandler) {
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        topics: [String?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        eventTypes: [ABIEvent.Type],
+        completionHandler: @escaping EventsCompletionHandler
+    ) {
         Task {
             do {
                 let result = try await getEvents(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, eventTypes: eventTypes)
@@ -248,13 +265,14 @@ public extension EthereumClientProtocol {
         }
     }
 
-    func getEvents(addresses: [EthereumAddress]?,
-                   topics: [String?]?,
-                   fromBlock: EthereumBlock,
-                   toBlock: EthereumBlock,
-                   matching matches: [EventFilter],
-                   completionHandler: @escaping EventsCompletionHandler) {
-
+    func getEvents(
+        addresses: [EthereumAddress]?,
+        topics: [String?]?,
+        fromBlock: EthereumBlock,
+        toBlock: EthereumBlock,
+        matching matches: [EventFilter],
+        completionHandler: @escaping EventsCompletionHandler
+    ) {
         Task {
             do {
                 let result = try await getEvents(addresses: addresses, topics: topics, fromBlock: fromBlock, toBlock: toBlock, matching: matches)

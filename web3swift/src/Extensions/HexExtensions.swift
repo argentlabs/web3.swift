@@ -14,11 +14,11 @@ public extension BigUInt {
 
 public extension Web3Extensions where Base == BigUInt {
     var hexString: String {
-        return String(bytes: base.web3.bytes)
+        String(bytes: base.web3.bytes)
     }
 
     var hexStringNoLeadingZeroes: String {
-        return base.web3.hexString.replacingOccurrences(of: "(?<=0x)0+", with: "", options: .regularExpression)
+        base.web3.hexString.replacingOccurrences(of: "(?<=0x)0+", with: "", options: .regularExpression)
     }
 }
 
@@ -36,7 +36,7 @@ public extension Int {
 
 public extension Web3Extensions where Base == Int {
     var hexString: String {
-        return "0x" + String(format: "%x", base)
+        "0x" + String(format: "%x", base)
     }
 }
 

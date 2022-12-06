@@ -6,7 +6,6 @@
 import Foundation
 
 extension SiweMessage: Codable {
-
     enum CodingKeys: String, CaseIterable, CodingKey {
         case domain
         case address

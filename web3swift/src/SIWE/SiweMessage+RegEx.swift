@@ -6,10 +6,8 @@
 import Foundation
 
 extension SiweMessage {
-
     /// Errors thrown while trying to parse a SIWE string message using RegEx
     enum RegExError: Swift.Error {
-
         /// Error thrown when no absolute matches were found in the message
         case noMatches
         /// Error thrown in case we couldn't create a JSON object from parsed values
@@ -20,7 +18,6 @@ extension SiweMessage {
     ///
     /// Check [the docs web page](https://docs.login.xyz) for more info
     private enum RegEx {
-
         static let domain = "(?<\(CodingKeys.domain.rawValue)>([^?#]*)) wants you to sign in with your Ethereum account:"
         static let address = "\n(?<\(CodingKeys.address.rawValue)>0x[a-zA-Z0-9]{40})\n\n"
         static let statement = "((?<\(CodingKeys.statement.rawValue)>[^\n]+)\n)?"
@@ -44,7 +41,9 @@ extension SiweMessage {
             throw RegExError.noMatches
         }
         let range = NSRange(string.startIndex ..< string.endIndex, in: string)
-        guard let match = regex.firstMatch(in: string, options: [], range: range) else { throw RegExError.noMatches }
+        guard let match = regex.firstMatch(in: string, options: [], range: range) else {
+            throw RegExError.noMatches
+        }
 
         var messageDict: [String: Any] = [:]
         for field in CodingKeys.allCases {
@@ -64,7 +63,9 @@ extension SiweMessage {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(SiweMessage.dateFormatter)
 
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: messageDict, options: []) else { throw RegExError.invalidJson }
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: messageDict, options: []) else {
+            throw RegExError.invalidJson
+        }
 
         self = try decoder.decode(SiweMessage.self, from: jsonData)
     }

@@ -7,9 +7,11 @@ import BigInt
 import Foundation
 
 extension ABIEncoder {
-    public static func encode(_ value: ABIType,
-                              staticSize: Int? = nil,
-                              packed: Bool = false) throws -> EncodedValue {
+    public static func encode(
+        _ value: ABIType,
+        staticSize: Int? = nil,
+        packed: Bool = false
+    ) throws -> EncodedValue {
         let type = Swift.type(of: value).rawType
         switch value {
         case let value as String:
@@ -108,9 +110,11 @@ extension ABIEncoder {
         }
     }
 
-    public static func encode<T: ABIType>(_ values: [T],
-                              staticSize: Int? = nil) throws -> EncodedValue {
-        return try ABIEncoder.encodeArray(elements: values.map { (value: $0, size: nil) }, isDynamic: staticSize == nil, size: values.count)
+    public static func encode<T: ABIType>(
+        _ values: [T],
+        staticSize: Int? = nil
+    ) throws -> EncodedValue {
+        try ABIEncoder.encodeArray(elements: values.map { (value: $0, size: nil) }, isDynamic: staticSize == nil, size: values.count)
     }
 
     private typealias ValueAndSize = (value: ABIType, size: Int?)
