@@ -149,7 +149,7 @@ extension Data: ABIType {
 // When decoding it's easier to specify a type, instead of type + static size
 public protocol ABIStaticSizeDataType: ABIType {}
 
-  public struct Data1: ABIStaticSizeDataType {
+public struct Data1: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(1)
     }
@@ -159,11 +159,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data2: ABIStaticSizeDataType {
+}
+
+public struct Data2: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(2)
     }
@@ -173,11 +173,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data3: ABIStaticSizeDataType {
+}
+
+public struct Data3: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(3)
     }
@@ -187,11 +187,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data4: ABIStaticSizeDataType {
+}
+
+public struct Data4: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(4)
     }
@@ -201,11 +201,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data5: ABIStaticSizeDataType {
+}
+
+public struct Data5: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(5)
     }
@@ -215,11 +215,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data6: ABIStaticSizeDataType {
+}
+
+public struct Data6: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(6)
     }
@@ -229,11 +229,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data7: ABIStaticSizeDataType {
+}
+
+public struct Data7: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(7)
     }
@@ -243,11 +243,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data8: ABIStaticSizeDataType {
+}
+
+public struct Data8: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(8)
     }
@@ -257,11 +257,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data9: ABIStaticSizeDataType {
+}
+
+public struct Data9: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(9)
     }
@@ -271,11 +271,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data10: ABIStaticSizeDataType {
+}
+
+public struct Data10: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(10)
     }
@@ -285,11 +285,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data11: ABIStaticSizeDataType {
+}
+
+public struct Data11: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(11)
     }
@@ -299,11 +299,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data12: ABIStaticSizeDataType {
+}
+
+public struct Data12: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(12)
     }
@@ -313,11 +313,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data13: ABIStaticSizeDataType {
+}
+
+public struct Data13: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(13)
     }
@@ -327,11 +327,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data14: ABIStaticSizeDataType {
+}
+
+public struct Data14: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(14)
     }
@@ -341,11 +341,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data15: ABIStaticSizeDataType {
+}
+
+public struct Data15: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(15)
     }
@@ -355,11 +355,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data16: ABIStaticSizeDataType {
+}
+
+public struct Data16: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(16)
     }
@@ -369,11 +369,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data17: ABIStaticSizeDataType {
+}
+
+public struct Data17: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(17)
     }
@@ -383,11 +383,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data18: ABIStaticSizeDataType {
+}
+
+public struct Data18: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(18)
     }
@@ -397,11 +397,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data19: ABIStaticSizeDataType {
+}
+
+public struct Data19: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(19)
     }
@@ -411,11 +411,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data20: ABIStaticSizeDataType {
+}
+
+public struct Data20: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(20)
     }
@@ -425,11 +425,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data21: ABIStaticSizeDataType {
+}
+
+public struct Data21: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(21)
     }
@@ -439,11 +439,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data22: ABIStaticSizeDataType {
+}
+
+public struct Data22: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(22)
     }
@@ -453,11 +453,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data23: ABIStaticSizeDataType {
+}
+
+public struct Data23: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(23)
     }
@@ -467,11 +467,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data24: ABIStaticSizeDataType {
+}
+
+public struct Data24: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(24)
     }
@@ -481,11 +481,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data25: ABIStaticSizeDataType {
+}
+
+public struct Data25: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(25)
     }
@@ -495,11 +495,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data26: ABIStaticSizeDataType {
+}
+
+public struct Data26: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(26)
     }
@@ -509,11 +509,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data27: ABIStaticSizeDataType {
+}
+
+public struct Data27: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(27)
     }
@@ -523,11 +523,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data28: ABIStaticSizeDataType {
+}
+
+public struct Data28: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(28)
     }
@@ -537,11 +537,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data29: ABIStaticSizeDataType {
+}
+
+public struct Data29: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(29)
     }
@@ -551,11 +551,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data30: ABIStaticSizeDataType {
+}
+
+public struct Data30: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(30)
     }
@@ -565,11 +565,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data31: ABIStaticSizeDataType {
+}
+
+public struct Data31: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(31)
     }
@@ -579,11 +579,11 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
-  public struct Data32: ABIStaticSizeDataType {
+}
+
+public struct Data32: ABIStaticSizeDataType {
     public static var rawType: ABIRawType {
         .FixedBytes(32)
     }
@@ -593,10 +593,9 @@ public protocol ABIStaticSizeDataType: ABIType {}
     var rawData: Data
 
     public init(data: Data) {
-      self.rawData = data
+        self.rawData = data
     }
-  }
-  
+}
 
 public struct ABIArray<T: ABIType>: ABIType {
     let values: [T]
