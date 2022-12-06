@@ -32,7 +32,7 @@ cleanup() {
     if [[ ${exit_code} -eq 0 ]]; then
         exit 0
     else
-        echo "Need to run swiftformat. Please run scripts/runSwiftFormat.sh to format the code."
+        echo "Need to run scripts/prepareForPush.sh script to prepare the code before a PullRequest."
         exit 1
     fi
 }
