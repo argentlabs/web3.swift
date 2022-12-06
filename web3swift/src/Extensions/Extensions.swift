@@ -13,7 +13,7 @@ public protocol Web3Extendable {
 
 public extension Web3Extendable {
     var web3: Web3Extensions<Self> {
-        return Web3Extensions(self)
+        Web3Extensions(self)
     }
 }
 

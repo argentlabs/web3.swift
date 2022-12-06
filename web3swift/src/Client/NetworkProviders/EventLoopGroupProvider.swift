@@ -5,12 +5,12 @@
 
 #if canImport(NIO)
 
-import Foundation
-import NIOCore
+    import NIOCore
+    import Foundation
 
-public enum EventLoopGroupProvider {
-    case shared(EventLoopGroup)
-    case createNew
-}
+    public enum EventLoopGroupProvider {
+        case shared(EventLoopGroup)
+        case createNew
+    }
 
 #endif

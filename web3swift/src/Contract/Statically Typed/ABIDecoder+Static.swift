@@ -42,7 +42,7 @@ extension ABIDecoder {
             var parsed = [T]()
             var leftElements = entry
             while leftElements.count >= tupleElements {
-                let slice = Array(leftElements[0..<tupleElements])
+                let slice = Array(leftElements[0 ..< tupleElements])
                 if let abc = try parse(slice) as? T {
                     parsed.append(abc)
                 }
@@ -69,11 +69,11 @@ extension ABIDecoder {
     }
 
     public static func decode(_ data: ParsedABIEntry, to: String.Type) throws -> String {
-        return data.web3.stringValue
+        data.web3.stringValue
     }
 
     public static func decode(_ data: ParsedABIEntry, to: Bool.Type) throws -> Bool {
-        if data == "0x01"{
+        if data == "0x01" {
             return true
         } else if data == "0x00" {
             return false
@@ -92,36 +92,56 @@ extension ABIDecoder {
     }
 
     public static func decode(_ data: ParsedABIEntry, to: BigInt.Type) throws -> BigInt {
-        guard let value = data.web3.hexData.map(BigInt.init(twosComplement:)) else { throw ABIError.invalidValue }
+        guard let value = data.web3.hexData.map(BigInt.init(twosComplement:)) else {
+            throw ABIError.invalidValue
+        }
         return value
     }
 
     public static func decode(_ data: ParsedABIEntry, to: BigUInt.Type) throws -> BigUInt {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else {
+            throw ABIError.invalidValue
+        }
         return value
     }
 
     public static func decode(_ data: ParsedABIEntry, to: UInt8.Type) throws -> UInt8 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 8 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else {
+            throw ABIError.invalidValue
+        }
+        guard value.bitWidth <= 8 else {
+            throw ABIError.invalidValue
+        }
         return UInt8(value)
     }
 
     public static func decode(_ data: ParsedABIEntry, to: UInt16.Type) throws -> UInt16 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 16 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else {
+            throw ABIError.invalidValue
+        }
+        guard value.bitWidth <= 16 else {
+            throw ABIError.invalidValue
+        }
         return UInt16(value)
     }
 
     public static func decode(_ data: ParsedABIEntry, to: UInt32.Type) throws -> UInt32 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 32 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else {
+            throw ABIError.invalidValue
+        }
+        guard value.bitWidth <= 32 else {
+            throw ABIError.invalidValue
+        }
         return UInt32(value)
     }
 
     public static func decode(_ data: ParsedABIEntry, to: UInt64.Type) throws -> UInt64 {
-        guard let value = BigUInt(hex: data) else { throw ABIError.invalidValue }
-        guard value.bitWidth <= 64 else { throw ABIError.invalidValue }
+        guard let value = BigUInt(hex: data) else {
+            throw ABIError.invalidValue
+        }
+        guard value.bitWidth <= 64 else {
+            throw ABIError.invalidValue
+        }
         return UInt64(value)
     }
 
@@ -138,8 +158,9 @@ extension ABIDecoder {
     }
 
     public static func decode(_ data: ParsedABIEntry, to: Data.Type) throws -> Data {
-        guard let data = Data(hex: data) else { throw ABIError.invalidValue }
+        guard let data = Data(hex: data) else {
+            throw ABIError.invalidValue
+        }
         return data
     }
-
 }

@@ -14,9 +14,9 @@ extension Result where Failure == JSONRPCError {
         }
     }
 
-	func tryMap<NewSuccess>(_ transform: (Success) throws -> NewSuccess) -> Result<NewSuccess, JSONRPCError> {
-		flatMap { value in
-			Result<NewSuccess, JSONRPCError> { try transform(value) }
-		}
-	}
+    func tryMap<NewSuccess>(_ transform: (Success) throws -> NewSuccess) -> Result<NewSuccess, JSONRPCError> {
+        flatMap { value in
+            Result<NewSuccess, JSONRPCError> { try transform(value) }
+        }
+    }
 }

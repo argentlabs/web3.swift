@@ -14,17 +14,19 @@ public enum ERC20Functions {
         public var contract: EthereumAddress
         public let from: EthereumAddress?
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
             self.gasLimit = gasLimit
         }
 
-        public func encode(to encoder: ABIFunctionEncoder) throws { }
+        public func encode(to encoder: ABIFunctionEncoder) throws {}
     }
 
     public struct symbol: ABIFunction {
@@ -34,17 +36,19 @@ public enum ERC20Functions {
         public var contract: EthereumAddress
         public let from: EthereumAddress?
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
             self.gasLimit = gasLimit
         }
 
-        public func encode(to encoder: ABIFunctionEncoder) throws { }
+        public func encode(to encoder: ABIFunctionEncoder) throws {}
     }
 
     public struct decimals: ABIFunction {
@@ -54,17 +58,19 @@ public enum ERC20Functions {
         public var contract: EthereumAddress
         public let from: EthereumAddress?
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
             self.gasLimit = gasLimit
         }
 
-        public func encode(to encoder: ABIFunctionEncoder) throws { }
+        public func encode(to encoder: ABIFunctionEncoder) throws {}
     }
 
     public struct balanceOf: ABIFunction {
@@ -76,11 +82,13 @@ public enum ERC20Functions {
 
         public let account: EthereumAddress
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    account: EthereumAddress) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            account: EthereumAddress
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
@@ -103,12 +111,14 @@ public enum ERC20Functions {
         public let owner: EthereumAddress
         public let spender: EthereumAddress
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    owner: EthereumAddress,
-                    spender: EthereumAddress) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            owner: EthereumAddress,
+            spender: EthereumAddress
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
@@ -133,12 +143,14 @@ public enum ERC20Functions {
         public let spender: EthereumAddress
         public let value: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    spender: EthereumAddress,
-                    value: BigUInt) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            spender: EthereumAddress,
+            value: BigUInt
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
@@ -163,12 +175,14 @@ public enum ERC20Functions {
         public let to: EthereumAddress
         public let value: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    to: EthereumAddress,
-                    value: BigUInt) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            to: EthereumAddress,
+            value: BigUInt
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice
@@ -194,13 +208,15 @@ public enum ERC20Functions {
         public let to: EthereumAddress
         public let value: BigUInt
 
-        public init(contract: EthereumAddress,
-                    from: EthereumAddress? = nil,
-                    gasPrice: BigUInt? = nil,
-                    gasLimit: BigUInt? = nil,
-                    sender: EthereumAddress,
-                    to: EthereumAddress,
-                    value: BigUInt) {
+        public init(
+            contract: EthereumAddress,
+            from: EthereumAddress? = nil,
+            gasPrice: BigUInt? = nil,
+            gasLimit: BigUInt? = nil,
+            sender: EthereumAddress,
+            to: EthereumAddress,
+            value: BigUInt
+        ) {
             self.contract = contract
             self.from = from
             self.gasPrice = gasPrice

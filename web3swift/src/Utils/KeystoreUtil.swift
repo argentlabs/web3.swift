@@ -34,7 +34,6 @@ class KeystoreUtil: KeystoreUtilProtocol {
     }
 
     static func encode(privateKey: Data, password: String, salt: Data, iv: Data) throws -> Data {
-
         // derive address from private key
         let publicKeyData = try KeyUtil.generatePublicKey(from: privateKey)
         let address = KeyUtil.generateAddress(from: publicKeyData)
@@ -46,12 +45,12 @@ class KeystoreUtil: KeystoreUtilProtocol {
         }
 
         // encrypt private key
-        let encKey = derivedKey.subdata(in: 0..<16)
+        let encKey = derivedKey.subdata(in: 0 ..< 16)
         let encryptor = Aes128Util(key: encKey, iv: iv)
         let ciphertext = encryptor.xcrypt(input: privateKey)
 
         // compute mac
-        let macKey = derivedKey.subdata(in: 16..<32)
+        let macKey = derivedKey.subdata(in: 16 ..< 32)
         let concat = macKey + ciphertext
         let mac = concat.web3.keccak256
 
@@ -62,7 +61,8 @@ class KeystoreUtil: KeystoreUtilProtocol {
             ciphertext: ciphertext.web3.hexString.web3.noHexPrefix,
             kdf: keyDerivator.algorithm.function(),
             kdfparams: KeystoreFileCryptoKdfParams(c: dkround, dklen: dklen, prf: keyDerivator.algorithm.hash(), salt: salt.web3.hexString.web3.noHexPrefix),
-            mac: mac.web3.hexString.web3.noHexPrefix)
+            mac: mac.web3.hexString.web3.noHexPrefix
+        )
 
         let keystore = KeystoreFile(crypto: crypto, address: address, version: 3)
 
@@ -75,7 +75,6 @@ class KeystoreUtil: KeystoreUtilProtocol {
     }
 
     static func decode(data: Data, password: String) throws -> Data {
-
         // decode json string
         guard let keystore = try? JSONDecoder().decode(KeystoreFile.self, from: data) else {
             throw KeystoreUtilError.decodeFailed
@@ -96,7 +95,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
         }
 
         // verify mac
-        let macKey = derivedKey.subdata(in: 16..<32)
+        let macKey = derivedKey.subdata(in: 16 ..< 32)
         let concat = macKey + ciphertext
         let mac = concat.web3.keccak256
         guard mac.web3.hexString.web3.noHexPrefix == keystore.crypto.mac else {
@@ -104,7 +103,7 @@ class KeystoreUtil: KeystoreUtilProtocol {
         }
 
         // decrypt ciphertext with encryption key
-        let encKey = derivedKey.subdata(in: 0..<16)
+        let encKey = derivedKey.subdata(in: 0 ..< 16)
         let iv = keystore.crypto.cipherparams.iv.web3.hexData
         let decryptor = Aes128Util(key: encKey, iv: iv)
         let privateKey = decryptor.xcrypt(input: ciphertext)

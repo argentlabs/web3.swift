@@ -6,7 +6,6 @@
 import Foundation
 
 extension SiweMessage: CustomStringConvertible {
-
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone(identifier: "UTC")

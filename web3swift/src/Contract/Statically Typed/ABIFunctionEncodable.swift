@@ -29,7 +29,7 @@ extension ABIFunctionEncodable {
         let decoded = try ABIDecoder.decodeData(raw, types: expectedTypes)
         let empty = decoded.flatMap { $0.entry.filter(\.isEmpty) }
         guard
-            empty.count == 0 || !filterEmptyEntries,
+            empty.isEmpty || !filterEmptyEntries,
             decoded.count == expectedTypes.count else {
             throw ABIError.invalidSignature
         }

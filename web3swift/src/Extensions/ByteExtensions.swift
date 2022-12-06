@@ -11,13 +11,13 @@ public extension Web3Extensions where Base == BigUInt {
         let data = base.magnitude.serialize()
         let bytes = data.web3.bytes
         let lastIndex = bytes.count - 1
-        let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = bytes.firstIndex(where: { $0 != 0x00 }) ?? lastIndex
 
         if lastIndex < 0 {
             return Array([0])
         }
 
-        return Array(bytes[firstIndex...lastIndex])
+        return Array(bytes[firstIndex ... lastIndex])
     }
 }
 
@@ -60,20 +60,20 @@ public extension Web3Extensions where Base == BigInt {
 
         let bytes = data.web3.bytes
         let lastIndex = bytes.count - 1
-        let firstIndex = bytes.firstIndex(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = bytes.firstIndex(where: { $0 != 0x00 }) ?? lastIndex
 
         if lastIndex < 0 {
             return Array([0])
         }
 
-        return Array(bytes[firstIndex...lastIndex])
+        return Array(bytes[firstIndex ... lastIndex])
     }
 }
 
 public extension Data {
     static func ^ (lhs: Data, rhs: Data) -> Data {
         let bytes = zip(lhs.web3.bytes, rhs.web3.bytes).map { lhsByte, rhsByte in
-            return lhsByte ^ rhsByte
+            lhsByte ^ rhsByte
         }
 
         return Data(bytes)
@@ -82,7 +82,7 @@ public extension Data {
 
 public extension Web3Extensions where Base == Data {
     var bytes: [UInt8] {
-        return Array(base)
+        Array(base)
     }
 
     var strippingZeroesFromBytes: Data {
@@ -90,15 +90,15 @@ public extension Web3Extensions where Base == Data {
         while bytes.first == 0 {
             bytes.removeFirst()
         }
-        return Data.init(bytes)
+        return Data(bytes)
     }
 
     var bytes4: Data {
-        return base.prefix(4)
+        base.prefix(4)
     }
 
     var bytes32: Data {
-        return base.prefix(32)
+        base.prefix(32)
     }
 }
 
@@ -110,7 +110,7 @@ public extension String {
 
 public extension Web3Extensions where Base == String {
     var bytes: [UInt8] {
-        return [UInt8](base.utf8)
+        [UInt8](base.utf8)
     }
 
     var bytesFromHex: [UInt8]? {

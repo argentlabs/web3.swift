@@ -18,14 +18,13 @@ public protocol ERC20Protocol {
     func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC20Events.Transfer]
 
     // Deprecated
-    func name(tokenContract: EthereumAddress, completionHandler: @escaping(Result<String, Error>) -> Void)
-    func symbol(tokenContract: EthereumAddress, completionHandler: @escaping(Result<String, Error>) -> Void)
-    func decimals(tokenContract: EthereumAddress, completionHandler: @escaping(Result<UInt8, Error>) -> Void)
-    func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completionHandler: @escaping(Result<BigUInt, Error>) -> Void)
-    func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completionHandler: @escaping(Result<BigUInt, Error>) -> Void)
-    func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping(Result<[ERC20Events.Transfer], Error>) -> Void)
-    func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping(Result<[ERC20Events.Transfer], Error>) -> Void)
-
+    func name(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void)
+    func symbol(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void)
+    func decimals(tokenContract: EthereumAddress, completionHandler: @escaping (Result<UInt8, Error>) -> Void)
+    func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void)
+    func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void)
+    func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping (Result<[ERC20Events.Transfer], Error>) -> Void)
+    func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping (Result<[ERC20Events.Transfer], Error>) -> Void)
 }
 
 open class ERC20: ERC20Protocol {
@@ -49,9 +48,11 @@ open class ERC20: ERC20Protocol {
 
     public func decimals(tokenContract: EthereumAddress) async throws -> UInt8 {
         let function = ERC20Functions.decimals(contract: tokenContract)
-        let data = try await function.call(withClient: client,
-                                           responseType: ERC20Responses.decimalsResponse.self,
-                                           resolution: .noOffchain(failOnExecutionError: false))
+        let data = try await function.call(
+            withClient: client,
+            responseType: ERC20Responses.decimalsResponse.self,
+            resolution: .noOffchain(failOnExecutionError: false)
+        )
         return data.value
     }
 
@@ -72,11 +73,13 @@ open class ERC20: ERC20Protocol {
             throw EthereumSignerError.unknownError
         }
 
-        let data = try await client.getEvents(addresses: nil,
-                         topics: [ sig, nil, String(hexFromBytes: result)],
-                         fromBlock: fromBlock,
-                         toBlock: toBlock,
-                         eventTypes: [ERC20Events.Transfer.self])
+        let data = try await client.getEvents(
+            addresses: nil,
+            topics: [sig, nil, String(hexFromBytes: result)],
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            eventTypes: [ERC20Events.Transfer.self]
+        )
 
         if let events = data.events as? [ERC20Events.Transfer] {
             return events
@@ -90,16 +93,18 @@ open class ERC20: ERC20Protocol {
             throw EthereumSignerError.unknownError
         }
 
-        let data = try await client.getEvents(addresses: nil,
-                         topics: [ sig, String(hexFromBytes: result), nil ],
-                         fromBlock: fromBlock,
-                         toBlock: toBlock,
-                         eventTypes: [ERC20Events.Transfer.self])
+        let data = try await client.getEvents(
+            addresses: nil,
+            topics: [sig, String(hexFromBytes: result), nil],
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            eventTypes: [ERC20Events.Transfer.self]
+        )
 
         if let events = data.events as? [ERC20Events.Transfer] {
-           return events
+            return events
         } else {
-           throw EthereumClientError.decodeIssue
+            throw EthereumClientError.decodeIssue
         }
     }
 }

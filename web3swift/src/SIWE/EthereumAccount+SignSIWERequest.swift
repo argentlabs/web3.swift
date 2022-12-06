@@ -12,7 +12,9 @@ extension EthereumAccount {
     }
 
     func signSIWERequest(_ message: SiweMessage) throws -> String {
-        guard let data = "\(message)".data(using: .utf8) else { throw EthereumAccountError.signError }
+        guard let data = "\(message)".data(using: .utf8) else {
+            throw EthereumAccountError.signError
+        }
         return try signMessage(message: data)
     }
 }

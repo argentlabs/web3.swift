@@ -3,12 +3,11 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 /// An object which will verify if a given `SiweMessage` and signature match with the EVM address provided
 public class SiweVerifier {
-
     /// Errors thrown when verifing a given message agains a signature
     public enum Error: Swift.Error {
         /// The provided message is from a different network than the client's.
@@ -38,7 +37,7 @@ public class SiweVerifier {
     /// - Returns: a `Bool` indicating if the pair message-signature is verified (whether or not the signature came from the address in the message)
     /// - Throws: any errors thrown from `SiweMessage.init(_:)` and `SiweVerifier.verify(message:against)`
     public final func verify(_ message: String, against signature: String) async throws -> Bool {
-        return try await verify(message: SiweMessage(message), against: signature)
+        try await verify(message: SiweMessage(message), against: signature)
     }
 
     /// Verifies if a given `SiweMessage` was signed by the address in the message.
@@ -63,9 +62,13 @@ public class SiweVerifier {
             }
         }
 
-        guard message.chainId == client.network?.intValue else { throw Error.differentNetwork }
+        guard message.chainId == client.network?.intValue else {
+            throw Error.differentNetwork
+        }
 
-        guard let messageData = "\(message)".data(using: .utf8) else { throw Error.invalidMessageData }
+        guard let messageData = "\(message)".data(using: .utf8) else {
+            throw Error.invalidMessageData
+        }
         let prefix = "\u{19}Ethereum Signed Message:\n\(String(messageData.count))"
         guard let prefixData = prefix.data(using: .ascii) else {
             assertionFailure("Etherem personal message signature prefix is not valid")
@@ -73,7 +76,9 @@ public class SiweVerifier {
         }
         let messageHash = (prefixData + messageData).web3.keccak256
 
-        guard let signatureData = signature.web3.hexData else { throw Error.invalidSignature }
+        guard let signatureData = signature.web3.hexData else {
+            throw Error.invalidSignature
+        }
 
         let address = EthereumAddress(try KeyUtil.recoverPublicKey(message: messageHash, signature: signatureData))
         if address.toChecksumAddress() == message.address {
