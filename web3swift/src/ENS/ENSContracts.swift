@@ -29,11 +29,11 @@ public enum ENSContracts {
         var nameHash: Data {
             let nameHash: String
             switch self {
-            case .address(let address):
+            case let .address(address):
                 nameHash = ENSContracts.nameHash(
                     name: address.value.web3.noHexPrefix + ".addr.reverse"
                 )
-            case .name(let ens):
+            case let .name(ens):
                 nameHash = ENSContracts.nameHash(name: ens)
             }
             return nameHash.web3.hexData ?? Data()
@@ -41,18 +41,18 @@ public enum ENSContracts {
 
         var dnsEncoded: Data {
             switch self {
-            case .address(let address):
+            case let .address(address):
                 return ENSContracts.dnsEncode(
                     name: address.value.web3.noHexPrefix + ".addr.reverse"
                 )
-            case .name(let name):
+            case let .name(name):
                 return ENSContracts.dnsEncode(name: name)
             }
         }
 
         var name: String? {
             switch self {
-            case .name(let ens):
+            case let .name(ens):
                 return ens
             case .address:
                 return nil
@@ -61,7 +61,7 @@ public enum ENSContracts {
 
         var address: EthereumAddress? {
             switch self {
-            case .address(let address):
+            case let .address(address):
                 return address
             case .name:
                 return nil
@@ -123,10 +123,10 @@ public enum ENSContracts {
 
             init(
                 contract: EthereumAddress,
-                 from: EthereumAddress? = nil,
-                 gasPrice: BigUInt? = nil,
-                 gasLimit: BigUInt? = nil,
-                 _node: Data
+                from: EthereumAddress? = nil,
+                gasPrice: BigUInt? = nil,
+                gasLimit: BigUInt? = nil,
+                _node: Data
             ) {
                 self.contract = contract
                 self.from = from
@@ -157,7 +157,7 @@ public enum ENSContracts {
 
     public enum ENSOffchainResolverFunctions {
         public static var interfaceId: Data {
-            return "0x9061b923".web3.hexData!
+            "0x9061b923".web3.hexData!
         }
 
         public struct resolve: ABIFunction {
@@ -314,7 +314,7 @@ public enum ENSContracts {
     }
 
     public struct AddressResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [ EthereumAddress.self ]
+        public static var types: [ABIType.Type] = [EthereumAddress.self]
         public let value: EthereumAddress
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -323,7 +323,7 @@ public enum ENSContracts {
     }
 
     public struct StringResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [ String.self ]
+        public static var types: [ABIType.Type] = [String.self]
         public let value: String
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -332,7 +332,7 @@ public enum ENSContracts {
     }
 
     public struct AddressAsDataResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [ Data.self ]
+        public static var types: [ABIType.Type] = [Data.self]
         public let value: EthereumAddress
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -342,7 +342,7 @@ public enum ENSContracts {
     }
 
     public struct StringAsDataResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [ Data.self ]
+        public static var types: [ABIType.Type] = [Data.self]
         public let value: String
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -352,7 +352,7 @@ public enum ENSContracts {
     }
 
     static func nameHash(name: String) -> String {
-        var node = Data.init(count: 32)
+        var node = Data(count: 32)
         let labels = name.components(separatedBy: ".")
         for label in labels.reversed() {
             node.append(label.web3.keccak256)

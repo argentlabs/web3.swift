@@ -3,14 +3,14 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public protocol ERC1271Protocol {
     init(client: EthereumClientProtocol)
 
     func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data) async throws -> Bool
-    func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data, completionHandler: @escaping(Result<Bool, Error>) -> Void)
+    func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data, completionHandler: @escaping (Result<Bool, Error>) -> Void)
 }
 
 public class ERC1271: ERC1271Protocol {

@@ -5,7 +5,7 @@
 
 import Foundation
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 public enum OffchainReadError: Error {
@@ -17,14 +17,18 @@ public enum OffchainReadError: Error {
 }
 
 extension BaseEthereumClient {
-    public func eth_call(_ transaction: EthereumTransaction,
-                         block: EthereumBlock = .Latest) async throws -> String {
-        return try await eth_call(transaction, resolution: .noOffchain(failOnExecutionError: true), block: block)
+    public func eth_call(
+        _ transaction: EthereumTransaction,
+        block: EthereumBlock = .Latest
+    ) async throws -> String {
+        try await eth_call(transaction, resolution: .noOffchain(failOnExecutionError: true), block: block)
     }
 
-    public func eth_call(_ transaction: EthereumTransaction,
-                         resolution: CallResolution = .noOffchain(failOnExecutionError: true),
-                         block: EthereumBlock = .Latest) async throws -> String {
+    public func eth_call(
+        _ transaction: EthereumTransaction,
+        resolution: CallResolution = .noOffchain(failOnExecutionError: true),
+        block: EthereumBlock = .Latest
+    ) async throws -> String {
         guard let transactionData = transaction.data else {
             throw EthereumClientError.noInputData
         }
@@ -53,10 +57,12 @@ extension BaseEthereumClient {
             }
         }
 
-        let params = CallParams(from: transaction.from?.value,
-                                to: transaction.to.value,
-                                data: transactionData.web3.hexString,
-                                block: block.stringValue)
+        let params = CallParams(
+            from: transaction.from?.value,
+            to: transaction.to.value,
+            data: transactionData.web3.hexString,
+            block: block.stringValue
+        )
         do {
             let data = try await networkProvider.send(method: "eth_call", params: params, receive: String.self)
 
@@ -70,14 +76,18 @@ extension BaseEthereumClient {
                 switch resolution {
                 case .noOffchain:
                     throw EthereumClientError.executionError(result.error)
-                case .offchainAllowed(let redirects):
+                case let .offchainAllowed(redirects):
                     if let lookup = result.offchainLookup, lookup.address == transaction.to {
                         do {
                             let data = try await self.offchainRead(lookup: lookup, maxReads: redirects)
-                            return try await self.eth_call(.init(to: lookup.address,
-                                                                 data: lookup.encodeCall(withResponse: data)),
-                                                           resolution: .noOffchain(failOnExecutionError: true),
-                                                           block: block)
+                            return try await self.eth_call(
+                                .init(
+                                    to: lookup.address,
+                                    data: lookup.encodeCall(withResponse: data)
+                                ),
+                                resolution: .noOffchain(failOnExecutionError: true),
+                                block: block
+                            )
                         } catch {
                             throw EthereumClientError.noResultFound
                         }
@@ -92,9 +102,11 @@ extension BaseEthereumClient {
     }
 
     // OffchainReadError
-    private func offchainRead(lookup: OffchainLookup,
-                              attempt: Int = 1,
-                              maxReads: Int = 4) async throws -> Data {
+    private func offchainRead(
+        lookup: OffchainLookup,
+        attempt: Int = 1,
+        maxReads: Int = 4
+    ) async throws -> Data {
         guard !lookup.urls.isEmpty else {
             throw OffchainReadError.invalidResponse
         }
@@ -102,11 +114,13 @@ extension BaseEthereumClient {
         let url = lookup.urls[0]
 
         do {
-            return try await offchainRead(sender: lookup.address,
-                                          data: lookup.callData,
-                                          rawURL: url,
-                                          attempt: attempt,
-                                          maxAttempts: maxReads)
+            return try await offchainRead(
+                sender: lookup.address,
+                data: lookup.callData,
+                rawURL: url,
+                attempt: attempt,
+                maxAttempts: maxReads
+            )
         } catch {
             guard let error = error as? OffchainReadError, error.isNextURLAllowed else {
                 throw error
@@ -114,17 +128,21 @@ extension BaseEthereumClient {
 
             var lookup = lookup
             lookup.urls = Array(lookup.urls.dropFirst())
-            return try await offchainRead(lookup: lookup,
-                                               attempt: attempt + 1,
-                                               maxReads: maxReads)
+            return try await offchainRead(
+                lookup: lookup,
+                attempt: attempt + 1,
+                maxReads: maxReads
+            )
         }
     }
 
-    private func offchainRead(sender: EthereumAddress,
-                              data: Data,
-                              rawURL: String,
-                              attempt: Int,
-                              maxAttempts: Int) async throws -> Data {
+    private func offchainRead(
+        sender: EthereumAddress,
+        data: Data,
+        rawURL: String,
+        attempt: Int,
+        maxAttempts: Int
+    ) async throws -> Data {
         guard attempt <= maxAttempts else {
             throw OffchainReadError.tooManyRedirections
         }
@@ -133,8 +151,7 @@ extension BaseEthereumClient {
 
         guard let url = URL(string: rawURL
             .replacingOccurrences(of: "{sender}", with: sender.value.lowercased())
-            .replacingOccurrences(of: "{data}", with: data.web3.hexString.lowercased()))
-        else {
+            .replacingOccurrences(of: "{data}", with: data.web3.hexString.lowercased())) else {
             throw OffchainReadError.invalidParams
         }
 
@@ -183,8 +200,7 @@ private struct OffchainReadJSONBody: Encodable {
 }
 
 private struct OffchainReadResponse: Decodable {
-    @DataStr
-    var data: Data
+    @DataStr var data: Data
 }
 
 private struct OffchainReadErrorResponse: Decodable {
@@ -206,16 +222,20 @@ fileprivate extension OffchainReadError {
 }
 
 extension BaseEthereumClient {
-    public func eth_call(_ transaction: EthereumTransaction,
-                         block: EthereumBlock = .Latest,
-                         completionHandler: @escaping (Result<String, EthereumClientError>) -> Void) {
+    public func eth_call(
+        _ transaction: EthereumTransaction,
+        block: EthereumBlock = .Latest,
+        completionHandler: @escaping (Result<String, EthereumClientError>) -> Void
+    ) {
         eth_call(transaction, resolution: .noOffchain(failOnExecutionError: true), block: block, completionHandler: completionHandler)
     }
 
-    public func eth_call(_ transaction: EthereumTransaction,
-                         resolution: CallResolution = .noOffchain(failOnExecutionError: true),
-                         block: EthereumBlock = .Latest,
-                         completionHandler: @escaping (Result<String, EthereumClientError>) -> Void) {
+    public func eth_call(
+        _ transaction: EthereumTransaction,
+        resolution: CallResolution = .noOffchain(failOnExecutionError: true),
+        block: EthereumBlock = .Latest,
+        completionHandler: @escaping (Result<String, EthereumClientError>) -> Void
+    ) {
         Task {
             do {
                 let result = try await eth_call(transaction, resolution: resolution, block: block)

@@ -28,7 +28,7 @@ public struct EthereumAddress: Codable, Hashable {
     }
 
     public static func == (lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {
-        return lhs.value == rhs.value
+        lhs.value == rhs.value
     }
 }
 
@@ -50,7 +50,6 @@ public extension EthereumAddress {
 }
 
 extension EthereumAddress: ExpressibleByStringLiteral {
-
     public init(stringLiteral value: String) {
         self.init(value)
     }

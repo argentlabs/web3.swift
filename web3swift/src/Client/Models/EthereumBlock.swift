@@ -19,14 +19,14 @@ public enum EthereumBlock: Hashable {
             return "earliest"
         case .Pending:
             return "pending"
-        case .Number(let int):
+        case let .Number(int):
             return int.web3.hexString
         }
     }
 
     public var intValue: Int? {
         switch self {
-        case .Number(let int):
+        case let .Number(int):
             return int
         default:
             return nil
@@ -65,7 +65,7 @@ extension EthereumBlock: Codable {
 
 extension EthereumBlock: Comparable {
     static public func == (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
-        return lhs.stringValue == rhs.stringValue
+        lhs.stringValue == rhs.stringValue
     }
 
     static public func < (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
@@ -76,7 +76,7 @@ extension EthereumBlock: Comparable {
             return rhs != .Pending ? true : false
         case .Pending:
             return true
-        case .Number(let lhsInt):
+        case let .Number(lhsInt):
             switch rhs {
             case .Earliest:
                 return false
@@ -84,10 +84,9 @@ extension EthereumBlock: Comparable {
                 return true
             case .Pending:
                 return true
-            case .Number(let rhsInt):
+            case let .Number(rhsInt):
                 return lhsInt < rhsInt
             }
         }
-
     }
 }

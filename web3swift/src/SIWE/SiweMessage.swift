@@ -9,7 +9,6 @@ import Foundation
 ///
 /// For more information on SIWE check out https://docs.login.xyz
 public struct SiweMessage: Hashable {
-
     /// RFC 4501 dns authority that is requesting the signing.
     public var domain: String
 

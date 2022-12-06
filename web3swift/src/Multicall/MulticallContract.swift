@@ -8,7 +8,6 @@ import Foundation
 
 extension Multicall {
     public enum Contract {
-
         static let goerliAddress: EthereumAddress = "0x77dCa2C955b15e9dE4dbBCf1246B4B85b651e50e"
         static let mainnetAddress: EthereumAddress = "0xF34D2Cb31175a51B23fb6e08cA06d7208FaD379F"
 
@@ -32,11 +31,13 @@ extension Multicall {
                 public let from: EthereumAddress?
                 public let calls: [Call]
 
-                public init(contract: EthereumAddress,
-                            from: EthereumAddress? = nil,
-                            gasPrice: BigUInt? = nil,
-                            gasLimit: BigUInt? = nil,
-                            calls: [Call]) {
+                public init(
+                    contract: EthereumAddress,
+                    from: EthereumAddress? = nil,
+                    gasPrice: BigUInt? = nil,
+                    gasLimit: BigUInt? = nil,
+                    calls: [Call]
+                ) {
                     self.contract = contract
                     self.from = from
                     self.gasPrice = gasPrice

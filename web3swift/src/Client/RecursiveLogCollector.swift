@@ -12,9 +12,9 @@ public enum Topics: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         switch self {
-        case .plain(let values):
+        case let .plain(values):
             try container.encode(contentsOf: values)
-        case .composed(let values):
+        case let .composed(values):
             try container.encode(contentsOf: values)
         }
     }
@@ -33,8 +33,9 @@ struct RecursiveLogCollector {
                 }
 
                 guard let lhs = try? await getAllLogs(addresses: addresses, topics: topics, from: from, to: middleBlock),
-                      let rhs = try? await getAllLogs(addresses: addresses, topics: topics, from: middleBlock, to: to)
-                else { throw EthereumClientError.unexpectedReturnValue }
+                      let rhs = try? await getAllLogs(addresses: addresses, topics: topics, from: middleBlock, to: to) else {
+                    throw EthereumClientError.unexpectedReturnValue
+                }
                 return lhs + rhs
             }
         }
@@ -42,11 +43,10 @@ struct RecursiveLogCollector {
     }
 
     private func getLogs(addresses: [EthereumAddress]?, topics: Topics? = nil, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
-        return try await ethClient.getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
+        try await ethClient.getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
     }
 
     private func getMiddleBlock(from: EthereumBlock, to: EthereumBlock) async -> EthereumBlock? {
-
         func toBlockNumber() async -> Int? {
             if let toBlockNumber = to.intValue {
                 return toBlockNumber
@@ -57,7 +57,9 @@ struct RecursiveLogCollector {
             }
         }
 
-        guard let fromBlockNumber = from.intValue, let toBlockNumber = await toBlockNumber() else { return nil }
+        guard let fromBlockNumber = from.intValue, let toBlockNumber = await toBlockNumber() else {
+            return nil
+        }
 
         return EthereumBlock(rawValue: fromBlockNumber + (toBlockNumber - fromBlockNumber) / 2)
     }

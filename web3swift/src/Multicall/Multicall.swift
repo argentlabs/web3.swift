@@ -24,8 +24,9 @@ public struct Multicall {
 
         do {
             let data = try await function.call(withClient: client, responseType: Response.self)
-            guard calls.count == data.outputs.count
-            else { fatalError("Outputs do not match the number of calls done") }
+            guard calls.count == data.outputs.count else {
+                fatalError("Outputs do not match the number of calls done")
+            }
 
             zip(calls, data.outputs)
                 .forEach { call, output in
@@ -52,7 +53,6 @@ extension Multicall {
 }
 
 extension Multicall {
-
     public enum MulticallError: Error {
         case contractUnavailable
         case executionFailed(Error?)
@@ -76,8 +76,9 @@ extension Multicall {
         public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.block = try values[0].decoded()
             self.outputs = values[1].entry.map { result in
-                guard result != Self.multicallFailedError
-                else { return .failure(.contractFailure) }
+                guard result != Self.multicallFailedError else {
+                    return .failure(.contractFailure)
+                }
 
                 return .success(result)
             }
@@ -141,7 +142,7 @@ extension Multicall {
                             } else {
                                 return .failure(.couldNotDecodeResponse(nil))
                             }
-                        } catch let error {
+                        } catch {
                             return .failure(.couldNotDecodeResponse(error))
                         }
                     }

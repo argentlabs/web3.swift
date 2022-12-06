@@ -3,14 +3,13 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-
 import Foundation
 #if canImport(NIO)
-import NIOWebSocket
+    import NIOWebSocket
 #endif
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 internal protocol NetworkProviderProtocol {
@@ -19,15 +18,15 @@ internal protocol NetworkProviderProtocol {
 }
 
 #if canImport(NIO)
-internal protocol WebSocketNetworkProviderProtocol: NetworkProviderProtocol {
-    var delegate: EthereumWebSocketClientDelegate? { get set }
-    var onReconnectCallback: (() -> Void)? { get set }
-    var currentState: WebSocketState { get }
-    func connect()
-    func disconnect(code: WebSocketErrorCode)
-    func refresh()
-    func reconnect()
-    func addSubscription(_ subscription: EthereumSubscription, callback: @escaping (Any) -> Void)
-    func removeSubscription(_ subscription: EthereumSubscription)
-}
+    internal protocol WebSocketNetworkProviderProtocol: NetworkProviderProtocol {
+        var delegate: EthereumWebSocketClientDelegate? { get set }
+        var onReconnectCallback: (() -> Void)? { get set }
+        var currentState: WebSocketState { get }
+        func connect()
+        func disconnect(code: WebSocketErrorCode)
+        func refresh()
+        func reconnect()
+        func addSubscription(_ subscription: EthereumSubscription, callback: @escaping (Any) -> Void)
+        func removeSubscription(_ subscription: EthereumSubscription)
+    }
 #endif

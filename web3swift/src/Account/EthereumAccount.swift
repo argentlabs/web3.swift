@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import Logging
+import Foundation
 
 public protocol EthereumAccountProtocol {
     var address: EthereumAddress { get }
@@ -29,13 +29,9 @@ public class EthereumAccount: EthereumAccountProtocol {
     private let publicKeyData: Data
     private let logger: Logger
 
-    public lazy var publicKey: String = {
-        return self.publicKeyData.web3.hexString
-    }()
+    public lazy var publicKey: String = self.publicKeyData.web3.hexString
 
-    public lazy var address: EthereumAddress = {
-        return KeyUtil.generateAddress(from: self.publicKeyData)
-    }()
+    public lazy var address: EthereumAddress = KeyUtil.generateAddress(from: self.publicKeyData)
 
     required public init(keyStorage: EthereumSingleKeyStorageProtocol, keystorePassword password: String, logger: Logger? = nil) throws {
         self.logger = logger ?? Logger(label: "web3.swift.eth-account")
@@ -43,7 +39,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             let decodedKey = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
             self.privateKeyData = decodedKey
             self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
-        } catch let error {
+        } catch {
             self.logger.warning("Error loading key data: \(error)")
             throw EthereumAccountError.loadAccountError
         }
@@ -59,7 +55,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             throw EthereumAccountError.loadAccountError
         }
     }
-    
+
     required public init(addressString: String, keyStorage: EthereumMultipleKeyStorageProtocol, keystorePassword password: String, logger: Logger? = nil) throws {
         self.logger = logger ?? Logger(label: "web3.swift.eth-account")
         do {
@@ -67,12 +63,12 @@ public class EthereumAccount: EthereumAccountProtocol {
             let decodedKey = try keyStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
             self.privateKeyData = decodedKey
             self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
-        } catch let error {
+        } catch {
             self.logger.warning("Error loading key data: \(error)")
             throw EthereumAccountError.loadAccountError
         }
     }
-    
+
     required public init(addressString: String, keyStorage: EthereumMultipleKeyStorageProtocol, logger: Logger? = nil) throws {
         self.logger = logger ?? Logger(label: "web3.swift.eth-account")
         do {
@@ -84,12 +80,12 @@ public class EthereumAccount: EthereumAccountProtocol {
             throw EthereumAccountError.loadAccountError
         }
     }
-    
+
     public static func create(addingTo keyStorage: EthereumMultipleKeyStorageProtocol, keystorePassword password: String) throws -> EthereumAccount {
         guard let privateKey = KeyUtil.generatePrivateKeyData() else {
             throw EthereumAccountError.createAccountError
         }
-        
+
         do {
             try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
             let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
@@ -99,7 +95,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             throw EthereumAccountError.createAccountError
         }
     }
-    
+
     public static func create(replacing keyStorage: EthereumSingleKeyStorageProtocol, keystorePassword password: String) throws -> EthereumAccount {
         guard let privateKey = KeyUtil.generatePrivateKeyData() else {
             throw EthereumAccountError.createAccountError
@@ -112,7 +108,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             throw EthereumAccountError.createAccountError
         }
     }
-    
+
     public static func importAccount(addingTo keyStorage: EthereumMultipleKeyStorageProtocol, privateKey: String, keystorePassword password: String) throws -> EthereumAccount {
         guard let privateKey = privateKey.web3.hexData else {
             throw EthereumAccountError.importAccountError
@@ -126,7 +122,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             throw EthereumAccountError.importAccountError
         }
     }
-    
+
     public static func importAccount(replacing keyStorage: EthereumSingleKeyStorageProtocol, privateKey: String, keystorePassword password: String) throws -> EthereumAccount {
         guard let privateKey = privateKey.web3.hexData else {
             throw EthereumAccountError.importAccountError
@@ -138,13 +134,13 @@ public class EthereumAccount: EthereumAccountProtocol {
             throw EthereumAccountError.importAccountError
         }
     }
-    
+
     public func sign(data: Data) throws -> Data {
-        return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
+        try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
     public func sign(hex: String) throws -> Data {
-        if let data = Data.init(hex: hex) {
+        if let data = Data(hex: hex) {
             return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
         } else {
             throw EthereumAccountError.signError
@@ -160,7 +156,7 @@ public class EthereumAccount: EthereumAccountProtocol {
     }
 
     public func sign(message: Data) throws -> Data {
-        return try KeyUtil.sign(message: message, with: privateKeyData, hashing: false)
+        try KeyUtil.sign(message: message, with: privateKeyData, hashing: false)
     }
 
     public func sign(message: String) throws -> Data {
@@ -181,13 +177,11 @@ public class EthereumAccount: EthereumAccountProtocol {
 
         guard var signed = try? sign(message: hash) else {
             throw EthereumAccountError.signError
-
         }
 
         // Check last char (v)
         guard var last = signed.popLast() else {
             throw EthereumAccountError.signError
-
         }
 
         if last < 27 {
@@ -203,13 +197,11 @@ public class EthereumAccount: EthereumAccountProtocol {
 
         guard var signed = try? sign(message: hash) else {
             throw EthereumAccountError.signError
-
         }
 
         // Check last char (v)
         guard var last = signed.popLast() else {
             throw EthereumAccountError.signError
-
         }
 
         if last < 27 {

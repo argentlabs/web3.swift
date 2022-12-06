@@ -20,7 +20,9 @@ struct DataStr: Codable, Equatable, Hashable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let str = try container.decode(String.self)
-        guard let data = Data(hex: str) else { throw DecodingError.dataCorruptedError(in: container, debugDescription: "Data not in '0x' format") }
+        guard let data = Data(hex: str) else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Data not in '0x' format")
+        }
         self.value = data
     }
 
@@ -33,5 +35,4 @@ struct DataStr: Codable, Equatable, Hashable {
         get { value }
         set { value = newValue }
     }
-
 }

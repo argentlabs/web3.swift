@@ -4,11 +4,11 @@
 //
 
 import BigInt
-import Foundation
 import Logging
+import Foundation
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 public class BaseEthereumClient: EthereumClientProtocol {
@@ -20,10 +20,12 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public var network: EthereumNetwork?
 
-    init(networkProvider: NetworkProviderProtocol,
-         url: URL,
-         logger: Logger? = nil,
-         network: EthereumNetwork?) {
+    init(
+        networkProvider: NetworkProviderProtocol,
+        url: URL,
+        logger: Logger? = nil,
+        network: EthereumNetwork?
+    ) {
         self.url = url
         self.networkProvider = networkProvider
         self.logger = logger ?? Logger(label: "web3.swift.eth-client")
@@ -157,10 +159,12 @@ public class BaseEthereumClient: EthereumClientProtocol {
             value = nil
         }
 
-        let params = CallParams(from: transaction.from?.value,
-                                to: transaction.to.value,
-                                value: value?.web3.hexStringNoLeadingZeroes,
-                                data: transaction.data?.web3.hexString)
+        let params = CallParams(
+            from: transaction.from?.value,
+            to: transaction.to.value,
+            value: value?.web3.hexStringNoLeadingZeroes,
+            data: transaction.data?.web3.hexString
+        )
 
         do {
             let data = try await networkProvider.send(method: "eth_estimateGas", params: params, receive: String.self)
@@ -241,11 +245,11 @@ public class BaseEthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest) async throws -> [EthereumLog] {
-        return try await RecursiveLogCollector(ethClient: self).getAllLogs(addresses: addresses, topics: topics.map(Topics.plain), from: from, to: to)
+        try await RecursiveLogCollector(ethClient: self).getAllLogs(addresses: addresses, topics: topics.map(Topics.plain), from: from, to: to)
     }
 
-    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest) async throws ->  [EthereumLog] {
-        return try await RecursiveLogCollector(ethClient: self).getAllLogs(addresses: addresses, topics: topics.map(Topics.composed), from: from, to: to)
+    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest) async throws -> [EthereumLog] {
+        try await RecursiveLogCollector(ethClient: self).getAllLogs(addresses: addresses, topics: topics.map(Topics.composed), from: from, to: to)
     }
 
     public func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog] {

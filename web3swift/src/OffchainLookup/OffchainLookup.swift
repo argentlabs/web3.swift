@@ -53,8 +53,7 @@ public struct OffchainLookup: ABIRevertError {
               let urls = decoded.urls,
               let callData = decoded.callData,
               let callbackFunction = decoded.callbackFunction,
-              let extraData = decoded.extraData
-        else {
+              let extraData = decoded.extraData else {
             return nil
         }
 
@@ -70,7 +69,7 @@ public struct OffchainLookup: ABIRevertError {
 
 extension JSONRPCErrorResult {
     var offchainLookup: OffchainLookup? {
-        return (try? error.decode(error: expected)).flatMap(OffchainLookup.init(decoded:))
+        (try? error.decode(error: expected)).flatMap(OffchainLookup.init(decoded:))
     }
 }
 
@@ -95,15 +94,19 @@ fileprivate extension Array where Element == ABIDecoder.DecodedValue {
     var sender: EthereumAddress? {
         try? self[0].decoded()
     }
+
     var urls: [String]? {
         try? self[1].decodedArray()
     }
+
     var callData: Data? {
         try? self[2].decoded()
     }
+
     var callbackFunction: Data? {
         try? self[3].decoded()
     }
+
     var extraData: Data? {
         try? self[4].decoded()
     }

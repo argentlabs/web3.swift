@@ -7,7 +7,6 @@ import BigInt
 import Foundation
 
 struct RLP {
-
     static func encode(_ item: Any) -> Data? {
         switch item {
         case let int as Int:
@@ -47,7 +46,7 @@ struct RLP {
 
     static func encodeBigInt(_ bint: BigInt) -> Data? {
         guard bint >= 0 else {
-            // TODO implement properly to support negatives if RLP supports.. twos complement reverse?
+            // TODO: implement properly to support negatives if RLP supports.. twos complement reverse?
             return nil
         }
         return encodeBigUInt(BigUInt(bint))
@@ -57,21 +56,21 @@ struct RLP {
         let data = buint.serialize()
 
         let lastIndex = data.count - 1
-        let firstIndex = data.firstIndex(where: {$0 != 0x00}) ?? lastIndex
+        let firstIndex = data.firstIndex(where: { $0 != 0x00 }) ?? lastIndex
         if lastIndex == -1 {
-            return Data( [0x80])
+            return Data([0x80])
         }
-        let subdata = data.subdata(in: firstIndex..<lastIndex+1)
+        let subdata = data.subdata(in: firstIndex ..< lastIndex + 1)
 
-        if subdata.count == 1 && subdata[0] == 0x00 {
-            return Data( [0x80])
+        if subdata.count == 1, subdata[0] == 0x00 {
+            return Data([0x80])
         }
 
-        return encodeData(data.subdata(in: firstIndex..<lastIndex+1))
+        return encodeData(data.subdata(in: firstIndex ..< lastIndex + 1))
     }
 
     static func encodeData(_ data: Data) -> Data {
-        if data.count == 1 && data[0] <= 0x7f {
+        if data.count == 1, data[0] <= 0x7f {
             return data // single byte, no header
         }
 
@@ -87,12 +86,11 @@ struct RLP {
                 return nil
             }
             encodedData.append(encoded)
-            /*if let encoded = encode(el) {
-                encodedData.append(encoded)
-            } else if let emptyPlaceholder = encodeString("") {
-                encodedData.append(emptyPlaceholder)
-            }*/
-
+            /* if let encoded = encode(el) {
+                 encodedData.append(encoded)
+             } else if let emptyPlaceholder = encodeString("") {
+                 encodedData.append(emptyPlaceholder)
+             } */
         }
 
         var encoded = encodeHeader(size: UInt64(encodedData.count), smallTag: 0xc0, largeTag: 0xf7)
@@ -117,13 +115,12 @@ struct RLP {
         var value = i
         var bytes = withUnsafeBytes(of: &value) { Array($0) }
         for (index, byte) in bytes.enumerated().reversed() {
-            if index != 0 && byte == 0x00 {
+            if index != 0, byte == 0x00 {
                 bytes.remove(at: index)
             } else {
                 break
             }
         }
-        return Data( bytes.reversed())
+        return Data(bytes.reversed())
     }
-
 }

@@ -5,7 +5,14 @@ on:
     branches: [ develop ]
 
 jobs:
+  lint:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Lint
+      run: ./scripts/runSwiftFormat.sh -l
   macos:
+    needs: lint
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
@@ -14,6 +21,7 @@ jobs:
     - name: Tests
       run: swift test -v
   linux:
+    needs: lint
     runs-on: ubuntu-latest
     container:
       image: swift:5.5-bionic
