@@ -7,27 +7,22 @@ import Foundation
 
 public class EthereumCryptingStorage<Wrapped>: EthereumKeyStorageProtocol where Wrapped: EthereumKeyStorageProtocol {
 
+    public typealias PasswordProvider = () -> String
+
     private let backingStorage: Wrapped
-    private var password: String?
+    private var passwordProvider: PasswordProvider
 
-    public init(backingStorage: Wrapped) {
+    public init(backingStorage: Wrapped, passwordProvider: @escaping PasswordProvider) {
         self.backingStorage = backingStorage
-    }
-
-    public func setOneTimePassword(_ password: String) {
-        self.password = password
+        self.passwordProvider = passwordProvider
     }
 
     public func storePrivateKey(key: Data, with address: EthereumAddress) throws {
-        guard let password else { throw StorageError.unableToGetDataBecauseOfPasswordNotFound }
-        defer { self.password = nil }
-        try backingStorage.encryptAndStorePrivateKey(key: key, keystorePassword: password)
+        try backingStorage.encryptAndStorePrivateKey(key: key, keystorePassword: passwordProvider())
     }
 
     public func loadPrivateKey(for address: EthereumAddress) throws -> Data {
-        guard let password else { throw StorageError.unableToGetDataBecauseOfPasswordNotFound }
-        defer { self.password = nil }
-        return try backingStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
+        try backingStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: passwordProvider())
     }
 }
 
