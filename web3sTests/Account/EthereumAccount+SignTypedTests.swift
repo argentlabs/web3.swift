@@ -164,7 +164,7 @@ class EthereumAccount_SignTypedTests: XCTestCase {
         let privateKey = "cow".web3.keccak256
         let address = "0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826"
         try! keyStorage.storePrivateKey(key: privateKey, with: .init(address))
-        account = try! EthereumAccount(addressString: address, keyStorage: keyStorage)
+        account = EthereumAccount(address: .init(address), keyStorage: keyStorage)
     }
 
     func test_GivenExample_TypeHashIsCorrect() {

@@ -31,18 +31,11 @@ public class EthereumAccount: EthereumAccountProtocol {
     public let publicKey: String
     public let address: EthereumAddress
 
-    required public init(addressString: String, keyStorage: EthereumKeyStorageProtocol, logger: Logger? = nil) throws {
+    required public init(address: EthereumAddress, keyStorage: EthereumKeyStorageProtocol, logger: Logger? = nil) {
         self.keyStorage = keyStorage
         self.logger = logger ?? Logger(label: "web3.swift.eth-account")
-        do {
-            let address = EthereumAddress(addressString)
-            let data = try keyStorage.loadPrivateKey(for: address)
-            let publicKeyData = try KeyUtil.generatePublicKey(from: data)
-            self.publicKey = publicKeyData.web3.hexString
-            self.address = KeyUtil.generateAddress(from: publicKeyData)
-        } catch {
-            throw EthereumAccountError.loadAccountError
-        }
+        self.address = address
+        self.publicKey = address.value.web3.withHexPrefix
     }
 
     public static func create(settingTo keyStorage: EthereumKeyStorageProtocol) throws -> EthereumAccount {
@@ -54,7 +47,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
             let address = KeyUtil.generateAddress(from: publicKey)
             try keyStorage.storePrivateKey(key: privateKey, with: address)
-            return try self.init(addressString: address.value, keyStorage: keyStorage)
+            return self.init(address: address, keyStorage: keyStorage)
         } catch {
             throw EthereumAccountError.createAccountError
         }
@@ -68,7 +61,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
             let address = KeyUtil.generateAddress(from: publicKey)
             try keyStorage.storePrivateKey(key: privateKey, with: address)
-            return try self.init(addressString: address.value, keyStorage: keyStorage)
+            return self.init(address: address, keyStorage: keyStorage)
         } catch {
             throw EthereumAccountError.importAccountError
         }
