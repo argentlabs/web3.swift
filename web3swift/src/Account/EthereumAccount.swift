@@ -29,9 +29,8 @@ public class EthereumAccount: EthereumAccountProtocol {
     private let publicKeyData: Data
     private let logger: Logger
 
-    public lazy var publicKey: String = self.publicKeyData.web3.hexString
-
-    public lazy var address: EthereumAddress = KeyUtil.generateAddress(from: self.publicKeyData)
+    public let publicKey: String
+    public let address: EthereumAddress
 
     required public init(keyStorage: EthereumSingleKeyStorageProtocol, keystorePassword password: String, logger: Logger? = nil) throws {
         self.logger = logger ?? Logger(label: "web3.swift.eth-account")
@@ -39,6 +38,8 @@ public class EthereumAccount: EthereumAccountProtocol {
             let decodedKey = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
             self.privateKeyData = decodedKey
             self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
+            self.publicKey = publicKeyData.web3.hexString
+            self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
             self.logger.warning("Error loading key data: \(error)")
             throw EthereumAccountError.loadAccountError
@@ -51,6 +52,8 @@ public class EthereumAccount: EthereumAccountProtocol {
             let data = try keyStorage.loadPrivateKey()
             self.privateKeyData = data
             self.publicKeyData = try KeyUtil.generatePublicKey(from: data)
+            self.publicKey = publicKeyData.web3.hexString
+            self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
             throw EthereumAccountError.loadAccountError
         }
@@ -63,6 +66,8 @@ public class EthereumAccount: EthereumAccountProtocol {
             let decodedKey = try keyStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
             self.privateKeyData = decodedKey
             self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
+            self.publicKey = publicKeyData.web3.hexString
+            self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
             self.logger.warning("Error loading key data: \(error)")
             throw EthereumAccountError.loadAccountError
@@ -76,6 +81,8 @@ public class EthereumAccount: EthereumAccountProtocol {
             let data = try keyStorage.loadPrivateKey(for: address)
             self.privateKeyData = data
             self.publicKeyData = try KeyUtil.generatePublicKey(from: data)
+            self.publicKey = publicKeyData.web3.hexString
+            self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
             throw EthereumAccountError.loadAccountError
         }
