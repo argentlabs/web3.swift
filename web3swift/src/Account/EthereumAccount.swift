@@ -26,7 +26,6 @@ public enum EthereumAccountError: Error {
 
 public class EthereumAccount: EthereumAccountProtocol {
     private let privateKeyData: Data
-    private let publicKeyData: Data
     private let logger: Logger
 
     public let publicKey: String
@@ -38,7 +37,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             let address = EthereumAddress(addressString)
             let decodedKey = try keyStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
             self.privateKeyData = decodedKey
-            self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
+            let publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
             self.publicKey = publicKeyData.web3.hexString
             self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
@@ -53,7 +52,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             let address = EthereumAddress(addressString)
             let data = try keyStorage.loadPrivateKey(for: address)
             self.privateKeyData = data
-            self.publicKeyData = try KeyUtil.generatePublicKey(from: data)
+            let publicKeyData = try KeyUtil.generatePublicKey(from: data)
             self.publicKey = publicKeyData.web3.hexString
             self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
@@ -67,7 +66,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             let address = EthereumAddress(addressString)
             let decodedKey = try keyStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
             self.privateKeyData = decodedKey
-            self.publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
+            let publicKeyData = try KeyUtil.generatePublicKey(from: decodedKey)
             self.publicKey = publicKeyData.web3.hexString
             self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
@@ -82,7 +81,7 @@ public class EthereumAccount: EthereumAccountProtocol {
             let address = EthereumAddress(addressString)
             let data = try keyStorage.loadPrivateKey(for: address)
             self.privateKeyData = data
-            self.publicKeyData = try KeyUtil.generatePublicKey(from: data)
+            let publicKeyData = try KeyUtil.generatePublicKey(from: data)
             self.publicKey = publicKeyData.web3.hexString
             self.address = KeyUtil.generateAddress(from: publicKeyData)
         } catch {
