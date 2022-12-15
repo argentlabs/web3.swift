@@ -18,6 +18,7 @@ public protocol EthereumAccountProtocol {
 }
 
 public enum EthereumAccountError: Error {
+    case addressesDoesNotMatch
     case createAccountError
     case importAccountError
     case loadAccountError
@@ -69,39 +70,35 @@ public class EthereumAccount: EthereumAccountProtocol {
 
     public func sign(data: Data) throws -> Data {
         let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        try validate(address: address, withPrivateKey: privateKeyData)
         return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
     public func sign(hex: String) throws -> Data {
-        if let data = Data(hex: hex) {
-            let privateKeyData = try keyStorage.loadPrivateKey(for: address)
-            return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
-        } else {
-            throw EthereumAccountError.signError
-        }
+        guard let data = Data(hex: hex) else { throw EthereumAccountError.signError }
+        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        try validate(address: address, withPrivateKey: privateKeyData)
+        return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
     public func sign(hash: String) throws -> Data {
-        if let data = hash.web3.hexData {
-            let privateKeyData = try keyStorage.loadPrivateKey(for: address)
-            return try KeyUtil.sign(message: data, with: privateKeyData, hashing: false)
-        } else {
-            throw EthereumAccountError.signError
-        }
+        guard let data = hash.web3.hexData else { throw EthereumAccountError.signError }
+        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        try validate(address: address, withPrivateKey: privateKeyData)
+        return try KeyUtil.sign(message: data, with: privateKeyData, hashing: false)
     }
 
     public func sign(message: Data) throws -> Data {
         let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        try validate(address: address, withPrivateKey: privateKeyData)
         return try KeyUtil.sign(message: message, with: privateKeyData, hashing: false)
     }
 
     public func sign(message: String) throws -> Data {
-        if let data = message.data(using: .utf8) {
-            let privateKeyData = try keyStorage.loadPrivateKey(for: address)
-            return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
-        } else {
-            throw EthereumAccountError.signError
-        }
+        guard let data = message.data(using: .utf8) else { throw EthereumAccountError.signError }
+        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        try validate(address: address, withPrivateKey: privateKeyData)
+        return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
     public func signMessage(message: Data) throws -> String {
@@ -147,5 +144,10 @@ public class EthereumAccount: EthereumAccountProtocol {
 
         signed.append(last)
         return signed.web3.hexString
+    }
+
+    private func validate(address: EthereumAddress, withPrivateKey key: Data) throws {
+        let retrievedAddress = try KeyUtil.generateAddress(from: KeyUtil.generatePublicKey(from: key))
+        guard address == retrievedAddress else { throw EthereumAccountError.addressesDoesNotMatch }
     }
 }

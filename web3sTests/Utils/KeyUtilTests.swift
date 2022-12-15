@@ -60,7 +60,7 @@ class KeyUtilTests: XCTestCase {
     }
     
     func testRecoverPublicKeyMultiple() {
-        let storage = TestEthereumMultipleKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173")
+        let storage = TestEthereumMultipleKeyStorage(privateKey: TestConfig.privateKey)
         let account = EthereumAccount(address: .init(TestConfig.publicKey), keyStorage: storage)
         let signature = try! account.sign(message: "Hello message!")
 
