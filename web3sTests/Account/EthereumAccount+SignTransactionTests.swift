@@ -29,7 +29,9 @@ class EthereumAccount_SignTransactionTests: XCTestCase {
 
         let tx = EthereumTransaction(from: nil, to: to, value: value, data: nil, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, chainId: chainID)
 
-        let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
+        let privateKey = "0x4646464646464646464646464646464646464646464646464646464646464646"
+        let address = "0x9d8a62f656a8d1615c1294fd71e9cfb3e4855a4f"
+        let account = try! EthereumAccount.init(addressString: address, keyStorage: TestEthereumKeyStorage(privateKey: privateKey))
         let signed = try! account.sign(transaction: tx)
 
         let v = signed.v.web3.hexString

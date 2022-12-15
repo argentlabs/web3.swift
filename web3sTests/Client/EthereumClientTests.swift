@@ -36,7 +36,7 @@ class EthereumClientTests: XCTestCase {
     override func setUp() {
         super.setUp()
         client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
-        account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
+        account = try? EthereumAccount(addressString: TestConfig.publicKey, keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
         print("Public address: \(account?.address.value ?? "NONE")")
     }
 

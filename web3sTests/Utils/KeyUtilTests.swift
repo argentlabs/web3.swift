@@ -49,12 +49,14 @@ class KeyUtilTests: XCTestCase {
     }
     
     func testRecoverPublicKey() {
-        let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
+        let privateKey = "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"
+        let address = "0x675f5810feb3b09528e5cd175061b4eb8de69075"
+        let account = try! EthereumAccount(addressString: address, keyStorage: TestEthereumKeyStorage(privateKey: privateKey))
         let signature = try! account.sign(message: "Hello message!")
 
-        let address = try! KeyUtil.recoverPublicKey(message: "Hello message!".web3.keccak256, signature: signature)
+        let recoveredAddress = try! KeyUtil.recoverPublicKey(message: "Hello message!".web3.keccak256, signature: signature)
 
-        XCTAssertEqual(address, account.address.value.lowercased())
+        XCTAssertEqual(recoveredAddress, account.address.value.lowercased())
     }
     
     func testRecoverPublicKeyMultiple() {

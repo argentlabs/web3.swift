@@ -14,10 +14,10 @@ class TestEthereumKeyStorage: EthereumSingleKeyStorageProtocol {
         self.privateKey = privateKey
     }
 
-    func storePrivateKey(key: Data) throws {
+    func storePrivateKey(key: Data, with address: EthereumAddress) throws {
     }
 
-    func loadPrivateKey() throws -> Data {
+    func loadPrivateKey(for address: EthereumAddress) throws -> Data {
         return privateKey.web3.hexData!
     }
 }
@@ -28,13 +28,6 @@ class TestEthereumMultipleKeyStorage: EthereumMultipleKeyStorageProtocol {
     
     init(privateKey: String) {
         self.privateKey = privateKey
-    }
-    
-    func storePrivateKey(key: Data) throws -> Void {
-    }
-
-    func loadPrivateKey() throws -> Data {
-        return privateKey.web3.hexData!
     }
     
     func fetchAccounts() throws -> [EthereumAddress] {
