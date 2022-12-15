@@ -37,6 +37,37 @@ final class EthereumCryptingStorageTests: XCTestCase {
         XCTAssertEqual(storageSpy.loadPrivateKeyCallsCount, 1)
         XCTAssertEqual(storageSpy.loadPrivateKeyRecordedData.first, addressStub)
     }
+
+    func test_whenDeleteAllKeysCalled_thenDeleteAllKeysCalled() throws {
+        // when
+        try sut.deleteAllKeys()
+
+        // then
+        XCTAssertEqual(storageSpy.deleteAllKeysCallsCount, 1)
+    }
+
+    func test_givenAddress_whenDeletePrivateKeyCalled_thenDeletePrivateKeyCalled() throws {
+        // given
+        // when
+        try sut.deletePrivateKey(for: addressStub)
+
+        // then
+        XCTAssertEqual(storageSpy.deletePrivateKeyCallsCount, 1)
+        XCTAssertEqual(storageSpy.deletePrivateKeyRecordedData.first, addressStub)
+    }
+
+    func test_givenAddresses_whenFetchAccountsCalled_thenReturnsExpectedAccounts() throws {
+        // given
+        let expected = [addressStub]
+        storageSpy.fetchAccountsReturnValue = expected
+
+        // when
+        let result = try sut.fetchAccounts()
+
+        // then
+        XCTAssertEqual(storageSpy.fetchAccountsCallsCount, 1)
+        XCTAssertEqual(result, expected)
+    }
 }
 
 extension EthereumCryptingStorageTests {

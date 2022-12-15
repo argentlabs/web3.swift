@@ -6,7 +6,7 @@
 import Foundation
 import web3
 
-class EthereumKeyStorageSpy: EthereumKeyStorageProtocol {
+class EthereumKeyStorageSpy: EthereumMultipleKeyStorageProtocol {
 
     var storePrivateKeyCallsCount: Int { storePrivateKeyRecordedData.count }
     private(set) var storePrivateKeyRecordedData = [(key: Data, address: EthereumAddress)]()
@@ -22,5 +22,26 @@ class EthereumKeyStorageSpy: EthereumKeyStorageProtocol {
     func loadPrivateKey(for address: EthereumAddress) throws -> Data {
         loadPrivateKeyRecordedData.append(address)
         return loadPrivateKeyReturnValue
+    }
+
+    private(set) var deleteAllKeysCallsCount = 0
+
+    func deleteAllKeys() throws {
+        deleteAllKeysCallsCount += 1
+    }
+
+    var deletePrivateKeyCallsCount: Int { deletePrivateKeyRecordedData.count }
+    private(set) var deletePrivateKeyRecordedData = [EthereumAddress]()
+
+    func deletePrivateKey(for address: EthereumAddress) throws {
+        deletePrivateKeyRecordedData.append(address)
+    }
+
+    var fetchAccountsReturnValue = [EthereumAddress]()
+    private(set) var fetchAccountsCallsCount = 0
+
+    func fetchAccounts() throws -> [EthereumAddress] {
+        fetchAccountsCallsCount += 1
+        return fetchAccountsReturnValue
     }
 }
