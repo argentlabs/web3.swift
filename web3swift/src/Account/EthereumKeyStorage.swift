@@ -5,12 +5,12 @@
 
 import Foundation
 
-public protocol EthereumSingleKeyStorageProtocol {
+public protocol EthereumKeyStorageProtocol {
     func storePrivateKey(key: Data, with address: EthereumAddress) throws
     func loadPrivateKey(for address: EthereumAddress) throws -> Data
 }
 
-public protocol EthereumMultipleKeyStorageProtocol: EthereumSingleKeyStorageProtocol {
+public protocol EthereumMultipleKeyStorageProtocol: EthereumKeyStorageProtocol {
     func deleteAllKeys() throws
     func deletePrivateKey(for address: EthereumAddress) throws
     func fetchAccounts() throws -> [EthereumAddress]
@@ -23,7 +23,7 @@ public enum EthereumKeyStorageError: Error {
     case failedToDelete
 }
 
-public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
+public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     public init() {}
 
     private var address: String?

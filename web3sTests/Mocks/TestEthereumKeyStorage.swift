@@ -6,7 +6,7 @@
 import Foundation
 @testable import web3
 
-class TestEthereumKeyStorage: EthereumSingleKeyStorageProtocol {
+class TestEthereumKeyStorage: EthereumKeyStorageProtocol {
     
     private var privateKey: String
 
