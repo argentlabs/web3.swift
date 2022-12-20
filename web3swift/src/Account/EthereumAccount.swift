@@ -9,12 +9,12 @@ import Foundation
 public protocol EthereumAccountProtocol {
     var address: EthereumAddress { get }
 
-    func sign(data: Data) throws -> Data
-    func sign(hash: String) throws -> Data
-    func sign(hex: String) throws -> Data
-    func sign(message: Data) throws -> Data
-    func sign(message: String) throws -> Data
-    func sign(transaction: EthereumTransaction) throws -> SignedTransaction
+    func sign(data: Data) async throws -> Data
+    func sign(hash: String) async throws -> Data
+    func sign(hex: String) async throws -> Data
+    func sign(message: Data) async throws -> Data
+    func sign(message: String) async throws -> Data
+    func sign(transaction: EthereumTransaction) async throws -> SignedTransaction
 }
 
 public enum EthereumAccountError: Error {
@@ -39,7 +39,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         self.publicKey = address.value.web3.withHexPrefix
     }
 
-    public static func create(settingTo keyStorage: EthereumKeyStorageProtocol) throws -> EthereumAccount {
+    public static func create(settingTo keyStorage: EthereumKeyStorageProtocol) async throws -> EthereumAccount {
         guard let privateKey = KeyUtil.generatePrivateKeyData() else {
             throw EthereumAccountError.createAccountError
         }
@@ -47,61 +47,61 @@ public class EthereumAccount: EthereumAccountProtocol {
         do {
             let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
             let address = KeyUtil.generateAddress(from: publicKey)
-            try keyStorage.storePrivateKey(key: privateKey, with: address)
+            try await keyStorage.storePrivateKey(key: privateKey, with: address)
             return self.init(address: address, keyStorage: keyStorage)
         } catch {
             throw EthereumAccountError.createAccountError
         }
     }
 
-    public static func importAccount(settingTo keyStorage: EthereumKeyStorageProtocol, privateKey: String) throws -> EthereumAccount {
+    public static func importAccount(settingTo keyStorage: EthereumKeyStorageProtocol, privateKey: String) async throws -> EthereumAccount {
         guard let privateKey = privateKey.web3.hexData else {
             throw EthereumAccountError.importAccountError
         }
         do {
             let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
             let address = KeyUtil.generateAddress(from: publicKey)
-            try keyStorage.storePrivateKey(key: privateKey, with: address)
+            try await keyStorage.storePrivateKey(key: privateKey, with: address)
             return self.init(address: address, keyStorage: keyStorage)
         } catch {
             throw EthereumAccountError.importAccountError
         }
     }
 
-    public func sign(data: Data) throws -> Data {
-        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+    public func sign(data: Data) async throws -> Data {
+        let privateKeyData = try await keyStorage.loadPrivateKey(for: address)
         try validate(address: address, withPrivateKey: privateKeyData)
         return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
-    public func sign(hex: String) throws -> Data {
+    public func sign(hex: String) async throws -> Data {
         guard let data = Data(hex: hex) else { throw EthereumAccountError.signError }
-        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        let privateKeyData = try await keyStorage.loadPrivateKey(for: address)
         try validate(address: address, withPrivateKey: privateKeyData)
         return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
-    public func sign(hash: String) throws -> Data {
+    public func sign(hash: String) async throws -> Data {
         guard let data = hash.web3.hexData else { throw EthereumAccountError.signError }
-        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        let privateKeyData = try await keyStorage.loadPrivateKey(for: address)
         try validate(address: address, withPrivateKey: privateKeyData)
         return try KeyUtil.sign(message: data, with: privateKeyData, hashing: false)
     }
 
-    public func sign(message: Data) throws -> Data {
-        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+    public func sign(message: Data) async throws -> Data {
+        let privateKeyData = try await keyStorage.loadPrivateKey(for: address)
         try validate(address: address, withPrivateKey: privateKeyData)
         return try KeyUtil.sign(message: message, with: privateKeyData, hashing: false)
     }
 
-    public func sign(message: String) throws -> Data {
+    public func sign(message: String) async throws -> Data {
         guard let data = message.data(using: .utf8) else { throw EthereumAccountError.signError }
-        let privateKeyData = try keyStorage.loadPrivateKey(for: address)
+        let privateKeyData = try await keyStorage.loadPrivateKey(for: address)
         try validate(address: address, withPrivateKey: privateKeyData)
         return try KeyUtil.sign(message: data, with: privateKeyData, hashing: true)
     }
 
-    public func signMessage(message: Data) throws -> String {
+    public func signMessage(message: Data) async throws -> String {
         let prefix = "\u{19}Ethereum Signed Message:\n\(String(message.count))"
         guard var data = prefix.data(using: .ascii) else {
             throw EthereumAccountError.signError
@@ -109,7 +109,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         data.append(message)
         let hash = data.web3.keccak256
 
-        guard var signed = try? sign(message: hash) else {
+        guard var signed = try? await sign(message: hash) else {
             throw EthereumAccountError.signError
         }
 
@@ -126,10 +126,10 @@ public class EthereumAccount: EthereumAccountProtocol {
         return signed.web3.hexString
     }
 
-    public func signMessage(message: TypedData) throws -> String {
+    public func signMessage(message: TypedData) async throws -> String {
         let hash = try message.signableHash()
 
-        guard var signed = try? sign(message: hash) else {
+        guard var signed = try? await sign(message: hash) else {
             throw EthereumAccountError.signError
         }
 

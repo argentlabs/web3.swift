@@ -6,14 +6,14 @@
 import Foundation
 
 public protocol EthereumKeyStorageProtocol {
-    func storePrivateKey(key: Data, with address: EthereumAddress) throws
-    func loadPrivateKey(for address: EthereumAddress) throws -> Data
+    func storePrivateKey(key: Data, with address: EthereumAddress) async throws
+    func loadPrivateKey(for address: EthereumAddress) async throws -> Data
 }
 
 public protocol EthereumMultipleKeyStorageProtocol: EthereumKeyStorageProtocol {
-    func deleteAllKeys() throws
-    func deletePrivateKey(for address: EthereumAddress) throws
-    func fetchAccounts() throws -> [EthereumAddress]
+    func deleteAllKeys() async throws
+    func deletePrivateKey(for address: EthereumAddress) async throws
+    func fetchAccounts() async throws -> [EthereumAddress]
 }
 
 public enum EthereumKeyStorageError: Error {
@@ -55,7 +55,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
 
     private let fileManager = FileManager.default
 
-    public func storePrivateKey(key: Data) throws {
+    public func storePrivateKey(key: Data) async throws {
         guard let localPath = localPath else {
             throw EthereumKeyStorageError.failedToSave
         }
@@ -67,7 +67,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
         }
     }
 
-    public func loadPrivateKey() throws -> Data {
+    public func loadPrivateKey() async throws -> Data {
         guard let localPath = localPath else {
             throw EthereumKeyStorageError.failedToLoad
         }
@@ -81,7 +81,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
 }
 
 extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
-    public func fetchAccounts() throws -> [EthereumAddress] {
+    public func fetchAccounts() async throws -> [EthereumAddress] {
         guard let folderPath = folderPath else {
             throw EthereumKeyStorageError.failedToLoad
         }
@@ -99,7 +99,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
         }
     }
 
-    public func storePrivateKey(key: Data, with address: EthereumAddress) throws {
+    public func storePrivateKey(key: Data, with address: EthereumAddress) async throws {
         self.address = address.value
 
         defer {
@@ -117,7 +117,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
         }
     }
 
-    public func loadPrivateKey(for address: EthereumAddress) throws -> Data {
+    public func loadPrivateKey(for address: EthereumAddress) async throws -> Data {
         self.address = address.value
 
         defer {
@@ -135,13 +135,13 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
         return data
     }
 
-    public func deleteAllKeys() throws {
+    public func deleteAllKeys() async throws {
         do {
             if let folderPath = folderPath {
                 let directoryContents = try fileManager.contentsOfDirectory(atPath: folderPath.path)
                 let addresses = directoryContents.filter({ $0.web3.isAddress || $0 == localFileName })
                 for address in addresses {
-                    try deletePrivateKey(for: EthereumAddress(address))
+                    try await deletePrivateKey(for: EthereumAddress(address))
                 }
             }
         } catch {
@@ -150,7 +150,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
         }
     }
 
-    public func deletePrivateKey(for address: EthereumAddress) throws {
+    public func deletePrivateKey(for address: EthereumAddress) async throws {
         do {
             if let folderPath = folderPath {
                 let filePathName = folderPath.appendingPathComponent(address.value)

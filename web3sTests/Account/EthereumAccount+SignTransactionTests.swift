@@ -17,7 +17,7 @@ class EthereumAccount_SignTransactionTests: XCTestCase {
         super.tearDown()
     }
 
-    func testTransaction2Sign() {
+    func testTransaction2Sign() async {
         //https://medium.com/@codetractio/walkthrough-of-an-ethereum-improvement-proposal-eip-6fda3966d171
 
         let nonce = 9
@@ -32,7 +32,7 @@ class EthereumAccount_SignTransactionTests: XCTestCase {
         let privateKey = "0x4646464646464646464646464646464646464646464646464646464646464646"
         let address = "0x9d8a62f656a8d1615c1294fd71e9cfb3e4855a4f"
         let account = EthereumAccount.init(address: .init(address), keyStorage: TestEthereumKeyStorage(privateKey: privateKey))
-        let signed = try! account.sign(transaction: tx)
+        let signed = try! await account.sign(transaction: tx)
 
         let v = signed.v.web3.hexString
         let r = signed.r.web3.hexString

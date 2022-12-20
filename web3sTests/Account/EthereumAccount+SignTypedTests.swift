@@ -159,11 +159,11 @@ class EthereumAccount_SignTypedTests: XCTestCase {
 
     let decoder = JSONDecoder()
 
-    override func setUp() {
+    override func setUp() async throws {
         let keyStorage = EthereumKeyLocalStorage()
         let privateKey = "cow".web3.keccak256
         let address = "0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826"
-        try! keyStorage.storePrivateKey(key: privateKey, with: .init(address))
+        try await keyStorage.storePrivateKey(key: privateKey, with: .init(address))
         account = EthereumAccount(address: .init(address), keyStorage: keyStorage)
     }
 
@@ -253,9 +253,9 @@ class EthereumAccount_SignTypedTests: XCTestCase {
 
     }
 
-    func test_givenExample_ItSignsCorrectly() {
+    func test_givenExample_ItSignsCorrectly() async {
         let typedData = try! decoder.decode(TypedData.self, from: example1)
-        let signed = try? account.signMessage(message: typedData)
+        let signed = try? await account.signMessage(message: typedData)
         XCTAssertEqual(signed, "0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c")
     }
 }

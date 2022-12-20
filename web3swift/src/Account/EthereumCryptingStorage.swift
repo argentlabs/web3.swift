@@ -17,26 +17,26 @@ public class EthereumCryptingStorage<Wrapped>: EthereumKeyStorageProtocol where 
         self.passwordProvider = passwordProvider
     }
 
-    public func storePrivateKey(key: Data, with address: EthereumAddress) throws {
-        try backingStorage.encryptAndStorePrivateKey(key: key, keystorePassword: passwordProvider())
+    public func storePrivateKey(key: Data, with address: EthereumAddress) async throws {
+        try await backingStorage.encryptAndStorePrivateKey(key: key, keystorePassword: passwordProvider())
     }
 
-    public func loadPrivateKey(for address: EthereumAddress) throws -> Data {
-        try backingStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: passwordProvider())
+    public func loadPrivateKey(for address: EthereumAddress) async throws -> Data {
+        try await backingStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: passwordProvider())
     }
 }
 
 extension EthereumCryptingStorage: EthereumMultipleKeyStorageProtocol where Wrapped: EthereumMultipleKeyStorageProtocol {
-    public func deleteAllKeys() throws {
-        try backingStorage.deleteAllKeys()
+    public func deleteAllKeys() async throws {
+        try await backingStorage.deleteAllKeys()
     }
 
-    public func deletePrivateKey(for address: EthereumAddress) throws {
-        try backingStorage.deletePrivateKey(for: address)
+    public func deletePrivateKey(for address: EthereumAddress) async throws {
+        try await backingStorage.deletePrivateKey(for: address)
     }
 
-    public func fetchAccounts() throws -> [EthereumAddress] {
-        try backingStorage.fetchAccounts()
+    public func fetchAccounts() async throws -> [EthereumAddress] {
+        try await backingStorage.fetchAccounts()
     }
 }
 

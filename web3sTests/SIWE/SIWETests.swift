@@ -45,7 +45,12 @@ class SIWETests: XCTestCase {
         )
 
         var signature: String = ""
-        XCTAssertNoThrow(signature = try account.signSIWERequest(message))
+        do {
+            signature = try await account.signSIWERequest(message)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
         var isValid = false
         do {
             isValid = try await verifier.verify(message: message, against: signature)
