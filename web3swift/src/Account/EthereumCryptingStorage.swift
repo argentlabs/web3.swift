@@ -7,7 +7,7 @@ import Foundation
 
 public class EthereumCryptingStorage<Wrapped>: EthereumKeyStorageProtocol where Wrapped: EthereumKeyStorageProtocol {
 
-    public typealias PasswordProvider = () -> String
+    public typealias PasswordProvider = (_ address: EthereumAddress) async throws -> String
 
     private let backingStorage: Wrapped
     private var passwordProvider: PasswordProvider
@@ -18,11 +18,13 @@ public class EthereumCryptingStorage<Wrapped>: EthereumKeyStorageProtocol where 
     }
 
     public func storePrivateKey(key: Data, with address: EthereumAddress) async throws {
-        try await backingStorage.encryptAndStorePrivateKey(key: key, keystorePassword: passwordProvider())
+        let password = try await passwordProvider(address)
+        try await backingStorage.encryptAndStorePrivateKey(key: key, keystorePassword: password)
     }
 
     public func loadPrivateKey(for address: EthereumAddress) async throws -> Data {
-        try await backingStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: passwordProvider())
+        let password = try await passwordProvider(address)
+        return try await backingStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
     }
 }
 

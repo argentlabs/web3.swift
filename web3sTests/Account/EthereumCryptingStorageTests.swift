@@ -11,7 +11,7 @@ final class EthereumCryptingStorageTests: XCTestCase {
     private let addressStub = EthereumAddress("0x675f5810feb3b09528e5cd175061b4eb8de69075")
     private let passwordStub = "PASSWORD"
     private var storageSpy = EthereumKeyStorageSpy()
-    private lazy var sut = EthereumCryptingStorage(backingStorage: storageSpy, passwordProvider: { [unowned self] in passwordStub })
+    private lazy var sut = EthereumCryptingStorage(backingStorage: storageSpy, passwordProvider: { [unowned self] _ in passwordStub })
 
     func test_givenKeyAndAddressAndOTPPassword_whenStoreCalled_thenStoreDataCalled() async throws {
         // given
