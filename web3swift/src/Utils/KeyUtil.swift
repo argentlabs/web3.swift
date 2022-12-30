@@ -21,11 +21,11 @@ public class KeyUtil {
         Logger(label: "web3.swift.key-util")
     }
 
-    static func generatePrivateKeyData() -> Data? {
+    public static func generatePrivateKeyData() -> Data? {
         Data.randomOfLength(32)
     }
 
-    static func generatePublicKey(from privateKey: Data) throws -> Data {
+    public static func generatePublicKey(from privateKey: Data) throws -> Data {
         guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
             logger.warning("Failed to generate a public key: invalid context.")
             throw KeyUtilError.invalidContext
@@ -62,13 +62,13 @@ public class KeyUtil {
         return publicKey
     }
 
-    static func generateAddress(from publicKey: Data) -> EthereumAddress {
+    public static func generateAddress(from publicKey: Data) -> EthereumAddress {
         let hash = publicKey.web3.keccak256
         let address = hash.subdata(in: 12 ..< hash.count)
         return EthereumAddress(address.web3.hexString)
     }
 
-    static func sign(message: Data, with privateKey: Data, hashing: Bool) throws -> Data {
+    public static func sign(message: Data, with privateKey: Data, hashing: Bool) throws -> Data {
         guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
             logger.warning("Failed to sign message: invalid context.")
             throw KeyUtilError.invalidContext
@@ -109,7 +109,7 @@ public class KeyUtil {
         return signature
     }
 
-    static func recoverPublicKey(message: Data, signature: Data) throws -> String {
+    public static func recoverPublicKey(message: Data, signature: Data) throws -> String {
         if signature.count != 65 || message.count != 32 {
             throw KeyUtilError.badArguments
         }
