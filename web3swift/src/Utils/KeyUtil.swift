@@ -7,7 +7,7 @@ import Logging
 import secp256k1
 import Foundation
 
-enum KeyUtilError: Error {
+public enum KeyUtilError: Error {
     case invalidContext
     case privateKeyInvalid
     case unknownError
@@ -16,7 +16,7 @@ enum KeyUtilError: Error {
     case badArguments
 }
 
-class KeyUtil {
+public class KeyUtil {
     private static var logger: Logger {
         Logger(label: "web3.swift.key-util")
     }
