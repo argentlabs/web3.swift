@@ -43,7 +43,7 @@ Create an instance of `EthereumHttpClient` or `EthereumWebSocketClient`. This wi
 `EthereumHttpClient`
 ```swift
 guard let clientUrl = URL(string: "https://an-infura-or-similar-url.com/123") else { return }
-let client = EthereumClient(url: clientUrl)
+let client = EthereumHttpClient(url: clientUrl)
 ```
 
 OR
