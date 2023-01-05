@@ -123,7 +123,7 @@ The library provides some types and helpers to make interacting with web3 and Et
 
 - `EthereumAddress`: For representation of addresses, including checksum support.
 - `BigInt` and `BigUInt`: Using [BigInt](https://github.com/attaswift/BigInt) library
-- `EthereumBlock`: Represents the block, either number of RPC-specific defintions like 'Earliest' or 'Latest'
+- `EthereumBlock`: Represents the block, either number of RPC-specific definitions like 'Earliest' or 'Latest'
 - `EthereumTransaction`: Wraps a transaction. Encoders and decoders can work with it to generate proper `data` fields.
 
 #### Conversion from and to Foundation types
