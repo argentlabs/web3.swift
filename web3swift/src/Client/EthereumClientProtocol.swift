@@ -109,6 +109,9 @@ public protocol EthereumClientProtocol: AnyObject {
         func newBlockHeaders(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumHeader) -> Void)
         func newBlockHeaders(onData: @escaping (EthereumHeader) -> Void) async throws -> EthereumSubscription
 
+        func logs(logsParams: LogsParams?, onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumLog) -> Void)
+        func logs(logsParams: LogsParams?, onData: @escaping (EthereumLog) -> Void) async throws -> EthereumSubscription
+
         func syncing(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumSyncStatus) -> Void)
         func syncing(onData: @escaping (EthereumSyncStatus) -> Void) async throws -> EthereumSubscription
     }
@@ -116,6 +119,7 @@ public protocol EthereumClientProtocol: AnyObject {
     public protocol EthereumWebSocketClientDelegate: AnyObject {
         func onNewPendingTransaction(subscription: EthereumSubscription, txHash: String)
         func onNewBlockHeader(subscription: EthereumSubscription, header: EthereumHeader)
+        func onLog(subscription: EthereumSubscription, log: EthereumLog)
         func onSyncing(subscription: EthereumSubscription, sync: EthereumSyncStatus)
         func onWebSocketReconnect()
     }
@@ -124,6 +128,8 @@ public protocol EthereumClientProtocol: AnyObject {
         func onNewPendingTransaction(subscription: EthereumSubscription, txHash: String) {}
 
         func onNewBlockHeader(subscription: EthereumSubscription, header: EthereumHeader) {}
+
+        func onLog(subscription: EthereumSubscription, log: EthereumLog) {}
 
         func onSyncing(subscription: EthereumSubscription, sync: EthereumSyncStatus) {}
 
