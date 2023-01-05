@@ -163,7 +163,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
 public struct SignedTransaction {
     public let transaction: EthereumTransaction
     public let signature: Signature
-    
+
     public init(
         transaction: EthereumTransaction,
         signature raw: Data
@@ -171,15 +171,15 @@ public struct SignedTransaction {
         self.transaction = transaction
         self.signature = .init(raw: raw)
     }
-    
+
     var r: Data {
         signature.r
     }
-    
+
     var s: Data {
         signature.s
     }
-    
+
     var v: Int {
         guard signature.v < 37 else {
             return signature.v

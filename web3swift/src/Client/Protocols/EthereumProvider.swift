@@ -6,9 +6,9 @@
 public struct EquatableError: Error, Equatable {
     let base: Error
 
-    public static func ==(lhs: EquatableError, rhs: EquatableError) -> Bool {
-        return type(of: lhs.base) == type(of: rhs.base) &&
-        lhs.base.localizedDescription == rhs.base.localizedDescription
+    public static func == (lhs: EquatableError, rhs: EquatableError) -> Bool {
+        type(of: lhs.base) == type(of: rhs.base) &&
+            lhs.base.localizedDescription == rhs.base.localizedDescription
     }
 }
 
@@ -55,4 +55,3 @@ public extension EthereumRPCProtocol {
         }
     }
 }
-

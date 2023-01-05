@@ -3,10 +3,14 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
+import web3
 import BigInt
 import Logging
-import web3
+import Foundation
+
+#if canImport(FoundationNetworking)
+    import FoundationNetworking
+#endif
 
 public protocol ZKSyncClientProtocol: EthereumRPCProtocol {
     func eth_sendRawZKSyncTransaction(_ transaction: ZKSyncTransaction, withAccount account: EthereumAccountProtocol) async throws -> String
@@ -41,7 +45,7 @@ extension ZKSyncClientProtocol {
 
         return txHash
     }
-    
+
     public func gasPrice() async throws -> BigUInt {
         let emptyParams: [Bool] = []
         guard let data = try await networkProvider.send(method: "eth_gasPrice", params: emptyParams, receive: String.self) as? String else {
@@ -56,12 +60,14 @@ extension ZKSyncClientProtocol {
 
     public func estimateGas(_ transaction: ZKSyncTransaction) async throws -> BigUInt {
         let value = transaction.value > .zero ? transaction.value : nil
-        let params = EstimateGasParams(from: transaction.from.value,
-                                to: transaction.to.value,
-                                gas: transaction.gasLimit?.web3.hexString,
-                                gasPrice: transaction.gasPrice?.web3.hexString,
-                                value: value?.web3.hexString,
-                                data: transaction.data.web3.hexString)
+        let params = EstimateGasParams(
+            from: transaction.from.value,
+            to: transaction.to.value,
+            gas: transaction.gasLimit?.web3.hexString,
+            gasPrice: transaction.gasPrice?.web3.hexString,
+            value: value?.web3.hexString,
+            data: transaction.data.web3.hexString
+        )
 
         guard let data = try await networkProvider.send(
             method: "eth_estimateGas",
@@ -122,14 +128,15 @@ struct EstimateGasParams: Encodable {
     }
 }
 
-
 public class ZKSyncClient: BaseEthereumClient, ZKSyncClientProtocol {
     let networkQueue: OperationQueue
 
-    public init(url: URL,
-                sessionConfig: URLSessionConfiguration = URLSession.shared.configuration,
-                logger: Logger? = nil,
-                network: EthereumNetwork? = nil) {
+    public init(
+        url: URL,
+        sessionConfig: URLSessionConfiguration = URLSession.shared.configuration,
+        logger: Logger? = nil,
+        network: EthereumNetwork? = nil
+    ) {
         let networkQueue = OperationQueue()
         networkQueue.name = "web3swift.client.networkQueue"
         networkQueue.maxConcurrentOperationCount = 4

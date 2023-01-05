@@ -3,17 +3,17 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
-import BigInt
-import GenericJSON
 import web3
+import BigInt
+import Foundation
+import GenericJSON
 
 // to be filled in by client
 public struct ZKSyncTransaction: Equatable {
     public static let eip712Type: UInt8 = 0x71
-    public static let gasPerPubDataByte: BigUInt = 16;
+    public static let gasPerPubDataByte: BigUInt = 16
     public static let defaultErgsPerPubDataLimit: BigUInt = gasPerPubDataByte * 10_000
-    
+
     public let txType: UInt8 = Self.eip712Type
     public var from: EthereumAddress
     public var to: EthereumAddress
@@ -27,7 +27,7 @@ public struct ZKSyncTransaction: Equatable {
     public var maxFeePerGas: BigUInt?
     public var maxPriorityFeePerGas: BigUInt?
     public var paymasterParams: PaymasterParams
-    
+
     public init(
         from: EthereumAddress,
         to: EthereumAddress,
@@ -55,7 +55,7 @@ public struct ZKSyncTransaction: Equatable {
         self.maxPriorityFeePerGas = maxPriorityFeePerGas
         self.paymasterParams = paymasterParams
     }
-    
+
     public struct PaymasterParams: Equatable {
         public var paymaster: EthereumAddress
         public var input: Data
@@ -66,36 +66,36 @@ public struct ZKSyncTransaction: Equatable {
             self.paymaster = paymaster
             self.input = input
         }
-        
+
         public var isEmpty: Bool {
             self.paymaster == .zero
         }
-        
+
         public static let none: PaymasterParams = .init(paymaster: .zero, input: Data())
     }
-    
+
     public var maxFeePerErg: BigUInt {
         maxFeePerGas ?? gasPrice ?? 0
     }
-    
+
     public var maxPriorityFeePerErg: BigUInt {
         maxPriorityFeePerGas ?? maxFeePerErg
     }
-    
+
     var paymaster: EthereumAddress {
         paymasterParams.paymaster
     }
-    
+
     var paymasterInput: Data {
         paymasterParams.input
     }
-    
+
     public var eip712Representation: TypedData {
         let decoder = JSONDecoder()
         let eip712 = try! decoder.decode(TypedData.self, from: eip712JSON)
         return eip712
     }
-    
+
     private var eip712JSON: Data {
         """
         {
@@ -150,7 +150,7 @@ public struct ZKSyncTransaction: Equatable {
 public struct ZKSyncSignedTransaction {
     public let transaction: ZKSyncTransaction
     public let signature: Signature
-    
+
     public init(
         transaction: ZKSyncTransaction,
         signature: Signature
@@ -158,13 +158,13 @@ public struct ZKSyncSignedTransaction {
         self.transaction = transaction
         self.signature = signature
     }
-    
+
     public var raw: Data? {
         guard transaction.nonce != nil, transaction.chainId != nil,
               transaction.gasPrice != nil, transaction.gasLimit != nil else {
             return nil
         }
-        
+
         var txArray: [Any?] = [
             transaction.nonce,
             transaction.maxPriorityFeePerErg,
@@ -174,20 +174,20 @@ public struct ZKSyncSignedTransaction {
             transaction.value,
             transaction.data
         ]
-        
+
         txArray.append(transaction.chainId)
         txArray.append(Data())
         txArray.append(Data())
-        
+
         txArray.append(transaction.chainId)
         txArray.append(transaction.from.value)
-        
+
         txArray.append(transaction.ergsPerPubdata)
-        // TODO factorydeps
+        // TODO: factorydeps
         txArray.append([])
-        
+
         txArray.append(signature.flattened)
-        
+
         if transaction.paymasterParams.isEmpty {
             txArray.append([])
         } else {
@@ -201,9 +201,9 @@ public struct ZKSyncSignedTransaction {
             Data([transaction.txType]) + $0.web3.bytes
         }
     }
-    
+
     public var hash: Data? {
-        return raw?.web3.keccak256
+        raw?.web3.keccak256
     }
 }
 
@@ -212,7 +212,6 @@ fileprivate extension EthereumAddress {
         .init(hex: self.value)!
     }
 }
-
 
 extension ABIFunction {
     public func zkTransaction(

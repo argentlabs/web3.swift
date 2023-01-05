@@ -27,7 +27,7 @@ public extension EthereumAccountProtocol {
         guard let signature = try? sign(data: raw) else {
             throw EthereumSignerError.unknownError
         }
-        
+
         return SignedTransaction(transaction: transaction, signature: signature)
     }
 }
