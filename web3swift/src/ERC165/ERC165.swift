@@ -39,14 +39,14 @@ public enum ERC165Functions {
         "supportsInterface(bytes4)".web3.keccak256.web3.bytes4
     }
 
-    struct supportsInterface: ABIFunction {
+    public struct supportsInterface: ABIFunction {
         public static let name = "supportsInterface"
         public let gasPrice: BigUInt?
         public let gasLimit: BigUInt?
         public var contract: EthereumAddress
         public let from: EthereumAddress?
 
-        let interfaceId: Data
+        public let interfaceId: Data
 
         public init(
             contract: EthereumAddress,

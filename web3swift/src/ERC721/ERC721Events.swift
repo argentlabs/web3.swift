@@ -49,8 +49,8 @@ public enum ERC721Events {
 
     public struct ApprovalForAll: ABIEvent {
         public static let name = "ApprovalForAll"
-        public static let types: [ABIType.Type] = [EthereumAddress.self, EthereumAddress.self, BigUInt.self]
-        public static let typesIndexed = [true, true, true]
+        public static let types: [ABIType.Type] = [EthereumAddress.self, EthereumAddress.self, Bool.self]
+        public static let typesIndexed = [true, true, false]
         public let log: EthereumLog
 
         public let from: EthereumAddress
