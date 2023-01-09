@@ -331,7 +331,7 @@
                                     self.delegate?.onNewBlockHeader(subscription: subscription.key, header: response.params.result)
                                     subscription.value(response.params.result)
                                 }
-                            case .pendingTransactions:
+                            case .newPendingTransactions:
                                 if let data = string.data(using: .utf8), let response = try? JSONDecoder().decode(JSONRPCSubscriptionResponse<String>.self, from: data) {
                                     self.delegate?.onNewPendingTransaction(subscription: subscription.key, txHash: response.params.result)
                                     subscription.value(response.params.result)
@@ -339,6 +339,11 @@
                             case .syncing:
                                 if let data = string.data(using: .utf8), let response = try? JSONDecoder().decode(JSONRPCSubscriptionResponse<EthereumSyncStatus>.self, from: data) {
                                     self.delegate?.onSyncing(subscription: subscription.key, sync: response.params.result)
+                                    subscription.value(response.params.result)
+                                }
+                            case .logs:
+                                if let data = string.data(using: .utf8), let response = try? JSONDecoder().decode(JSONRPCSubscriptionResponse<EthereumLog>.self, from: data) {
+                                    self.delegate?.onLog(subscription: subscription.key, log: response.params.result)
                                     subscription.value(response.params.result)
                                 }
                             }

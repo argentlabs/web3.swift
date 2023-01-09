@@ -94,7 +94,7 @@
     extension EthereumWebSocketClient: EthereumClientWebSocketProtocol {
         public func subscribe(type: EthereumSubscriptionType) async throws -> EthereumSubscription {
             do {
-                let data = try await networkProvider.send(method: "eth_subscribe", params: [type.method, type.params].compactMap { $0 }, receive: String.self)
+                let data = try await networkProvider.send(method: "eth_subscribe", params: type.params.compactMap { $0 }, receive: String.self)
                 if let resDataString = data as? String {
                     let subscription = EthereumSubscription(type: type, id: resDataString)
                     provider.addSubscription(subscription, callback: { _ in })
@@ -123,9 +123,9 @@
 
         public func pendingTransactions(onData: @escaping (String) -> Void) async throws -> EthereumSubscription {
             do {
-                let data = try await networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.pendingTransactions.method], receive: String.self)
+                let data = try await networkProvider.send(method: "eth_subscribe", params: EthereumSubscriptionType.newPendingTransactions.params, receive: String.self)
                 if let resDataString = data as? String {
-                    let subscription = EthereumSubscription(type: .pendingTransactions, id: resDataString)
+                    let subscription = EthereumSubscription(type: .newPendingTransactions, id: resDataString)
                     provider.addSubscription(subscription, callback: { object in
                         onData(object as! String)
                     })
@@ -140,7 +140,7 @@
 
         public func newBlockHeaders(onData: @escaping (EthereumHeader) -> Void) async throws -> EthereumSubscription {
             do {
-                let data = try await networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.newBlockHeaders.method], receive: String.self)
+                let data = try await networkProvider.send(method: "eth_subscribe", params: EthereumSubscriptionType.newBlockHeaders.params, receive: String.self)
                 if let resDataString = data as? String {
                     let subscription = EthereumSubscription(type: .newBlockHeaders, id: resDataString)
                     provider.addSubscription(subscription, callback: { object in
@@ -155,9 +155,27 @@
             }
         }
 
+        public func logs(logsParams: LogsParams? = nil, onData: @escaping (EthereumLog) -> Void) async throws -> EthereumSubscription {
+            do {
+                let type: EthereumSubscriptionType = .logs(logsParams)
+                let data = try await networkProvider.send(method: "eth_subscribe", params: type.params, receive: String.self)
+                if let resDataString = data as? String {
+                    let subscription = EthereumSubscription(type: type, id: resDataString)
+                    provider.addSubscription(subscription, callback: { object in
+                        onData(object as! EthereumLog)
+                    })
+                    return subscription
+                } else {
+                    throw EthereumClientError.unexpectedReturnValue
+                }
+            } catch {
+                throw failureHandler(error)
+            }
+        }
+
         public func syncing(onData: @escaping (EthereumSyncStatus) -> Void) async throws -> EthereumSubscription {
             do {
-                let data = try await networkProvider.send(method: "eth_subscribe", params: [EthereumSubscriptionType.syncing.method], receive: String.self)
+                let data = try await networkProvider.send(method: "eth_subscribe", params: EthereumSubscriptionType.syncing.params, receive: String.self)
                 if let resDataString = data as? String {
                     let subscription = EthereumSubscription(type: .syncing, id: resDataString)
                     provider.addSubscription(subscription, callback: { object in
@@ -211,6 +229,17 @@
             Task {
                 do {
                     let result = try await newBlockHeaders(onData: onData)
+                    onSubscribe(.success(result))
+                } catch {
+                    failureHandler(error, completionHandler: onSubscribe)
+                }
+            }
+        }
+
+        public func logs(logsParams: LogsParams? = nil, onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumLog) -> Void) {
+            Task {
+                do {
+                    let result = try await logs(logsParams: logsParams, onData: onData)
                     onSubscribe(.success(result))
                 } catch {
                     failureHandler(error, completionHandler: onSubscribe)
