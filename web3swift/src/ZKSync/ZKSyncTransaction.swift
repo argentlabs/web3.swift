@@ -10,8 +10,7 @@ import GenericJSON
 // to be filled in by client
 public struct ZKSyncTransaction: Equatable {
     public static let eip712Type: UInt8 = 0x71
-    public static let gasPerPubDataByte: BigUInt = 16;
-    public static let defaultErgsPerPubDataLimit: BigUInt = gasPerPubDataByte * 10_000
+    public static let defaultGasPerPubDataLimit: BigUInt = 50000
     
     public let txType: UInt8 = Self.eip712Type
     public var from: EthereumAddress
@@ -22,7 +21,7 @@ public struct ZKSyncTransaction: Equatable {
     public var nonce: Int?
     public var gasPrice: BigUInt?
     public var gasLimit: BigUInt?
-    public var ergsPerPubdata: BigUInt
+    public var gasPerPubData: BigUInt
     public var maxFeePerGas: BigUInt?
     public var maxPriorityFeePerGas: BigUInt?
     public var paymasterParams: PaymasterParams
@@ -36,7 +35,7 @@ public struct ZKSyncTransaction: Equatable {
         nonce: Int? = nil,
         gasPrice: BigUInt? = nil,
         gasLimit: BigUInt? = nil,
-        ergsPerPubData: BigUInt = ZKSyncTransaction.defaultErgsPerPubDataLimit,
+        gasPerPubData: BigUInt = ZKSyncTransaction.defaultGasPerPubDataLimit,
         maxFeePerGas: BigUInt? = nil,
         maxPriorityFeePerGas: BigUInt? = nil,
         paymasterParams: PaymasterParams = .none
@@ -49,7 +48,7 @@ public struct ZKSyncTransaction: Equatable {
         self.nonce = nonce
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
-        self.ergsPerPubdata = ergsPerPubData
+        self.gasPerPubData = gasPerPubData
         self.maxFeePerGas = maxFeePerGas
         self.maxPriorityFeePerGas = maxPriorityFeePerGas
         self.paymasterParams = paymasterParams
@@ -73,15 +72,15 @@ public struct ZKSyncTransaction: Equatable {
         public static let none: PaymasterParams = .init(paymaster: .zero, input: Data())
     }
     
-    public var maxFeePerErg: BigUInt {
+    public var maxFee: BigUInt {
         maxFeePerGas ?? gasPrice ?? 0
     }
     
-    public var maxPriorityFeePerErg: BigUInt {
-        maxPriorityFeePerGas ?? maxFeePerErg
+    public var maxPriorityFee: BigUInt {
+        maxPriorityFeePerGas ?? maxFee
     }
     
-    var paymaster: EthereumAddress {
+    public var paymaster: EthereumAddress {
         paymasterParams.paymaster
     }
     
@@ -108,10 +107,10 @@ public struct ZKSyncTransaction: Equatable {
                     {"name": "txType","type": "uint256"},
                     {"name": "from","type": "uint256"},
                     {"name": "to","type": "uint256"},
-                    {"name": "ergsLimit","type": "uint256"},
-                    {"name": "ergsPerPubdataByteLimit","type": "uint256"},
-                    {"name": "maxFeePerErg", "type": "uint256"},
-                    {"name": "maxPriorityFeePerErg", "type": "uint256"},
+                    {"name": "gasLimit","type": "uint256"},
+                    {"name": "gasPerPubdataByteLimit","type": "uint256"},
+                    {"name": "maxFeePerGas", "type": "uint256"},
+                    {"name": "maxPriorityFeePerGas", "type": "uint256"},
                     {"name": "paymaster", "type": "uint256"},
                     {"name": "nonce","type": "uint256"},
                     {"name": "value","type": "uint256"},
@@ -130,10 +129,10 @@ public struct ZKSyncTransaction: Equatable {
                 "txType" : \(txType),
                 "from" : "\(from.asBigInt.description)",
                 "to" : "\(to.asBigInt.description)",
-                "ergsLimit" : "\(gasLimit!.description)",
-                "ergsPerPubdataByteLimit" : "\(ergsPerPubdata.description)",
-                "maxFeePerErg" : "\(maxFeePerErg.description)",
-                "maxPriorityFeePerErg" : "\(maxPriorityFeePerErg.description)",
+                "gasLimit" : "\(gasLimit!.description)",
+                "gasPerPubdataByteLimit" : "\(gasPerPubData.description)",
+                "maxFeePerGas" : "\(maxFee.description)",
+                "maxPriorityFeePerGas" : "\(maxPriorityFee.description)",
                 "paymaster" : "\(paymaster.asBigInt.description)",
                 "nonce" : \(nonce!),
                 "value" : "\(value.description)",
@@ -166,8 +165,8 @@ public struct ZKSyncSignedTransaction {
         
         var txArray: [Any?] = [
             transaction.nonce,
-            transaction.maxPriorityFeePerErg,
-            transaction.maxFeePerErg,
+            transaction.maxPriorityFee,
+            transaction.maxFee,
             transaction.gasLimit,
             transaction.to.value,
             transaction.value,
@@ -181,7 +180,7 @@ public struct ZKSyncSignedTransaction {
         txArray.append(transaction.chainId)
         txArray.append(transaction.from.value)
         
-        txArray.append(transaction.ergsPerPubdata)
+        txArray.append(transaction.gasPerPubData)
         // TODO factorydeps
         txArray.append([])
         
