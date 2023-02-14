@@ -100,6 +100,14 @@ public extension Web3Extensions where Base == Data {
     var bytes32: Data {
         base.prefix(32)
     }
+
+    func padded(toSize size: Int) -> Data {
+        guard base.bytes.count <= size else {
+            return base
+        }
+        let padded = [UInt8](repeating: 0x00, count: size - base.bytes.count) + base.bytes
+        return Data(padded)
+    }
 }
 
 public extension String {

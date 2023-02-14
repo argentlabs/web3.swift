@@ -20,6 +20,15 @@ public extension Web3Extensions where Base == BigUInt {
     var hexStringNoLeadingZeroes: String {
         base.web3.hexString.replacingOccurrences(of: "(?<=0x)0+", with: "", options: .regularExpression)
     }
+
+    func hexString(paddingToSize size: Int) -> String {
+        let bytes = base.web3.bytes
+        guard bytes.count <= size else {
+            return String(bytes: bytes)
+        }
+        let padded = [UInt8](repeating: 0x00, count: size - bytes.count) + bytes
+        return String(bytes: padded)
+    }
 }
 
 public extension BigInt {
