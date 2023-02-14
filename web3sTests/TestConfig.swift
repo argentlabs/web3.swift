@@ -17,7 +17,7 @@ struct TestConfig {
 //    static let privateKey = "SET_YOUR_KEY_HERE"
 
     // This is the expected public key (address) from the above private key
-    static let publicKey = "0xE78e5ecb061fE3DD1672dDDA7b5116213B23B99A"
+//    static let publicKey = "SET_YOUR_PUBLIC_ADDRESS_HERE"
 
     // A test ERC20 token contract (UNI)
     static let erc20Contract = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
