@@ -159,7 +159,9 @@ We support querying ERC721 token data via the `ERC721` struct. Including:
 
 ### Running Tests
 
-The tests will all pass when running against Goerli. You will need to provide a URL for the blockchain proxy (e.g. on Infura), and a key-pair in `TestConfig.swift`. Some of the account signing tests will fail, given the signature assertions are against a specific (unprovided) key.
+Some of the tests require a private key, which is not stored in the repository. You can ignore these while testing locally, as CI will use the encrypted secret key from Github.
+
+It's better to run only the tests you need, instead of the whole test suite while developing. If you ever need to set up the key locally, take a look at `TestConfig.swift` where you can manually set it up. Alternatively you can set it up by calling the script `setupKey.sh` and passing the value (adding 0x) so it's written to an ignored file.
 
 ## Dependencies
 

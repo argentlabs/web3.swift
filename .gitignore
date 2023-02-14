@@ -66,3 +66,4 @@ fastlane/screenshots
 fastlane/test_output
 
 scripts/bin/*
+TestConfig_private.swift
