@@ -37,10 +37,10 @@ public struct Multicall {
             throw MulticallError.executionFailed(error)
         }
     }
-    
+
     public func tryAggregate(requireSuccess: Bool, calls: [Call]) async throws -> Multicall.Multicall2Response {
         let function = Contract.Functions.tryAggregate(contract: Contract.multicall2Address, requireSuccess: requireSuccess, calls: calls)
-        
+
         do {
             let data = try await function.call(withClient: client, responseType: Multicall2Response.self)
             zip(calls, data.outputs)
@@ -65,6 +65,7 @@ extension Multicall {
             }
         }
     }
+
     public func tryAggregate(requireSuccess: Bool, calls: [Call], completionHandler: @escaping (Result<Multicall2Response, MulticallError>) -> Void) {
         Task {
             do {
@@ -109,35 +110,30 @@ extension Multicall {
             }
         }
     }
-    
+
     public struct Multicall2Result: ABITuple {
         public static var types: [ABIType.Type] = [Bool.self, String.self]
         public var encodableValues: [ABIType] { [success, returnData] }
-        
+
         public let success: Bool
         public let returnData: String
-        
+
         public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.success = try values[0].decoded()
-            self.returnData = try values[1].decoded()
+            self.returnData = try values[1].entry[0]
         }
-        
+
         public func encode(to encoder: ABIFunctionEncoder) throws {
             try encoder.encode(success)
             try encoder.encode(returnData)
         }
-        
-        public init(success: Bool, returnData: String) {
-            self.success = success
-            self.returnData = returnData
-        }
     }
-    
+
     public struct Multicall2Response: ABIResponse {
         static let multicallFailedError = "MULTICALL_FAIL".web3.keccak256.web3.hexString
         public static var types: [ABIType.Type] = [ABIArray<Multicall2Result>.self]
         public let outputs: [Output]
-        
+
         public init?(values: [ABIDecoder.DecodedValue]) throws {
             let results: [Multicall2Result] = try values[0].decodedTupleArray()
             self.outputs = results.map { result in

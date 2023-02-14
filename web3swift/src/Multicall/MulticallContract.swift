@@ -50,7 +50,7 @@ extension Multicall {
                     try encoder.encode(calls)
                 }
             }
-            
+
             public struct tryAggregate: ABIFunction {
                 public static let name = "tryAggregate"
                 public let gasPrice: BigUInt?
@@ -59,7 +59,7 @@ extension Multicall {
                 public let from: EthereumAddress?
                 public let requireSuccess: Bool
                 public let calls: [Call]
-                
+
                 public init(
                     contract: EthereumAddress,
                     from: EthereumAddress? = nil,
@@ -75,7 +75,7 @@ extension Multicall {
                     self.requireSuccess = requireSuccess
                     self.calls = calls
                 }
-                
+
                 public func encode(to encoder: ABIFunctionEncoder) throws {
                     try encoder.encode(requireSuccess)
                     try encoder.encode(calls)
