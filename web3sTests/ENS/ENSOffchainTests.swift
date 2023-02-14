@@ -60,7 +60,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0xe264d5bb84ba3b8061adc38d3d76e6674ab91852"), ens)
+            XCTAssertEqual(EthereumAddress("0x19c2d5d0f035563344dbb7be5fd09c8dad62b001"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
@@ -104,7 +104,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0xe264d5bb84ba3b8061adc38d3d76e6674ab91852"), ens)
+            XCTAssertEqual(EthereumAddress("0x19c2d5d0f035563344dbb7be5fd09c8dad62b001"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
@@ -139,7 +139,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0xe264d5bb84ba3b8061adc38d3d76e6674ab91852"), ens)
+            XCTAssertEqual(EthereumAddress("0x19c2d5d0f035563344dbb7be5fd09c8dad62b001"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
