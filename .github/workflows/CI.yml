@@ -14,8 +14,12 @@ jobs:
   macos:
     needs: lint
     runs-on: macos-latest
+    env:
+      TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
     steps:
     - uses: actions/checkout@v3
+    - name: SetupKey
+      run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
     - name: Build
       run: swift build -v
     - name: Tests
@@ -25,8 +29,12 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: swift:5.5-bionic
+    env:
+      TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
     steps:
     - uses: actions/checkout@v3
+    - name: SetupKey
+      run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
     - name: Build
       run: swift build -v
     - name: Tests
