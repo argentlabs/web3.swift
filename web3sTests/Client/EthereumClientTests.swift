@@ -37,7 +37,6 @@ class EthereumClientTests: XCTestCase {
         super.setUp()
         client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
         account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        print("Public address: \(account?.address.value ?? "NONE")")
     }
 
     func testEthGetTransactionCount() async {
@@ -208,8 +207,8 @@ class EthereumClientTests: XCTestCase {
     func testGivenMinedTransactionHash_ThenGetsTransactionByHash() async {
         do {
             let transaction = try await client?.eth_getTransaction(byHash: "0x706bbe6f2593235942b8e76c2f37af3824d47a64caf65f7ae5e0c5ee1e886132")
-            XCTAssertEqual(transaction?.from?.value, "0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793")
-            XCTAssertEqual(transaction?.to.value, "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984")
+            XCTAssertEqual(transaction?.from, "0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793")
+            XCTAssertEqual(transaction?.to, "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984")
             XCTAssertEqual(transaction?.gas, "85773")
             XCTAssertEqual(transaction?.gasPrice, BigUInt(14300000000))
             XCTAssertEqual(transaction?.nonce, 23)

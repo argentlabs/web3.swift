@@ -28,7 +28,7 @@ public enum EthereumKeyStorageError: Error {
 public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
     public init() {}
 
-    private var address: String?
+    private var address: EthereumAddress?
     private let localFileName = "ethereumkey"
 
     private var addressPath: String? {
@@ -36,7 +36,7 @@ public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
             return nil
         }
         if let url = folderPath {
-            return url.appendingPathComponent(address).path
+            return url.appendingPathComponent(address.asString()).path
         }
         return nil
     }
@@ -102,7 +102,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
     }
 
     public func storePrivateKey(key: Data, with address: EthereumAddress) throws {
-        self.address = address.value
+        self.address = address
 
         defer {
             self.address = nil
@@ -120,7 +120,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
     }
 
     public func loadPrivateKey(for address: EthereumAddress) throws -> Data {
-        self.address = address.value
+        self.address = address
 
         defer {
             self.address = nil
@@ -155,7 +155,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
     public func deletePrivateKey(for address: EthereumAddress) throws {
         do {
             if let folderPath = folderPath {
-                let filePathName = folderPath.appendingPathComponent(address.value)
+                let filePathName = folderPath.appendingPathComponent(address.asString())
                 try fileManager.removeItem(at: filePathName)
             }
         } catch {

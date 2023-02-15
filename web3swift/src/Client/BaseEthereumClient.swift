@@ -93,7 +93,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public func eth_getBalance(address: EthereumAddress, block: EthereumBlock) async throws -> BigUInt {
         do {
-            let data = try await networkProvider.send(method: "eth_getBalance", params: [address.value, block.stringValue], receive: String.self)
+            let data = try await networkProvider.send(method: "eth_getBalance", params: [address.asString(), block.stringValue], receive: String.self)
             if let resString = data as? String, let balanceInt = BigUInt(hex: resString.web3.noHexPrefix) {
                 return balanceInt
             } else {
@@ -106,7 +106,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest) async throws -> String {
         do {
-            let data = try await networkProvider.send(method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self)
+            let data = try await networkProvider.send(method: "eth_getCode", params: [address.asString(), block.stringValue], receive: String.self)
             if let resDataString = data as? String {
                 return resDataString
             } else {
@@ -160,8 +160,8 @@ public class BaseEthereumClient: EthereumClientProtocol {
         }
 
         let params = CallParams(
-            from: transaction.from?.value,
-            to: transaction.to.value,
+            from: transaction.from?.asString(),
+            to: transaction.to.asString(),
             value: value?.web3.hexStringNoLeadingZeroes,
             data: transaction.data?.web3.hexString
         )
@@ -207,7 +207,7 @@ public class BaseEthereumClient: EthereumClientProtocol {
 
     public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int {
         do {
-            let data = try await networkProvider.send(method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self)
+            let data = try await networkProvider.send(method: "eth_getTransactionCount", params: [address.asString(), block.stringValue], receive: String.self)
             if let resString = data as? String, let count = Int(hex: resString) {
                 return count
             } else {

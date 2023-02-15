@@ -69,7 +69,7 @@ class ENSTests: XCTestCase {
     func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenDoesNotResolveCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
-            let ens = try await nameService.resolve(
+            let _ = try await nameService.resolve(
                 address: "0x787411394Ccb38483a6F303FDee075f3EA67D65F",
                 mode: .onchain
             )
