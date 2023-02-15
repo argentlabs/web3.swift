@@ -37,6 +37,21 @@ public struct Multicall {
             throw MulticallError.executionFailed(error)
         }
     }
+
+    public func tryAggregate(requireSuccess: Bool, calls: [Call]) async throws -> Multicall.Multicall2Response {
+        let function = Contract.Functions.tryAggregate(contract: Contract.multicall2Address, requireSuccess: requireSuccess, calls: calls)
+
+        do {
+            let data = try await function.call(withClient: client, responseType: Multicall2Response.self)
+            zip(calls, data.outputs)
+                .forEach { call, output in
+                    try? call.handler?(output)
+                }
+            return data
+        } catch {
+            throw MulticallError.executionFailed(error)
+        }
+    }
 }
 
 extension Multicall {
@@ -44,6 +59,17 @@ extension Multicall {
         Task {
             do {
                 let res = try await aggregate(calls: calls)
+                completionHandler(.success(res))
+            } catch let error as MulticallError {
+                completionHandler(.failure(error))
+            }
+        }
+    }
+
+    public func tryAggregate(requireSuccess: Bool, calls: [Call], completionHandler: @escaping (Result<Multicall2Response, MulticallError>) -> Void) {
+        Task {
+            do {
+                let res = try await tryAggregate(requireSuccess: requireSuccess, calls: calls)
                 completionHandler(.success(res))
             } catch let error as MulticallError {
                 completionHandler(.failure(error))
@@ -81,6 +107,40 @@ extension Multicall {
                 }
 
                 return .success(result)
+            }
+        }
+    }
+
+    public struct Multicall2Result: ABITuple {
+        public static var types: [ABIType.Type] = [Bool.self, String.self]
+        public var encodableValues: [ABIType] { [success, returnData] }
+
+        public let success: Bool
+        public let returnData: String
+
+        public init?(values: [ABIDecoder.DecodedValue]) throws {
+            self.success = try values[0].decoded()
+            self.returnData = try values[1].entry[0]
+        }
+
+        public func encode(to encoder: ABIFunctionEncoder) throws {
+            try encoder.encode(success)
+            try encoder.encode(returnData)
+        }
+    }
+
+    public struct Multicall2Response: ABIResponse {
+        static let multicallFailedError = "MULTICALL_FAIL".web3.keccak256.web3.hexString
+        public static var types: [ABIType.Type] = [ABIArray<Multicall2Result>.self]
+        public let outputs: [Output]
+
+        public init?(values: [ABIDecoder.DecodedValue]) throws {
+            let results: [Multicall2Result] = try values[0].decodedTupleArray()
+            self.outputs = results.map { result in
+                guard result.returnData != Self.multicallFailedError else {
+                    return .failure(.contractFailure)
+                }
+                return .success(result.returnData)
             }
         }
     }
