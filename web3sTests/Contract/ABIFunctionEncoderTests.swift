@@ -100,11 +100,11 @@ class ABIFunctionEncoderTests: XCTestCase {
     
     
     func testGivenArrayOfAddressses_ThenEncodesCorrectly() {
-        let addresses = ["0x26fc876db425b44bf6c377a7beef65e9ebad0ec3",
+        let addresses: [EthereumAddress] = ["0x26fc876db425b44bf6c377a7beef65e9ebad0ec3",
                          "0x25a01a05c188dacbcf1d61af55d4a5b4021f7eed",
                          "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                          "0x8c2dc702371d73febc50c6e6ced100bf9dbcb029",
-                         "0x007eedb5044ed5512ed7b9f8b42fe3113452491e"].map(EthereumAddress.init)
+                         "0x007eedb5044ed5512ed7b9f8b42fe3113452491e"]
         
         XCTAssertNoThrow(try encoder.encode(addresses))
         let encoded = try! encoder.encoded()

@@ -18,7 +18,7 @@ public enum EthereumKeyStorageError: Error {
 
 public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     public init() {}
-    
+
     private var localPath: String? {
         if let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
             return url.appendingPathComponent("EthereumKey").path
@@ -40,6 +40,7 @@ public class EthereumKeyLocalStorage: EthereumKeyStorageProtocol {
     
     public func loadPrivateKey() throws -> Data {
         guard let localPath = self.localPath else {
+
             throw EthereumKeyStorageError.failedToLoad
         }
         

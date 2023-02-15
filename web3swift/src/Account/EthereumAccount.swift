@@ -62,7 +62,7 @@ public class EthereumAccount: EthereumAccountProtocol {
         guard let privateKey = KeyUtil.generatePrivateKeyData() else {
             throw EthereumAccountError.createAccountError
         }
-        
+
         do {
             try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
             return try self.init(keyStorage: keyStorage, keystorePassword: password)

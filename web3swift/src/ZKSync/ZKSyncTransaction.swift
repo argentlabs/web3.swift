@@ -127,13 +127,13 @@ public struct ZKSyncTransaction: Equatable {
             },
             "message": {
                 "txType" : \(txType),
-                "from" : "\(from.asBigInt.description)",
-                "to" : "\(to.asBigInt.description)",
+                "from" : "\(from.asNumber()!.description)",
+                "to" : "\(to.asNumber()!.description)",
                 "gasLimit" : "\(gasLimit!.description)",
                 "gasPerPubdataByteLimit" : "\(gasPerPubData.description)",
                 "maxFeePerGas" : "\(maxFee.description)",
                 "maxPriorityFeePerGas" : "\(maxPriorityFee.description)",
-                "paymaster" : "\(paymaster.asBigInt.description)",
+                "paymaster" : "\(paymaster.asNumber()!.description)",
                 "nonce" : \(nonce!),
                 "value" : "\(value.description)",
                 "data" : "\(data.web3.hexString)",
@@ -168,7 +168,7 @@ public struct ZKSyncSignedTransaction {
             transaction.maxPriorityFee,
             transaction.maxFee,
             transaction.gasLimit,
-            transaction.to.value,
+            transaction.to,
             transaction.value,
             transaction.data
         ]
@@ -178,7 +178,7 @@ public struct ZKSyncSignedTransaction {
         txArray.append(Data())
         
         txArray.append(transaction.chainId)
-        txArray.append(transaction.from.value)
+        txArray.append(transaction.from)
         
         txArray.append(transaction.gasPerPubData)
         // TODO factorydeps
@@ -190,7 +190,7 @@ public struct ZKSyncSignedTransaction {
             txArray.append([])
         } else {
             txArray.append([
-                transaction.paymaster.value,
+                transaction.paymaster,
                 transaction.paymasterInput
             ])
         }
@@ -204,13 +204,6 @@ public struct ZKSyncSignedTransaction {
         return raw?.web3.keccak256
     }
 }
-
-fileprivate extension EthereumAddress {
-    var asBigInt: BigUInt {
-        .init(hex: self.value)!
-    }
-}
-
 
 extension ABIFunction {
     public func zkTransaction(

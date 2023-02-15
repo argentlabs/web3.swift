@@ -17,7 +17,7 @@ extension ABIEncoder {
         case let value as Bool:
             return try ABIEncoder.encodeRaw(value ? "true" : "false", forType: type, padded: !packed)
         case let value as EthereumAddress:
-            return try ABIEncoder.encodeRaw(value.value, forType: type, padded: !packed)
+            return try ABIEncoder.encodeRaw(value.asString(), forType: type, padded: !packed)
         case let value as BigInt:
             return try ABIEncoder.encodeRaw(String(value), forType: type, padded: !packed)
         case let value as BigUInt:

@@ -178,7 +178,7 @@ public class EthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, BigUInt?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getBalance", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
+        EthereumRPC.execute(session: session, url: url, method: "eth_getBalance", params: [address.asString(), block.stringValue], receive: String.self) { (error, response) in
             if let resString = response as? String, let balanceInt = BigUInt(hex: resString.web3.noHexPrefix) {
                 completion(nil, balanceInt)
             } else {
@@ -188,7 +188,7 @@ public class EthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest, completion: @escaping((EthereumClientError?, String?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
+        EthereumRPC.execute(session: session, url: url, method: "eth_getCode", params: [address.asString(), block.stringValue], receive: String.self) { (error, response) in
             if let resDataString = response as? String {
                 completion(nil, resDataString)
             } else {
@@ -206,8 +206,8 @@ public class EthereumClient: EthereumClientProtocol {
             value = nil
         }
 
-        let params = EstimateGasParams(from: transaction.from?.value,
-                                to: transaction.to.value,
+        let params = EstimateGasParams(from: transaction.from?.asString(),
+                                to: transaction.to.asString(),
                                 gas: transaction.gasLimit?.web3.hexString,
                                 gasPrice: transaction.gasPrice?.web3.hexString,
                                 value: value?.web3.hexString,
@@ -263,7 +263,7 @@ public class EthereumClient: EthereumClientProtocol {
     }
 
     public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completion: @escaping ((EthereumClientError?, Int?) -> Void)) {
-        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.value, block.stringValue], receive: String.self) { (error, response) in
+        EthereumRPC.execute(session: session, url: url, method: "eth_getTransactionCount", params: [address.asString(), block.stringValue], receive: String.self) { (error, response) in
             if let resString = response as? String {
                 let count = Int(hex: resString)
                 completion(nil, count)
