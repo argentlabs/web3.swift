@@ -102,7 +102,8 @@ extension ABIEncoder {
             } else {
                 return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: type, padded: !packed)
             }
-
+        case let value as ABIArray<Data>:
+            return try encode(value.values)
         case let value as ABITuple:
             return try encodeTuple(value, type: type)
         default:
