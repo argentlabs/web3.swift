@@ -11,20 +11,20 @@ enum EthereumSignerError: Error {
 }
 
 public extension EthereumAccount {
-    func signRaw(_ transaction: EthereumTransaction) throws -> Data {
-        let signed: SignedTransaction = try sign(transaction: transaction)
+    func signRaw(_ transaction: EthereumTransaction) async throws -> Data {
+        let signed: SignedTransaction = try await sign(transaction: transaction)
         guard let raw = signed.raw else {
             throw EthereumSignerError.unknownError
         }
         return raw
     }
 
-    func sign(transaction: EthereumTransaction) throws -> SignedTransaction {
+    func sign(transaction: EthereumTransaction) async throws -> SignedTransaction {
         guard let raw = transaction.raw else {
             throw EthereumSignerError.emptyRawTransaction
         }
 
-        guard let signature = try? sign(data: raw) else {
+        guard let signature = try? await sign(data: raw) else {
             throw EthereumSignerError.unknownError
         }
 

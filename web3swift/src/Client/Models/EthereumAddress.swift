@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct EthereumAddress: Codable, Hashable {
+public struct EthereumAddress: Codable, Hashable, Sendable {
     public let value: String
     public static let zero: Self = "0x0000000000000000000000000000000000000000"
 

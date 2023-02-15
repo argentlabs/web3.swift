@@ -20,7 +20,9 @@ class SIWETests: XCTestCase {
     }
 
     func testEndToEnd() async {
-        let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
+        let privateKey = "0x4646464646464646464646464646464646464646464646464646464646464646"
+        let address = "0x9d8a62f656a8d1615c1294fd71e9cfb3e4855a4f"
+        let account = EthereumAccount(address: .init(address), keyStorage: TestEthereumKeyStorage(privateKey: privateKey))
         let message = try! SiweMessage(
             """
             login.xyz wants you to sign in with your Ethereum account:
@@ -43,7 +45,12 @@ class SIWETests: XCTestCase {
         )
 
         var signature: String = ""
-        XCTAssertNoThrow(signature = try account.signSIWERequest(message))
+        do {
+            signature = try await account.signSIWERequest(message)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
         var isValid = false
         do {
             isValid = try await verifier.verify(message: message, against: signature)
