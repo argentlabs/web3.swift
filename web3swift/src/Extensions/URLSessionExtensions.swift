@@ -5,7 +5,7 @@
 
 import Foundation
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 @available(iOS, deprecated: 15.0, message: "Use the built-in API instead")

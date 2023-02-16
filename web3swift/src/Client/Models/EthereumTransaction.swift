@@ -126,11 +126,11 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
         self.data = try? container.decode(Data.self, forKey: .data)
 
         let decodeHexUInt = { (key: CodingKeys) -> BigUInt? in
-            return (try? container.decode(String.self, forKey: key)).flatMap { BigUInt(hex: $0)}
+            (try? container.decode(String.self, forKey: key)).flatMap { BigUInt(hex: $0) }
         }
 
         let decodeHexInt = { (key: CodingKeys) -> Int? in
-            return (try? container.decode(String.self, forKey: key)).flatMap { Int(hex: $0)}
+            (try? container.decode(String.self, forKey: key)).flatMap { Int(hex: $0) }
         }
 
         self.value = decodeHexUInt(.value)
@@ -180,6 +180,6 @@ public struct SignedTransaction {
     }
 
     public var hash: Data? {
-        return raw?.web3.keccak256
+        raw?.web3.keccak256
     }
 }

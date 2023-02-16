@@ -17,6 +17,7 @@ extension EthereumBlockInfo: Codable {
         case timestamp
         case transactions
     }
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -25,8 +26,8 @@ extension EthereumBlockInfo: Codable {
         }
 
         guard let timestampRaw = try? container.decode(String.self, forKey: .timestamp),
-            let timestamp = TimeInterval(timestampRaw) else {
-                throw JSONRPCError.decodingError
+              let timestamp = TimeInterval(timestampRaw) else {
+            throw JSONRPCError.decodingError
         }
 
         guard let transactions = try? container.decode([String].self, forKey: .transactions) else {

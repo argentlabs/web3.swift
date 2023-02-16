@@ -43,7 +43,7 @@ Create an instance of `EthereumHttpClient` or `EthereumWebSocketClient`. This wi
 `EthereumHttpClient`
 ```swift
 guard let clientUrl = URL(string: "https://an-infura-or-similar-url.com/123") else { return }
-let client = EthereumClient(url: clientUrl)
+let client = EthereumHttpClient(url: clientUrl)
 ```
 
 OR
@@ -117,13 +117,18 @@ If using `async/await` you can `await` on the result
 let txHash = try await client.eth_sendRawTransaction(transaction, withAccount: account)
 ```
 
+## Generating ABI from a smart contract ABI file
+Currently we don't support code generation as making it properly is a bigger project, and should possibly live outside of this repository. 
+
+You can try this project instead: [imanrep/swiftabigen](https://github.com/imanrep/swiftabigen)
+
 ### Data types
 
 The library provides some types and helpers to make interacting with web3 and Ethereum easier.
 
 - `EthereumAddress`: For representation of addresses, including checksum support.
 - `BigInt` and `BigUInt`: Using [BigInt](https://github.com/attaswift/BigInt) library
-- `EthereumBlock`: Represents the block, either number of RPC-specific defintions like 'Earliest' or 'Latest'
+- `EthereumBlock`: Represents the block, either number of RPC-specific definitions like 'Earliest' or 'Latest'
 - `EthereumTransaction`: Wraps a transaction. Encoders and decoders can work with it to generate proper `data` fields.
 
 #### Conversion from and to Foundation types
@@ -159,7 +164,9 @@ We support querying ERC721 token data via the `ERC721` struct. Including:
 
 ### Running Tests
 
-The tests will all pass when running against Goerli. You will need to provide a URL for the blockchain proxy (e.g. on Infura), and a key-pair in `TestConfig.swift`. Some of the account signing tests will fail, given the signature assertions are against a specific (unprovided) key.
+Some of the tests require a private key, which is not stored in the repository. You can ignore these while testing locally, as CI will use the encrypted secret key from Github.
+
+It's better to run only the tests you need, instead of the whole test suite while developing. If you ever need to set up the key locally, take a look at `TestConfig.swift` where you can manually set it up. Alternatively you can set it up by calling the script `setupKey.sh` and passing the value (adding 0x) so it's written to an ignored file.
 
 ## Dependencies
 
@@ -169,17 +176,14 @@ We built web3.swift to be as lightweight as possible. However, given the cryptog
 - [Tiny AES](https://github.com/kokke/tiny-AES-c):  A small and portable implementation of the AES ECB, CTR and CBC encryption algorithms.
 - [secp256k1.swift](https://github.com/Boilertalk/secp256k1.swift)
 
-We also use Apple's own CommonCrypto (via [this](https://github.com/sergejp/CommonCrypto) method) and [BigInt](https://github.com/attaswift/BigInt) via CocoaPod dependency.
+Package dependencies:
+- [BigInt](https://github.com/attaswift/BigInt) 
+- [GenericJSON](https://github.com/iwill/generic-json-swift)
+- [secp256k1](https://github.com/GigaBitcoin/secp256k1.swift.git)
+- [Vapor Websocket](https://github.com/vapor/websocket-kit.git)
+- [Apple Swift-log](https://github.com/apple/swift-log.git)
 
-## Todos
-
-There are some features that have yet to be fully implemented! Not every RPC method is currently supported, and here's some other suggestions we would like to see in the future:
-
-
-- Batch support for JSONRPC interface
-- Use a Hex struct for values to be more explicit in expected types
-- Use [Truffle](https://github.com/trufflesuite/ganache-cli) for running tests
-- Bloom Filter support
+Also for Linux build, we can't se Apple crypto APIs, so we embedded a small subset of CryptoSwift (instead of importing the whole library). Credit to [Marcin Krzyżanowski](https://github.com/krzyzanowskim/CryptoSwift)
 
 ## Contributors
 

@@ -8,7 +8,7 @@ import Foundation
 
 public class ABIFunctionEncoder {
     private let name: String
-    private (set) var types: [ABIRawType] = []
+    private(set) var types: [ABIRawType] = []
 
     public func encode(_ value: ABIType, staticSize: Int? = nil) throws {
         let rawType = type(of: value).rawType
@@ -16,17 +16,17 @@ public class ABIFunctionEncoder {
 
         encodedValues.append(encoded)
         switch (staticSize, rawType) {
-        case (let size?, .DynamicBytes):
+        case let (size?, .DynamicBytes):
             guard size <= 32 else {
                 throw ABIError.invalidType
             }
             types.append(.FixedBytes(size))
-        case (let size?, .FixedUInt):
+        case let (size?, .FixedUInt):
             guard size <= 256 else {
                 throw ABIError.invalidType
             }
             types.append(.FixedUInt(size))
-        case (let size?, .FixedInt):
+        case let (size?, .FixedInt):
             guard size <= 256 else {
                 throw ABIError.invalidType
             }
@@ -57,7 +57,9 @@ public class ABIFunctionEncoder {
     static func signature(name: String, types: [ABIRawType]) throws -> [UInt8] {
         let typeNames = types.map { $0.rawValue }
         let signature = name + "(" + typeNames.joined(separator: ",") + ")"
-        guard let data = signature.data(using: .utf8) else { throw ABIError.invalidSignature }
+        guard let data = signature.data(using: .utf8) else {
+            throw ABIError.invalidSignature
+        }
         return data.web3.keccak256.web3.bytes
     }
 
@@ -70,5 +72,4 @@ public class ABIFunctionEncoder {
         let signature = try Self.signature(name: name, types: types)
         return Array(signature.prefix(4))
     }
-
 }

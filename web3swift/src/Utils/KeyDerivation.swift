@@ -5,10 +5,10 @@
 
 import Foundation
 #if canImport(CommonCrypto)
-import CommonCrypto
+    import CommonCrypto
 #endif
 #if !COCOAPODS
-import Internal_CryptoSwift_PBDKF2
+    import Internal_CryptoSwift_PBDKF2
 #endif
 
 enum KeyDerivationAlgorithm {
@@ -16,14 +16,14 @@ enum KeyDerivationAlgorithm {
     case pbkdf2sha512
 
     #if canImport(CommonCrypto)
-    func ccAlgorithm() -> CCAlgorithm {
-        switch self {
-        case .pbkdf2sha256:
-            return CCPBKDFAlgorithm(kCCPRFHmacAlgSHA256)
-        case .pbkdf2sha512:
-            return CCPBKDFAlgorithm(kCCPRFHmacAlgSHA512)
+        func ccAlgorithm() -> CCAlgorithm {
+            switch self {
+            case .pbkdf2sha256:
+                return CCPBKDFAlgorithm(kCCPRFHmacAlgSHA256)
+            case .pbkdf2sha512:
+                return CCPBKDFAlgorithm(kCCPRFHmacAlgSHA512)
+            }
         }
-    }
     #endif
 
     func function() -> String {
@@ -55,7 +55,6 @@ enum KeyDerivationAlgorithm {
 }
 
 class KeyDerivator {
-
     var algorithm: KeyDerivationAlgorithm
     var dklen: Int
     var round: Int
@@ -67,7 +66,6 @@ class KeyDerivator {
     }
 
     func deriveKey(key: String, salt: Data, forceCryptoSwiftImplementation: Bool = false) -> Data? {
-
         let password = key
         let keyByteCount = dklen
         let rounds = round
@@ -78,16 +76,17 @@ class KeyDerivator {
         }
 
         #if canImport(CommonCrypto)
-        return pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+            return pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
         #else
-        return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
+            return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: salt, keyByteCount: keyByteCount, rounds: rounds)
         #endif
     }
 
     func deriveKey(key: String, salt: String, forceCryptoSwiftImplementation: Bool = false) -> Data? {
-
         let password = key
-        guard let saltData = salt.data(using: .utf8) else { return nil }
+        guard let saltData = salt.data(using: .utf8) else {
+            return nil
+        }
         let keyByteCount = dklen
         let rounds = round
 
@@ -97,40 +96,43 @@ class KeyDerivator {
         }
 
         #if canImport(CommonCrypto)
-        return pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+            return pbkdf2(hash: algorithm.ccAlgorithm(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
         #else
-        return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
+            return pbkdf2(variant: algorithm.hmacVariant(), password: password, salt: saltData, keyByteCount: keyByteCount, rounds: rounds)
         #endif
-
     }
 
     #if canImport(CommonCrypto)
-    private func pbkdf2(hash: CCPBKDFAlgorithm, password: String, salt: Data, keyByteCount: Int, rounds: Int) -> Data? {
-        guard let passwordData = password.data(using: String.Encoding.utf8) else { return nil }
-        var derivedKeyData = [UInt8](repeating: 0, count: keyByteCount)
-        var saltData = salt.web3.bytes
-        let derivationStatus = CCKeyDerivationPBKDF(
-            CCPBKDFAlgorithm(kCCPBKDF2),
-            password,
-            passwordData.count,
-            &saltData,
-            saltData.count,
-            hash,
-            UInt32(rounds),
-            &derivedKeyData,
-            derivedKeyData.count)
+        private func pbkdf2(hash: CCPBKDFAlgorithm, password: String, salt: Data, keyByteCount: Int, rounds: Int) -> Data? {
+            guard let passwordData = password.data(using: String.Encoding.utf8) else {
+                return nil
+            }
+            var derivedKeyData = [UInt8](repeating: 0, count: keyByteCount)
+            var saltData = salt.web3.bytes
+            let derivationStatus = CCKeyDerivationPBKDF(
+                CCPBKDFAlgorithm(kCCPBKDF2),
+                password,
+                passwordData.count,
+                &saltData,
+                saltData.count,
+                hash,
+                UInt32(rounds),
+                &derivedKeyData,
+                derivedKeyData.count
+            )
 
-        if derivationStatus != 0 {
-            print("Error: \(derivationStatus)")
-            return nil
+            if derivationStatus != 0 {
+                print("Error: \(derivationStatus)")
+                return nil
+            }
+            return Data(derivedKeyData)
         }
-        return Data(derivedKeyData)
-    }
     #endif
 
     private func pbkdf2(variant: HMAC.Variant, password: String, salt: Data, keyByteCount: Int, rounds: Int) -> Data? {
-
-        guard let passwordData = password.data(using: String.Encoding.utf8) else { return nil }
+        guard let passwordData = password.data(using: String.Encoding.utf8) else {
+            return nil
+        }
 
         let derivedKey = try? PBKDF2(
             password: [UInt8](passwordData),
@@ -142,5 +144,4 @@ class KeyDerivator {
 
         return derivedKey.map { Data($0) }
     }
-
 }

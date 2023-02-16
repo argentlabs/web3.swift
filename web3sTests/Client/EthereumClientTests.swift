@@ -483,7 +483,7 @@ class EthereumWebSocketClientTests: EthereumClientTests {
             await waitForExpectations(timeout: 5, handler: nil)
 
             XCTAssertNotEqual(subscription.id, "")
-            XCTAssertEqual(subscription.type, .pendingTransactions)
+            XCTAssertEqual(subscription.type, .newPendingTransactions)
         } catch {
             XCTFail("Expected subscription but failed \(error).")
         }
@@ -512,6 +512,31 @@ class EthereumWebSocketClientTests: EthereumClientTests {
         }
     }
 
+    func testWebSocketLogs() async {
+        do {
+            guard let client = client as? EthereumWebSocketClient else {
+                XCTFail("Expected client to be EthereumWebSocketClient")
+                return
+            }
+
+            var expectation: XCTestExpectation? = self.expectation(description: "Logs")
+            let type = EthereumSubscriptionType.logs(nil)
+            let subscription = try await client.logs { log in
+                print(log)
+                expectation?.fulfill()
+                expectation = nil
+            }
+
+            // we need a high timeout as new block might take a while
+            await waitForExpectations(timeout: 2500, handler: nil)
+
+            XCTAssertNotEqual(subscription.id, "")
+            XCTAssertEqual(subscription.type, type)
+        } catch {
+            XCTFail("Expected subscription but failed \(error).")
+        }
+    }
+
     func testWebSocketSubscribe() async {
         do {
             guard let client = client as? EthereumWebSocketClient else {
@@ -521,12 +546,18 @@ class EthereumWebSocketClientTests: EthereumClientTests {
             client.delegate = self
 
             delegateExpectation = expectation(description: "onNewPendingTransaction delegate call")
-            var subscription = try await client.subscribe(type: .pendingTransactions)
+            var subscription = try await client.subscribe(type: .newPendingTransactions)
             await waitForExpectations(timeout: 10)
             _ = try await client.unsubscribe(subscription)
 
             delegateExpectation = expectation(description: "onNewBlockHeader delegate call")
             subscription = try await client.subscribe(type: .newBlockHeaders)
+            await waitForExpectations(timeout: 2500)
+            _ = try await client.unsubscribe(subscription)
+
+            delegateExpectation = expectation(description: "onLogs delegate call")
+            let type = EthereumSubscriptionType.logs(nil)
+            subscription = try await client.subscribe(type: type)
             await waitForExpectations(timeout: 2500)
             _ = try await client.unsubscribe(subscription)
         } catch {
@@ -558,6 +589,11 @@ extension EthereumWebSocketClientTests: EthereumWebSocketClientDelegate {
     }
 
     func onNewBlockHeader(subscription: EthereumSubscription, header: EthereumHeader) {
+        delegateExpectation?.fulfill()
+        delegateExpectation = nil
+    }
+
+    func onLog(subscription: EthereumSubscription, log: EthereumLog) {
         delegateExpectation?.fulfill()
         delegateExpectation = nil
     }

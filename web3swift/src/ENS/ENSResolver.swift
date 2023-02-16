@@ -6,10 +6,9 @@
 import Foundation
 
 class ENSResolver {
-
     let address: EthereumAddress
     let callResolution: CallResolution
-    private (set) var supportsWildCard: Bool?
+    private(set) var supportsWildCard: Bool?
 
     private let client: EthereumClientProtocol
 
@@ -37,7 +36,7 @@ class ENSResolver {
         }
         supportsWildCard = wildcardResolution
 
-        if mustSupportWildCard && !wildcardResolution {
+        if mustSupportWildCard, !wildcardResolution {
             // Wildcard name resolution (ENSIP-10)
             throw EthereumNameServiceError.ensUnknown
         }

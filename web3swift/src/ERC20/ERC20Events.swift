@@ -9,7 +9,7 @@ import Foundation
 public enum ERC20Events {
     public struct Transfer: ABIEvent {
         public static let name = "Transfer"
-        public static let types: [ABIType.Type] = [ EthereumAddress.self, EthereumAddress.self, BigUInt.self]
+        public static let types: [ABIType.Type] = [EthereumAddress.self, EthereumAddress.self, BigUInt.self]
         public static let typesIndexed = [true, true, false]
         public let log: EthereumLog
 

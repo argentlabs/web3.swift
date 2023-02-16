@@ -3,13 +3,11 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public enum ERC1271Functions {
-
     public struct isValidSignature: ABIFunction {
-
         public static let name = "isValidSignature"
         public let gasPrice: BigUInt? = nil
         public let gasLimit: BigUInt? = nil
@@ -19,10 +17,14 @@ public enum ERC1271Functions {
         public let message: Data
         public let signature: Data
 
-        public init(contract: EthereumAddress,
-                    message: Data,
-                    signature: Data) throws {
-            guard message.count == 32 && signature.count == 65 else { throw ERC1271Error.invalidInput }
+        public init(
+            contract: EthereumAddress,
+            message: Data,
+            signature: Data
+        ) throws {
+            guard message.count == 32, signature.count == 65 else {
+                throw ERC1271Error.invalidInput
+            }
             self.contract = contract
             self.message = message
             self.signature = signature

@@ -35,9 +35,9 @@ public enum ResultUnion: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
-        case .bool(let x):
+        case let .bool(x):
             try container.encode(x)
-        case .resultClass(let x):
+        case let .resultClass(x):
             try container.encode(x)
         }
     }

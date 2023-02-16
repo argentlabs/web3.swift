@@ -36,7 +36,7 @@ public enum EthereumNetwork: Equatable, Decodable {
             return "42"
         case .sepolia:
             return "11155111"
-        case .custom(let str):
+        case let .custom(str):
             return str
         }
     }
@@ -51,12 +51,12 @@ public enum EthereumNetwork: Equatable, Decodable {
             return 42
         case .sepolia:
             return 11155111
-        case .custom(let str):
+        case let .custom(str):
             return Int(str) ?? 0
         }
     }
 }
 
-public func ==(lhs: EthereumNetwork, rhs: EthereumNetwork) -> Bool {
-    return lhs.stringValue == rhs.stringValue
+public func == (lhs: EthereumNetwork, rhs: EthereumNetwork) -> Bool {
+    lhs.stringValue == rhs.stringValue
 }

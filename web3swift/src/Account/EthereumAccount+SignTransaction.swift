@@ -11,7 +11,6 @@ enum EthereumSignerError: Error {
 }
 
 public extension EthereumAccount {
-
     func signRaw(_ transaction: EthereumTransaction) throws -> Data {
         let signed: SignedTransaction = try sign(transaction: transaction)
         guard let raw = signed.raw else {
@@ -21,7 +20,6 @@ public extension EthereumAccount {
     }
 
     func sign(transaction: EthereumTransaction) throws -> SignedTransaction {
-
         guard let raw = transaction.raw else {
             throw EthereumSignerError.emptyRawTransaction
         }
@@ -30,8 +28,8 @@ public extension EthereumAccount {
             throw EthereumSignerError.unknownError
         }
 
-        let r = signature.subdata(in: 0..<32)
-        let s = signature.subdata(in: 32..<64)
+        let r = signature.subdata(in: 0 ..< 32)
+        let s = signature.subdata(in: 32 ..< 64)
 
         var v = Int(signature[64])
         if v < 37 {
