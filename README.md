@@ -117,6 +117,11 @@ If using `async/await` you can `await` on the result
 let txHash = try await client.eth_sendRawTransaction(transaction, withAccount: account)
 ```
 
+## Generating ABI from a smart contract ABI file
+Currently we don't support code generation as making it properly is a bigger project, and should possibly live outside of this repository. 
+
+You can try this project instead: [imanrep/swiftabigen](https://github.com/imanrep/swiftabigen)
+
 ### Data types
 
 The library provides some types and helpers to make interacting with web3 and Ethereum easier.
@@ -171,17 +176,14 @@ We built web3.swift to be as lightweight as possible. However, given the cryptog
 - [Tiny AES](https://github.com/kokke/tiny-AES-c):  A small and portable implementation of the AES ECB, CTR and CBC encryption algorithms.
 - [secp256k1.swift](https://github.com/Boilertalk/secp256k1.swift)
 
-We also use Apple's own CommonCrypto (via [this](https://github.com/sergejp/CommonCrypto) method) and [BigInt](https://github.com/attaswift/BigInt) via CocoaPod dependency.
+Package dependencies:
+- [BigInt](https://github.com/attaswift/BigInt) 
+- [GenericJSON](https://github.com/iwill/generic-json-swift)
+- [secp256k1](https://github.com/GigaBitcoin/secp256k1.swift.git)
+- [Vapor Websocket](https://github.com/vapor/websocket-kit.git)
+- [Apple Swift-log](https://github.com/apple/swift-log.git)
 
-## Todos
-
-There are some features that have yet to be fully implemented! Not every RPC method is currently supported, and here's some other suggestions we would like to see in the future:
-
-
-- Batch support for JSONRPC interface
-- Use a Hex struct for values to be more explicit in expected types
-- Use [Truffle](https://github.com/trufflesuite/ganache-cli) for running tests
-- Bloom Filter support
+Also for Linux build, we can't se Apple crypto APIs, so we embedded a small subset of CryptoSwift (instead of importing the whole library). Credit to [Marcin Krzyżanowski](https://github.com/krzyzanowskim/CryptoSwift)
 
 ## Contributors
 
