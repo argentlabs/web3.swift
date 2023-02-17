@@ -61,8 +61,8 @@ extension ZKSyncClientProtocol {
     public func estimateGas(_ transaction: ZKSyncTransaction) async throws -> BigUInt {
         let value = transaction.value > .zero ? transaction.value : nil
         let params = EstimateGasParams(
-            from: transaction.from.value,
-            to: transaction.to.value,
+            from: transaction.from.asString(),
+            to: transaction.to.asString(),
             gas: transaction.gasLimit?.web3.hexString,
             gasPrice: transaction.gasPrice?.web3.hexString,
             value: value?.web3.hexString,

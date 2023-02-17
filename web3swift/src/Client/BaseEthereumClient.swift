@@ -204,7 +204,7 @@ open class BaseEthereumClient: EthereumClientProtocol {
             throw failureHandler(error)
         }
     }
-    
+
     public func eth_getTransaction(byHash txHash: String) async throws -> EthereumTransaction {
         do {
             let data = try await networkProvider.send(method: "eth_getTransactionByHash", params: [txHash], receive: EthereumTransaction.self)

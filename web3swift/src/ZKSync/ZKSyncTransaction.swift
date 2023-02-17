@@ -127,13 +127,13 @@ public struct ZKSyncTransaction: Equatable {
             },
             "message": {
                 "txType" : \(txType),
-                "from" : "\(from.asBigInt.description)",
-                "to" : "\(to.asBigInt.description)",
+                "from" : "\(from.asNumber()!.description)",
+                "to" : "\(to.asNumber()!.description)",
                 "gasLimit" : "\(gasLimit!.description)",
                 "gasPerPubdataByteLimit" : "\(gasPerPubData.description)",
                 "maxFeePerGas" : "\(maxFee.description)",
                 "maxPriorityFeePerGas" : "\(maxPriorityFee.description)",
-                "paymaster" : "\(paymaster.asBigInt.description)",
+                "paymaster" : "\(paymaster.asNumber()!.description)",
                 "nonce" : \(nonce!),
                 "value" : "\(value.description)",
                 "data" : "\(data.web3.hexString)",
@@ -168,7 +168,7 @@ public struct ZKSyncSignedTransaction {
             transaction.maxPriorityFee,
             transaction.maxFee,
             transaction.gasLimit,
-            transaction.to.value,
+            transaction.to,
             transaction.value,
             transaction.data
         ]
@@ -178,9 +178,9 @@ public struct ZKSyncSignedTransaction {
         txArray.append(Data())
 
         txArray.append(transaction.chainId)
-        txArray.append(transaction.from.value)
+        txArray.append(transaction.from)
         txArray.append(transaction.gasPerPubData)
-        // TODO factorydeps
+        // TODO: factorydeps
         txArray.append([])
 
         txArray.append(signature.flattened)
@@ -201,12 +201,6 @@ public struct ZKSyncSignedTransaction {
 
     public var hash: Data? {
         raw?.web3.keccak256
-    }
-}
-
-fileprivate extension EthereumAddress {
-    var asBigInt: BigUInt {
-        .init(hex: self.value)!
     }
 }
 
