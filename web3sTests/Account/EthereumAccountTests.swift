@@ -17,13 +17,13 @@ class EthereumAccountTests: XCTestCase {
     
     func testLoadAccountAndAddress() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        XCTAssertEqual(account.address.value.lowercased(), TestConfig.publicKey.lowercased(), "Failed to load private key. Ensure key is valid in TestConfig.swift")
+        XCTAssertEqual(account.address, EthereumAddress(TestConfig.publicKey), "Failed to load private key. Ensure key is valid in TestConfig.swift")
     }
 
     func testLoadAccountAndAddressMultiple() {
         let storage = TestEthereumMultipleKeyStorage(privateKey: TestConfig.privateKey)
         let account = try! EthereumAccount(addressString: TestConfig.publicKey, keyStorage: storage)
-        XCTAssertEqual(account.address.value.lowercased(), TestConfig.publicKey.lowercased(), "Failed to load private key. Ensure key is valid in TestConfig.swift")
+        XCTAssertEqual(account.address, EthereumAddress(TestConfig.publicKey), "Failed to load private key. Ensure key is valid in TestConfig.swift")
     }
 
     func testCreateAccount() {
@@ -42,14 +42,14 @@ class EthereumAccountTests: XCTestCase {
         let storage = EthereumKeyLocalStorage()
         let account = try! EthereumAccount.importAccount(replacing: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
 
-        XCTAssertEqual(account.address.value, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
+        XCTAssertEqual(account.address, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
     }
     
     func testImportAccountMultiple() {
         let storage = EthereumKeyLocalStorage()
         let account = try! EthereumAccount.importAccount(addingTo: storage, privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173", keystorePassword: "PASSWORD")
 
-        XCTAssertEqual(account.address.value, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
+        XCTAssertEqual(account.address, "0x675f5810feb3b09528e5cd175061b4eb8de69075")
     }
     
     func testFetchAccounts() {

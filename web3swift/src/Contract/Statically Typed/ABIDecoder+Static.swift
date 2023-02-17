@@ -83,12 +83,11 @@ extension ABIDecoder {
     }
 
     public static func decode(_ data: ParsedABIEntry, to: EthereumAddress.Type) throws -> EthereumAddress {
-        let address = EthereumAddress(data)
-        guard address.value.hasPrefix("0x") else {
+        guard data.hasPrefix("0x") else {
             throw ABIError.invalidValue
         }
 
-        return address
+        return EthereumAddress(data)
     }
 
     public static func decode(_ data: ParsedABIEntry, to: BigInt.Type) throws -> BigInt {

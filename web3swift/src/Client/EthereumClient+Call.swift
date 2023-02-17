@@ -58,8 +58,8 @@ extension BaseEthereumClient {
         }
 
         let params = CallParams(
-            from: transaction.from?.value,
-            to: transaction.to.value,
+            from: transaction.from?.asString(),
+            to: transaction.to.asString(),
             data: transactionData.web3.hexString,
             block: block.stringValue
         )
@@ -150,7 +150,7 @@ extension BaseEthereumClient {
         let isGet = rawURL.contains("{data}")
 
         guard let url = URL(string: rawURL
-            .replacingOccurrences(of: "{sender}", with: sender.value.lowercased())
+            .replacingOccurrences(of: "{sender}", with: sender.asString().lowercased())
             .replacingOccurrences(of: "{data}", with: data.web3.hexString.lowercased())) else {
             throw OffchainReadError.invalidParams
         }
