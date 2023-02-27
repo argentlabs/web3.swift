@@ -95,4 +95,13 @@ public extension Web3Extensions where Base == String {
 
         return nil
     }
+
+    var hexDataAddingPadding: Data? {
+        let noHexPrefix = self.noHexPrefix
+        if let bytes = try? HexUtil.byteArray(fromHex: noHexPrefix, addingPadding: true) {
+            return Data(bytes)
+        }
+
+        return nil
+    }
 }

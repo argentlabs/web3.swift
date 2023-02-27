@@ -3,14 +3,14 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public struct EthereumAddress: Codable, Hashable {
-    @available(*, deprecated, message: "Shouldn't rely on the actual String representation. Use asString() instead to get an unformatted representation")
-    public var value: String {
+    @available(*, deprecated, message: "Shouldn't rely on the actual String representation. Use asString() instead to get an unformatted representation")  public var value: String {
         raw
     }
+
     private let raw: String
     public static let zero: Self = "0x0000000000000000000000000000000000000000"
 
@@ -54,7 +54,7 @@ public extension EthereumAddress {
     }
 
     func asData() -> Data? {
-        raw.web3.hexData
+        raw.web3.hexDataAddingPadding?.web3.strippingZeroesFromBytes
     }
 
     func toChecksumAddress() -> String {
