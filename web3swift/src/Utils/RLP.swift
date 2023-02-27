@@ -40,7 +40,7 @@ struct RLP {
     }
 
     static func encodeAddress(_ address: EthereumAddress) -> Data? {
-        return encodeString(address.asString())
+        encodeString(address.asString())
     }
 
     static func encodeInt(_ int: Int) -> Data? {
