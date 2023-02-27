@@ -54,7 +54,7 @@ public extension EthereumAddress {
     }
 
     func asData() -> Data? {
-        raw.web3.hexData
+        raw.web3.hexDataAddingPadding?.web3.strippingZeroesFromBytes
     }
 
     func toChecksumAddress() -> String {

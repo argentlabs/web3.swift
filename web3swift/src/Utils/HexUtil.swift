@@ -28,22 +28,27 @@ class HexUtil {
             throw HexConversionError.invalidDigit
         }
     }
-    
-    static func byteArray(fromHex string: String) throws -> [UInt8] {
+
+    static func byteArray(fromHex string: String, addingPadding addPadding: Bool = false) throws -> [UInt8] {
         var iterator = string.unicodeScalars.makeIterator()
         var byteArray: [UInt8] = []
         
         while let msn = iterator.next() {
-            if let lsn = iterator.next() {
-                do {
-                    let convertedMsn = try convert(hexDigit: msn)
-                    let convertedLsn = try convert(hexDigit: lsn)
-                    byteArray += [ (convertedMsn << 4 | convertedLsn) ]
-                } catch {
-                    throw error
-                }
-            } else {
+            var lsn = iterator.next()
+            if lsn == nil, addPadding == true {
+                lsn = "0"
+            }
+
+            guard let lsn else {
                 throw HexConversionError.stringNotEven
+            }
+
+            do {
+                let convertedMsn = try convert(hexDigit: msn)
+                let convertedLsn = try convert(hexDigit: lsn)
+                byteArray += [convertedMsn << 4 | convertedLsn]
+            } catch {
+                throw error
             }
         }
         return byteArray
