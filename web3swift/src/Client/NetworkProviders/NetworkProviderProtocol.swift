@@ -12,7 +12,7 @@ import Foundation
     import FoundationNetworking
 #endif
 
-internal protocol NetworkProviderProtocol {
+public protocol NetworkProviderProtocol {
     var session: URLSession { get }
     func send<P: Encodable, U: Decodable>(method: String, params: P, receive: U.Type) async throws -> Any
 }

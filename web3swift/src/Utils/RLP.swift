@@ -6,8 +6,8 @@
 import BigInt
 import Foundation
 
-struct RLP {
-    static func encode(_ item: Any) -> Data? {
+public struct RLP {
+    public static func encode(_ item: Any) -> Data? {
         switch item {
         case let int as Int:
             return encodeInt(int)
