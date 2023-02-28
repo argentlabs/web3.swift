@@ -29,10 +29,11 @@ public struct EthereumAddress: Codable, Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        guard let data = asData() else {
-            return
+        if let number = asNumber() {
+            hasher.combine(number)
+        } else {
+            hasher.combine(asString())
         }
-        hasher.combine(data)
     }
     
     public static func == (lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {
@@ -54,7 +55,7 @@ public extension EthereumAddress {
     }
 
     func asData() -> Data? {
-        raw.web3.hexDataAddingPadding?.web3.strippingZeroesFromBytes
+        raw.web3.hexData
     }
 
     func toChecksumAddress() -> String {
