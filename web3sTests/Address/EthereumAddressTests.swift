@@ -38,4 +38,12 @@ class EthereumAddressTests: XCTestCase {
         values = [addr1Padded]
         XCTAssertTrue(values.contains(addr1))
     }
+
+    func testGivenAddress_WhenHashing_EqualToSameAddressHash() {
+        XCTAssertEqual(addr1.hashValue, addr1.hashValue)
+    }
+
+    func testGivenAddress_WhenHashing_EqualToPaddedAddressHash() {
+        XCTAssertEqual(addr1.hashValue, addr1Padded.hashValue)
+    }
 }
