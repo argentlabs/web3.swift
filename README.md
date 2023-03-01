@@ -183,7 +183,7 @@ Package dependencies:
 - [Vapor Websocket](https://github.com/vapor/websocket-kit.git)
 - [Apple Swift-log](https://github.com/apple/swift-log.git)
 
-Also for Linux build, we can't se Apple crypto APIs, so we embedded a small subset of CryptoSwift (instead of importing the whole library). Credit to [Marcin Krzyżanowski](https://github.com/krzyzanowskim/CryptoSwift)
+Also for Linux build, we can't use Apple crypto APIs, so we embedded a small subset of CryptoSwift (instead of importing the whole library). Credit to [Marcin Krzyżanowski](https://github.com/krzyzanowskim/CryptoSwift)
 
 ## Contributors
 
