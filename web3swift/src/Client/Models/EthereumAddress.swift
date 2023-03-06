@@ -12,15 +12,19 @@ public struct EthereumAddress: Codable, Hashable {
     }
 
     private let raw: String
+    private let numberRepresentation: BigUInt?
     public static let zero: Self = "0x0000000000000000000000000000000000000000"
 
     public init(_ value: String) {
         self.raw = value.lowercased()
+        self.numberRepresentation = BigUInt(hex: raw)
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.raw = try container.decode(String.self).lowercased()
+        let raw = try container.decode(String.self).lowercased()
+        self.raw = raw
+        self.numberRepresentation = BigUInt(hex: raw)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -51,7 +55,7 @@ public extension EthereumAddress {
     }
 
     func asNumber() -> BigUInt? {
-        .init(hex: raw)
+        numberRepresentation
     }
 
     func asData() -> Data? {
