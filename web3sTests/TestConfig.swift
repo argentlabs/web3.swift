@@ -29,4 +29,16 @@ struct TestConfig {
     static let erc165Contract = "0xA2618a1c426a1684E00cA85b5C736164AC391d35"
 
     static let webSocketConfig = WebSocketConfiguration(maxFrameSize: 1_000_000)
+
+     enum ZKSync {
+        static let chainId = 280
+        static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
+    }
+}
+
+
+@discardableResult public func with<Root>(_ root: Root, _ block: (inout Root) throws -> Void) rethrows -> Root {
+    var copy = root
+    try block(&copy)
+    return copy
 }

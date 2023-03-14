@@ -11,7 +11,7 @@ public enum EthereumNetwork: Equatable, Decodable {
     case goerli
     case sepolia
     case custom(String)
-    static func fromString(_ networkId: String) -> EthereumNetwork {
+    public static func fromString(_ networkId: String) -> EthereumNetwork {
         switch networkId {
         case "1":
             return .mainnet
@@ -26,7 +26,7 @@ public enum EthereumNetwork: Equatable, Decodable {
         }
     }
 
-    var stringValue: String {
+    public var stringValue: String {
         switch self {
         case .mainnet:
             return "1"
@@ -41,7 +41,7 @@ public enum EthereumNetwork: Equatable, Decodable {
         }
     }
 
-    var intValue: Int {
+    public var intValue: Int {
         switch self {
         case .mainnet:
             return 1
