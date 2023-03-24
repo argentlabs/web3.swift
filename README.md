@@ -162,6 +162,14 @@ We support querying ERC721 token data via the `ERC721` struct. Including:
 - Retrieve `Transfer` events
 - Decode standard JSON for NFT metadata. Please be aware some smart contracts are not 100% compliant with standard.
 
+
+### ZKSync Era
+
+We also include additional helpers to interact with [ZKSync Era](https://zksync.io/), by importing `web3_zksync`.
+
+Take a look at [ZKSyncTransaction](https://github.com/argentlabs/web3.swift/blob/develop/web3swift/src/ZKSync/ZKSyncTransaction.swift) or use directly
+[ZKSyncClient](https://github.com/argentlabs/web3.swift/blob/develop/web3swift/src/ZKSync/ZKSyncProvider.swift) which has similar API as the `EthereumClient`
+
 ### Running Tests
 
 Some of the tests require a private key, which is not stored in the repository. You can ignore these while testing locally, as CI will use the encrypted secret key from Github.
