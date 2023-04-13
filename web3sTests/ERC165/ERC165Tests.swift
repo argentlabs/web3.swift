@@ -11,6 +11,7 @@ class ERC165Tests: XCTestCase {
     var client: EthereumClientProtocol!
     var erc165: ERC165!
     let address = EthereumAddress(TestConfig.erc165Contract)
+    let nonSupportedAddress = EthereumAddress(TestConfig.erc20Contract)
 
     override func setUp() {
         super.setUp()
@@ -37,6 +38,15 @@ class ERC165Tests: XCTestCase {
             XCTAssertEqual(supported, true)
         } catch {
             XCTFail("Expected supported but failed \(error).")
+        }
+    }
+
+    func test_GivenContractNotImplementingERC165_WhenCalling_ReturnsNotSupported() async {
+        do {
+            let supported = try await erc165.supportsInterface(contract: nonSupportedAddress, id: ERC165Functions.interfaceId)
+            XCTAssertEqual(supported, false)
+        } catch {
+            XCTFail("Expected unsupported but failed \(error).")
         }
     }
 }
