@@ -15,7 +15,7 @@ extension ABIFunction {
         chainId: Int? = nil,
         nonce: Int? = nil
     ) throws -> ZKSyncTransaction {
-        guard let from else {
+        guard let from = from else {
             throw ABIError.invalidValue
         }
 

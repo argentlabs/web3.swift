@@ -29,7 +29,7 @@ jobs:
     # needs: lint
     runs-on: ubuntu-latest
     container:
-      image: swift:5.5-bionic
+      image: swift:5.7-bionic
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
     steps:

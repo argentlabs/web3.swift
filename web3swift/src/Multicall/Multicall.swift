@@ -120,7 +120,7 @@ extension Multicall {
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.success = try values[0].decoded()
-            self.returnData = try values[1].entry[0]
+            self.returnData = values[1].entry[0]
         }
 
         public func encode(to encoder: ABIFunctionEncoder) throws {
