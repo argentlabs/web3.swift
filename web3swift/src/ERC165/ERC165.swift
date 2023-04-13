@@ -16,7 +16,12 @@ public class ERC165 {
         let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
 
         function.call(withClient: self.client, responseType: ERC165Responses.supportsInterfaceResponse.self) { (error, response) in
-            return completion(error, response?.supported)
+            switch error {
+            case .executionError:
+                return completion(nil, false)
+            default:
+                return completion(error, response?.supported)
+            }
         }
     }
 
