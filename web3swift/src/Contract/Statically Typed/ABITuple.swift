@@ -8,6 +8,7 @@ import Foundation
 /// A Tuple is a set of sequential types encoded together
 public protocol ABITupleDecodable {
     static var types: [ABIType.Type] { get }
+    init?(data: String) throws
     init?(values: [ABIDecoder.DecodedValue]) throws
 }
 
