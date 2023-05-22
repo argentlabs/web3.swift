@@ -7,7 +7,7 @@ import BigInt
 import Foundation
 
 public protocol ERC20Protocol {
-    init(client: EthereumClientProtocol)
+    init(client: EthereumRPCProtocol)
 
     func name(tokenContract: EthereumAddress) async throws -> String
     func symbol(tokenContract: EthereumAddress) async throws -> String
@@ -28,9 +28,9 @@ public protocol ERC20Protocol {
 }
 
 open class ERC20: ERC20Protocol {
-    let client: EthereumClientProtocol
+    let client: EthereumRPCProtocol
 
-    required public init(client: EthereumClientProtocol) {
+    required public init(client: EthereumRPCProtocol) {
         self.client = client
     }
 
