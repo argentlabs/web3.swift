@@ -145,8 +145,6 @@ extension EthereumRPCProtocol {
     }
 
     public func eth_estimateGas(_ transaction: EthereumTransaction) async throws -> BigUInt {
-
-
         let value: BigUInt?
         if let txValue = transaction.value, txValue > .zero {
             value = txValue
@@ -235,8 +233,6 @@ extension EthereumRPCProtocol {
     }
 
     public func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog] {
-
-
         let params = GetLogsCallParams(fromBlock: fromBlock.stringValue, toBlock: toBlock.stringValue, address: addresses, topics: topics)
 
         do {
@@ -259,8 +255,6 @@ extension EthereumRPCProtocol {
     }
 
     public func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo {
-
-
         let params = GetBlockByNumberCallParams(block: block, fullTransactions: false)
 
         do {

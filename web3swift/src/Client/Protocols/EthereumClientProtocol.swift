@@ -44,7 +44,6 @@ public protocol EthereumClientProtocol: EthereumRPCProtocol, AnyObject {
     func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
 }
 
-
 // MARK: - Websocket
 #if canImport(NIO)
     import NIOWebSocket

@@ -16,19 +16,19 @@ open class ERC165 {
     public func supportsInterface(contract: EthereumAddress, id: Data) async throws -> Bool {
         let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
 
-         do {
-             let data = try await function.call(withClient: client, responseType: ERC165Responses.supportsInterfaceResponse.self)
-             return data.supported
-         } catch let error as EthereumClientError {
-             switch error {
-             case .executionError:
-                 return false
-             default:
-                 throw error
-             }
-         } catch {
-             throw error
-         }
+        do {
+            let data = try await function.call(withClient: client, responseType: ERC165Responses.supportsInterfaceResponse.self)
+            return data.supported
+        } catch let error as EthereumClientError {
+            switch error {
+            case .executionError:
+                return false
+            default:
+                throw error
+            }
+        } catch {
+            throw error
+        }
     }
 }
 
