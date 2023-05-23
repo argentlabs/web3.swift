@@ -9,9 +9,9 @@ import Foundation
 public typealias MulticallResponse = Multicall.Response
 
 public struct Multicall {
-    private let client: EthereumClientProtocol
+    private let client: EthereumRPCProtocol
 
-    public init(client: EthereumClientProtocol) {
+    public init(client: EthereumRPCProtocol) {
         self.client = client
     }
 

@@ -7,28 +7,28 @@ import BigInt
 import Foundation
 
 open class ERC165 {
-    public let client: EthereumClientProtocol
+    public let client: EthereumRPCProtocol
 
-    required public init(client: EthereumClientProtocol) {
+    required public init(client: EthereumRPCProtocol) {
         self.client = client
     }
 
     public func supportsInterface(contract: EthereumAddress, id: Data) async throws -> Bool {
         let function = ERC165Functions.supportsInterface(contract: contract, interfaceId: id)
 
-         do {
-             let data = try await function.call(withClient: client, responseType: ERC165Responses.supportsInterfaceResponse.self)
-             return data.supported
-         } catch let error as EthereumClientError {
-             switch error {
-             case .executionError:
-                 return false
-             default:
-                 throw error
-             }
-         } catch {
-             throw error
-         }
+        do {
+            let data = try await function.call(withClient: client, responseType: ERC165Responses.supportsInterfaceResponse.self)
+            return data.supported
+        } catch let error as EthereumClientError {
+            switch error {
+            case .executionError:
+                return false
+            default:
+                throw error
+            }
+        } catch {
+            throw error
+        }
     }
 }
 

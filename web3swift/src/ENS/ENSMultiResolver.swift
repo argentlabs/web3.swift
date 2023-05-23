@@ -80,12 +80,12 @@ extension EthereumNameService {
             let nameHash: Data
         }
 
-        let client: EthereumClientProtocol
+        let client: EthereumRPCProtocol
         let registryAddress: EthereumAddress?
         let multicall: Multicall
 
         init(
-            client: EthereumClientProtocol,
+            client: EthereumRPCProtocol,
             registryAddress: EthereumAddress? = nil
         ) {
             self.client = client

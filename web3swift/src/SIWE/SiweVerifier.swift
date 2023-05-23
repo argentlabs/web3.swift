@@ -22,10 +22,10 @@ public class SiweVerifier {
         case invalidSignature
     }
 
-    private let client: EthereumClientProtocol
+    private let client: EthereumRPCProtocol
     private let dateProvider: () -> Date
 
-    public init(client: EthereumClientProtocol, dateProvider: @escaping () -> Date = Date.init) {
+    public init(client: EthereumRPCProtocol, dateProvider: @escaping () -> Date = Date.init) {
         self.client = client
         self.dateProvider = dateProvider
     }

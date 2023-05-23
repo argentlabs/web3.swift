@@ -37,7 +37,7 @@ public enum EthereumNameServiceError: Error, Equatable {
 }
 
 public class EthereumNameService: EthereumNameServiceProtocol {
-    let client: EthereumClientProtocol
+    let client: EthereumRPCProtocol
     let registryAddress: EthereumAddress?
     let maximumRedirections: Int
     private let syncQueue = DispatchQueue(label: "web3swift.ethereumNameService.syncQueue")
@@ -57,7 +57,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     }
 
     required public init(
-        client: EthereumClientProtocol,
+        client: EthereumRPCProtocol,
         registryAddress: EthereumAddress? = nil,
         maximumRedirections: Int = 5
     ) {
