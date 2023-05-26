@@ -145,7 +145,7 @@ class OffchainLookupTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
     }
 
@@ -331,6 +331,6 @@ private func expectedResponse(
 class OffchainLookupWebSocketTests: OffchainLookupTests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
     }
 }

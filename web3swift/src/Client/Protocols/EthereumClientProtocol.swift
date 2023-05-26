@@ -14,8 +14,6 @@ public enum CallResolution {
 //  MARK: EthereumClient (HTTP or Websocket)
 
 public protocol EthereumClientProtocol: EthereumRPCProtocol, AnyObject {
-    var network: EthereumNetwork? { get }
-
     // Legacy result-based API
     func net_version(completionHandler: @escaping (Result<EthereumNetwork, EthereumClientError>) -> Void)
     func eth_gasPrice(completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void)

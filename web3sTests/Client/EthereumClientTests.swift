@@ -35,7 +35,7 @@ class EthereumClientTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
     }
 
@@ -435,14 +435,14 @@ class EthereumWebSocketClientTests: EthereumClientTests {
 
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
 
     }
 #if os(Linux)
 // On Linux some tests are fail. Need investigation
 #else
     func testWebSocketNoAutomaticOpen() {
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false))
+        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false), network: TestConfig.network)
 
         guard let client = client as? EthereumWebSocketClient else {
             XCTFail("Expected client to be EthereumWebSocketClient")
@@ -453,7 +453,7 @@ class EthereumWebSocketClientTests: EthereumClientTests {
     }
 
     func testWebSocketConnect() {
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false))
+        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false), network: TestConfig.network)
 
         guard let client = client as? EthereumWebSocketClient else {
             XCTFail("Expected client to be EthereumWebSocketClient")

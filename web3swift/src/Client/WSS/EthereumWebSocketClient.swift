@@ -56,7 +56,7 @@
             configuration: WebSocketConfiguration = .init(),
             sessionConfig: URLSessionConfiguration = URLSession.shared.configuration,
             logger: Logger? = nil,
-            network: EthereumNetwork? = nil
+            network: EthereumNetwork
         ) {
             let networkQueue = OperationQueue()
             networkQueue.name = "web3swift.client.networkQueue"

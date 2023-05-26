@@ -32,9 +32,12 @@ struct TestConfig {
 
     static let webSocketConfig = WebSocketConfiguration(maxFrameSize: 1_000_000)
 
+    static let network = EthereumNetwork.goerli
+
      enum ZKSync {
-        static let chainId = 280
-        static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
+         static let chainId = 280
+         static let network = EthereumNetwork.custom("\(280)")
+         static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
     }
 }
 

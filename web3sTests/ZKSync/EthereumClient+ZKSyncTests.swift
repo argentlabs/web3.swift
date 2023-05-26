@@ -12,7 +12,7 @@ import BigInt
 
 final class EthereumClientZKSyncTests: XCTestCase {
     let eoaAccount = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-    let client = ZKSyncClient(url: TestConfig.ZKSync.clientURL)
+    let client = ZKSyncClient(url: TestConfig.ZKSync.clientURL, network: TestConfig.ZKSync.network)
     var eoaEthTransfer = ZKSyncTransaction(
         from: .init(TestConfig.publicKey),
         to: .init("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"),

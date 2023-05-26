@@ -26,7 +26,7 @@ extension ZKSyncClientProtocol {
         var transaction = transaction
         transaction.nonce = nonce
 
-        if transaction.chainId == nil, let network = self.network {
+        if transaction.chainId == nil {
             transaction.chainId = network.intValue
         }
 
@@ -135,7 +135,7 @@ public class ZKSyncClient: BaseEthereumClient, ZKSyncClientProtocol {
         url: URL,
         sessionConfig: URLSessionConfiguration = URLSession.shared.configuration,
         logger: Logger? = nil,
-        network: EthereumNetwork? = nil
+        network: EthereumNetwork
     ) {
         let networkQueue = OperationQueue()
         networkQueue.name = "web3swift.client.networkQueue"
