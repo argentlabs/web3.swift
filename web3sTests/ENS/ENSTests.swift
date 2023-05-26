@@ -363,7 +363,7 @@ class ENSTests: XCTestCase {
 class ENSWebSocketTests: ENSTests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
-        mainnetClient = EthereumWebSocketClient(url: URL(string: TestConfig.wssMainnetUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
+        mainnetClient = EthereumWebSocketClient(url: URL(string: TestConfig.wssMainnetUrl)!, configuration: TestConfig.webSocketConfig, network: .mainnet)
     }
 }

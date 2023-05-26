@@ -28,7 +28,7 @@ public enum EthereumClientError: Error, Equatable {
 
 public protocol EthereumRPCProtocol: AnyObject {
     var networkProvider: NetworkProviderProtocol { get }
-    var network: EthereumNetwork? { get }
+    var network: EthereumNetwork { get }
 
     func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int
     func net_version() async throws -> EthereumNetwork
@@ -179,7 +179,7 @@ extension EthereumRPCProtocol {
             var transaction = transaction
             transaction.nonce = nonce
 
-            if transaction.chainId == nil, let network = network {
+            if transaction.chainId == nil {
                 transaction.chainId = network.intValue
             }
 

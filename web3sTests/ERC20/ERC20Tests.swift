@@ -14,7 +14,7 @@ class ERC20Tests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         erc20 = ERC20(client: client!)
     }
 
@@ -114,6 +114,6 @@ class ERC20Tests: XCTestCase {
 class ERC20WebSocketTests: ERC20Tests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
     }
 }

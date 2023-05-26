@@ -24,7 +24,7 @@ class ERC721Tests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         erc721 = ERC721(client: client)
     }
 
@@ -111,7 +111,7 @@ class ERC721MetadataTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         erc721 = ERC721Metadata(client: client, metadataSession: URLSession.shared)
     }
 
@@ -163,7 +163,7 @@ class ERC721EnumerableTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         erc721 = ERC721Enumerable(client: client)
     }
 
@@ -211,20 +211,20 @@ class ERC721EnumerableTests: XCTestCase {
 class ERC721WebSocketTests: ERC721Tests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
     }
 }
 
 class ERC721MetadataWebSocketTests: ERC721MetadataTests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
     }
 }
 
 class ERC721EnumerableWebSocketTests: ERC721EnumerableTests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
     }
 }

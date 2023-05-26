@@ -13,7 +13,7 @@ class ERC1271Tests: XCTestCase {
     override func setUp() {
         super.setUp()
         if self.client == nil {
-            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         }
         self.erc1271 = ERC1271(client: self.client)
     }
@@ -105,7 +105,7 @@ final class ERC1271WebSocketTests: ERC1271Tests {
 
     override func setUp() {
         if self.client == nil {
-            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!)
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, network: TestConfig.network)
         }
         super.setUp()
     }

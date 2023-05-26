@@ -18,37 +18,18 @@ open class BaseEthereumClient: EthereumClientProtocol {
 
     private let logger: Logger
 
-    public var network: EthereumNetwork?
+    public var network: EthereumNetwork
 
     public init(
         networkProvider: NetworkProviderProtocol,
         url: URL,
         logger: Logger? = nil,
-        network: EthereumNetwork?
+        network: EthereumNetwork
     ) {
         self.url = url
         self.networkProvider = networkProvider
         self.logger = logger ?? Logger(label: "web3.swift.eth-client")
         self.network = network
-
-        if network == nil {
-            let semaphore = DispatchSemaphore(value: 0)
-            Task {
-                self.network = await fetchNetwork()
-                semaphore.signal()
-            }
-            semaphore.wait()
-        }
-    }
-
-    private func fetchNetwork() async -> EthereumNetwork? {
-        do {
-            return try await net_version()
-        } catch {
-            logger.warning("Client has no network: \(error.localizedDescription)")
-        }
-
-        return nil
     }
 
     func failureHandler(_ error: Error) -> EthereumClientError {

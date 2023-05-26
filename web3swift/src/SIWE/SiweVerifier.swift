@@ -62,7 +62,7 @@ public class SiweVerifier {
             }
         }
 
-        guard message.chainId == client.network?.intValue else {
+        guard message.chainId == client.network.intValue else {
             throw Error.differentNetwork
         }
 

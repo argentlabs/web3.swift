@@ -14,7 +14,7 @@ class SIWETests: XCTestCase {
     override func setUp() {
         super.setUp()
         if self.client == nil {
-            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         }
         self.verifier = SiweVerifier(client: self.client)
     }
@@ -58,7 +58,7 @@ final class SIWEWebSocketTests: SIWETests {
 
     override func setUp() {
         if self.client == nil {
-            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!)
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, network: TestConfig.network)
         }
         super.setUp()
     }

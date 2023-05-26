@@ -15,8 +15,12 @@ public struct Multicall {
         self.client = client
     }
 
+    private var network: EthereumNetwork {
+        client.network
+    }
+
     public func aggregate(calls: [Call]) async throws -> MulticallResponse {
-        guard let network = client.network, let contract = Contract.registryAddress(for: network) else {
+        guard let contract = Contract.registryAddress(for: network) else {
             throw MulticallError.contractUnavailable
         }
 

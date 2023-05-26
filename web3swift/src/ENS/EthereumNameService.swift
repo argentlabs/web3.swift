@@ -66,9 +66,12 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         self.maximumRedirections = maximumRedirections
     }
 
+    private var network: EthereumNetwork {
+        client.network
+    }
+
     public func resolve(address: EthereumAddress, mode: ResolutionMode) async throws -> String {
-        guard let network = client.network,
-              let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
+        guard let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
             throw EthereumNameServiceError.noNetwork
         }
 
@@ -87,8 +90,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     }
 
     public func resolve(ens: String, mode: ResolutionMode) async throws -> EthereumAddress {
-        guard let network = client.network,
-              let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
+        guard let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
             throw EthereumNameServiceError.noNetwork
         }
         do {
