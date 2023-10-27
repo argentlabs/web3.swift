@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "web3-zksync.swift", targets: ["web3-zksync"])
     ],
     dependencies: [
-        .package(name: "BigInt", url: "https://github.com/attaswift/BigInt", from: "5.0.0"),
+        .package(name: "BigInt", url: "https://github.com/attaswift/BigInt", from: "3.1"),
         .package(name: "GenericJSON", url: "https://github.com/iwill/generic-json-swift", .upToNextMajor(from: "2.0.0")),
         .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", .upToNextMajor(from: "0.6.0")),
         .package(url: "https://github.com/vapor/websocket-kit.git", from: "2.0.0"),
