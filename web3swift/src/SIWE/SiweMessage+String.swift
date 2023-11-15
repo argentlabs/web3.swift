@@ -82,7 +82,7 @@ extension SiweMessage: CustomStringConvertible {
     /// - https://example.com/my-web2-claim.json
     /// ```
     /// - Parameter description: the SIWE string message following EIP-4361 standard.
-    /// - Throws: `SiweMessage.RegExError` if an error occured while parsing the string;
+    /// - Throws: `SiweMessage.RegExError` if an error occurred while parsing the string;
     ///           `SiweMessage.ValidationError` in case regex parsing was successful but data in the message was invalid;
     ///           might throw `DecodingError` since we use `Decodable` to transform parsed values into `SiweMessage`.
     public init(_ description: String) throws {
