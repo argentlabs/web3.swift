@@ -8,7 +8,7 @@ import Foundation
 
 /// An object which will verify if a given `SiweMessage` and signature match with the EVM address provided
 public class SiweVerifier {
-    /// Errors thrown when verifing a given message agains a signature
+    /// Errors thrown when verifing a given message against a signature
     public enum Error: Swift.Error {
         /// The provided message is from a different network than the client's.
         case differentNetwork
