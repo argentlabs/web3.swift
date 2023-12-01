@@ -89,7 +89,7 @@ extension TypedData {
 
         let recursiveEncoded: [UInt8] = try valueTypes.flatMap { variable -> [UInt8] in
 
-            // Decomposit the type if it is array type
+            // Decomposite the type if it is array type
             let components = variable.type.components(separatedBy: CharacterSet(charactersIn: "[]"))
             let parsedType = components[0]
 
@@ -128,7 +128,7 @@ extension TypedData {
     }
 
     private func getParsedType(primaryType: String) -> String {
-        // Decomposit the type if it is an array type
+        // Decomposite the type if it is an array type
         let components = primaryType.components(separatedBy: CharacterSet(charactersIn: "[]"))
         let parsedType = components[0]
 
