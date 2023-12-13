@@ -9,9 +9,11 @@ import web3
 struct TestConfig {
     // This is the proxy URL for connecting to the Blockchain. For testing we usually use the Goerli network on Infura. Using free tier, so might hit rate limits
     static let clientUrl = "https://goerli.infura.io/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
+    static let mainnetUrl = "https://mainnet.infura.io/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
 
     // This is the proxy wss URL for connecting to the Blockchain. For testing we usually use the Goerli network on Infura. Using free tier, so might hit rate limits
     static let wssUrl = "wss://goerli.infura.io/ws/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
+    static let wssMainnetUrl = "wss://mainnet.infura.io/ws/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
 
     // An EOA with some Ether, so that we can test sending transactions (pay for gas). Set by CI
 //    static let privateKey = "SET_YOUR_KEY_HERE"
@@ -29,4 +31,19 @@ struct TestConfig {
     static let erc165Contract = "0xA2618a1c426a1684E00cA85b5C736164AC391d35"
 
     static let webSocketConfig = WebSocketConfiguration(maxFrameSize: 1_000_000)
+
+    static let network = EthereumNetwork.goerli
+
+     enum ZKSync {
+         static let chainId = 280
+         static let network = EthereumNetwork.custom("\(280)")
+         static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
+    }
+}
+
+
+@discardableResult public func with<Root>(_ root: Root, _ block: (inout Root) throws -> Void) rethrows -> Root {
+    var copy = root
+    try block(&copy)
+    return copy
 }

@@ -9,10 +9,12 @@ import XCTest
 class ENSTests: XCTestCase {
     var account: EthereumAccount?
     var client: EthereumClientProtocol!
+    var mainnetClient: EthereumClientProtocol!
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: .goerli)
+        mainnetClient = EthereumHttpClient(url: URL(string: TestConfig.mainnetUrl)!, network: .mainnet)
     }
 
     func testGivenName_ThenResolvesNameHash() {
@@ -69,7 +71,7 @@ class ENSTests: XCTestCase {
     func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenDoesNotResolveCorrectly() async {
         do {
             let nameService = EthereumNameService(client: client!)
-            let ens = try await nameService.resolve(
+            let _ = try await nameService.resolve(
                 address: "0x787411394Ccb38483a6F303FDee075f3EA67D65F",
                 mode: .onchain
             )
@@ -296,11 +298,72 @@ class ENSTests: XCTestCase {
             XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
         }
     }
+
+    func testGivenMainnetRegistry_WhenResolvingOnChain_ItResolvesName() async {
+        do {
+            let nameService = EthereumNameService(client: mainnetClient!)
+
+            let address = try await nameService.resolve(
+                ens: "michael-brown.eth",
+                mode: .onchain
+            )
+
+            XCTAssertEqual("0x7bcf6af56f0e4e7498b2a76d4ac8b3262ac790bb", address)
+        } catch {
+            XCTFail("Error \(error)")
+        }
+    }
+
+    func testGivenMainnetRegistry_WhenAllowsOffchain_AndDomainDoesNotHaveOffchain_ItResolvesName() async {
+        do {
+            let nameService = EthereumNameService(client: mainnetClient!)
+
+            let address = try await nameService.resolve(
+                ens: "michael-brown.eth",
+                mode: .allowOffchainLookup
+            )
+
+            XCTAssertEqual("0x7bcf6af56f0e4e7498b2a76d4ac8b3262ac790bb", address)
+        } catch {
+            XCTFail("Error \(error)")
+        }
+    }
+
+    func testGivenMainnetRegistry_WhenResolvingOnChain_ItResolvesAddress() async {
+        do {
+            let nameService = EthereumNameService(client: mainnetClient!)
+
+            let name = try await nameService.resolve(
+                address: "0x7bcf6af56f0e4e7498b2a76d4ac8b3262ac790bb",
+                mode: .onchain
+            )
+
+            XCTAssertEqual("michael-brown.eth", name)
+        } catch {
+            XCTFail("Error \(error)")
+        }
+    }
+
+    func testGivenMainnetRegistry_WhenAllowsOffchain_ItResolvesAddress() async {
+        do {
+            let nameService = EthereumNameService(client: mainnetClient!)
+
+            let name = try await nameService.resolve(
+                address: "0x7bcf6af56f0e4e7498b2a76d4ac8b3262ac790bb",
+                mode: .allowOffchainLookup
+            )
+
+            XCTAssertEqual("michael-brown.eth", name)
+        } catch {
+            XCTFail("Error \(error)")
+        }
+    }
 }
 
 class ENSWebSocketTests: ENSTests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
+        mainnetClient = EthereumWebSocketClient(url: URL(string: TestConfig.wssMainnetUrl)!, configuration: TestConfig.webSocketConfig, network: .mainnet)
     }
 }

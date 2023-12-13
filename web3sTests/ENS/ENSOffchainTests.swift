@@ -12,7 +12,7 @@ class ENSOffchainTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
     }
 
     func testDNSEncode() {
@@ -60,7 +60,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0x19c2d5d0f035563344dbb7be5fd09c8dad62b001"), ens)
+            XCTAssertEqual(EthereumAddress("0xd7a4f6473f32ac2af804b3686ae8f1932bc35750"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
@@ -104,7 +104,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0x19c2d5d0f035563344dbb7be5fd09c8dad62b001"), ens)
+            XCTAssertEqual(EthereumAddress("0xd7a4f6473f32ac2af804b3686ae8f1932bc35750"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
@@ -139,7 +139,7 @@ class ENSOffchainTests: XCTestCase {
                 ens: "resolver.eth",
                 mode: .allowOffchainLookup
             )
-            XCTAssertEqual(EthereumAddress("0x19c2d5d0f035563344dbb7be5fd09c8dad62b001"), ens)
+            XCTAssertEqual(EthereumAddress("0xd7a4f6473f32ac2af804b3686ae8f1932bc35750"), ens)
         } catch {
             XCTFail("Expected ens but failed \(error).")
         }
@@ -149,6 +149,6 @@ class ENSOffchainTests: XCTestCase {
 class ENSOffchainWebSocketTests: ENSOffchainTests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
     }
 }

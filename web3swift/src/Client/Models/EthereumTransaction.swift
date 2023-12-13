@@ -44,7 +44,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
         self.chainId = chainId
         self.gas = nil
         self.blockNumber = nil
-        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to.value.web3.noHexPrefix, self.value, self.data, self.chainId, 0, 0]
+        let txArray: [Any?] = [self.nonce, self.gasPrice, self.gasLimit, self.to, self.value, self.data, self.chainId, 0, 0]
         self.hash = RLP.encode(txArray)
         self.input = nil
     }
@@ -100,7 +100,7 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
     }
 
     public var raw: Data? {
-        let txArray: [Any?] = [nonce, gasPrice, gasLimit, to.value.web3.noHexPrefix, value, data, chainId, 0, 0]
+        let txArray: [Any?] = [nonce, gasPrice, gasLimit, to, value, data, chainId, 0, 0]
 
         return RLP.encode(txArray)
     }
@@ -162,19 +162,33 @@ public struct EthereumTransaction: EthereumTransactionProtocol, Equatable, Codab
 
 public struct SignedTransaction {
     public let transaction: EthereumTransaction
-    let v: Int
-    let r: Data
-    let s: Data
+    public let signature: Signature
 
-    public init(transaction: EthereumTransaction, v: Int, r: Data, s: Data) {
+    public init(
+        transaction: EthereumTransaction,
+        signature raw: Data
+    ) {
         self.transaction = transaction
-        self.v = v
-        self.r = r.web3.strippingZeroesFromBytes
-        self.s = s.web3.strippingZeroesFromBytes
+        self.signature = .init(raw: raw)
+    }
+
+    var r: Data {
+        signature.r
+    }
+
+    var s: Data {
+        signature.s
+    }
+
+    var v: Int {
+        guard signature.v < 37 else {
+            return signature.v
+        }
+        return signature.v + (transaction.chainId ?? -1) * 2 + 8
     }
 
     public var raw: Data? {
-        let txArray: [Any?] = [transaction.nonce, transaction.gasPrice, transaction.gasLimit, transaction.to.value.web3.noHexPrefix, transaction.value, transaction.data, v, r, s]
+        let txArray: [Any?] = [transaction.nonce, transaction.gasPrice, transaction.gasLimit, transaction.to, transaction.value, transaction.data, v, r, s]
 
         return RLP.encode(txArray)
     }

@@ -6,8 +6,8 @@
 import BigInt
 import Foundation
 
-struct RLP {
-    static func encode(_ item: Any) -> Data? {
+public struct RLP {
+    public static func encode(_ item: Any) -> Data? {
         switch item {
         case let int as Int:
             return encodeInt(int)
@@ -21,6 +21,8 @@ struct RLP {
             return encodeBigUInt(buint)
         case let data as Data:
             return encodeData(data)
+        case let address as EthereumAddress:
+            return encodeAddress(address)
         default:
             return nil
         }
@@ -35,6 +37,10 @@ struct RLP {
             return nil
         }
         return encodeData(data)
+    }
+
+    static func encodeAddress(_ address: EthereumAddress) -> Data? {
+        encodeString(address.asString())
     }
 
     static func encodeInt(_ int: Int) -> Data? {

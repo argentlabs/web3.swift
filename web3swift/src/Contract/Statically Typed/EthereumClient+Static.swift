@@ -6,7 +6,7 @@
 import Foundation
 
 public extension ABIFunction {
-    func execute(withClient client: EthereumClientProtocol, account: EthereumAccountProtocol) async throws -> String {
+    func execute(withClient client: EthereumRPCProtocol, account: EthereumAccountProtocol) async throws -> String {
         guard let tx = try? transaction() else {
             throw EthereumClientError.encodeIssue
         }
@@ -15,7 +15,7 @@ public extension ABIFunction {
     }
 
     func call<T: ABIResponse>(
-        withClient client: EthereumClientProtocol,
+        withClient client: EthereumRPCProtocol,
         responseType: T.Type,
         block: EthereumBlock = .Latest,
         resolution: CallResolution = .noOffchain(failOnExecutionError: true)
@@ -92,7 +92,7 @@ public struct Events {
     public let logs: [EthereumLog]
 }
 
-public extension EthereumClientProtocol {
+public extension EthereumRPCProtocol {
     func getEvents(
         addresses: [EthereumAddress]?,
         orTopics: [[String]?]?,

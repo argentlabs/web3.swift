@@ -45,7 +45,7 @@ class KeyUtilTests: XCTestCase {
         let publicKey = try! KeyUtil.generatePublicKey(from: privateKey)
         let address = KeyUtil.generateAddress(from: publicKey)
 
-        XCTAssertEqual(address.value, "0x751e735a83a8142c1b9dc722ef559b898f1d77fa")
+        XCTAssertEqual(address, "0x751e735a83a8142c1b9dc722ef559b898f1d77fa")
     }
     
     func testRecoverPublicKey() {
@@ -54,7 +54,7 @@ class KeyUtilTests: XCTestCase {
 
         let address = try! KeyUtil.recoverPublicKey(message: "Hello message!".web3.keccak256, signature: signature)
 
-        XCTAssertEqual(address, account.address.value.lowercased())
+        XCTAssertEqual(address, account.address.asString().lowercased())
     }
     
     func testRecoverPublicKeyMultiple() {
@@ -64,6 +64,6 @@ class KeyUtilTests: XCTestCase {
 
         let address = try! KeyUtil.recoverPublicKey(message: "Hello message!".web3.keccak256, signature: signature)
 
-        XCTAssertEqual(address, account.address.value.lowercased())
+        XCTAssertEqual(address, account.address.asString().lowercased())
     }
 }

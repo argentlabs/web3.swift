@@ -11,30 +11,10 @@ public enum CallResolution {
     case offchainAllowed(maxRedirects: Int)
 }
 
-public struct EquatableError: Error, Equatable {
-    let base: Error
+//  MARK: EthereumClient (HTTP or Websocket)
 
-    public static func == (lhs: EquatableError, rhs: EquatableError) -> Bool {
-        type(of: lhs.base) == type(of: rhs.base) &&
-            lhs.base.localizedDescription == rhs.base.localizedDescription
-    }
-}
-
-public enum EthereumClientError: Error, Equatable {
-    case tooManyResults
-    case executionError(JSONRPCErrorDetail)
-    case unexpectedReturnValue
-    case noResultFound
-    case decodeIssue
-    case encodeIssue
-    case noInputData
-    case webSocketError(EquatableError)
-    case connectionNotOpen
-}
-
-public protocol EthereumClientProtocol: AnyObject {
-    var network: EthereumNetwork? { get }
-
+public protocol EthereumClientProtocol: EthereumRPCProtocol, AnyObject {
+    // Legacy result-based API
     func net_version(completionHandler: @escaping (Result<EthereumNetwork, EthereumClientError>) -> Void)
     func eth_gasPrice(completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void)
     func eth_blockNumber(completionHandler: @escaping (Result<Int, EthereumClientError>) -> Void)
@@ -60,32 +40,9 @@ public protocol EthereumClientProtocol: AnyObject {
     func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping (Result<[EthereumLog], EthereumClientError>) -> Void)
     func eth_getBlockByNumber(_ block: EthereumBlock, completionHandler: @escaping (Result<EthereumBlockInfo, EthereumClientError>) -> Void)
     func getLogs(addresses: [EthereumAddress]?, topics: Topics?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
-
-    // Async/Await
-    func net_version() async throws -> EthereumNetwork
-    func eth_gasPrice() async throws -> BigUInt
-    func eth_blockNumber() async throws -> Int
-    func eth_getBalance(address: EthereumAddress, block: EthereumBlock) async throws -> BigUInt
-    func eth_getCode(address: EthereumAddress, block: EthereumBlock) async throws -> String
-    func eth_estimateGas(_ transaction: EthereumTransaction) async throws -> BigUInt
-    func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol) async throws -> String
-    func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int
-    func eth_getTransaction(byHash txHash: String) async throws -> EthereumTransaction
-    func eth_getTransactionReceipt(txHash: String) async throws -> EthereumTransactionReceipt
-    func eth_call(
-        _ transaction: EthereumTransaction,
-        block: EthereumBlock
-    ) async throws -> String
-    func eth_call(
-        _ transaction: EthereumTransaction,
-        resolution: CallResolution,
-        block: EthereumBlock
-    ) async throws -> String
-    func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
-    func eth_getLogs(addresses: [EthereumAddress]?, orTopics: [[String]?]?, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [EthereumLog]
-    func eth_getBlockByNumber(_ block: EthereumBlock) async throws -> EthereumBlockInfo
 }
 
+// MARK: - Websocket
 #if canImport(NIO)
     import NIOWebSocket
 

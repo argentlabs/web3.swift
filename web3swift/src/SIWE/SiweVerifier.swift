@@ -8,7 +8,7 @@ import Foundation
 
 /// An object which will verify if a given `SiweMessage` and signature match with the EVM address provided
 public class SiweVerifier {
-    /// Errors thrown when verifing a given message agains a signature
+    /// Errors thrown when verifing a given message against a signature
     public enum Error: Swift.Error {
         /// The provided message is from a different network than the client's.
         case differentNetwork
@@ -22,10 +22,10 @@ public class SiweVerifier {
         case invalidSignature
     }
 
-    private let client: EthereumClientProtocol
+    private let client: EthereumRPCProtocol
     private let dateProvider: () -> Date
 
-    public init(client: EthereumClientProtocol, dateProvider: @escaping () -> Date = Date.init) {
+    public init(client: EthereumRPCProtocol, dateProvider: @escaping () -> Date = Date.init) {
         self.client = client
         self.dateProvider = dateProvider
     }
@@ -62,7 +62,7 @@ public class SiweVerifier {
             }
         }
 
-        guard message.chainId == client.network?.intValue else {
+        guard message.chainId == client.network.intValue else {
             throw Error.differentNetwork
         }
 

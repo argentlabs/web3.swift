@@ -145,9 +145,8 @@ class OffchainLookupTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
         account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
-        print("Public address: \(account?.address.value ?? "NONE")")
     }
 
     func test_GivenFunctionWithOffchainLookupError_ThenDecodesLookupParamsCorrectly() async throws {
@@ -318,7 +317,7 @@ private func expectedResponse(
     sender: EthereumAddress,
     data: Data
 ) -> String {
-    let senderData = sender.value.web3.hexData!
+    let senderData = sender.asData()!
     return Data([
         [UInt8(senderData.count)],
         senderData.web3.bytes,
@@ -332,6 +331,6 @@ private func expectedResponse(
 class OffchainLookupWebSocketTests: OffchainLookupTests {
     override func setUp() {
         super.setUp()
-        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig)
+        client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
     }
 }

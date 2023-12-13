@@ -226,7 +226,7 @@ final class SiweVerifierWebSocketTests: SiweVerifierTests {
 
     override func setUp() {
         if self.client == nil {
-            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!)
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, network: TestConfig.network)
         }
         super.setUp()
     }

@@ -37,7 +37,7 @@ public enum EthereumNameServiceError: Error, Equatable {
 }
 
 public class EthereumNameService: EthereumNameServiceProtocol {
-    let client: EthereumClientProtocol
+    let client: EthereumRPCProtocol
     let registryAddress: EthereumAddress?
     let maximumRedirections: Int
     private let syncQueue = DispatchQueue(label: "web3swift.ethereumNameService.syncQueue")
@@ -57,7 +57,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     }
 
     required public init(
-        client: EthereumClientProtocol,
+        client: EthereumRPCProtocol,
         registryAddress: EthereumAddress? = nil,
         maximumRedirections: Int = 5
     ) {
@@ -66,9 +66,12 @@ public class EthereumNameService: EthereumNameServiceProtocol {
         self.maximumRedirections = maximumRedirections
     }
 
+    private var network: EthereumNetwork {
+        client.network
+    }
+
     public func resolve(address: EthereumAddress, mode: ResolutionMode) async throws -> String {
-        guard let network = client.network,
-              let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
+        guard let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
             throw EthereumNameServiceError.noNetwork
         }
 
@@ -87,8 +90,7 @@ public class EthereumNameService: EthereumNameServiceProtocol {
     }
 
     public func resolve(ens: String, mode: ResolutionMode) async throws -> EthereumAddress {
-        guard let network = client.network,
-              let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
+        guard let registryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
             throw EthereumNameServiceError.noNetwork
         }
         do {

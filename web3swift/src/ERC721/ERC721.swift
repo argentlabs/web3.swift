@@ -130,12 +130,12 @@ public class ERC721Metadata: ERC721 {
 
     public let session: URLSession
 
-    public init(client: EthereumClientProtocol, metadataSession: URLSession) {
+    public init(client: EthereumRPCProtocol, metadataSession: URLSession) {
         self.session = metadataSession
         super.init(client: client)
     }
 
-    required init(client: EthereumClientProtocol) {
+    required init(client: EthereumRPCProtocol) {
         fatalError("init(client:) has not been implemented")
     }
 

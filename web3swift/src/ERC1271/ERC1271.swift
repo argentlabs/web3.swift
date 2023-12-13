@@ -7,16 +7,16 @@ import BigInt
 import Foundation
 
 public protocol ERC1271Protocol {
-    init(client: EthereumClientProtocol)
+    init(client: EthereumRPCProtocol)
 
     func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data) async throws -> Bool
     func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data, completionHandler: @escaping (Result<Bool, Error>) -> Void)
 }
 
 public class ERC1271: ERC1271Protocol {
-    let client: EthereumClientProtocol
+    let client: EthereumRPCProtocol
 
-    required public init(client: EthereumClientProtocol) {
+    required public init(client: EthereumRPCProtocol) {
         self.client = client
     }
 

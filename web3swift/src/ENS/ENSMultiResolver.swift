@@ -80,17 +80,21 @@ extension EthereumNameService {
             let nameHash: Data
         }
 
-        let client: EthereumClientProtocol
+        let client: EthereumRPCProtocol
         let registryAddress: EthereumAddress?
         let multicall: Multicall
 
         init(
-            client: EthereumClientProtocol,
+            client: EthereumRPCProtocol,
             registryAddress: EthereumAddress? = nil
         ) {
             self.client = client
             self.registryAddress = registryAddress
             self.multicall = Multicall(client: client)
+        }
+
+        private var network: EthereumNetwork {
+            client.network
         }
 
         func resolve(addresses: [EthereumAddress]) async throws -> [AddressResolveOutput] {
@@ -154,7 +158,7 @@ extension EthereumNameService {
             parameters: [ENSRegistryResolverParameter],
             handler: @escaping (Int, ENSRegistryResolverParameter, Result<EthereumAddress, Multicall.CallError>) -> Void
         ) async throws {
-            guard let network = client.network, let ensRegistryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
+            guard let ensRegistryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
                 throw EthereumNameServiceError.noNetwork
             }
 

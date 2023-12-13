@@ -31,7 +31,7 @@ public enum ENSContracts {
             switch self {
             case let .address(address):
                 nameHash = ENSContracts.nameHash(
-                    name: address.value.web3.noHexPrefix + ".addr.reverse"
+                    name: address.asString().web3.noHexPrefix + ".addr.reverse"
                 )
             case let .name(ens):
                 nameHash = ENSContracts.nameHash(name: ens)
@@ -43,7 +43,7 @@ public enum ENSContracts {
             switch self {
             case let .address(address):
                 return ENSContracts.dnsEncode(
-                    name: address.value.web3.noHexPrefix + ".addr.reverse"
+                    name: address.asString().web3.noHexPrefix + ".addr.reverse"
                 )
             case let .name(name):
                 return ENSContracts.dnsEncode(name: name)

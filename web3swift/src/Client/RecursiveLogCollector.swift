@@ -21,7 +21,7 @@ public enum Topics: Encodable {
 }
 
 struct RecursiveLogCollector {
-    let ethClient: EthereumClientProtocol
+    let ethClient: EthereumRPCProtocol
 
     func getAllLogs(addresses: [EthereumAddress]?, topics: Topics?, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
         do {

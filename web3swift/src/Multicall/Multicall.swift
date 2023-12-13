@@ -9,14 +9,18 @@ import Foundation
 public typealias MulticallResponse = Multicall.Response
 
 public struct Multicall {
-    private let client: EthereumClientProtocol
+    private let client: EthereumRPCProtocol
 
-    public init(client: EthereumClientProtocol) {
+    public init(client: EthereumRPCProtocol) {
         self.client = client
     }
 
+    private var network: EthereumNetwork {
+        client.network
+    }
+
     public func aggregate(calls: [Call]) async throws -> MulticallResponse {
-        guard let network = client.network, let contract = Contract.registryAddress(for: network) else {
+        guard let contract = Contract.registryAddress(for: network) else {
             throw MulticallError.contractUnavailable
         }
 
@@ -120,7 +124,7 @@ extension Multicall {
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
             self.success = try values[0].decoded()
-            self.returnData = try values[1].entry[0]
+            self.returnData = values[1].entry[0]
         }
 
         public func encode(to encoder: ABIFunctionEncoder) throws {
