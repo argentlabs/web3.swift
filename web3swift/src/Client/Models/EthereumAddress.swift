@@ -13,11 +13,13 @@ public struct EthereumAddress: Codable, Hashable {
 
     private let raw: String
     private let numberRepresentation: BigUInt?
+    private let numberRepresentationAsString: String?
     public static let zero: Self = "0x0000000000000000000000000000000000000000"
 
     public init(_ value: String) {
         self.raw = value.lowercased()
         self.numberRepresentation = BigUInt(hex: raw)
+        self.numberRepresentationAsString = self.numberRepresentation.map(String.init(describing:))
     }
 
     public init(from decoder: Decoder) throws {
@@ -25,6 +27,7 @@ public struct EthereumAddress: Codable, Hashable {
         let raw = try container.decode(String.self).lowercased()
         self.raw = raw
         self.numberRepresentation = BigUInt(hex: raw)
+        self.numberRepresentationAsString = self.numberRepresentation.map(String.init(describing:))
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -33,19 +36,19 @@ public struct EthereumAddress: Codable, Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        if let number = asNumber() {
-            hasher.combine(number)
+        if let numberAsString = numberRepresentationAsString {
+            hasher.combine(numberAsString)
         } else {
             hasher.combine(asString())
         }
     }
 
     public static func == (lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {
-        guard let lhsInt = lhs.asNumber(), let rhsInt = rhs.asNumber() else {
+        guard let lhs = lhs.numberRepresentationAsString, let rhs = rhs.numberRepresentationAsString else {
             return false
         }
         // Comparing Number representation avoids issues with lowercase and 0-padding
-        return lhsInt == rhsInt
+        return lhs == rhs
     }
 }
 
