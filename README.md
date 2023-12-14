@@ -10,7 +10,7 @@ Use Xcode to add to the project (**File -> Swift Packages**) or add this to your
 ```swift
 .package(url: "https://github.com/argentlabs/web3.swift", from: "1.1.0")
 ```
-### CocoaPods
+### CocoaPods (not recommended)
 
 Add web3.swift to your `Podfile`:
 
