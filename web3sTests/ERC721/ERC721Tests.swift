@@ -68,12 +68,12 @@ class ERC721Tests: XCTestCase {
         do {
             let events = try await erc721.transferEventsTo(recipient: tokenOwner,
                                                            fromBlock: .Number(
-                                                            8011670  ),
+                                                            4916900  ),
                                                            toBlock: .Number(
-                                                            8011670 ))
+                                                            4916900 ))
             XCTAssertEqual(events.first?.from, previousOwner)
             XCTAssertEqual(events.first?.to, tokenOwner)
-            XCTAssertEqual(events.first?.tokenId, 2)
+            XCTAssertEqual(events.first?.tokenId, 0)
         } catch {
             XCTFail("Expected Events but failed \(error).")
         }
@@ -83,12 +83,12 @@ class ERC721Tests: XCTestCase {
         do {
             let events = try await erc721.transferEventsFrom(sender: previousOwner,
                                                              fromBlock: .Number(
-                                                                8011670),
+                                                                4916900),
                                                              toBlock: .Number(
-                                                                8011670))
+                                                                4916900))
             XCTAssertEqual(events.first?.to, tokenOwner)
             XCTAssertEqual(events.first?.from, previousOwner)
-            XCTAssertEqual(events.first?.tokenId, 2)
+            XCTAssertEqual(events.first?.tokenId, 0)
         } catch {
             XCTFail("Expected Events but failed \(error).")
         }

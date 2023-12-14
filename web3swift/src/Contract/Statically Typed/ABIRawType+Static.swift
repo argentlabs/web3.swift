@@ -134,8 +134,6 @@ extension ABITuple {
     }
 }
 
-// TODO: Other Int sizes
-
 private let DataParser: ABIType.ParserFunction = { data in
     let first = data.first ?? ""
     return try ABIDecoder.decode(first, to: Data.self)

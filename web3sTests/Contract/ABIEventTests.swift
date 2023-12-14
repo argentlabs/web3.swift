@@ -21,8 +21,8 @@ class ABIEventTests: XCTestCase {
 
             let eventsResult = try await client.getEvents(addresses: nil,
                                                           topics: [try? AddressAndData4Event.signature(), String(hexFromBytes: encodedAddress), nil],
-                                                          fromBlock: .Number(8017312 ),
-                                                          toBlock: .Number(8017312 ),
+                                                          fromBlock: .Number(4916814 ),
+                                                          toBlock: .Number(4916814 ),
                                                           eventTypes: [AddressAndData4Event.self])
 
             let eventFirst = eventsResult.events.first as? AddressAndData4Event
@@ -42,9 +42,9 @@ class ABIEventTests: XCTestCase {
             let eventsResult = try await client.getEvents(addresses: nil,
                                                           topics: [try? AddressAndData32Event.signature()],
                                                           fromBlock: .Number(
-                                                            8017318 ),
+                                                            4916812 ),
                                                           toBlock: .Number(
-                                                            8017318 ),
+                                                            4916812 ),
                                                           eventTypes: [AddressAndData32Event.self])
 
             XCTAssertEqual(eventsResult.events.count, 1)

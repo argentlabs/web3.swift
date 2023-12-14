@@ -80,7 +80,7 @@ class EthereumClientTests: XCTestCase {
     func testNetVersion() async {
         do {
             let network = try await client?.net_version()
-            XCTAssertEqual(network, EthereumNetwork.goerli, "Network incorrect")
+            XCTAssertEqual(network, EthereumNetwork.sepolia, "Network incorrect")
         } catch {
             XCTFail("Expected network but failed \(error).")
         }
@@ -116,7 +116,7 @@ class EthereumClientTests: XCTestCase {
     func testEthSendRawTransaction() async {
         do {
             let gasPrice = try await client?.eth_gasPrice()
-            let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1), data: nil, nonce: 2, gasPrice: gasPrice ?? BigUInt(9000000), gasLimit: BigUInt(30000), chainId: EthereumNetwork.goerli.intValue)
+            let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1), data: nil, nonce: 2, gasPrice: gasPrice ?? BigUInt(9000000), gasLimit: BigUInt(30000), chainId: EthereumNetwork.sepolia.intValue)
 
             let txHash = try await client?.eth_sendRawTransaction(tx, withAccount: account!)
             XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
@@ -127,7 +127,7 @@ class EthereumClientTests: XCTestCase {
 
     func testEthGetTransactionReceipt() async {
         do {
-            let txHash = "0x706bbe6f2593235942b8e76c2f37af3824d47a64caf65f7ae5e0c5ee1e886132"
+            let txHash = "0x058af59b2de40c8f745bc8baf403f54b1f7c3a502aff26d36ad3f174649ded1b"
             let receipt = try await client?.eth_getTransactionReceipt(txHash: txHash)
             XCTAssertNotNil(receipt, "Transaction receipt not available")
         } catch {
@@ -137,7 +137,7 @@ class EthereumClientTests: XCTestCase {
 
     func testEthCall() async {
         do {
-            let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.goerli.intValue)
+            let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1800000), data: nil, nonce: 2, gasPrice: BigUInt(400000), gasLimit: BigUInt(50000), chainId: EthereumNetwork.sepolia.intValue)
             let txHash = try await client?.eth_call(tx, block: .Latest)
             XCTAssertNotNil(txHash, "Transaction hash not available")
         } catch {
@@ -156,8 +156,8 @@ class EthereumClientTests: XCTestCase {
 
     func testOrTopicsEthGetLogs() async {
         do {
-            let logs = try await client?.eth_getLogs(addresses: nil, orTopics: [["0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925", "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"], ["0x000000000000000000000000377f56d089c7e0b7e18865e6e3f0c14feb55bf36"]], fromBlock: .Number(8012709), toBlock: .Number(8012709))
-            XCTAssertEqual(logs?.count, 15)
+            let logs = try await client?.eth_getLogs(addresses: nil, orTopics: [["0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925", "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"], ["0x00000000000000000000000061CA935f8b7847C4a1275814d8D88CDa8d406CC9"]], fromBlock: .Number(4902849), toBlock: .Number(4902849))
+            XCTAssertEqual(logs?.count, 1)
             XCTAssertNotNil(logs, "Logs not available")
         } catch {
             XCTFail("Expected logs but failed \(error).")
@@ -167,7 +167,7 @@ class EthereumClientTests: XCTestCase {
     func testGivenGenesisBlock_ThenReturnsByNumber() async {
         do {
             let block = try await client?.eth_getBlockByNumber(.Number(0))
-            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 1548854791)
+            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 1633267481)
             XCTAssertEqual(block?.transactions.count, 0)
             XCTAssertEqual(block?.number, .Number(0))
         } catch {
@@ -186,11 +186,11 @@ class EthereumClientTests: XCTestCase {
 
     func testGivenExistingBlock_ThenGetsBlockByNumber() async {
         do {
-            let block = try await client?.eth_getBlockByNumber(.Number(8006312))
-            XCTAssertEqual(block?.number, .Number(8006312))
-            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 1669224864)
-            XCTAssertEqual(block?.transactions.count, 53)
-            XCTAssertEqual(block?.transactions.first, "0xd6b8256322a91ea138afa16181c61040381ca713c56ca7046dcbbd832ed71386")
+            let block = try await client?.eth_getBlockByNumber(.Number(4892410))
+            XCTAssertEqual(block?.number, .Number(4892410))
+            XCTAssertEqual(block?.timestamp.timeIntervalSince1970, 1702659468)
+            XCTAssertEqual(block?.transactions.count, 155)
+            XCTAssertEqual(block?.transactions.first, "0x3584af370197e447cd4d9163194dd41910741ded549550c47aace44eea6cf910")
         } catch {
             XCTFail("Expected block but failed \(error).")
         }
@@ -207,15 +207,15 @@ class EthereumClientTests: XCTestCase {
 
     func testGivenMinedTransactionHash_ThenGetsTransactionByHash() async {
         do {
-            let transaction = try await client?.eth_getTransaction(byHash: "0x706bbe6f2593235942b8e76c2f37af3824d47a64caf65f7ae5e0c5ee1e886132")
-            XCTAssertEqual(transaction?.from, "0x64d0ea4fc60f27e74f1a70aa6f39d403bbe56793")
-            XCTAssertEqual(transaction?.to, "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984")
-            XCTAssertEqual(transaction?.gas, "85773")
-            XCTAssertEqual(transaction?.gasPrice, BigUInt(14300000000))
-            XCTAssertEqual(transaction?.nonce, 23)
-            XCTAssertEqual(transaction?.value, 0)
-            XCTAssertEqual(transaction?.blockNumber, EthereumBlock.Number(8006312))
-            XCTAssertEqual(transaction?.hash?.web3.hexString, "0x706bbe6f2593235942b8e76c2f37af3824d47a64caf65f7ae5e0c5ee1e886132")
+            let transaction = try await client?.eth_getTransaction(byHash: "0x058af59b2de40c8f745bc8baf403f54b1f7c3a502aff26d36ad3f174649ded1b")
+            XCTAssertEqual(transaction?.from, "0x1E2cD78882b12d3954a049Fd82FFD691565dC0A5")
+            XCTAssertEqual(transaction?.to, "0x9b7E335088762aD8061C04D08C37902ABC8ACb87")
+            XCTAssertEqual(transaction?.gas, "21000")
+            XCTAssertEqual(transaction?.gasPrice, BigUInt(19635664880))
+            XCTAssertEqual(transaction?.nonce, 181635)
+            XCTAssertEqual(transaction?.value, 542261709133544904)
+            XCTAssertEqual(transaction?.blockNumber, EthereumBlock.Number(4892410))
+            XCTAssertEqual(transaction?.hash?.web3.hexString, "0x058af59b2de40c8f745bc8baf403f54b1f7c3a502aff26d36ad3f174649ded1b")
         } catch {
             XCTFail("Expected transaction but failed \(error).")
         }
@@ -241,8 +241,8 @@ class EthereumClientTests: XCTestCase {
                                                            fromBlock: .Earliest,
                                                            toBlock: .Latest,
                                                            eventTypes: [ERC20Events.Transfer.self])
-            XCTAssertEqual(eventsResult?.events.count, 3)
             XCTAssertEqual(eventsResult?.logs.count, 4)
+            XCTAssertEqual(eventsResult?.events.count, 5)
         } catch {
             XCTFail("Expected events but failed \(error).")
         }
@@ -257,8 +257,8 @@ class EthereumClientTests: XCTestCase {
                                                            fromBlock: .Earliest,
                                                            toBlock: .Latest,
                                                            eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self])
-            XCTAssertEqual(eventsResult?.events.count, 6)
             XCTAssertEqual(eventsResult?.logs.count, 8)
+            XCTAssertEqual(eventsResult?.events.count, 10)
         } catch {
             XCTFail("Expected events but failed \(error).")
         }
@@ -268,7 +268,7 @@ class EthereumClientTests: XCTestCase {
         do {
             let to = try! ABIEncoder.encodeRaw("0x162142f0508F557C02bEB7C473682D7C91Bcef41", forType: ABIRawType.FixedAddress)
             let filters = [
-                EventFilter(type: ERC20Events.Transfer.self, allowedSenders: ["0x0C45dd4A3DEcb146F3ae0d82b1151AdEEEfA73cD"])
+                EventFilter(type: ERC20Events.Transfer.self, allowedSenders: ["0xF31B086459C2cdaC006Feedd9080223964a9cDdB"])
             ]
 
             let eventsResult = try await client?.getEvents(addresses: nil,
@@ -276,8 +276,8 @@ class EthereumClientTests: XCTestCase {
                                                            fromBlock: .Earliest,
                                                            toBlock: .Latest,
                                                            matching: filters)
-            XCTAssertEqual(eventsResult?.events.count, 1)
-            XCTAssertEqual(eventsResult?.logs.count, 6)
+            XCTAssertEqual(eventsResult?.logs.count, 7)
+            XCTAssertEqual(eventsResult?.events.count, 2)
         } catch {
             XCTFail("Expected events but failed \(error).")
         }
@@ -287,8 +287,8 @@ class EthereumClientTests: XCTestCase {
         do {
             let to = try! ABIEncoder.encode(EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"))
             let filters = [
-                EventFilter(type: ERC20Events.Transfer.self, allowedSenders: ["0x0C45dd4A3DEcb146F3ae0d82b1151AdEEEfA73cD"]),
-                EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: ["0x162142f0508F557C02bEB7C473682D7C91Bcef41"])
+                EventFilter(type: ERC20Events.Transfer.self, allowedSenders: ["0xF31B086459C2cdaC006Feedd9080223964a9cDdB"]),
+                EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: ["0xB2a6874c2F71fD4481674BaC945D5407A2318b3E"])
             ]
 
             let eventsResult = try await client?.getEvents(addresses: nil,
@@ -296,8 +296,8 @@ class EthereumClientTests: XCTestCase {
                                                            fromBlock: .Earliest,
                                                            toBlock: .Latest,
                                                            matching: filters)
-            XCTAssertEqual(eventsResult?.events.count, 1)
-            XCTAssertEqual(eventsResult?.logs.count, 27)
+            XCTAssertEqual(eventsResult?.logs.count, 16)
+            XCTAssertEqual(eventsResult?.events.count, 6)
         } catch {
             XCTFail("Expected events but failed \(error).")
         }
@@ -366,8 +366,8 @@ class EthereumClientTests: XCTestCase {
 
 struct GetDynamicArray: ABIFunction {
     static let name = "getDynamicArray"
-    let contract: EthereumAddress = "0xD5017917007D588dD5f9Dd5d260a0d72E7C3Ee25"
-    let from: EthereumAddress? = "0xD5017917007D588dD5f9Dd5d260a0d72E7C3Ee25"
+    let contract: EthereumAddress = "0x47780bc6093413B52014777F26b2BBb401d85243"
+    let from: EthereumAddress? = "0x47780bc6093413B52014777F26b2BBb401d85243"
     let gasPrice: BigUInt? = nil
     let gasLimit: BigUInt? = nil
 
@@ -410,8 +410,8 @@ struct TransferToken: ABIFunction {
 
 struct InvalidMethodA: ABIFunction {
     static let name = "invalidMethodCallBoolResponse"
-    let contract: EthereumAddress = "0x72602FE1F2CaBAbCfFB51eb84741AFaE04AF10ca"
-    let from: EthereumAddress? = "0x72602FE1F2CaBAbCfFB51eb84741AFaE04AF10ca"
+    let contract: EthereumAddress = "0x47780bc6093413B52014777F26b2BBb401d85243"
+    let from: EthereumAddress? = "0x47780bc6093413B52014777F26b2BBb401d85243"
     let gasPrice: BigUInt? = nil
     let gasLimit: BigUInt? = nil
 

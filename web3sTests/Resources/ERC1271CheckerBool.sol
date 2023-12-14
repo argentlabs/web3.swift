@@ -4,7 +4,10 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ERC1271CheckerBool is Ownable {
-
+    constructor(address initialOwner) Ownable(initialOwner) {
+        Ownable(initialOwner);
+    }
+    
     function isValidSignature(
         bytes32 _hash,
         bytes calldata _signature

@@ -11,7 +11,7 @@ class ERC165Tests: XCTestCase {
     var client: EthereumClientProtocol!
     var erc165: ERC165!
     let address = EthereumAddress(TestConfig.erc165Contract)
-    let nonSupportedAddress = EthereumAddress(TestConfig.erc20Contract)
+    let nonSupportedAddress = EthereumAddress(TestConfig.nonerc165Contrat)
 
     override func setUp() {
         super.setUp()
