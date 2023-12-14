@@ -52,7 +52,6 @@ public struct RLP {
 
     static func encodeBigInt(_ bint: BigInt) -> Data? {
         guard bint >= 0 else {
-            // TODO: implement properly to support negatives if RLP supports.. twos complement reverse?
             return nil
         }
         return encodeBigUInt(BigUInt(bint))

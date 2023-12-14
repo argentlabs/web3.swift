@@ -20,30 +20,6 @@ final class EthereumClientZKSyncTests: XCTestCase {
         data: Data(),
         gasLimit: 300000
     )
-
-    // TODO: Reintegrate test
-//    func test_GivenEOAAccount_WhenSendETH_ThenSendsCorrectly() async {
-//        do {
-//            let gasPrice = try await client.eth_gasPrice()
-//            eoaEthTransfer.gasPrice = gasPrice
-//            let txHash = try await client.eth_sendRawZKSyncTransaction(eoaEthTransfer, withAccount: eoaAccount)
-//            XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
-//        } catch {
-//            XCTFail("Expected tx but failed \(error).")
-//        }
-//    }
-    
-    // TODO: Integrate paymaster
-//    func test_GivenEOAAccount_WhenSendETH_AndFeeIsInUSDC_ThenSendsCorrectly() async {
-//        do {
-//            let txHash = try await client.eth_sendRawZKSyncTransaction(with(eoaEthTransfer) {
-//                $0.feeToken = EthereumAddress("0x54a14D7559BAF2C8e8Fa504E019d32479739018c")
-//            }, withAccount: eoaAccount)
-//            XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
-//        } catch {
-//            XCTFail("Expected tx but failed \(error).")
-//        }
-//    }
     
     func test_GivenEOATransaction_gasEstimationCorrect() async {
         do {

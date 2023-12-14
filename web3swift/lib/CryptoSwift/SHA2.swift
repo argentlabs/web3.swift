@@ -12,7 +12,6 @@
 //  - Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 //  - This notice may not be removed or altered from any source or binary distribution.
 //
-//  TODO: generic for process32/64 (UInt32/UInt64)
 //
 public final class SHA2 {
     @usableFromInline

@@ -7,18 +7,12 @@ import Foundation
 
 public enum EthereumNetwork: Equatable, Decodable {
     case mainnet
-    case kovan
-    case goerli
     case sepolia
     case custom(String)
     public static func fromString(_ networkId: String) -> EthereumNetwork {
         switch networkId {
         case "1":
             return .mainnet
-        case "5":
-            return .goerli
-        case "42":
-            return .kovan
         case "11155111":
             return .sepolia
         default:
@@ -30,10 +24,6 @@ public enum EthereumNetwork: Equatable, Decodable {
         switch self {
         case .mainnet:
             return "1"
-        case .goerli:
-            return "5"
-        case .kovan:
-            return "42"
         case .sepolia:
             return "11155111"
         case let .custom(str):
@@ -45,10 +35,6 @@ public enum EthereumNetwork: Equatable, Decodable {
         switch self {
         case .mainnet:
             return 1
-        case .goerli:
-            return 5
-        case .kovan:
-            return 42
         case .sepolia:
             return 11155111
         case let .custom(str):

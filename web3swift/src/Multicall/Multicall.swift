@@ -43,7 +43,11 @@ public struct Multicall {
     }
 
     public func tryAggregate(requireSuccess: Bool, calls: [Call]) async throws -> Multicall.Multicall2Response {
-        let function = Contract.Functions.tryAggregate(contract: Contract.multicall2Address, requireSuccess: requireSuccess, calls: calls)
+        guard let contract = Contract.multicall2Address(for: network) else {
+            throw MulticallError.contractUnavailable
+        }
+
+        let function = Contract.Functions.tryAggregate(contract: contract, requireSuccess: requireSuccess, calls: calls)
 
         do {
             let data = try await function.call(withClient: client, responseType: Multicall2Response.self)

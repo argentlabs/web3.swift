@@ -15,7 +15,7 @@ public enum ENSContracts {
         switch network {
         case .mainnet:
             return ENSContracts.RegistryAddress
-        case .goerli:
+        case .sepolia:
             return ENSContracts.RegistryAddress
         default:
             return nil
