@@ -25,7 +25,7 @@ class ERC20Tests: XCTestCase {
     func testName() async {
         do {
             let name = try await erc20?.name(tokenContract: testContractAddress)
-            XCTAssertEqual(name, "Uniswap")
+            XCTAssertEqual(name, "USD Coin")
         } catch {
             XCTFail("Expected name but failed \(error).")
         }
@@ -34,7 +34,7 @@ class ERC20Tests: XCTestCase {
     func testNonZeroDecimals() async {
         do {
             let decimals = try await erc20?.decimals(tokenContract: testContractAddress)
-            XCTAssertEqual(decimals, 18)
+            XCTAssertEqual(decimals, 6)
         } catch {
             XCTFail("Expected decimals but failed \(error).")
         }
@@ -52,7 +52,7 @@ class ERC20Tests: XCTestCase {
     func testSymbol() async {
         do {
             let symbol = try await erc20?.symbol(tokenContract: testContractAddress)
-            XCTAssertEqual(symbol, "UNI")
+            XCTAssertEqual(symbol, "USDC")
         } catch {
             XCTFail("Expected symbol but failed \(error).")
         }
@@ -92,9 +92,9 @@ class ERC20Tests: XCTestCase {
     func testGivenAddressWithOutgoingEvents_ThenGetsTheTransferEvents() async {
         do {
             let events = try await erc20?.transferEventsFrom(sender: "0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793", fromBlock: .Earliest, toBlock: .Latest)
-            XCTAssertEqual(events?.first?.log.transactionHash, "0x706bbe6f2593235942b8e76c2f37af3824d47a64caf65f7ae5e0c5ee1e886132")
+            XCTAssertEqual(events?.first?.log.transactionHash, "0x9bf24689047a2af63aed77da170410df3c14762ebf4bd6d37acfb1cf968b7d32")
             XCTAssertEqual(events?.first?.to, EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"))
-            XCTAssertEqual(events?.first?.value, 20000000000000000)
+            XCTAssertEqual(events?.first?.value, 10000000)
             XCTAssertEqual(events?.first?.log.address, EthereumAddress(TestConfig.erc20Contract))
         } catch {
             XCTFail("Expected events but failed \(error).")

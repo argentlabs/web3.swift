@@ -30,7 +30,7 @@ class SIWETests: XCTestCase {
 
             URI: https://login.xyz/demo#login
             Version: 1
-            Chain ID: 5
+            Chain ID: 11155111
             Nonce: qwerty123456
             Issued At: \(SiweMessage.dateFormatter.string(from: Date()))
             Expiration Time: \(SiweMessage.dateFormatter.string(from: Date(timeInterval: 60, since: Date())))

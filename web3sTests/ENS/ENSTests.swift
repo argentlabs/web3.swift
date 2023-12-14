@@ -13,7 +13,7 @@ class ENSTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: .goerli)
+        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: .sepolia)
         mainnetClient = EthereumHttpClient(url: URL(string: TestConfig.mainnetUrl)!, network: .mainnet)
     }
 
@@ -88,7 +88,7 @@ class ENSTests: XCTestCase {
                 ens: "another.darhmike.eth",
                 mode: .onchain
             )
-            XCTAssertEqual(address, "0x787411394Ccb38483a6F303FDee075f3EA67D65F")
+            XCTAssertEqual(address, "0xa25093F94ffBdb975B81474D63D244dE6898eC3B")
         } catch {
             XCTAssertEqual(error as? EthereumNameServiceError, .ensUnknown)
         }
@@ -234,7 +234,7 @@ class ENSTests: XCTestCase {
             XCTAssertEqual(
                 results.map(\.output),
                 [
-                    .resolved("0x787411394Ccb38483a6F303FDee075f3EA67D65F")
+                    .resolved("0xa25093F94ffBdb975B81474D63D244dE6898eC3B")
                 ]
             )
         } catch {
@@ -269,20 +269,21 @@ class ENSTests: XCTestCase {
         }
     }
 
-    func testGivenRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesExampleCorrectly() async {
-        do {
-            let nameService = EthereumNameService(client: client!)
-
-            let address = try await nameService.resolve(
-                ens: "ricmoose.hatch.eth",
-                mode: .onchain
-            )
-
-            XCTAssertEqual(address, EthereumAddress("0x4b711a377b1b3534749fbe5e59bcf7f94d92ea98"))
-        } catch {
-            XCTFail("Expected ens but failed \(error).")
-        }
-    }
+    // TODO [Tests] Temporarily removed until set up for offchain ENS is done
+//    func testGivenMainnetRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesExampleCorrectly() async {
+//        do {
+//            let nameService = EthereumNameService(client: client!)
+//
+//            let address = try await nameService.resolve(
+//                ens: "ricmoose.hatch.eth",
+//                mode: .onchain
+//            )
+//
+//            XCTAssertEqual(address, EthereumAddress("0x4b711a377b1b3534749fbe5e59bcf7f94d92ea98"))
+//        } catch {
+//            XCTFail("Expected ens but failed \(error).")
+//        }
+//    }
 
     func testGivenRegistry_WhenWildcardNOTSupported_AndAddressHasSubdomain_ThenFailsResolving() async {
         do {

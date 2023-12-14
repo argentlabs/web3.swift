@@ -3,8 +3,8 @@
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public struct EthereumBlockInfo: Equatable {
     public var number: EthereumBlock
@@ -40,15 +40,15 @@ extension EthereumBlockInfo: Codable {
         guard let transactions = try? container.decode([String].self, forKey: .transactions) else {
             throw JSONRPCError.decodingError
         }
-        
+
         guard let gasLimit = try? container.decode(String.self, forKey: .gasLimit) else {
             throw JSONRPCError.decodingError
         }
-        
+
         guard let gasUsed = try? container.decode(String.self, forKey: .gasUsed) else {
             throw JSONRPCError.decodingError
         }
-        
+
         let baseFeePerGas = try? container.decode(String.self, forKey: .baseFeePerGas)
 
         self.number = number
