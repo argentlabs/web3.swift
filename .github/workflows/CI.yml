@@ -10,10 +10,11 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
-    # - name: Lint
-    #   run: ./scripts/runSwiftFormat.sh -l
+    - name: Lint
+      run: ./scripts/runSwiftFormat.sh -l
   macos:
-    # needs: lint
+    if: ${{ success() }}
+    needs: lint
     runs-on: macos-latest
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
@@ -26,7 +27,8 @@ jobs:
     - name: Tests
       run: swift test -v
   linux:
-    # needs: lint
+    if: ${{ success() }}
+    needs: [lint, macos]
     runs-on: ubuntu-latest
     container:
       image: swift:5.7-bionic
