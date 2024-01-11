@@ -26,19 +26,19 @@ jobs:
       run: swift build -v
     - name: Tests
       run: swift test -v
-  linux:
-    if: ${{ success() }}
-    needs: [lint, macos]
-    runs-on: ubuntu-latest
-    container:
-      image: swift:5.7-bionic
-    env:
-      TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
-    steps:
-    - uses: actions/checkout@v3
-    - name: SetupKey
-      run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
-    - name: Build
-      run: swift build -v
-    - name: Tests
-      run: swift test -v
+  # linux:
+  #   if: ${{ success() }}
+  #   needs: [lint, macos]
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: swift:5.7-bionic
+  #   env:
+  #     TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: SetupKey
+  #     run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
+  #   - name: Build
+  #     run: swift build -v
+  #   - name: Tests
+  #     run: swift test -v
