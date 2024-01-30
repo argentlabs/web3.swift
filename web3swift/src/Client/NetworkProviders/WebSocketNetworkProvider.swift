@@ -225,7 +225,7 @@
                 resources.toggleForcedClosed(closed: true)
                 try webSocket?.close(code: code).wait()
             } catch {
-                logger.warning("Clossing WebSocket failed:  \(error)")
+                logger.warning("Closing WebSocket failed:  \(error)")
             }
         }
 
