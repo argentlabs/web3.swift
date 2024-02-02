@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: swift:5.7-bionic
+      image: swift:5.9-jammy
 
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
