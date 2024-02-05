@@ -50,7 +50,7 @@ OR
 
 `EthereumWebSocketClient`
 ```swift
-guard let clientUrl = URL(string: "wss://goerli.infura.io/ws/v3//123") else { return }
+guard let clientUrl = URL(string: "wss://sepolia.infura.io/ws/v3//123") else { return }
 let client = EthereumWebSocketClient(url: clientUrl)
 ```
 

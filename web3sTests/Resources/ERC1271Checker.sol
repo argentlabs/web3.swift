@@ -8,6 +8,10 @@ contract ERC1271Checker is IERC1271, Ownable {
     // bytes4(keccak256("isValidSignature(bytes32,bytes)")
     bytes4 constant internal MAGICVALUE = 0x1626ba7e;
 
+    constructor(address initialOwner) Ownable(initialOwner) {
+        Ownable(initialOwner);
+    
+
     function isValidSignature(
         bytes32 _hash,
         bytes calldata _signature

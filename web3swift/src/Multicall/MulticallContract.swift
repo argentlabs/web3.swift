@@ -8,16 +8,33 @@ import Foundation
 
 extension Multicall {
     public enum Contract {
-        static let goerliAddress: EthereumAddress = "0x77dCa2C955b15e9dE4dbBCf1246B4B85b651e50e"
-        static let mainnetAddress: EthereumAddress = "0xF34D2Cb31175a51B23fb6e08cA06d7208FaD379F"
-        static let multicall2Address: EthereumAddress = "0x5ba1e12693dc8f9c48aad8770482f4739beed696"
+        public enum Registry {
+            static let sepolia: EthereumAddress = "0x25Eef291876194AeFAd0D60Dff89e268b90754Bb"
+            static let mainnet: EthereumAddress = "0xF34D2Cb31175a51B23fb6e08cA06d7208FaD379F"
+        }
+
+        public enum Multicall2 {
+            static let mainnet: EthereumAddress = "0x5ba1e12693dc8f9c48aad8770482f4739beed696"
+            static let sepolia: EthereumAddress = "0x55344B7242EB48e332aaccec3e0cFbE553Be88B5"
+        }
 
         public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
             switch network {
             case .mainnet:
-                return Self.mainnetAddress
-            case .goerli:
-                return Self.goerliAddress
+                return Multicall.Contract.Registry.mainnet
+            case .sepolia:
+                return Multicall.Contract.Registry.sepolia
+            default:
+                return nil
+            }
+        }
+
+        public static func multicall2Address(for network: EthereumNetwork) -> EthereumAddress? {
+            switch network {
+            case .mainnet:
+                return Multicall.Contract.Multicall2.mainnet
+            case .sepolia:
+                return Multicall.Contract.Multicall2.sepolia
             default:
                 return nil
             }
