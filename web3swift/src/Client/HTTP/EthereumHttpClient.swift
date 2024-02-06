@@ -15,6 +15,7 @@ public class EthereumHttpClient: BaseEthereumClient {
 
     public init(
         url: URL,
+        headers: [String: String]? = nil,
         sessionConfig: URLSessionConfiguration = URLSession.shared.configuration,
         logger: Logger? = nil,
         network: EthereumNetwork
@@ -25,6 +26,6 @@ public class EthereumHttpClient: BaseEthereumClient {
         self.networkQueue = networkQueue
 
         let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: networkQueue)
-        super.init(networkProvider: HttpNetworkProvider(session: session, url: url), url: url, logger: logger, network: network)
+        super.init(networkProvider: HttpNetworkProvider(session: session, url: url, headers: headers), url: url, logger: logger, network: network)
     }
 }

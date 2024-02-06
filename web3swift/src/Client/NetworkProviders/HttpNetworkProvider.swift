@@ -12,10 +12,12 @@ import Foundation
 public class HttpNetworkProvider: NetworkProviderProtocol {
     public let session: URLSession
     private let url: URL
-
-    public init(session: URLSession, url: URL) {
+    private let headers: [String: String]
+    
+    public init(session: URLSession, url: URL, headers: [String: String]? = nil) {
         self.session = session
         self.url = url
+        self.headers = headers ?? [:]
     }
 
     deinit {
@@ -33,6 +35,10 @@ public class HttpNetworkProvider: NetworkProviderProtocol {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
 
+        headers.forEach { key, value in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        
         let id = 1
         let rpcRequest = JSONRPCRequest(jsonrpc: "2.0", method: method, params: params, id: id)
         guard let encoded = try? JSONEncoder().encode(rpcRequest) else {
