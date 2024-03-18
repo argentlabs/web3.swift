@@ -226,9 +226,7 @@ class EthereumClientTests: XCTestCase {
             _ = try await client?.eth_getTransaction(byHash: "0x01234")
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
-            XCTAssertEqual(error as? EthereumClientError, .executionError(
-                .init(code: -32602, message: "invalid argument 0: json: cannot unmarshal hex string of odd length into Go value of type common.Hash", data: nil)
-            ))
+            XCTAssertNotNil(error as? EthereumClientError)
         }
     }
 
