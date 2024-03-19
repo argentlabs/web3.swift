@@ -19,7 +19,7 @@
         import FoundationNetworking
     #endif
 
-    class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
+    public class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
         private struct WebSocketRequest {
             var payload: String
             var callback: (Result<Data, JSONRPCError>) -> Void
@@ -107,7 +107,7 @@
 
         weak var delegate: EthereumWebSocketClientDelegate?
 
-        var session: URLSession
+        public var session: URLSession
         var onReconnectCallback: (() -> Void)?
         let url: String
         let eventLoopGroup: EventLoopGroup
@@ -171,7 +171,7 @@
             }
         }
 
-        func send<P, U>(method: String, params: P, receive: U.Type) async throws -> Any where P: Encodable, U: Decodable {
+        public func send<P, U>(method: String, params: P, receive: U.Type) async throws -> Any where P: Encodable, U: Decodable {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
                 resources.incrementCounter()
                 let id = resources.counter
