@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.10
 import PackageDescription
 
 let package = Package(
@@ -33,7 +33,10 @@ let package = Package(
                 .product(name: "WebSocketKit", package: "websocket-kit"),
                 .product(name: "Logging", package: "swift-log")
             ],
-            path: "Sources/Web3Swift"
+            path: "Sources/Web3Swift",
+            swiftSettings: [
+                //                 .concurrencyChecking
+            ]
         ),
         .target(
             name: "web3-zksync",
@@ -41,7 +44,10 @@ let package = Package(
             [
                 .target(name: "web3")
             ],
-            path: "Sources/Web3ZKSync"
+            path: "Sources/Web3ZKSync",
+            swiftSettings: [
+                //                .concurrencyChecking
+            ]
         ),
         .target(
             name: "keccaktiny",
@@ -73,3 +79,11 @@ let package = Package(
         )
     ]
 )
+
+extension SwiftSetting {
+    /// Enable complete concurrency checking for a target in a Swift package using Swift 5.9 or Swift 5.10
+    /// [Swift Concurrency Documentation](https://www.swift.org/documentation/concurrency/)
+    static var concurrencyChecking: SwiftSetting {
+        .enableExperimentalFeature("StrictConcurrency=complete")
+    }
+}
