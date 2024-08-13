@@ -1,13 +1,12 @@
 //
-//  web3.swift
+//  KeyUtilTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class KeyUtilTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -47,7 +46,7 @@ class KeyUtilTests: XCTestCase {
 
         XCTAssertEqual(address, "0x751e735a83a8142c1b9dc722ef559b898f1d77fa")
     }
-    
+
     func testRecoverPublicKey() {
         let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173"))
         let signature = try! account.sign(message: "Hello message!")
@@ -56,7 +55,7 @@ class KeyUtilTests: XCTestCase {
 
         XCTAssertEqual(address, account.address.asString().lowercased())
     }
-    
+
     func testRecoverPublicKeyMultiple() {
         let storage = TestEthereumMultipleKeyStorage(privateKey: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173")
         let account = try! EthereumAccount(addressString: TestConfig.publicKey, keyStorage: storage)

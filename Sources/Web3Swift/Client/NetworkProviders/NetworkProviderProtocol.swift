@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  NetworkProviderProtocol.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -18,7 +18,7 @@ public protocol NetworkProviderProtocol {
 }
 
 #if canImport(NIO)
-    internal protocol WebSocketNetworkProviderProtocol: NetworkProviderProtocol {
+    protocol WebSocketNetworkProviderProtocol: NetworkProviderProtocol {
         var delegate: EthereumWebSocketClientDelegate? { get set }
         var onReconnectCallback: (() -> Void)? { get set }
         var currentState: WebSocketState { get }

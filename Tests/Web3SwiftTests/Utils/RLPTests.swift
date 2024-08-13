@@ -1,14 +1,13 @@
 //
-//  web3.swift
+//  RLPTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 class RLPTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -106,7 +105,6 @@ class RLPTests: XCTestCase {
     }
 
     func testEncodeNestedList() {
-
         let input = [
             [],
             [
@@ -121,7 +119,7 @@ class RLPTests: XCTestCase {
         ]
 
         let encoded = RLP.encode(input)!
-        let expected = Data( [0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
+        let expected = Data([0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0])
 
         XCTAssertEqual(expected, encoded)
     }
@@ -135,7 +133,7 @@ class RLPTests: XCTestCase {
             var input = value["in"] as Any
             let output = value["out"] as! String
 
-            if let inputStr = input as? String, inputStr.count > 0, let numericString = BigUInt(inputStr) {
+            if let inputStr = input as? String, !inputStr.isEmpty, let numericString = BigUInt(inputStr) {
                 input = numericString
             }
 
@@ -145,5 +143,4 @@ class RLPTests: XCTestCase {
             XCTAssertEqual(expected, encoded.web3.hexString.web3.noHexPrefix, "\(key) failed for \(input)")
         })
     }
-
 }

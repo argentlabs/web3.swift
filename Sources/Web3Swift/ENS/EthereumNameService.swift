@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  EthereumNameService.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -155,9 +155,9 @@ fileprivate extension ResolutionMode {
     func callResolution(maxRedirects: Int) -> CallResolution {
         switch self {
         case .allowOffchainLookup:
-            return .offchainAllowed(maxRedirects: maxRedirects)
+            .offchainAllowed(maxRedirects: maxRedirects)
         case .onchain:
-            return .noOffchain(failOnExecutionError: true)
+            .noOffchain(failOnExecutionError: true)
         }
     }
 }

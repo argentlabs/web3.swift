@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ByteExtensions.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 

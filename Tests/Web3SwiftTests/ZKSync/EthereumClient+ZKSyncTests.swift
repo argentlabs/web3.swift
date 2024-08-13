@@ -1,14 +1,13 @@
 //
-//  web3.swift
+//  EthereumClient+ZKSyncTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
-@testable import web3_zksync
 @testable import web3
 import XCTest
+import Foundation
+@testable import web3_zksync
 import BigInt
-
 
 final class EthereumClientZKSyncTests: XCTestCase {
     let eoaAccount = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
@@ -20,7 +19,7 @@ final class EthereumClientZKSyncTests: XCTestCase {
         data: Data(),
         gasLimit: 300000
     )
-    
+
     func test_GivenEOATransaction_gasEstimationCorrect() async {
         do {
             let estimate = try await client.estimateGas(

@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  EthereumProvider.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -145,11 +145,10 @@ extension EthereumRPCProtocol {
     }
 
     public func eth_estimateGas(_ transaction: EthereumTransaction) async throws -> BigUInt {
-        let value: BigUInt?
-        if let txValue = transaction.value, txValue > .zero {
-            value = txValue
+        let value: BigUInt? = if let txValue = transaction.value, txValue > .zero {
+            txValue
         } else {
-            value = nil
+            nil
         }
 
         let params = EstimateCallParams(
@@ -271,11 +270,11 @@ extension EthereumRPCProtocol {
 
     func failureHandler(_ error: Error) -> EthereumClientError {
         if case let .executionError(result) = error as? JSONRPCError {
-            return EthereumClientError.executionError(result.error)
+            EthereumClientError.executionError(result.error)
         } else if case .executionError = error as? EthereumClientError, let error = error as? EthereumClientError {
-            return error
+            error
         } else {
-            return EthereumClientError.unexpectedReturnValue
+            EthereumClientError.unexpectedReturnValue
         }
     }
 }
@@ -296,7 +295,7 @@ fileprivate struct EstimateCallParams: Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
-        if let from = from {
+        if let from {
             try nested.encode(from, forKey: .from)
         }
         try nested.encode(to, forKey: .to)
@@ -308,7 +307,7 @@ fileprivate struct EstimateCallParams: Encodable {
         if let value = value.map(jsonRPCAmount) {
             try nested.encode(value, forKey: .value)
         }
-        if let data = data {
+        if let data {
             try nested.encode(data, forKey: .data)
         }
     }

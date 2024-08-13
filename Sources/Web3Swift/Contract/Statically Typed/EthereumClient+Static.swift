@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  EthereumClient+Static.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -58,18 +58,18 @@ extension CallResolution {
     var failOnExecutionError: Bool {
         switch self {
         case let .noOffchain(fail):
-            return fail
+            fail
         case .offchainAllowed:
-            return true
+            true
         }
     }
 
     var allowsOffchain: Bool {
         switch self {
         case .noOffchain:
-            return false
+            false
         case .offchainAllowed:
-            return true
+            true
         }
     }
 }

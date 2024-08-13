@@ -1,14 +1,14 @@
 //
-//  web3.swift
+//  ERC721Tests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 let tokenOwner = EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41")
@@ -66,11 +66,13 @@ class ERC721Tests: XCTestCase {
 
     func test_GivenAddressWithTransfer_FindsInTransferEvent() async {
         do {
-            let events = try await erc721.transferEventsTo(recipient: tokenOwner,
-                                                           fromBlock: .Number(
-                                                            4916900  ),
-                                                           toBlock: .Number(
-                                                            4916900 ))
+            let events = try await erc721.transferEventsTo(
+                recipient: tokenOwner,
+                fromBlock: .Number(
+                    4916900),
+                toBlock: .Number(
+                    4916900)
+            )
             XCTAssertEqual(events.first?.from, previousOwner)
             XCTAssertEqual(events.first?.to, tokenOwner)
             XCTAssertEqual(events.first?.tokenId, 0)
@@ -81,11 +83,13 @@ class ERC721Tests: XCTestCase {
 
     func test_GivenAddressWithTransfer_FindsOutTransferEvent() async {
         do {
-            let events = try await erc721.transferEventsFrom(sender: previousOwner,
-                                                             fromBlock: .Number(
-                                                                4916900),
-                                                             toBlock: .Number(
-                                                                4916900))
+            let events = try await erc721.transferEventsFrom(
+                sender: previousOwner,
+                fromBlock: .Number(
+                    4916900),
+                toBlock: .Number(
+                    4916900)
+            )
             XCTAssertEqual(events.first?.to, tokenOwner)
             XCTAssertEqual(events.first?.from, previousOwner)
             XCTAssertEqual(events.first?.tokenId, 0)

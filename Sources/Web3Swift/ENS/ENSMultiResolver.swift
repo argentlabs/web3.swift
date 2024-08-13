@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ENSMultiResolver.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -190,7 +190,7 @@ extension EthereumNameService {
         private func resolveQueries<ResolverOutput>(registryOutput: RegistryOutput<ResolverOutput>) async throws -> [ResolverOutput] {
             var aggegator = Multicall.Aggregator()
 
-            registryOutput.queries.forEach { query in
+            for query in registryOutput.queries {
                 switch query.parameter {
                 case let .address(address):
                     guard let registryOutput = registryOutput as? RegistryOutput<AddressResolveOutput> else {

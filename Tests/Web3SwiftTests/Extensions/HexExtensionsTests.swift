@@ -1,14 +1,13 @@
 //
-//  web3.swift
+//  HexExtensionsTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 class HexExtensionsTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -93,13 +92,13 @@ class HexExtensionsTests: XCTestCase {
     func testHexStringToData() {
         let hexString = "2b6f"
         let data = hexString.web3.hexData
-        XCTAssertEqual(data, Data( [43, 111]))
+        XCTAssertEqual(data, Data([43, 111]))
     }
 
     func testHexStringToDataPrefix() {
         let hexString = "0x2b6f"
         let data = hexString.web3.hexData
-        XCTAssertEqual(data, Data( [43, 111]))
+        XCTAssertEqual(data, Data([43, 111]))
     }
 
     func testHexStringFromBytes() {

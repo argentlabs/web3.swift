@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ENSContracts.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -14,11 +14,11 @@ public enum ENSContracts {
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
         switch network {
         case .mainnet:
-            return ENSContracts.RegistryAddress
+            ENSContracts.RegistryAddress
         case .sepolia:
-            return ENSContracts.RegistryAddress
+            ENSContracts.RegistryAddress
         default:
-            return nil
+            nil
         }
     }
 
@@ -27,14 +27,13 @@ public enum ENSContracts {
         case name(String)
 
         var nameHash: Data {
-            let nameHash: String
-            switch self {
+            let nameHash: String = switch self {
             case let .address(address):
-                nameHash = ENSContracts.nameHash(
+                ENSContracts.nameHash(
                     name: address.asString().web3.noHexPrefix + ".addr.reverse"
                 )
             case let .name(ens):
-                nameHash = ENSContracts.nameHash(name: ens)
+                ENSContracts.nameHash(name: ens)
             }
             return nameHash.web3.hexData ?? Data()
         }
@@ -42,29 +41,29 @@ public enum ENSContracts {
         var dnsEncoded: Data {
             switch self {
             case let .address(address):
-                return ENSContracts.dnsEncode(
+                ENSContracts.dnsEncode(
                     name: address.asString().web3.noHexPrefix + ".addr.reverse"
                 )
             case let .name(name):
-                return ENSContracts.dnsEncode(name: name)
+                ENSContracts.dnsEncode(name: name)
             }
         }
 
         var name: String? {
             switch self {
             case let .name(ens):
-                return ens
+                ens
             case .address:
-                return nil
+                nil
             }
         }
 
         var address: EthereumAddress? {
             switch self {
             case let .address(address):
-                return address
+                address
             case .name:
-                return nil
+                nil
             }
         }
     }

@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  SiweMessageTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -7,7 +7,6 @@ import XCTest
 @testable import web3
 
 final class SiweMessageTests: XCTestCase {
-
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone(identifier: "UTC")
@@ -482,8 +481,9 @@ private extension Data {
     func asJson(with writingOptions: JSONSerialization.WritingOptions) -> Data {
         guard
             let object = try? JSONSerialization.jsonObject(with: self, options: []),
-            let data = try? JSONSerialization.data(withJSONObject: object, options: writingOptions)
-        else { return self }
+            let data = try? JSONSerialization.data(withJSONObject: object, options: writingOptions) else {
+            return self
+        }
         return data
     }
 }

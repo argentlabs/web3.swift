@@ -1,10 +1,10 @@
 //
-//  web3.swift
+//  TestConfig.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import Foundation
 import web3
+import Foundation
 
 struct TestConfig {
     // This is the proxy URL for connecting to the Blockchain. For testing we usually use the Sepolia network on Infura. Using free tier, so might hit rate limits
@@ -35,15 +35,15 @@ struct TestConfig {
 
     static let network = EthereumNetwork.sepolia
 
-     enum ZKSync {
-         static let chainId = 280
-         static let network = EthereumNetwork.custom("\(280)")
-         static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
+    enum ZKSync {
+        static let chainId = 280
+        static let network = EthereumNetwork.custom("\(280)")
+        static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
     }
 }
 
-
-@discardableResult public func with<Root>(_ root: Root, _ block: (inout Root) throws -> Void) rethrows -> Root {
+@discardableResult
+public func with<Root>(_ root: Root, _ block: (inout Root) throws -> Void) rethrows -> Root {
     var copy = root
     try block(&copy)
     return copy

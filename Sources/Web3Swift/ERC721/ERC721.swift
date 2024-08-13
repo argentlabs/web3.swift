@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ERC721.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -68,7 +68,7 @@ open class ERC721: ERC165 {
 
 public class ERC721Metadata: ERC721 {
     public struct Token: Equatable, Decodable {
-        public typealias PropertyType = Equatable & Decodable
+        public typealias PropertyType = Decodable & Equatable
         public struct Property<T: PropertyType>: Equatable, Decodable {
             public var description: T
         }
@@ -98,7 +98,7 @@ public class ERC721Metadata: ERC721 {
             self.type = try? container.decode(String.self, forKey: .type)
             let properties = try? container.decode(Properties.self, forKey: .properties)
 
-            if let properties = properties {
+            if let properties {
                 self.properties = properties
             } else {
                 // try decoding properties from root directly

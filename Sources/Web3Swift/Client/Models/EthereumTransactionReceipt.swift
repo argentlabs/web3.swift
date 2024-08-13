@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  EthereumTransactionReceipt.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 

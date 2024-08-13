@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ResultExtensions.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -8,7 +8,7 @@ import Foundation
 extension Result where Failure == JSONRPCError {
     init(catching body: () throws -> Success) {
         do {
-            self = .success(try body())
+            self = try .success(body())
         } catch {
             self = .failure(error as! JSONRPCError)
         }

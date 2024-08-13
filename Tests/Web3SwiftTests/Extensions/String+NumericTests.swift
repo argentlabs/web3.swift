@@ -1,13 +1,12 @@
 //
-//  web3.swift
+//  String+NumericTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class String_NumericTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -28,5 +27,4 @@ class String_NumericTests: XCTestCase {
         XCTAssertFalse("!9043".web3.isNumeric)
         XCTAssertFalse("#42044".web3.isNumeric)
     }
-
 }

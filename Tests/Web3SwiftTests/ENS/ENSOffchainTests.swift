@@ -1,10 +1,10 @@
 //
-//  web3.swift
+//  ENSOffchainTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class ENSOffchainTests: XCTestCase {
     var account: EthereumAccount?
@@ -19,15 +19,14 @@ class ENSOffchainTests: XCTestCase {
         XCTAssertEqual(
             EthereumNameService.dnsEncode(name: "offchainexample.eth").web3.hexString,
             "0x0f6f6666636861696e6578616d706c650365746800"
-            )
+        )
         XCTAssertEqual(
             EthereumNameService.dnsEncode(name: "1.offchainexample.eth").web3.hexString,
             "0x01310f6f6666636861696e6578616d706c650365746800"
-            )
-
+        )
     }
 
-    // TODO [Tests] Disabled until we can test with proper offchain ENS set up
+    // TODO: [Tests] Disabled until we can test with proper offchain ENS set up
 //    func testGivenRegistry_WhenResolvingOffchainENS_ResolvesCorrectly() async {
 //        do {
 //            let nameService = EthereumNameService(client: client!)

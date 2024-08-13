@@ -1,11 +1,11 @@
 //
-//  web3.swift
+//  ERC165Tests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 class ERC165Tests: XCTestCase {
     var client: EthereumClientProtocol!

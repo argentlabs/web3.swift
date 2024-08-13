@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  EthereumSubscription.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -14,13 +14,13 @@ public enum EthereumSubscriptionType: Equatable, Hashable {
     var params: [EthereumSubscriptionParamElement] {
         switch self {
         case .newBlockHeaders:
-            return [.method("newHeads")]
+            [.method("newHeads")]
         case let .logs(params):
-            return [.method("logs"), .logsParams(params ?? .init(address: nil, topics: nil))]
+            [.method("logs"), .logsParams(params ?? .init(address: nil, topics: nil))]
         case .newPendingTransactions:
-            return [.method("newPendingTransactions")]
+            [.method("newPendingTransactions")]
         case .syncing:
-            return [.method("syncing")]
+            [.method("syncing")]
         }
     }
 }

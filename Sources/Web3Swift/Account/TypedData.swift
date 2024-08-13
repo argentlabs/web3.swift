@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  TypedData.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -61,8 +61,8 @@ extension TypedData {
     // Whole data blob hash to sign
     public func signableHash() throws -> Data {
         var data = Data([0x19, 0x01])
-        data.append(try encodeData(data: domain, type: "EIP712Domain").web3.keccak256)
-        data.append(try encodeData(data: message, type: primaryType).web3.keccak256)
+        try data.append(encodeData(data: domain, type: "EIP712Domain").web3.keccak256)
+        try data.append(encodeData(data: message, type: primaryType).web3.keccak256)
         return data.web3.keccak256
     }
 

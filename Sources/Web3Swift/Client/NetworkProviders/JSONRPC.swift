@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  JSONRPC.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -78,9 +78,9 @@ public enum JSONRPCError: Error {
     public var isExecutionError: Bool {
         switch self {
         case .executionError:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }

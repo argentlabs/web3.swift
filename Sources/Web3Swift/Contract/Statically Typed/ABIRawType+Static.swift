@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ABIRawType+Static.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -119,7 +119,7 @@ extension URL: ABIType {
 
 extension ABITuple {
     public static var rawType: ABIRawType {
-        .Tuple(Self.types.map { $0.rawType })
+        .Tuple(types.map { $0.rawType })
     }
 
     public static var parser: ParserFunction {

@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  KeyDerivation.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -19,9 +19,9 @@ enum KeyDerivationAlgorithm {
         func ccAlgorithm() -> CCAlgorithm {
             switch self {
             case .pbkdf2sha256:
-                return CCPBKDFAlgorithm(kCCPRFHmacAlgSHA256)
+                CCPBKDFAlgorithm(kCCPRFHmacAlgSHA256)
             case .pbkdf2sha512:
-                return CCPBKDFAlgorithm(kCCPRFHmacAlgSHA512)
+                CCPBKDFAlgorithm(kCCPRFHmacAlgSHA512)
             }
         }
     #endif
@@ -29,27 +29,27 @@ enum KeyDerivationAlgorithm {
     func function() -> String {
         switch self {
         case .pbkdf2sha256:
-            return "pbkdf2"
+            "pbkdf2"
         case .pbkdf2sha512:
-            return "pbkdf2"
+            "pbkdf2"
         }
     }
 
     func hash() -> String {
         switch self {
         case .pbkdf2sha256:
-            return "hmac-sha256"
+            "hmac-sha256"
         case .pbkdf2sha512:
-            return "hmac-sha512"
+            "hmac-sha512"
         }
     }
 
     fileprivate func hmacVariant() -> HMAC.Variant {
         switch self {
         case .pbkdf2sha256:
-            return .sha256
+            .sha256
         case .pbkdf2sha512:
-            return .sha512
+            .sha512
         }
     }
 }

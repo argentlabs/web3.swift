@@ -1,11 +1,11 @@
 //
-//  web3.swift
+//  ERC20Tests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 class ERC20Tests: XCTestCase {
     var client: EthereumClientProtocol?
@@ -62,10 +62,10 @@ class ERC20Tests: XCTestCase {
         do {
             let result = try! ABIEncoder.encode(EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"))
             let sig = try! ERC20Events.Transfer.signature()
-            let topics = [ sig, result.hexString]
+            let topics = [sig, result.hexString]
 
             let eventResults = try await client?.getEvents(addresses: nil, topics: topics, fromBlock: .Earliest, toBlock: .Latest, eventTypes: [ERC20Events.Transfer.self])
-            XCTAssert(eventResults!.events.count > 0)
+            XCTAssert(!eventResults!.events.isEmpty)
         } catch {
             XCTFail("Expected eventResults but failed \(error).")
         }
@@ -74,7 +74,7 @@ class ERC20Tests: XCTestCase {
     func testGivenAddressWithInTransfers_ThenGetsTheTransferEvents() async {
         do {
             let events = try await erc20?.transferEventsTo(recipient: "0x162142f0508F557C02bEB7C473682D7C91Bcef41", fromBlock: .Earliest, toBlock: .Latest)
-            XCTAssert(events!.count > 0)
+            XCTAssert(!events!.isEmpty)
         } catch {
             XCTFail("Expected events but failed \(error).")
         }

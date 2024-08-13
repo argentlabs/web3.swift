@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  EthereumKeyStorage.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -32,7 +32,7 @@ public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
     private let localFileName = "ethereumkey"
 
     private var addressPath: String? {
-        guard let address = address else {
+        guard let address else {
             return nil
         }
         if let url = folderPath {
@@ -58,7 +58,7 @@ public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
     private let fileManager = FileManager.default
 
     public func storePrivateKey(key: Data) throws {
-        guard let localPath = localPath else {
+        guard let localPath else {
             throw EthereumKeyStorageError.failedToSave
         }
 
@@ -70,7 +70,7 @@ public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
     }
 
     public func loadPrivateKey() throws -> Data {
-        guard let localPath = localPath else {
+        guard let localPath else {
             throw EthereumKeyStorageError.failedToLoad
         }
 
@@ -84,7 +84,7 @@ public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
 
 extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
     public func fetchAccounts() throws -> [EthereumAddress] {
-        guard let folderPath = folderPath else {
+        guard let folderPath else {
             throw EthereumKeyStorageError.failedToLoad
         }
 
@@ -139,7 +139,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
 
     public func deleteAllKeys() throws {
         do {
-            if let folderPath = folderPath {
+            if let folderPath {
                 let directoryContents = try fileManager.contentsOfDirectory(atPath: folderPath.path)
                 let addresses = directoryContents.filter({ $0.web3.isAddress || $0 == localFileName })
                 for address in addresses {
@@ -154,7 +154,7 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
 
     public func deletePrivateKey(for address: EthereumAddress) throws {
         do {
-            if let folderPath = folderPath {
+            if let folderPath {
                 let filePathName = folderPath.appendingPathComponent(address.asString())
                 try fileManager.removeItem(at: filePathName)
             }

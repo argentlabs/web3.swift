@@ -1,13 +1,12 @@
 //
-//  web3.swift
+//  Data+RandomTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class Data_RandomTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -25,5 +24,4 @@ class Data_RandomTests: XCTestCase {
         let data = Data.randomOfLength(32)!
         XCTAssertEqual(data.count, 32)
     }
-
 }
