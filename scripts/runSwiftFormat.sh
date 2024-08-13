@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SWIFT_VERSION=5.3
+SWIFT_VERSION=5.10
 
 cd "$(dirname "$0")"
 
@@ -17,8 +17,8 @@ if ! which bin/swiftformat >/dev/null; then
     cd bin
     rm -r ./*
 
-    downloadAndUnzip "SwiftFormatTmp" "https://github.com/nicklockwood/SwiftFormat/releases/download/0.50.3/swiftformat.artifactbundle.zip"
-    mv -f ./SwiftFormatTmp/swiftformat.artifactbundle/swiftformat-0.50.3-macos/bin/swiftformat .
+    downloadAndUnzip "SwiftFormatTmp" "https://github.com/nicklockwood/SwiftFormat/releases/download/0.54.3/swiftformat.artifactbundle.zip"
+    mv -f ./SwiftFormatTmp/swiftformat.artifactbundle/swiftformat-0.54.3-macos/bin/swiftformat .
     find . -name "*Tmp" -type d -prune -exec rm -rf '{}' +
     for entry in ./*
     do
