@@ -1,10 +1,10 @@
 //
-//  web3.swift
+//  MulticallTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class MulticallTests: XCTestCase {
     var client: EthereumClientProtocol!
@@ -38,7 +38,7 @@ class MulticallTests: XCTestCase {
 
         do {
             let response = try await multicall.aggregate(calls: aggregator.calls)
-            let symbol = try ERC20Responses.symbolResponse(data: try response.outputs[2].get())?.value
+            let symbol = try ERC20Responses.symbolResponse(data: response.outputs[2].get())?.value
             XCTAssertEqual(symbol, "USDC")
         } catch {
             XCTFail("Unexpected failure while handling output")
@@ -47,7 +47,7 @@ class MulticallTests: XCTestCase {
         XCTAssertEqual(decimals, 6)
         XCTAssertEqual(name, "USD Coin")
     }
-    
+
     func testNameAndSymbolMulticall2() async throws {
         var aggregator = Multicall.Aggregator()
 

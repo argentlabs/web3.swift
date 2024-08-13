@@ -1,16 +1,16 @@
 //
-//  web3.swift
+//  EthereumClientTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import BigInt
 import NIO
-import XCTest
 @testable import web3
+import BigInt
+import XCTest
 
 struct TransferMatchingSignatureEvent: ABIEvent {
     public static let name = "Transfer"
-    public static let types: [ABIType.Type] = [ EthereumAddress.self, EthereumAddress.self, BigUInt.self]
+    public static let types: [ABIType.Type] = [EthereumAddress.self, EthereumAddress.self, BigUInt.self]
     public static let typesIndexed = [true, true, false]
     public let log: EthereumLog
 
@@ -32,7 +32,7 @@ struct TransferMatchingSignatureEvent: ABIEvent {
 class EthereumClientTests: XCTestCase {
     var client: EthereumClientProtocol?
     var account: EthereumAccount?
-    
+
     override func setUp() {
         super.setUp()
         client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
@@ -234,11 +234,13 @@ class EthereumClientTests: XCTestCase {
         do {
             let to = try! ABIEncoder.encode(EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"))
 
-            let eventsResult = try await client?.getEvents(addresses: nil,
-                                                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                                                           fromBlock: .Earliest,
-                                                           toBlock: .Latest,
-                                                           eventTypes: [ERC20Events.Transfer.self])
+            let eventsResult = try await client?.getEvents(
+                addresses: nil,
+                topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                fromBlock: .Earliest,
+                toBlock: .Latest,
+                eventTypes: [ERC20Events.Transfer.self]
+            )
             XCTAssertEqual(eventsResult?.logs.count, 4)
             XCTAssertEqual(eventsResult?.events.count, 5)
         } catch {
@@ -250,11 +252,13 @@ class EthereumClientTests: XCTestCase {
         do {
             let to = try! ABIEncoder.encode(EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"))
 
-            let eventsResult = try await client?.getEvents(addresses: nil,
-                                                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                                                           fromBlock: .Earliest,
-                                                           toBlock: .Latest,
-                                                           eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self])
+            let eventsResult = try await client?.getEvents(
+                addresses: nil,
+                topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                fromBlock: .Earliest,
+                toBlock: .Latest,
+                eventTypes: [ERC20Events.Transfer.self, TransferMatchingSignatureEvent.self]
+            )
             XCTAssertEqual(eventsResult?.logs.count, 8)
             XCTAssertEqual(eventsResult?.events.count, 10)
         } catch {
@@ -269,11 +273,13 @@ class EthereumClientTests: XCTestCase {
                 EventFilter(type: ERC20Events.Transfer.self, allowedSenders: ["0xF31B086459C2cdaC006Feedd9080223964a9cDdB"])
             ]
 
-            let eventsResult = try await client?.getEvents(addresses: nil,
-                                                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                                                           fromBlock: .Earliest,
-                                                           toBlock: .Latest,
-                                                           matching: filters)
+            let eventsResult = try await client?.getEvents(
+                addresses: nil,
+                topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                fromBlock: .Earliest,
+                toBlock: .Latest,
+                matching: filters
+            )
             XCTAssertEqual(eventsResult?.logs.count, 7)
             XCTAssertEqual(eventsResult?.events.count, 2)
         } catch {
@@ -289,11 +295,13 @@ class EthereumClientTests: XCTestCase {
                 EventFilter(type: TransferMatchingSignatureEvent.self, allowedSenders: ["0xB2a6874c2F71fD4481674BaC945D5407A2318b3E"])
             ]
 
-            let eventsResult = try await client?.getEvents(addresses: nil,
-                                                           topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
-                                                           fromBlock: .Earliest,
-                                                           toBlock: .Latest,
-                                                           matching: filters)
+            let eventsResult = try await client?.getEvents(
+                addresses: nil,
+                topics: [try! ERC20Events.Transfer.signature(), nil, to.hexString, nil],
+                fromBlock: .Earliest,
+                toBlock: .Latest,
+                matching: filters
+            )
             XCTAssertEqual(eventsResult?.logs.count, 16)
             XCTAssertEqual(eventsResult?.events.count, 6)
         } catch {
@@ -317,7 +325,8 @@ class EthereumClientTests: XCTestCase {
             let function = InvalidMethodA(param: .zero)
             _ = try await function.call(
                 withClient: client!,
-                responseType: InvalidMethodA.BoolResponse.self)
+                responseType: InvalidMethodA.BoolResponse.self
+            )
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
             XCTAssertEqual(
@@ -331,13 +340,15 @@ class EthereumClientTests: XCTestCase {
 
     func test_GivenValidTransaction_ThenEstimatesGas() async {
         do {
-            let function = TransferToken(wallet: "0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F",
-                                         token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-                                         to: "0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd",
-                                         amount: 1,
-                                         data: Data(),
-                                         gasPrice: nil,
-                                         gasLimit: nil)
+            let function = TransferToken(
+                wallet: "0xD18dE36e6FB4a5A069f673723Fab71cc00C6CE5F",
+                token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+                to: "0x2A6295C34b4136F2C3c1445c6A0338D784fe0ddd",
+                amount: 1,
+                data: Data(),
+                gasPrice: nil,
+                gasLimit: nil
+            )
 
             let value = try await client!.eth_estimateGas(try! function.transaction())
             XCTAssert(value != 0)
@@ -348,12 +359,14 @@ class EthereumClientTests: XCTestCase {
 
     func test_ValueWithLeadingZero_EstimatesGas() async {
         do {
-            let tx = EthereumTransaction(from: EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"),
-                                         to: EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"),
-                                         value: BigUInt(5000000000),
-                                         data: Data(),
-                                         gasPrice: BigUInt(0),
-                                         gasLimit: BigUInt(0))
+            let tx = EthereumTransaction(
+                from: EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"),
+                to: EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793"),
+                value: BigUInt(5000000000),
+                data: Data(),
+                gasPrice: BigUInt(0),
+                gasLimit: BigUInt(0)
+            )
             let value = try await client!.eth_estimateGas(tx)
             XCTAssert(value != 0)
         } catch {
@@ -375,12 +388,10 @@ struct GetDynamicArray: ABIFunction {
 
         init?(values: [ABIDecoder.DecodedValue]) throws {
             self.addresses = try values[0].decodedArray()
-
         }
     }
 
-    func encode(to encoder: ABIFunctionEncoder) throws {
-    }
+    func encode(to encoder: ABIFunctionEncoder) throws {}
 }
 
 struct TransferToken: ABIFunction {
@@ -424,8 +435,7 @@ struct InvalidMethodA: ABIFunction {
         }
     }
 
-    func encode(to encoder: ABIFunctionEncoder) throws {
-    }
+    func encode(to encoder: ABIFunctionEncoder) throws {}
 }
 
 class EthereumWebSocketClientTests: EthereumClientTests {
@@ -434,150 +444,149 @@ class EthereumWebSocketClientTests: EthereumClientTests {
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
-
     }
-#if os(Linux)
-// On Linux some tests are fail. Need investigation
-#else
-    func testWebSocketNoAutomaticOpen() {
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false), network: TestConfig.network)
+    #if os(Linux)
+    // On Linux some tests are fail. Need investigation
+    #else
+        func testWebSocketNoAutomaticOpen() {
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false), network: TestConfig.network)
 
-        guard let client = client as? EthereumWebSocketClient else {
-            XCTFail("Expected client to be EthereumWebSocketClient")
-            return
-        }
-
-        XCTAssertEqual(client.currentState, WebSocketState.closed)
-    }
-
-    func testWebSocketConnect() {
-        self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false), network: TestConfig.network)
-
-        guard let client = client as? EthereumWebSocketClient else {
-            XCTFail("Expected client to be EthereumWebSocketClient")
-            return
-        }
-
-        XCTAssertEqual(client.currentState, WebSocketState.closed)
-
-        client.connect()
-
-        XCTAssertEqual(client.currentState, WebSocketState.open)
-    }
-
-    func testWebSocketPendingTransactions() async {
-        do {
             guard let client = client as? EthereumWebSocketClient else {
                 XCTFail("Expected client to be EthereumWebSocketClient")
                 return
             }
 
-            var expectation: XCTestExpectation? = self.expectation(description: "Pending Transaction")
-            let subscription = try await client.pendingTransactions { _ in
-                expectation?.fulfill()
-                expectation = nil
-            }
-
-            await waitForExpectations(timeout: 5, handler: nil)
-
-            XCTAssertNotEqual(subscription.id, "")
-            XCTAssertEqual(subscription.type, .newPendingTransactions)
-        } catch {
-            XCTFail("Expected subscription but failed \(error).")
+            XCTAssertEqual(client.currentState, WebSocketState.closed)
         }
-    }
 
-    func testWebSocketNewBlockHeaders() async {
-        do {
+        func testWebSocketConnect() {
+            self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: .init(automaticOpen: false), network: TestConfig.network)
+
             guard let client = client as? EthereumWebSocketClient else {
                 XCTFail("Expected client to be EthereumWebSocketClient")
                 return
             }
 
-            var expectation: XCTestExpectation? = self.expectation(description: "New Block Headers")
-            let subscription = try await client.newBlockHeaders { _ in
-                expectation?.fulfill()
-                expectation = nil
-            }
+            XCTAssertEqual(client.currentState, WebSocketState.closed)
 
-            // we need a high timeout as new block might take a while
-            await waitForExpectations(timeout: 2500, handler: nil)
+            client.connect()
 
-            XCTAssertNotEqual(subscription.id, "")
-            XCTAssertEqual(subscription.type, .newBlockHeaders)
-        } catch {
-            XCTFail("Expected subscription but failed \(error).")
+            XCTAssertEqual(client.currentState, WebSocketState.open)
         }
-    }
 
-    func testWebSocketLogs() async {
-        do {
-            guard let client = client as? EthereumWebSocketClient else {
-                XCTFail("Expected client to be EthereumWebSocketClient")
-                return
+        func testWebSocketPendingTransactions() async {
+            do {
+                guard let client = client as? EthereumWebSocketClient else {
+                    XCTFail("Expected client to be EthereumWebSocketClient")
+                    return
+                }
+
+                var expectation: XCTestExpectation? = self.expectation(description: "Pending Transaction")
+                let subscription = try await client.pendingTransactions { _ in
+                    expectation?.fulfill()
+                    expectation = nil
+                }
+
+                await waitForExpectations(timeout: 5, handler: nil)
+
+                XCTAssertNotEqual(subscription.id, "")
+                XCTAssertEqual(subscription.type, .newPendingTransactions)
+            } catch {
+                XCTFail("Expected subscription but failed \(error).")
             }
-
-            var expectation: XCTestExpectation? = self.expectation(description: "Logs")
-            let type = EthereumSubscriptionType.logs(nil)
-            let subscription = try await client.logs { log in
-                print(log)
-                expectation?.fulfill()
-                expectation = nil
-            }
-
-            // we need a high timeout as new block might take a while
-            await waitForExpectations(timeout: 2500, handler: nil)
-
-            XCTAssertNotEqual(subscription.id, "")
-            XCTAssertEqual(subscription.type, type)
-        } catch {
-            XCTFail("Expected subscription but failed \(error).")
         }
-    }
 
-    func testWebSocketSubscribe() async {
-        do {
-            guard let client = client as? EthereumWebSocketClient else {
-                XCTFail("Expected client to be EthereumWebSocketClient")
-                return
+        func testWebSocketNewBlockHeaders() async {
+            do {
+                guard let client = client as? EthereumWebSocketClient else {
+                    XCTFail("Expected client to be EthereumWebSocketClient")
+                    return
+                }
+
+                var expectation: XCTestExpectation? = self.expectation(description: "New Block Headers")
+                let subscription = try await client.newBlockHeaders { _ in
+                    expectation?.fulfill()
+                    expectation = nil
+                }
+
+                // we need a high timeout as new block might take a while
+                await waitForExpectations(timeout: 2500, handler: nil)
+
+                XCTAssertNotEqual(subscription.id, "")
+                XCTAssertEqual(subscription.type, .newBlockHeaders)
+            } catch {
+                XCTFail("Expected subscription but failed \(error).")
             }
-            client.delegate = self
-
-            delegateExpectation = expectation(description: "onNewPendingTransaction delegate call")
-            var subscription = try await client.subscribe(type: .newPendingTransactions)
-            await waitForExpectations(timeout: 10)
-            _ = try await client.unsubscribe(subscription)
-
-            delegateExpectation = expectation(description: "onNewBlockHeader delegate call")
-            subscription = try await client.subscribe(type: .newBlockHeaders)
-            await waitForExpectations(timeout: 2500)
-            _ = try await client.unsubscribe(subscription)
-
-            delegateExpectation = expectation(description: "onLogs delegate call")
-            let type = EthereumSubscriptionType.logs(nil)
-            subscription = try await client.subscribe(type: type)
-            await waitForExpectations(timeout: 2500)
-            _ = try await client.unsubscribe(subscription)
-        } catch {
-            XCTFail("Expected subscription but failed \(error).")
         }
-    }
 
-    func testWebSocketUnsubscribe() async {
-        do {
-            guard let client = client as? EthereumWebSocketClient else {
-                XCTFail("Expected client to be EthereumWebSocketClient")
-                return
+        func testWebSocketLogs() async {
+            do {
+                guard let client = client as? EthereumWebSocketClient else {
+                    XCTFail("Expected client to be EthereumWebSocketClient")
+                    return
+                }
+
+                var expectation: XCTestExpectation? = self.expectation(description: "Logs")
+                let type = EthereumSubscriptionType.logs(nil)
+                let subscription = try await client.logs { log in
+                    print(log)
+                    expectation?.fulfill()
+                    expectation = nil
+                }
+
+                // we need a high timeout as new block might take a while
+                await waitForExpectations(timeout: 2500, handler: nil)
+
+                XCTAssertNotEqual(subscription.id, "")
+                XCTAssertEqual(subscription.type, type)
+            } catch {
+                XCTFail("Expected subscription but failed \(error).")
             }
-
-            let subscription = try await client.subscribe(type: .newBlockHeaders)
-            let result = try await client.unsubscribe(subscription)
-            XCTAssertTrue(result)
-        } catch {
-            XCTFail("Expected subscription but failed \(error).")
         }
-    }
-#endif
+
+        func testWebSocketSubscribe() async {
+            do {
+                guard let client = client as? EthereumWebSocketClient else {
+                    XCTFail("Expected client to be EthereumWebSocketClient")
+                    return
+                }
+                client.delegate = self
+
+                delegateExpectation = expectation(description: "onNewPendingTransaction delegate call")
+                var subscription = try await client.subscribe(type: .newPendingTransactions)
+                await waitForExpectations(timeout: 10)
+                _ = try await client.unsubscribe(subscription)
+
+                delegateExpectation = expectation(description: "onNewBlockHeader delegate call")
+                subscription = try await client.subscribe(type: .newBlockHeaders)
+                await waitForExpectations(timeout: 2500)
+                _ = try await client.unsubscribe(subscription)
+
+                delegateExpectation = expectation(description: "onLogs delegate call")
+                let type = EthereumSubscriptionType.logs(nil)
+                subscription = try await client.subscribe(type: type)
+                await waitForExpectations(timeout: 2500)
+                _ = try await client.unsubscribe(subscription)
+            } catch {
+                XCTFail("Expected subscription but failed \(error).")
+            }
+        }
+
+        func testWebSocketUnsubscribe() async {
+            do {
+                guard let client = client as? EthereumWebSocketClient else {
+                    XCTFail("Expected client to be EthereumWebSocketClient")
+                    return
+                }
+
+                let subscription = try await client.subscribe(type: .newBlockHeaders)
+                let result = try await client.unsubscribe(subscription)
+                XCTAssertTrue(result)
+            } catch {
+                XCTFail("Expected subscription but failed \(error).")
+            }
+        }
+    #endif
 }
 
 extension EthereumWebSocketClientTests: EthereumWebSocketClientDelegate {

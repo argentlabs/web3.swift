@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ABIDecoder.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -51,10 +51,10 @@ public class ABIDecoder {
             guard !data.isEmpty else {
                 return [""]
             }
-            guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first, let newOffset = Int(hex: offsetHex) else {
+            guard let offsetHex = try (decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first, let newOffset = Int(hex: offsetHex) else {
                 throw ABIError.invalidValue
             }
-            guard let sizeHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first, let bint = BigInt(hex: sizeHex.web3.noHexPrefix) else {
+            guard let sizeHex = try (decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first, let bint = BigInt(hex: sizeHex.web3.noHexPrefix) else {
                 throw ABIError.invalidValue
             }
             let size = Int(bint)
@@ -116,13 +116,13 @@ public class ABIDecoder {
             var result: [String] = []
             var currentOffset = offset
 
-            guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: currentOffset)).first else {
+            guard let offsetHex = try (decode(data, forType: ABIRawType.FixedUInt(256), offset: currentOffset)).first else {
                 throw ABIError.invalidValue
             }
 
             currentOffset = Int(hex: offsetHex) ?? currentOffset
 
-            guard let lengthHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: currentOffset)).first else {
+            guard let lengthHex = try (decode(data, forType: ABIRawType.FixedUInt(256), offset: currentOffset)).first else {
                 throw ABIError.invalidValue
             }
             guard let length = Int(hex: lengthHex) else {
@@ -140,12 +140,12 @@ public class ABIDecoder {
             var result: [String] = []
             var newOffset = offset
 
-            guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first else {
+            guard let offsetHex = try (decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first else {
                 throw ABIError.invalidValue
             }
             newOffset = Int(hex: offsetHex) ?? newOffset
 
-            guard let sizeHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first else {
+            guard let sizeHex = try (decode(data, forType: ABIRawType.FixedUInt(256), offset: newOffset)).first else {
                 throw ABIError.invalidValue
             }
             guard var size = Int(hex: sizeHex) else {
@@ -159,7 +159,7 @@ public class ABIDecoder {
             var result: [String] = []
 
             if type.isDynamic {
-                guard let offsetHex = (try decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first else {
+                guard let offsetHex = try (decode(data, forType: ABIRawType.FixedUInt(256), offset: offset)).first else {
                     throw ABIError.invalidValue
                 }
 

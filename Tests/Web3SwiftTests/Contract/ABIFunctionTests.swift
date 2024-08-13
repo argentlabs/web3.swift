@@ -1,11 +1,11 @@
 //
-//  web3.swift
+//  ABIFunctionTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 struct Deposit_NoParameter: ABIFunction {
     static let name = "deposit"
@@ -14,8 +14,7 @@ struct Deposit_NoParameter: ABIFunction {
     var contract: EthereumAddress = "0xFFB9239F43673068E3c8D7664382Dd6Fdd6e40cb"
     let from: EthereumAddress? = nil
 
-    func encode(to encoder: ABIFunctionEncoder) throws {
-    }
+    func encode(to encoder: ABIFunctionEncoder) throws {}
 }
 
 struct BalanceOf_Parameter: ABIFunction {

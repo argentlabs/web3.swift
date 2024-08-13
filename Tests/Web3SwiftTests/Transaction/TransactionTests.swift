@@ -1,46 +1,54 @@
 //
-//  web3.swift
+//  TransactionTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 class TransactionTests: XCTestCase {
-    let withoutChainID: EthereumTransaction = EthereumTransaction(from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
-                                                                  to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
-                                                                  value: 0,
-                                                                  data: Data(),
-                                                                  nonce: 1,
-                                                                  gasPrice: 10,
-                                                                  gasLimit: 400000,
-                                                                  chainId: nil)
+    let withoutChainID: EthereumTransaction = .init(
+        from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
+        to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
+        value: 0,
+        data: Data(),
+        nonce: 1,
+        gasPrice: 10,
+        gasLimit: 400000,
+        chainId: nil
+    )
 
     func test_GivenLocalTransaction_WhenTransactionOnlyWithToAndData_HashIsNil() {
-        let transaction = EthereumTransaction(to: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
-                                              data: Data())
+        let transaction = EthereumTransaction(
+            to: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
+            data: Data()
+        )
         XCTAssertNil(transaction.hash)
     }
 
     func test_GivenLocalTransaction_WhenTransactionDoesNotHaveNonce_HashIsNil() {
-        let transaction = EthereumTransaction(from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
-                                              to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
-                                              data: Data(),
-                                              gasPrice: 10,
-                                              gasLimit: 400000)
+        let transaction = EthereumTransaction(
+            from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
+            to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
+            data: Data(),
+            gasPrice: 10,
+            gasLimit: 400000
+        )
         XCTAssertNil(transaction.hash)
     }
 
     func test_GivenLocalTransaction_WhenTransactionWithNonce_HashIsCorrect() {
-        let transaction = EthereumTransaction(from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
-                                              to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
-                                              value: 0,
-                                              data: Data(),
-                                              nonce: 1,
-                                              gasPrice: 10,
-                                              gasLimit: 400000,
-                                              chainId: 5)
+        let transaction = EthereumTransaction(
+            from: "0x2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173",
+            to: "0x1639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7174",
+            value: 0,
+            data: Data(),
+            nonce: 1,
+            gasPrice: 10,
+            gasLimit: 400000,
+            chainId: 5
+        )
 
         XCTAssertEqual(transaction.hash?.web3.hexString, "0xec010a83061a80a01639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde71748080058080")
     }

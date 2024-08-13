@@ -1,10 +1,10 @@
 //
-//  web3.swift
+//  EthereumAddressTests.swift
 //  Copyright © 2023 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class EthereumAddressTests: XCTestCase {
     private var values: Set<EthereumAddress>!

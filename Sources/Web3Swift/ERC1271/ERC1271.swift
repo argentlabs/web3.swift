@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ERC1271.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 

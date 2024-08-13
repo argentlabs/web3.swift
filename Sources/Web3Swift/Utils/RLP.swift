@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  RLP.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -10,21 +10,21 @@ public struct RLP {
     public static func encode(_ item: Any) -> Data? {
         switch item {
         case let int as Int:
-            return encodeInt(int)
+            encodeInt(int)
         case let string as String:
-            return encodeString(string)
+            encodeString(string)
         case let bint as BigInt:
-            return encodeBigInt(bint)
+            encodeBigInt(bint)
         case let array as [Any]:
-            return encodeArray(array)
+            encodeArray(array)
         case let buint as BigUInt:
-            return encodeBigUInt(buint)
+            encodeBigUInt(buint)
         case let data as Data:
-            return encodeData(data)
+            encodeData(data)
         case let address as EthereumAddress:
-            return encodeAddress(address)
+            encodeAddress(address)
         default:
-            return nil
+            nil
         }
     }
 

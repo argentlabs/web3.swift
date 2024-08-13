@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  EthereumKeyStorage+Password.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 

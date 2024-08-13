@@ -1,10 +1,10 @@
 //
-//  web3.swift
+//  ENSTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class ENSTests: XCTestCase {
     var account: EthereumAccount?
@@ -30,7 +30,7 @@ class ENSTests: XCTestCase {
             let tx = try function.transaction()
 
             let dataStr = try await client?.eth_call(tx, resolution: .noOffchain(failOnExecutionError: true), block: .Latest)
-            guard let dataStr = dataStr else {
+            guard let dataStr else {
                 XCTFail()
                 return
             }
@@ -154,9 +154,10 @@ class ENSTests: XCTestCase {
                     .couldNotBeResolved(.ensUnknown),
                     .resolved("darthmike.eth")
                 ]
-            ) } catch {
-                XCTFail("Expected resolutions but failed \(error).")
-            }
+            )
+        } catch {
+            XCTFail("Expected resolutions but failed \(error).")
+        }
     }
 
     func testGivenRegistry_ThenResolvesSingleAddressWithMultiCall() async {
@@ -176,9 +177,10 @@ class ENSTests: XCTestCase {
                 [
                     .resolved("darhmike.eth")
                 ]
-            ) } catch {
-                XCTFail("Expected resolutions but failed \(error).")
-            }
+            )
+        } catch {
+            XCTFail("Expected resolutions but failed \(error).")
+        }
     }
 
     func testGivenRegistry_WhenAddressHasSubdomain_ThenResolvesSingleAddressWithMultiCall() async {
@@ -198,9 +200,10 @@ class ENSTests: XCTestCase {
                 [
                     .resolved("subdomain.darhmike.eth")
                 ]
-            ) } catch {
-                XCTFail("Expected resolutions but failed \(error).")
-            }
+            )
+        } catch {
+            XCTFail("Expected resolutions but failed \(error).")
+        }
     }
 
     func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenDoesNotResolveSingleAddressWithMultiCall() async {
@@ -220,9 +223,10 @@ class ENSTests: XCTestCase {
                 [
                     .couldNotBeResolved(.ensUnknown)
                 ]
-            ) } catch {
-                XCTFail("Expected resolutions but failed \(error).")
-            }
+            )
+        } catch {
+            XCTFail("Expected resolutions but failed \(error).")
+        }
     }
 
     func testGivenRegistry_WhenAddressHasSubdomain_AndReverseRecordNotSet_ThenResolvesENSWithMultiCall() async {
@@ -269,7 +273,7 @@ class ENSTests: XCTestCase {
         }
     }
 
-    // TODO [Tests] Temporarily removed until set up for offchain ENS is done
+    // TODO: [Tests] Temporarily removed until set up for offchain ENS is done
 //    func testGivenMainnetRegistry_WhenWildcardSupported_AndAddressHasSubdomain_ThenResolvesExampleCorrectly() async {
 //        do {
 //            let nameService = EthereumNameService(client: client!)

@@ -1,11 +1,11 @@
 //
-//  web3.swift
+//  ABIEncoderTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 class ABIEncoderTests: XCTestCase {
     func testGivenSmallBigUInt_EncodesCorrectly() {
@@ -100,8 +100,10 @@ class ABIEncoderTests: XCTestCase {
 
     func testGivenBytes1_EncodesCorrectly() {
         let encoded = try? ABIEncoder.encode("0x63".web3.hexData!, staticSize: 1)
-        XCTAssertEqual(encoded?.hexString,
-                       "0x6300000000000000000000000000000000000000000000000000000000000000")
+        XCTAssertEqual(
+            encoded?.hexString,
+            "0x6300000000000000000000000000000000000000000000000000000000000000"
+        )
     }
 
     func testGivenBytes3_EncodesCorrectly() {
@@ -143,5 +145,4 @@ class ABIEncoderTests: XCTestCase {
         let encoded = try? ABIEncoder.encode(["hello", "big", "world"])
         XCTAssertEqual(encoded?.hexString, "0x000000000000000000000000000000000000000000000000000000000000000568656c6c6f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000362696700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005776f726c64000000000000000000000000000000000000000000000000000000")
     }
-
 }

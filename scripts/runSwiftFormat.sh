@@ -38,12 +38,12 @@ cleanup() {
 }
 
 format() {
-    bin/swiftformat ../web3swift/src/ --config "swiftformat.yml" --swiftversion $SWIFT_VERSION
+    bin/swiftformat ../Sources/ ../Tests/ --config "swiftformat.yml" --swiftversion $SWIFT_VERSION
     cleanup
 }
 
 lint() {
-    bin/swiftformat --lint ../web3swift/src/ --config "swiftformat.yml" --swiftversion $SWIFT_VERSION
+    bin/swiftformat --lint ../Sources/ ../Tests/ --config "swiftformat.yml" --swiftversion $SWIFT_VERSION
     cleanup
 }
 

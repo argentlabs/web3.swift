@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  String+Numeric.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 

@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ABIFunctionEncodable.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -19,7 +19,7 @@ extension ABIFunctionEncodable {
         let encoder = ABIFunctionEncoder(Self.name)
         try encode(to: encoder)
         let rawTypes = encoder.types
-        let methodId = String(hexFromBytes: try ABIFunctionEncoder.methodId(name: Self.name, types: rawTypes))
+        let methodId = try String(hexFromBytes: ABIFunctionEncoder.methodId(name: Self.name, types: rawTypes))
         var raw = data.web3.hexString
 
         guard raw.hasPrefix(methodId) else {

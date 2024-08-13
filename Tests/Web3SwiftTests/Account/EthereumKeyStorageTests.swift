@@ -1,13 +1,12 @@
 //
-//  web3.swift
+//  EthereumKeyStorageTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class EthereumKeyStorageTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -40,7 +39,7 @@ class EthereumKeyStorageTests: XCTestCase {
             XCTFail("Failed to save private key. Ensure key is valid in TestConfig.swift")
         }
     }
-    
+
     func testEncryptAndStorePrivateKey() {
         let randomData = Data.randomOfLength(256)!
         let keyStorage = EthereumKeyLocalStorage() as EthereumSingleKeyStorageProtocol
@@ -50,7 +49,7 @@ class EthereumKeyStorageTests: XCTestCase {
             try keyStorage.encryptAndStorePrivateKey(key: randomData, keystorePassword: password)
             let decrypted = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
             XCTAssertEqual(decrypted, randomData)
-        } catch let error {
+        } catch {
             XCTFail("Failed to encrypt and store private key with error: \(error)")
         }
     }
@@ -67,11 +66,11 @@ class EthereumKeyStorageTests: XCTestCase {
             let address = KeyUtil.generateAddress(from: publicKey)
             let decrypted = try keyStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
             XCTAssertEqual(decrypted, randomData)
-        } catch let error {
+        } catch {
             XCTFail("Failed to encrypt and store private key with error: \(error)")
         }
     }
-    
+
     func testDeleteAllPrivateKeys() {
         let keyStorage = EthereumKeyLocalStorage()
         do {
@@ -81,7 +80,7 @@ class EthereumKeyStorageTests: XCTestCase {
             try keyStorage.deleteAllKeys()
             let countAfterDeleting = try keyStorage.fetchAccounts()
             XCTAssertEqual(countAfterDeleting.count, 0)
-        } catch let error {
+        } catch {
             XCTFail("Failed to delete all private keys: \(error)")
         }
     }

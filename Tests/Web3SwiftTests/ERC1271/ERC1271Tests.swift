@@ -1,10 +1,10 @@
 //
-//  web3.swift
+//  ERC1271Tests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class ERC1271Tests: XCTestCase {
     var client: EthereumClientProtocol!
@@ -103,7 +103,6 @@ class ERC1271Tests: XCTestCase {
 }
 
 final class ERC1271WebSocketTests: ERC1271Tests {
-
     override func setUp() {
         if self.client == nil {
             self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, network: TestConfig.network)

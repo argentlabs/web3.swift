@@ -1,13 +1,12 @@
 //
-//  web3.swift
+//  SIWETests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class SIWETests: XCTestCase {
-
     var client: EthereumClientProtocol!
     var verifier: SiweVerifier!
 
@@ -20,7 +19,7 @@ class SIWETests: XCTestCase {
     }
 
     func testEndToEnd() async {
-        let account = try! EthereumAccount.init(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
+        let account = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: "0x4646464646464646464646464646464646464646464646464646464646464646"))
         let message = try! SiweMessage(
             """
             login.xyz wants you to sign in with your Ethereum account:
@@ -42,7 +41,7 @@ class SIWETests: XCTestCase {
             """
         )
 
-        var signature: String = ""
+        var signature = ""
         XCTAssertNoThrow(signature = try account.signSIWERequest(message))
         var isValid = false
         do {
@@ -55,7 +54,6 @@ class SIWETests: XCTestCase {
 }
 
 final class SIWEWebSocketTests: SIWETests {
-
     override func setUp() {
         if self.client == nil {
             self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, network: TestConfig.network)

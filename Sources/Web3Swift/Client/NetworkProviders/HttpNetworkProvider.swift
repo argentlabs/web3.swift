@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  HttpNetworkProvider.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
@@ -35,7 +35,7 @@ public class HttpNetworkProvider: NetworkProviderProtocol {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
 
-        headers.forEach { key, value in
+        for (key, value) in headers {
             request.addValue(value, forHTTPHeaderField: key)
         }
 

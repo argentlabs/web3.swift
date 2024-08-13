@@ -1,5 +1,5 @@
 //
-//  web3.swift
+//  ABIFunction+ZKSync.swift
 //  Copyright © 2023 Argent Labs Limited. All rights reserved.
 //
 
@@ -15,7 +15,7 @@ extension ABIFunction {
         chainId: Int? = nil,
         nonce: Int? = nil
     ) throws -> ZKSyncTransaction {
-        guard let from = from else {
+        guard let from else {
             throw ABIError.invalidValue
         }
 

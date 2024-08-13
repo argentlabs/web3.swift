@@ -1,13 +1,12 @@
 //
-//  web3.swift
+//  SiweVerifierTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
-import XCTest
 @testable import web3
+import XCTest
 
 class SiweVerifierTests: XCTestCase {
-
     var client: EthereumClientProtocol!
 
     override func setUp() {
@@ -223,7 +222,6 @@ class SiweVerifierTests: XCTestCase {
 }
 
 final class SiweVerifierWebSocketTests: SiweVerifierTests {
-
     override func setUp() {
         if self.client == nil {
             self.client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, network: TestConfig.network)

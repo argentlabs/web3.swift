@@ -1,11 +1,11 @@
 //
-//  web3.swift
+//  OffchainLookupTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 struct DummyOffchainENSResolve: ABIFunction {
     static var name: String = "resolver"
@@ -130,10 +130,10 @@ enum EthersTestContract {
 extension EthereumClientError {
     var executionError: JSONRPCErrorDetail? {
         switch self {
-        case .executionError(let detail):
-            return detail
+        case let .executionError(detail):
+            detail
         default:
-            return nil
+            nil
         }
     }
 }
@@ -142,7 +142,7 @@ class OffchainLookupTests: XCTestCase {
     var client: EthereumClientProtocol!
     var account: EthereumAccount!
     var offchainLookup = OffchainLookup(address: .zero, urls: [], callData: Data(), callbackFunction: Data(), extraData: Data())
-    
+
     override func setUp() {
         super.setUp()
         client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
@@ -159,7 +159,7 @@ class OffchainLookupTests: XCTestCase {
         do {
             _ = try await client.eth_call(tx, resolution: .noOffchain(failOnExecutionError: true), block: .Latest)
             XCTFail("Expecting error, not return value")
-        } catch let error {
+        } catch {
             let error = (error as? EthereumClientError)?.executionError
             let decoded = try? error?.decode(error: offchainLookup)
 
@@ -172,7 +172,7 @@ class OffchainLookupTests: XCTestCase {
         }
     }
 
-    // TODO [Tests] Disabled for now until we reimplement on our side (ethers.js tests setup using goerli)
+    // TODO: [Tests] Disabled for now until we reimplement on our side (ethers.js tests setup using goerli)
 //    func test_GivenTestFunction_WhenLookupCorrect_ThenDecodesRetrievesValue() async throws {
 //        let function =  EthersTestContract.TestGet(data: "0x1234".web3.hexData!)
 //
@@ -324,8 +324,8 @@ private func expectedResponse(
         senderData.web3.bytes,
         [UInt8(data.count)],
         data.web3.bytes
-        ]
-        .flatMap { $0 }
+    ]
+    .flatMap { $0 }
     ).web3.keccak256.web3.hexString
 }
 

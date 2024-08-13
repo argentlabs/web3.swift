@@ -1,11 +1,11 @@
 //
-//  web3.swift
+//  ByteExtensionsTests.swift
 //  Copyright © 2022 Argent Labs Limited. All rights reserved.
 //
 
+@testable import web3
 import BigInt
 import XCTest
-@testable import web3
 
 class ByteExtensionsTests: XCTestCase {
     func testBytesFromBigInt() {
@@ -95,5 +95,4 @@ class ByteExtensionsTests: XCTestCase {
         let result = dataA ^ dataB
         XCTAssertEqual(result.web3.hexString, "0x5b5e139fc6568dcbe817e85f5006fe073fedbf54f63f8f5c5db6f4b41a3451")
     }
-
 }
