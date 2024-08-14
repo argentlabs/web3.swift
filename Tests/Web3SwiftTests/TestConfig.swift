@@ -36,9 +36,9 @@ struct TestConfig {
     static let network = EthereumNetwork.sepolia
 
     enum ZKSync {
-        static let chainId = 280
-        static let network = EthereumNetwork.custom("\(280)")
-        static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
+        static let chainId = 300
+        static let network = EthereumNetwork.custom("\(300)")
+        static let clientURL = URL(string: "https://sepolia.era.zksync.dev")!
     }
 }
 
