@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SWIFT_VERSION=5.10
+SWIFT_VERSION=5.6
 
 cd "$(dirname "$0")"
 
