@@ -3,8 +3,8 @@
 //  Copyright © Argent Labs Limited. All rights reserved.
 //
 
+import P256K
 import Logging
-import secp256k1
 import Foundation
 
 public enum KeyUtilError: Error {
@@ -26,40 +26,12 @@ public class KeyUtil {
     }
 
     public static func generatePublicKey(from privateKey: Data) throws -> Data {
-        guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
-            logger.warning("Failed to generate a public key: invalid context.")
-            throw KeyUtilError.invalidContext
-        }
+        let privateKey = try P256K.Recovery.PrivateKey(dataRepresentation: privateKey, format: .uncompressed)
 
-        defer {
-            secp256k1_context_destroy(ctx)
-        }
-
-        let privateKeyPtr = (privateKey as NSData).bytes.assumingMemoryBound(to: UInt8.self)
-        guard secp256k1_ec_seckey_verify(ctx, privateKeyPtr) == 1 else {
-            logger.warning("Failed to generate a public key: private key is not valid.")
-            throw KeyUtilError.privateKeyInvalid
-        }
-
-        let publicKeyPtr = UnsafeMutablePointer<secp256k1_pubkey>.allocate(capacity: 1)
-        defer {
-            publicKeyPtr.deallocate()
-        }
-        guard secp256k1_ec_pubkey_create(ctx, publicKeyPtr, privateKeyPtr) == 1 else {
-            logger.warning("Failed to generate a public key: public key could not be created.")
-            throw KeyUtilError.unknownError
-        }
-
-        var publicKeyLength = 65
-        let outputPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: publicKeyLength)
-        defer {
-            outputPtr.deallocate()
-        }
-        secp256k1_ec_pubkey_serialize(ctx, outputPtr, &publicKeyLength, publicKeyPtr, UInt32(SECP256K1_EC_UNCOMPRESSED))
-
-        let publicKey = Data(bytes: outputPtr, count: publicKeyLength).subdata(in: 1 ..< publicKeyLength)
-
-        return publicKey
+        let publicKey = privateKey.publicKey.dataRepresentation
+        let publicKeyLength = publicKey.count
+        let finalPublicKey = publicKey.subdata(in: 1 ..< publicKeyLength)
+        return finalPublicKey
     }
 
     public static func generateAddress(from publicKey: Data) -> EthereumAddress {
@@ -69,44 +41,18 @@ public class KeyUtil {
     }
 
     public static func sign(message: Data, with privateKey: Data, hashing: Bool) throws -> Data {
-        guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
-            logger.warning("Failed to sign message: invalid context.")
-            throw KeyUtilError.invalidContext
-        }
-
-        defer {
-            secp256k1_context_destroy(ctx)
-        }
-
+        let privateKey = try P256K.Recovery.PrivateKey(dataRepresentation: privateKey)
         let msgData = hashing ? message.web3.keccak256 : message
-        let msg = (msgData as NSData).bytes.assumingMemoryBound(to: UInt8.self)
-        let privateKeyPtr = (privateKey as NSData).bytes.assumingMemoryBound(to: UInt8.self)
-        let signaturePtr = UnsafeMutablePointer<secp256k1_ecdsa_recoverable_signature>.allocate(capacity: 1)
-        defer {
-            signaturePtr.deallocate()
-        }
-        guard secp256k1_ecdsa_sign_recoverable(ctx, signaturePtr, msg, privateKeyPtr, nil, nil) == 1 else {
-            logger.warning("Failed to sign message: recoverable ECDSA signature creation failed.")
-            throw KeyUtilError.signatureFailure
-        }
+        let digest = HashDigest(msgData.bytes)
+        let signature = try privateKey.signature(for: digest)
 
-        let outputPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: 64)
-        defer {
-            outputPtr.deallocate()
-        }
-        var recid: Int32 = 0
-        secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, outputPtr, &recid, signaturePtr)
+        let compactSignature = try signature.compactRepresentation.signature
+        let recoveryId = try signature.compactRepresentation.recoveryId
 
-        let outputWithRecidPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: 65)
-        defer {
-            outputWithRecidPtr.deallocate()
-        }
-        outputWithRecidPtr.update(from: outputPtr, count: 64)
-        outputWithRecidPtr.advanced(by: 64).pointee = UInt8(recid)
-
-        let signature = Data(bytes: outputWithRecidPtr, count: 65)
-
-        return signature
+        var resultSignature = Data(compactSignature)
+        let v = UInt8(recoveryId & 0xFF)
+        resultSignature.append(v)
+        return resultSignature
     }
 
     public static func recoverPublicKey(message: Data, signature: Data) throws -> String {
@@ -114,45 +60,23 @@ public class KeyUtil {
             throw KeyUtilError.badArguments
         }
 
-        guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
-            logger.warning("Failed to sign message: invalid context.")
-            throw KeyUtilError.invalidContext
-        }
-        defer { secp256k1_context_destroy(ctx) }
-
-        // get recoverable signature
-        let signaturePtr = UnsafeMutablePointer<secp256k1_ecdsa_recoverable_signature>.allocate(capacity: 1)
-        defer { signaturePtr.deallocate() }
-
         let serializedSignature = Data(signature[0 ..< 64])
-        var v = Int32(signature[64])
-        if v >= 27, v <= 30 {
-            v -= 27
-        } else if v >= 31, v <= 34 {
-            v -= 31
-        } else if v >= 35, v <= 38 {
-            v -= 35
+        var recoveryId = Int32(signature[64])
+        if recoveryId >= 27, recoveryId <= 30 {
+            recoveryId -= 27
+        } else if recoveryId >= 31, recoveryId <= 34 {
+            recoveryId -= 31
+        } else if recoveryId >= 35, recoveryId <= 38 {
+            recoveryId -= 35
         }
 
-        try serializedSignature.withUnsafeBytes {
-            guard secp256k1_ecdsa_recoverable_signature_parse_compact(ctx, signaturePtr, $0.bindMemory(to: UInt8.self).baseAddress!, v) == 1 else {
-                logger.warning("Failed to parse signature: recoverable ECDSA signature parse failed.")
-                throw KeyUtilError.signatureParseFailure
-            }
-        }
-        let pubkey = UnsafeMutablePointer<secp256k1_pubkey>.allocate(capacity: 1)
-        defer { pubkey.deallocate() }
+        let digest = HashDigest(message.bytes)
+        let publicKey = try P256K.Recovery.PublicKey(
+            digest,
+            signature: P256K.Recovery.ECDSASignature(compactRepresentation: serializedSignature, recoveryId: recoveryId),
+            format: .uncompressed
+        )
 
-        try message.withUnsafeBytes {
-            guard secp256k1_ecdsa_recover(ctx, pubkey, signaturePtr, $0.bindMemory(to: UInt8.self).baseAddress!) == 1 else {
-                throw KeyUtilError.signatureFailure
-            }
-        }
-        var size = 65
-        var rv = Data(count: size)
-        _ = rv.withUnsafeMutableBytes {
-            secp256k1_ec_pubkey_serialize(ctx, $0.bindMemory(to: UInt8.self).baseAddress!, &size, pubkey, UInt32(SECP256K1_EC_UNCOMPRESSED))
-        }
-        return "0x\(rv[1...].web3.keccak256.web3.hexString.suffix(40))"
+        return "0x\(publicKey.dataRepresentation[1...].web3.keccak256.web3.hexString.suffix(40))"
     }
 }
