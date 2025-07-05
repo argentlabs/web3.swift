@@ -1,6 +1,6 @@
 ![web3.swift: Ethereum API for Swift](https://raw.github.com/argentlabs/web3.swift/master/web3swift.png)
 
-[![Swift](https://github.com/argentlabs/web3.swift/actions/workflows/swift.yml/badge.svg?branch=develop)](https://github.com/argentlabs/web3.swift/actions/workflows/swift.yml)
+[![CI](https://github.com/argentlabs/web3.swift/actions/workflows/CI.yml/badge.svg)](https://github.com/argentlabs/web3.swift/actions/workflows/CI.yml)
 
 ## Installation
 
