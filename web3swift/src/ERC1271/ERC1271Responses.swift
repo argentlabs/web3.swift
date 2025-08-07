@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -37,11 +37,11 @@ public enum ERC1271Responses {
             { data in
                 switch data.first ?? "" {
                 case "0x0000000000000000000000000000000000000000000000000000000000000000":
-                    return EitherBoolOrData4.bool(false)
+                    EitherBoolOrData4.bool(false)
                 case "0x0000000000000000000000000000000000000000000000000000000000000001":
-                    return EitherBoolOrData4.bool(true)
+                    EitherBoolOrData4.bool(true)
                 case let data:
-                    return EitherBoolOrData4.data(try ABIDecoder.decode(data, to: Data.self).web3.bytes4)
+                    try EitherBoolOrData4.data(ABIDecoder.decode(data, to: Data.self).web3.bytes4)
                 }
             }
         }

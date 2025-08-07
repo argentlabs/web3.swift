@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,7 @@ public protocol NetworkProviderProtocol {
 }
 
 #if canImport(NIO)
-    internal protocol WebSocketNetworkProviderProtocol: NetworkProviderProtocol {
+    protocol WebSocketNetworkProviderProtocol: NetworkProviderProtocol {
         var delegate: EthereumWebSocketClientDelegate? { get set }
         var onReconnectCallback: (() -> Void)? { get set }
         var currentState: WebSocketState { get }

@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -12,33 +12,33 @@ public enum EthereumNetwork: Equatable, Decodable {
     public static func fromString(_ networkId: String) -> EthereumNetwork {
         switch networkId {
         case "1":
-            return .mainnet
+            .mainnet
         case "11155111":
-            return .sepolia
+            .sepolia
         default:
-            return .custom(networkId)
+            .custom(networkId)
         }
     }
 
     public var stringValue: String {
         switch self {
         case .mainnet:
-            return "1"
+            "1"
         case .sepolia:
-            return "11155111"
+            "11155111"
         case let .custom(str):
-            return str
+            str
         }
     }
 
     public var intValue: Int {
         switch self {
         case .mainnet:
-            return 1
+            1
         case .sepolia:
-            return 11155111
+            11155111
         case let .custom(str):
-            return Int(str) ?? 0
+            Int(str) ?? 0
         }
     }
 }

@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 #if canImport(NIO)
@@ -295,7 +295,7 @@
                     ),
                     on: eventLoopGroup
                 ) { [weak self] ws in
-                    guard let self = self else {
+                    guard let self else {
                         return
                     }
 
@@ -317,7 +317,7 @@
                     }
 
                     ws.onText { [weak self] _, string in
-                        guard let self = self else {
+                        guard let self else {
                             return
                         }
 
@@ -361,7 +361,7 @@
                     }
 
                     ws.onClose.whenComplete { [weak self] value in
-                        guard let self = self else {
+                        guard let self else {
                             return
                         }
 

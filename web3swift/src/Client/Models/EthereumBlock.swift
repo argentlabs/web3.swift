@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -14,22 +14,22 @@ public enum EthereumBlock: Hashable {
     public var stringValue: String {
         switch self {
         case .Latest:
-            return "latest"
+            "latest"
         case .Earliest:
-            return "earliest"
+            "earliest"
         case .Pending:
-            return "pending"
+            "pending"
         case let .Number(int):
-            return int.web3.hexString
+            int.web3.hexString
         }
     }
 
     public var intValue: Int? {
         switch self {
         case let .Number(int):
-            return int
+            int
         default:
-            return nil
+            nil
         }
     }
 
@@ -71,21 +71,21 @@ extension EthereumBlock: Comparable {
     static public func < (lhs: EthereumBlock, rhs: EthereumBlock) -> Bool {
         switch lhs {
         case .Earliest:
-            return false
+            false
         case .Latest:
-            return rhs != .Pending ? true : false
+            rhs != .Pending ? true : false
         case .Pending:
-            return true
+            true
         case let .Number(lhsInt):
             switch rhs {
             case .Earliest:
-                return false
+                false
             case .Latest:
-                return true
+                true
             case .Pending:
-                return true
+                true
             case let .Number(rhsInt):
-                return lhsInt < rhsInt
+                lhsInt < rhsInt
             }
         }
     }

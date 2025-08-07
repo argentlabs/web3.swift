@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -166,7 +166,6 @@ extension EthereumNameService {
 
             do {
                 try parameters.enumerated().forEach { index, parameter in
-
                     let function = ENSContracts.ENSRegistryFunctions.resolver(contract: ensRegistryAddress, parameter: parameter)
 
                     try aggegator.append(
@@ -190,7 +189,7 @@ extension EthereumNameService {
         private func resolveQueries<ResolverOutput>(registryOutput: RegistryOutput<ResolverOutput>) async throws -> [ResolverOutput] {
             var aggegator = Multicall.Aggregator()
 
-            registryOutput.queries.forEach { query in
+            for query in registryOutput.queries {
                 switch query.parameter {
                 case let .address(address):
                     guard let registryOutput = registryOutput as? RegistryOutput<AddressResolveOutput> else {

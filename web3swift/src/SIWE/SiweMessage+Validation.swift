@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -47,7 +47,7 @@ extension SiweMessage {
             throw ValidationError.invalidNonce
         }
 
-        if let requestId = requestId {
+        if let requestId {
             guard
                 !requestId.isEmpty,
                 requestId.matches(regex: "[-._~!$&'()*+,;=:@%a-zA-Z0-9]*") else {

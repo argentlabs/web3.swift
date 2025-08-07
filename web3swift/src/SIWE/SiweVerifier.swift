@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -80,7 +80,7 @@ public class SiweVerifier {
             throw Error.invalidSignature
         }
 
-        let address = EthereumAddress(try KeyUtil.recoverPublicKey(message: messageHash, signature: signatureData))
+        let address = try EthereumAddress(KeyUtil.recoverPublicKey(message: messageHash, signature: signatureData))
         if address.toChecksumAddress() == message.address {
             return true
         } else {

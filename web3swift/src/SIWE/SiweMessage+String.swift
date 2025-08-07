@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -45,16 +45,16 @@ extension SiweMessage: CustomStringConvertible {
             "Issued At: \(SiweMessage.dateFormatter.string(from: issuedAt))"
         ]
 
-        if let expirationTime = expirationTime {
+        if let expirationTime {
             fields.append("Expiration Time: \(SiweMessage.dateFormatter.string(from: expirationTime))")
         }
-        if let notBefore = notBefore {
+        if let notBefore {
             fields.append("Not Before: \(SiweMessage.dateFormatter.string(from: notBefore))")
         }
-        if let requestId = requestId {
+        if let requestId {
             fields.append("Request ID: \(requestId)")
         }
-        if let resources = resources {
+        if let resources {
             fields.append("Resources:")
             fields.append(contentsOf: resources.map { "- \($0.absoluteString)" })
         }

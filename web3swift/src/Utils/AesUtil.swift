@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import aes
@@ -23,7 +23,7 @@ class Aes128Util {
 
         let keyPtr = (key as NSData).bytes.assumingMemoryBound(to: UInt8.self)
 
-        if let iv = iv {
+        if let iv {
             let ivPtr = (iv as NSData).bytes.assumingMemoryBound(to: UInt8.self)
             AES_init_ctx_iv(ctx, keyPtr, ivPtr)
         } else {

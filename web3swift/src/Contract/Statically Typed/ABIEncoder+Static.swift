@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -97,7 +97,7 @@ extension ABIEncoder {
         case let value as Data32:
             return try ABIEncoder.encodeRaw(String(bytes: value.rawData.web3.bytes), forType: Data32.rawType, padded: !packed)
         case let data as Data:
-            if let staticSize = staticSize {
+            if let staticSize {
                 return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: .FixedBytes(staticSize), padded: !packed)
             } else {
                 return try ABIEncoder.encodeRaw(String(bytes: data.web3.bytes), forType: type, padded: !packed)

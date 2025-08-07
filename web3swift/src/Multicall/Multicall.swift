@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -32,10 +32,9 @@ public struct Multicall {
                 fatalError("Outputs do not match the number of calls done")
             }
 
-            zip(calls, data.outputs)
-                .forEach { call, output in
-                    try? call.handler?(output)
-                }
+            for (call, output) in zip(calls, data.outputs) {
+                try? call.handler?(output)
+            }
             return data
         } catch {
             throw MulticallError.executionFailed(error)
@@ -51,10 +50,9 @@ public struct Multicall {
 
         do {
             let data = try await function.call(withClient: client, responseType: Multicall2Response.self)
-            zip(calls, data.outputs)
-                .forEach { call, output in
-                    try? call.handler?(output)
-                }
+            for (call, output) in zip(calls, data.outputs) {
+                try? call.handler?(output)
+            }
             return data
         } catch {
             throw MulticallError.executionFailed(error)

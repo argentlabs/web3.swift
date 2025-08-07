@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -48,7 +48,7 @@ extension BaseEthereumClient {
             func encode(to encoder: Encoder) throws {
                 var container = encoder.unkeyedContainer()
                 var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
-                if let from = from {
+                if let from {
                     try nested.encode(from, forKey: .from)
                 }
                 try nested.encode(to, forKey: .to)
@@ -212,11 +212,11 @@ fileprivate extension OffchainReadError {
     var isNextURLAllowed: Bool {
         switch self {
         case let .server(code, _):
-            return code >= 500 // 4xx responses -> Don't continue with next url
+            code >= 500 // 4xx responses -> Don't continue with next url
         case .network, .invalidParams, .invalidResponse:
-            return true
+            true
         case .tooManyRedirections:
-            return false
+            false
         }
     }
 }

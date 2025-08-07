@@ -1,19 +1,19 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
 
 struct JSONRPCSubscriptionParams<T: Decodable>: Decodable {
-    public var subscription: String
-    public var result: T
+    var subscription: String
+    var result: T
 }
 
 struct JSONRPCSubscriptionResponse<T: Decodable>: Decodable {
-    public var jsonrpc: String
-    public var method: String
-    public var params: JSONRPCSubscriptionParams<T>
+    var jsonrpc: String
+    var method: String
+    var params: JSONRPCSubscriptionParams<T>
 }
 
 struct JSONRPCRequest<T: Encodable>: Encodable {
@@ -78,9 +78,9 @@ public enum JSONRPCError: Error {
     public var isExecutionError: Bool {
         switch self {
         case .executionError:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }

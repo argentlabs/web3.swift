@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -61,8 +61,8 @@ extension TypedData {
     // Whole data blob hash to sign
     public func signableHash() throws -> Data {
         var data = Data([0x19, 0x01])
-        data.append(try encodeData(data: domain, type: "EIP712Domain").web3.keccak256)
-        data.append(try encodeData(data: message, type: primaryType).web3.keccak256)
+        try data.append(encodeData(data: domain, type: "EIP712Domain").web3.keccak256)
+        try data.append(encodeData(data: message, type: primaryType).web3.keccak256)
         return data.web3.keccak256
     }
 
@@ -88,7 +88,6 @@ extension TypedData {
         }
 
         let recursiveEncoded: [UInt8] = try valueTypes.flatMap { variable -> [UInt8] in
-
             // Decomposite the type if it is array type
             let components = variable.type.components(separatedBy: CharacterSet(charactersIn: "[]"))
             let parsedType = components[0]

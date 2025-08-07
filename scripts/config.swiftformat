@@ -35,7 +35,7 @@
 --group-blank-lines true
 --grouped-extension "MARK: %c"
 --guard-else same-line
---header "//\n// web3.swift\n// Copyright © Argent Labs Limited. All rights reserved.\n//"
+--header "//\n//  web3.swift\n//  Copyright © Argent Labs Limited. All rights reserved.\n//"
 --hex-grouping 4,8
 --hex-literal-case uppercase
 --ifdef indent
@@ -112,5 +112,5 @@
 --xcode-indentation disabled
 --xctest-symbols 
 --yoda-swap always
---disable consecutiveSpaces,enumNamespaces,extensionAccessControl,genericExtensions,modifierOrder,numberFormatting,opaqueGenericParameters,preferKeyPath,redundantBackticks,redundantExtensionACL,redundantFileprivate,redundantPattern,redundantRawValues,redundantSelf,sortDeclarations,spaceAroundGenerics,strongOutlets,trailingClosures,trailingCommas,unusedArguments,wrap,wrapMultilineStatementBraces,wrapSingleLineComments,yodaConditions
+--disable consecutiveSpaces,enumNamespaces,extensionAccessControl,genericExtensions,headerFileName,modifierOrder,numberFormatting,opaqueGenericParameters,preferKeyPath,redundantBackticks,redundantExtensionACL,redundantFileprivate,redundantPattern,redundantRawValues,redundantSelf,sortDeclarations,spaceAroundGenerics,strongOutlets,trailingClosures,trailingCommas,unusedArguments,wrap,wrapMultilineStatementBraces,wrapSingleLineComments,yodaConditions
 --enable blankLinesBetweenImports,isEmpty,wrapConditionalBodies
