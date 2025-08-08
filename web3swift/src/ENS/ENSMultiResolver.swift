@@ -20,7 +20,7 @@ extension EthereumNameService {
 extension EthereumNameService {
     public func resolve(
         addresses: [EthereumAddress],
-        completion: @escaping (Result<[AddressResolveOutput], Error>) -> Void
+        completion: @Sendable @escaping (Result<[AddressResolveOutput], Error>) -> Void
     ) {
         Task {
             do {
@@ -34,7 +34,7 @@ extension EthereumNameService {
 
     public func resolve(
         names: [String],
-        completion: @escaping (Result<[NameResolveOutput], Error>) -> Void
+        completion: @Sendable @escaping (Result<[NameResolveOutput], Error>) -> Void
     ) {
         Task {
             do {
@@ -48,32 +48,33 @@ extension EthereumNameService {
 }
 
 extension EthereumNameService {
-    public enum ResolveOutput<Value: Equatable>: Equatable {
+    public enum ResolveOutput<Value: Sendable & Equatable>: Sendable, Equatable {
         case couldNotBeResolved(EthereumNameServiceError)
         case resolved(Value)
     }
 
-    public struct AddressResolveOutput: Equatable {
+    public struct AddressResolveOutput: Sendable, Equatable {
         public let address: EthereumAddress
         public let output: ResolveOutput<String>
     }
 
-    public struct NameResolveOutput: Equatable {
+    public struct NameResolveOutput: Sendable, Equatable {
         public let ens: String
         public let output: ResolveOutput<EthereumAddress>
     }
 
-    private class MultiResolver {
-        private class RegistryOutput<ResolveOutput> {
-            var queries: [ResolverQuery] = []
-            var intermediaryResponses: [ResolveOutput?]
+    private final class MultiResolver: Sendable {
+        private final class RegistryOutput<ResolveOutput: Sendable>: Sendable {
+            let queries: ThreadSafeBox<[ResolverQuery]>
+            let intermediaryResponses: ThreadSafeBox<[ResolveOutput?]>
 
             init(expectedResponsesCount: Int) {
-                self.intermediaryResponses = Array(repeating: nil, count: expectedResponsesCount)
+                self.queries = ThreadSafeBox([])
+                self.intermediaryResponses = ThreadSafeBox(Array(repeating: nil, count: expectedResponsesCount))
             }
         }
 
-        private struct ResolverQuery {
+        private struct ResolverQuery: Sendable {
             let index: Int
             let parameter: ENSRegistryResolverParameter
             let resolverAddress: EthereumAddress
@@ -106,19 +107,23 @@ extension EthereumNameService {
                 }
                 switch result {
                 case let .success(resolverAddress):
-                    output.queries.append(
-                        ResolverQuery(
-                            index: index,
-                            parameter: parameter,
-                            resolverAddress: resolverAddress,
-                            nameHash: parameter.nameHash
+                    output.queries.withLock { queries in
+                        queries.append(
+                            ResolverQuery(
+                                index: index,
+                                parameter: parameter,
+                                resolverAddress: resolverAddress,
+                                nameHash: parameter.nameHash
+                            )
                         )
-                    )
+                    }
                 case let .failure(error):
-                    output.intermediaryResponses[index] = AddressResolveOutput(
-                        address: address,
-                        output: Self.output(from: error)
-                    )
+                    output.intermediaryResponses.withLock { responses in
+                        responses[index] = AddressResolveOutput(
+                            address: address,
+                            output: Self.output(from: error)
+                        )
+                    }
                 }
             })
 
@@ -135,19 +140,23 @@ extension EthereumNameService {
                 }
                 switch result {
                 case let .success(resolverAddress):
-                    output.queries.append(
-                        ResolverQuery(
-                            index: index,
-                            parameter: parameter,
-                            resolverAddress: resolverAddress,
-                            nameHash: parameter.nameHash
+                    output.queries.withLock { queries in
+                        queries.append(
+                            ResolverQuery(
+                                index: index,
+                                parameter: parameter,
+                                resolverAddress: resolverAddress,
+                                nameHash: parameter.nameHash
+                            )
                         )
-                    )
+                    }
                 case let .failure(error):
-                    output.intermediaryResponses[index] = NameResolveOutput(
-                        ens: name,
-                        output: Self.output(from: error)
-                    )
+                    output.intermediaryResponses.withLock { responses in
+                        responses[index] = NameResolveOutput(
+                            ens: name,
+                            output: Self.output(from: error)
+                        )
+                    }
                 }
             })
 
@@ -156,7 +165,7 @@ extension EthereumNameService {
 
         private func resolveRegistry(
             parameters: [ENSRegistryResolverParameter],
-            handler: @escaping (Int, ENSRegistryResolverParameter, Result<EthereumAddress, Multicall.CallError>) -> Void
+            handler: @Sendable @escaping (Int, ENSRegistryResolverParameter, Result<EthereumAddress, Multicall.CallError>) -> Void
         ) async throws {
             guard let ensRegistryAddress = registryAddress ?? ENSContracts.registryAddress(for: network) else {
                 throw EthereumNameServiceError.noNetwork
@@ -189,7 +198,7 @@ extension EthereumNameService {
         private func resolveQueries<ResolverOutput>(registryOutput: RegistryOutput<ResolverOutput>) async throws -> [ResolverOutput] {
             var aggegator = Multicall.Aggregator()
 
-            for query in registryOutput.queries {
+            for query in registryOutput.queries.value {
                 switch query.parameter {
                 case let .address(address):
                     guard let registryOutput = registryOutput as? RegistryOutput<AddressResolveOutput> else {
@@ -206,7 +215,7 @@ extension EthereumNameService {
 
             do {
                 _ = try await multicall.aggregate(calls: aggegator.calls)
-                return registryOutput.intermediaryResponses.compactMap { $0 }
+                return registryOutput.intermediaryResponses.value.compactMap { $0 }
             } catch {
                 throw EthereumNameServiceError.noNetwork
             }
@@ -225,22 +234,28 @@ extension EthereumNameService {
                 ) { result in
                     switch result {
                     case let .success(name):
-                        registryOutput.intermediaryResponses[query.index] = AddressResolveOutput(
-                            address: address,
-                            output: .resolved(name)
-                        )
+                        registryOutput.intermediaryResponses.withLock { responses in
+                            responses[query.index] = AddressResolveOutput(
+                                address: address,
+                                output: .resolved(name)
+                            )
+                        }
                     case let .failure(error):
-                        registryOutput.intermediaryResponses[query.index] = AddressResolveOutput(
-                            address: address,
-                            output: Self.output(from: error)
-                        )
+                        registryOutput.intermediaryResponses.withLock { responses in
+                            responses[query.index] = AddressResolveOutput(
+                                address: address,
+                                output: Self.output(from: error)
+                            )
+                        }
                     }
                 }
             } catch {
-                registryOutput.intermediaryResponses[query.index] = AddressResolveOutput(
-                    address: address,
-                    output: Self.output(from: error)
-                )
+                registryOutput.intermediaryResponses.withLock { responses in
+                    responses[query.index] = AddressResolveOutput(
+                        address: address,
+                        output: Self.output(from: error)
+                    )
+                }
             }
         }
 
@@ -257,22 +272,28 @@ extension EthereumNameService {
                 ) { result in
                     switch result {
                     case let .success(address):
-                        registryOutput.intermediaryResponses[query.index] = NameResolveOutput(
-                            ens: ens,
-                            output: .resolved(address)
-                        )
+                        registryOutput.intermediaryResponses.withLock { responses in
+                            responses[query.index] = NameResolveOutput(
+                                ens: ens,
+                                output: .resolved(address)
+                            )
+                        }
                     case let .failure(error):
-                        registryOutput.intermediaryResponses[query.index] = NameResolveOutput(
-                            ens: ens,
-                            output: Self.output(from: error)
-                        )
+                        registryOutput.intermediaryResponses.withLock { responses in
+                            responses[query.index] = NameResolveOutput(
+                                ens: ens,
+                                output: Self.output(from: error)
+                            )
+                        }
                     }
                 }
             } catch {
-                registryOutput.intermediaryResponses[query.index] = NameResolveOutput(
-                    ens: ens,
-                    output: Self.output(from: error)
-                )
+                registryOutput.intermediaryResponses.withLock { responses in
+                    responses[query.index] = NameResolveOutput(
+                        ens: ens,
+                        output: Self.output(from: error)
+                    )
+                }
             }
         }
 

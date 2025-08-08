@@ -6,7 +6,7 @@
 import BigInt
 import Foundation
 
-public enum ABIError: Error {
+public enum ABIError: Sendable, Error {
     case invalidSignature
     case invalidType
     case invalidValue
@@ -14,7 +14,7 @@ public enum ABIError: Error {
     case notCurrentlySupported
 }
 
-public enum ABIRawType {
+public enum ABIRawType: Sendable {
     case FixedUInt(Int)
     case FixedInt(Int)
     case FixedAddress

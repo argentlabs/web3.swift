@@ -8,6 +8,7 @@ import XCTest
 @testable import web3
 import BigInt
 
+@MainActor
 final class ZKSyncTransactionTests: XCTestCase {
     let signature = "0x55943b2228183717fd3be583bde0f6ec168247ea8d304eb13b3e7e76ebf6bf2c3c77734e163711c5963ac25a15f95d9ac63b82c2c427fd4eb011c5e3a22f89221b".web3.hexData!
     let chainId = TestConfig.ZKSync.chainId

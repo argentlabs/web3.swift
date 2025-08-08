@@ -8,7 +8,7 @@ import XCTest
 @testable import web3
 
 struct DummyOffchainENSResolve: ABIFunction {
-    static var name: String = "resolver"
+    static let name: String = "resolver"
     var gasPrice: BigUInt?
     var gasLimit: BigUInt?
 
@@ -25,7 +25,7 @@ struct DummyOffchainENSResolve: ABIFunction {
 // https://github.com/ethers-io/ethers.js/blob/master/packages/tests/src.ts/test-providers.ts
 enum EthersTestContract {
     struct TestGet: ABIFunction {
-        static var name: String = "testGet"
+        static let name: String = "testGet"
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
@@ -40,7 +40,7 @@ enum EthersTestContract {
     }
 
     struct TestGetFail: ABIFunction {
-        static var name: String = "testGetFail"
+        static let name: String = "testGetFail"
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
@@ -55,7 +55,7 @@ enum EthersTestContract {
     }
 
     struct TestGetSenderFail: ABIFunction {
-        static var name: String = "testGetSenderFail"
+        static let name: String = "testGetSenderFail"
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
@@ -70,7 +70,7 @@ enum EthersTestContract {
     }
 
     struct TestGetMissing: ABIFunction {
-        static var name: String = "testGetMissing"
+        static let name: String = "testGetMissing"
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
@@ -85,7 +85,7 @@ enum EthersTestContract {
     }
 
     struct TestGetFallback: ABIFunction {
-        static var name: String = "testGetFallback"
+        static let name: String = "testGetFallback"
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 
@@ -100,7 +100,7 @@ enum EthersTestContract {
     }
 
     struct TestPost: ABIFunction {
-        static var name: String = "testPost"
+        static let name: String = "testPost"
         var gasPrice: BigUInt?
         var gasLimit: BigUInt?
 

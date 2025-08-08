@@ -5,10 +5,10 @@
 
 import Foundation
 
-class ENSResolver {
+final class ENSResolver: Sendable {
     let address: EthereumAddress
     let callResolution: CallResolution
-    private(set) var supportsWildCard: Bool?
+    let supportsWildCard: ThreadSafeBox<Bool?>
 
     private let client: EthereumRPCProtocol
 
@@ -21,19 +21,19 @@ class ENSResolver {
         self.address = address
         self.callResolution = callResolution
         self.client = client
-        self.supportsWildCard = supportsWildCard
+        self.supportsWildCard = ThreadSafeBox(supportsWildCard)
     }
 
     func resolve(
         name: String,
         supportingWildcard mustSupportWildCard: Bool
     ) async throws -> EthereumAddress {
-        let wildcardResolution: Bool = if let supportsWildCard {
+        let wildcardResolution: Bool = if let supportsWildCard = supportsWildCard.value {
             supportsWildCard
         } else {
             try await supportsWildcard()
         }
-        supportsWildCard = wildcardResolution
+        supportsWildCard.value = wildcardResolution
 
         if mustSupportWildCard, !wildcardResolution {
             // Wildcard name resolution (ENSIP-10)
@@ -66,12 +66,12 @@ class ENSResolver {
     func resolve(
         address: EthereumAddress
     ) async throws -> String {
-        let wildcardResolution: Bool = if let supportsWildCard {
+        let wildcardResolution: Bool = if let supportsWildCard = supportsWildCard.value {
             supportsWildCard
         } else {
             try await supportsWildcard()
         }
-        supportsWildCard = wildcardResolution
+        supportsWildCard.value = wildcardResolution
 
         if wildcardResolution {
             let response = try await ENSContracts.ENSOffchainResolverFunctions.resolve(

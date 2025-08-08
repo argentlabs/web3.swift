@@ -8,7 +8,7 @@ import Foundation
 
 public typealias MulticallResponse = Multicall.Response
 
-public struct Multicall {
+public struct Multicall: Sendable {
     private let client: EthereumRPCProtocol
 
     public init(client: EthereumRPCProtocol) {
@@ -61,7 +61,7 @@ public struct Multicall {
 }
 
 extension Multicall {
-    public func aggregate(calls: [Call], completionHandler: @escaping (Result<MulticallResponse, MulticallError>) -> Void) {
+    public func aggregate(calls: [Call], completionHandler: @Sendable @escaping (Result<MulticallResponse, MulticallError>) -> Void) {
         Task {
             do {
                 let res = try await aggregate(calls: calls)
@@ -72,7 +72,7 @@ extension Multicall {
         }
     }
 
-    public func tryAggregate(requireSuccess: Bool, calls: [Call], completionHandler: @escaping (Result<Multicall2Response, MulticallError>) -> Void) {
+    public func tryAggregate(requireSuccess: Bool, calls: [Call], completionHandler: @Sendable @escaping (Result<Multicall2Response, MulticallError>) -> Void) {
         Task {
             do {
                 let res = try await tryAggregate(requireSuccess: requireSuccess, calls: calls)
@@ -100,7 +100,7 @@ extension Multicall {
     public struct Response: ABIResponse {
         static let multicallFailedError = "MULTICALL_FAIL".web3.keccak256.web3.hexString
 
-        public static var types: [ABIType.Type] = [BigUInt.self, ABIArray<String>.self]
+        public static let types: [ABIType.Type] = [BigUInt.self, ABIArray<String>.self]
 
         public let block: BigUInt
         public let outputs: [Output]
@@ -118,7 +118,7 @@ extension Multicall {
     }
 
     public struct Multicall2Result: ABITuple {
-        public static var types: [ABIType.Type] = [Bool.self, String.self]
+        public static let types: [ABIType.Type] = [Bool.self, String.self]
         public var encodableValues: [ABIType] { [success, returnData] }
 
         public let success: Bool
@@ -137,7 +137,7 @@ extension Multicall {
 
     public struct Multicall2Response: ABIResponse {
         static let multicallFailedError = "MULTICALL_FAIL".web3.keccak256.web3.hexString
-        public static var types: [ABIType.Type] = [ABIArray<Multicall2Result>.self]
+        public static let types: [ABIType.Type] = [ABIArray<Multicall2Result>.self]
         public let outputs: [Output]
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -152,14 +152,14 @@ extension Multicall {
     }
 
     public struct Call: ABITuple {
-        public static var types: [ABIType.Type] = [EthereumAddress.self, Data.self]
+        public static let types: [ABIType.Type] = [EthereumAddress.self, Data.self]
         public var encodableValues: [ABIType] { [target, encodedFunction] }
 
         public let target: EthereumAddress
         public let encodedFunction: Data
-        public let handler: ((Output) throws -> Void)?
+        public let handler: (@Sendable (Output) throws -> Void)?
 
-        public init<Function: ABIFunction>(function: Function, handler: ((Output) throws -> Void)? = nil) throws {
+        public init<Function: ABIFunction>(function: Function, handler: (@Sendable (Output) throws -> Void)? = nil) throws {
             self.target = function.contract
             self.encodedFunction = try {
                 let encoder = ABIFunctionEncoder(Function.name)
@@ -190,14 +190,14 @@ extension Multicall {
             try calls.append(.init(function: f))
         }
 
-        public mutating func append<Function: ABIFunction>(_ f: Function, handler: @escaping (Output) throws -> Void) throws {
+        public mutating func append<Function: ABIFunction>(_ f: Function, handler: @Sendable @escaping (Output) throws -> Void) throws {
             try calls.append(.init(function: f, handler: handler))
         }
 
         public mutating func append<Function: ABIFunction, Response: MulticallDecodableResponse>(
             function f: Function,
             response: Response.Type,
-            handler: @escaping (Result<Response.Value, CallError>) throws -> Void
+            handler: @Sendable @escaping (Result<Response.Value, CallError>) throws -> Void
         ) throws {
             try calls.append(.init(function: f, handler: { output in
                 try handler(

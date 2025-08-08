@@ -10,7 +10,7 @@ import Foundation
     import FoundationNetworking
 #endif
 
-public class EthereumHttpClient: BaseEthereumClient {
+public class EthereumHttpClient: BaseEthereumClient, @unchecked Sendable {
     let networkQueue: OperationQueue
 
     public init(

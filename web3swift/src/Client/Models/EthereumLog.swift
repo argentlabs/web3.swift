@@ -6,7 +6,7 @@
 import BigInt
 import Foundation
 
-public struct EthereumLog: Equatable {
+public struct EthereumLog: Sendable, Equatable {
     public let logIndex: BigUInt?
     public let transactionIndex: BigUInt?
     public let transactionHash: String?
@@ -19,7 +19,7 @@ public struct EthereumLog: Equatable {
 }
 
 extension EthereumLog: Codable {
-    enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, Sendable, CodingKey {
         case removed // Bool
         case logIndex // Quantity or null
         case transactionIndex // Quantity or null

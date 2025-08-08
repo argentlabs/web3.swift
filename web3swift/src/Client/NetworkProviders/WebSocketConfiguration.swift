@@ -8,7 +8,7 @@
     import NIOSSL
     import Foundation
 
-    public struct WebSocketConfiguration {
+    public struct WebSocketConfiguration: Sendable {
         /// The TLS configuration for client use.
         public var tlsConfiguration: TLSConfiguration?
         /// The largest incoming `WebSocketFrame` size in bytes. Default is 16,384 bytes.

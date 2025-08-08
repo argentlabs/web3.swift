@@ -6,7 +6,7 @@
 import BigInt
 import Foundation
 
-public enum ResolutionMode {
+public enum ResolutionMode: Sendable {
     case onchain
     case allowOffchainLookup
 }
@@ -15,12 +15,12 @@ protocol EthereumNameServiceProtocol {
     func resolve(
         address: EthereumAddress,
         mode: ResolutionMode,
-        completionHandler: @escaping (Result<String, EthereumNameServiceError>) -> Void
+        completionHandler: @Sendable @escaping (Result<String, EthereumNameServiceError>) -> Void
     )
     func resolve(
         ens: String,
         mode: ResolutionMode,
-        completionHandler: @escaping (Result<EthereumAddress, EthereumNameServiceError>) -> Void
+        completionHandler: @Sendable @escaping (Result<EthereumAddress, EthereumNameServiceError>) -> Void
     )
 
     func resolve(address: EthereumAddress, mode: ResolutionMode) async throws -> String
@@ -28,7 +28,7 @@ protocol EthereumNameServiceProtocol {
     func resolve(ens: String, mode: ResolutionMode) async throws -> EthereumAddress
 }
 
-public enum EthereumNameServiceError: Error, Equatable {
+public enum EthereumNameServiceError: Sendable, Error, Equatable {
     case noNetwork
     case ensUnknown
     case invalidInput
@@ -36,7 +36,7 @@ public enum EthereumNameServiceError: Error, Equatable {
     case tooManyRedirections
 }
 
-public class EthereumNameService: EthereumNameServiceProtocol {
+public class EthereumNameService: @unchecked Sendable, EthereumNameServiceProtocol {
     let client: EthereumRPCProtocol
     let registryAddress: EthereumAddress?
     let maximumRedirections: Int
@@ -123,7 +123,7 @@ extension EthereumNameService {
     public func resolve(
         address: EthereumAddress,
         mode: ResolutionMode,
-        completionHandler: @escaping (Result<String, EthereumNameServiceError>) -> Void
+        completionHandler: @Sendable @escaping (Result<String, EthereumNameServiceError>) -> Void
     ) {
         Task {
             do {
@@ -138,7 +138,7 @@ extension EthereumNameService {
     public func resolve(
         ens: String,
         mode: ResolutionMode,
-        completionHandler: @escaping (Result<EthereumAddress, EthereumNameServiceError>) -> Void
+        completionHandler: @Sendable @escaping (Result<EthereumAddress, EthereumNameServiceError>) -> Void
     ) {
         Task {
             do {

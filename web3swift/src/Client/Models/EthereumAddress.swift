@@ -3,10 +3,10 @@
 //  Copyright © Argent Labs Limited. All rights reserved.
 //
 
-import BigInt
+@preconcurrency import BigInt
 import Foundation
 
-public struct EthereumAddress: Codable, Hashable {
+public struct EthereumAddress: Sendable, Codable, Hashable {
     @available(*, deprecated, message: "Shouldn't rely on the actual String representation. Use asString() instead to get an unformatted representation")  public var value: String {
         raw
     }

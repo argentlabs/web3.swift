@@ -37,6 +37,7 @@ public extension ABIFunction {
 
             return try parseOrFail(data)
         } catch {
+            print("Error calling function: \(error)")
             if let error = error as? EthereumClientError {
                 switch error {
                 case .executionError:
@@ -74,7 +75,7 @@ extension CallResolution {
     }
 }
 
-public struct EventFilter {
+public struct EventFilter: Sendable {
     public let type: ABIEvent.Type
     public let allowedSenders: [EthereumAddress]
 
@@ -209,7 +210,7 @@ public extension EthereumRPCProtocol {
 }
 
 public extension EthereumClientProtocol {
-    typealias EventsCompletionHandler = (Result<Events, Error>) -> Void
+    typealias EventsCompletionHandler = @Sendable (Result<Events, Error>) -> Void
 
     func getEvents(
         addresses: [EthereumAddress]?,

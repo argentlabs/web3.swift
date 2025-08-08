@@ -10,7 +10,7 @@ public enum ERC1271Responses {
         // bytes4(keccak256("isValidSignature(bytes32,bytes)")
         static let MAGICVALUE = Data(hex: "0x1626ba7e")
 
-        public static var types: [ABIType.Type] = [EitherBoolOrData4.self]
+        public static let types: [ABIType.Type] = [EitherBoolOrData4.self]
 
         public let isValid: Bool
 

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct Signature: Equatable {
+public struct Signature: Sendable, Equatable {
     public let r: Data
     public let s: Data
     public let v: Int

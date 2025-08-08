@@ -5,7 +5,7 @@
 
 import Foundation
 
-public protocol ABIFunctionEncodable {
+public protocol ABIFunctionEncodable: Sendable {
     static var name: String { get }
     func encode(to encoder: ABIFunctionEncoder) throws
 }

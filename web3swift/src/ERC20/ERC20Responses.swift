@@ -6,9 +6,9 @@
 import BigInt
 import Foundation
 
-public enum ERC20Responses {
+public enum ERC20Responses: Sendable {
     public struct nameResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [String.self]
+        public static let types: [ABIType.Type] = [String.self]
         public let value: String
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -17,7 +17,7 @@ public enum ERC20Responses {
     }
 
     public struct symbolResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [String.self]
+        public static let types: [ABIType.Type] = [String.self]
         public let value: String
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -26,7 +26,7 @@ public enum ERC20Responses {
     }
 
     public struct decimalsResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [UInt8.self]
+        public static let types: [ABIType.Type] = [UInt8.self]
         public let value: UInt8
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -35,7 +35,7 @@ public enum ERC20Responses {
     }
 
     public struct balanceResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [BigUInt.self]
+        public static let types: [ABIType.Type] = [BigUInt.self]
         public let value: BigUInt
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {

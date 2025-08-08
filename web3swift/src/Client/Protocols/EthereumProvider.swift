@@ -26,7 +26,7 @@ public enum EthereumClientError: Error, Equatable {
     case connectionNotOpen
 }
 
-public protocol EthereumRPCProtocol: AnyObject {
+public protocol EthereumRPCProtocol: Sendable, AnyObject {
     var networkProvider: NetworkProviderProtocol { get }
     var network: EthereumNetwork { get }
 

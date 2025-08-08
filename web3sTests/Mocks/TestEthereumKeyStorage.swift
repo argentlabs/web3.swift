@@ -6,8 +6,8 @@
 import Foundation
 @testable import web3
 
-class TestEthereumKeyStorage: EthereumSingleKeyStorageProtocol {
-    
+class TestEthereumKeyStorage: EthereumSingleKeyStorageProtocol, @unchecked Sendable {
+
     private var privateKey: String
 
     init(privateKey: String) {
@@ -22,7 +22,7 @@ class TestEthereumKeyStorage: EthereumSingleKeyStorageProtocol {
     }
 }
 
-class TestEthereumMultipleKeyStorage: EthereumMultipleKeyStorageProtocol {
+class TestEthereumMultipleKeyStorage: EthereumMultipleKeyStorageProtocol, @unchecked Sendable {
     
     private var privateKey: String
     

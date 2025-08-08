@@ -5,12 +5,12 @@
 
 import Foundation
 
-public protocol EthereumSingleKeyStorageProtocol {
+public protocol EthereumSingleKeyStorageProtocol: Sendable {
     func storePrivateKey(key: Data) throws
     func loadPrivateKey() throws -> Data
 }
 
-public protocol EthereumMultipleKeyStorageProtocol {
+public protocol EthereumMultipleKeyStorageProtocol: Sendable {
     func deleteAllKeys() throws
     func deletePrivateKey(for address: EthereumAddress) throws
     func fetchAccounts() throws -> [EthereumAddress]
@@ -18,21 +18,21 @@ public protocol EthereumMultipleKeyStorageProtocol {
     func storePrivateKey(key: Data, with address: EthereumAddress) throws
 }
 
-public enum EthereumKeyStorageError: Error {
+public enum EthereumKeyStorageError: Sendable, Error {
     case notFound
     case failedToSave
     case failedToLoad
     case failedToDelete
 }
 
-public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol {
+public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol, @unchecked Sendable {
     public init() {}
 
-    private var address: EthereumAddress?
+    private let address: ThreadSafeBox<EthereumAddress?> = ThreadSafeBox(nil)
     private let localFileName = "ethereumkey"
 
     private var addressPath: String? {
-        guard let address else {
+        guard let address = address.value else {
             return nil
         }
         if let url = folderPath {
@@ -102,10 +102,14 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
     }
 
     public func storePrivateKey(key: Data, with address: EthereumAddress) throws {
-        self.address = address
+        self.address.withLock {
+            $0 = address
+        }
 
         defer {
-            self.address = nil
+            self.address.withLock {
+                $0 = nil
+            }
         }
 
         guard let localPath = self.addressPath else {
@@ -120,10 +124,14 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
     }
 
     public func loadPrivateKey(for address: EthereumAddress) throws -> Data {
-        self.address = address
+        self.address.withLock {
+            $0 = address
+        }
 
         defer {
-            self.address = nil
+            self.address.withLock {
+                $0 = nil
+            }
         }
 
         guard let localPath = self.addressPath else {

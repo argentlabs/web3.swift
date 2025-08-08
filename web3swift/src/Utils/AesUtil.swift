@@ -36,7 +36,7 @@ class Aes128Util {
         defer {
             outputPtr.deallocate()
         }
-        outputPtr.assign(from: inputPtr, count: length)
+        outputPtr.update(from: inputPtr, count: length)
 
         AES_CTR_xcrypt_buffer(ctx, outputPtr, UInt32(length))
 

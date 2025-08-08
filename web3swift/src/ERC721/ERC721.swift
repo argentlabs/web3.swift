@@ -3,14 +3,14 @@
 //  Copyright © Argent Labs Limited. All rights reserved.
 //
 
-import BigInt
+@preconcurrency import BigInt
 import Foundation
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
 #endif
 
-open class ERC721: ERC165 {
+open class ERC721: ERC165, @unchecked Sendable {
     public func balanceOf(contract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt {
         let function = ERC721Functions.balanceOf(contract: contract, owner: address)
         let data = try await function.call(withClient: client, responseType: ERC721Responses.balanceResponse.self)
@@ -66,7 +66,7 @@ open class ERC721: ERC165 {
     }
 }
 
-public class ERC721Metadata: ERC721 {
+public class ERC721Metadata: ERC721, @unchecked Sendable {
     public struct Token: Equatable, Decodable {
         public typealias PropertyType = Decodable & Equatable
         public struct Property<T: PropertyType>: Equatable, Decodable {
@@ -180,7 +180,7 @@ public class ERC721Metadata: ERC721 {
     }
 }
 
-public class ERC721Enumerable: ERC721 {
+public class ERC721Enumerable: ERC721, @unchecked Sendable {
     public func totalSupply(contract: EthereumAddress) async throws -> BigUInt {
         let function = ERC721EnumerableFunctions.totalSupply(contract: contract)
         let data = try await function.call(withClient: client, responseType: ERC721EnumerableResponses.numberResponse.self)
@@ -211,7 +211,7 @@ extension ERC721 {
     public func balanceOf(
         contract: EthereumAddress,
         address: EthereumAddress,
-        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void
     ) {
         Task {
             do {
@@ -226,7 +226,7 @@ extension ERC721 {
     public func ownerOf(
         contract: EthereumAddress,
         tokenId: BigUInt,
-        completionHandler: @escaping (Result<EthereumAddress, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<EthereumAddress, Error>) -> Void
     ) {
         Task {
             do {
@@ -242,7 +242,7 @@ extension ERC721 {
         recipient: EthereumAddress,
         fromBlock: EthereumBlock,
         toBlock: EthereumBlock,
-        completionHandler: @escaping (Result<[ERC721Events.Transfer], Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<[ERC721Events.Transfer], Error>) -> Void
     ) {
         Task {
             do {
@@ -258,7 +258,7 @@ extension ERC721 {
         sender: EthereumAddress,
         fromBlock: EthereumBlock,
         toBlock: EthereumBlock,
-        completionHandler: @escaping (Result<[ERC721Events.Transfer], Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<[ERC721Events.Transfer], Error>) -> Void
     ) {
         Task {
             do {
@@ -274,7 +274,7 @@ extension ERC721 {
 extension ERC721Metadata {
     public func name(
         contract: EthereumAddress,
-        completionHandler: @escaping (Result<String, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<String, Error>) -> Void
     ) {
         Task {
             do {
@@ -288,7 +288,7 @@ extension ERC721Metadata {
 
     public func symbol(
         contract: EthereumAddress,
-        completionHandler: @escaping (Result<String, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<String, Error>) -> Void
     ) {
         Task {
             do {
@@ -303,7 +303,7 @@ extension ERC721Metadata {
     public func tokenURI(
         contract: EthereumAddress,
         tokenID: BigUInt,
-        completionHandler: @escaping (Result<URL, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<URL, Error>) -> Void
     ) {
         Task {
             do {
@@ -318,7 +318,7 @@ extension ERC721Metadata {
     public func tokenMetadata(
         contract: EthereumAddress,
         tokenID: BigUInt,
-        completionHandler: @escaping (Result<Token, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<Token, Error>) -> Void
     ) {
         Task {
             do {
@@ -334,7 +334,7 @@ extension ERC721Metadata {
 extension ERC721Enumerable {
     public func totalSupply(
         contract: EthereumAddress,
-        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void
     ) {
         Task {
             do {
@@ -349,7 +349,7 @@ extension ERC721Enumerable {
     public func tokenByIndex(
         contract: EthereumAddress,
         index: BigUInt,
-        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void
     ) {
         Task {
             do {
@@ -365,7 +365,7 @@ extension ERC721Enumerable {
         contract: EthereumAddress,
         owner: EthereumAddress,
         index: BigUInt,
-        completionHandler: @escaping (Result<BigUInt, Error>) -> Void
+        completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void
     ) {
         Task {
             do {

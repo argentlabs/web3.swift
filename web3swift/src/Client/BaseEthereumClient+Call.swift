@@ -225,7 +225,7 @@ extension BaseEthereumClient {
     public func eth_call(
         _ transaction: EthereumTransaction,
         block: EthereumBlock = .Latest,
-        completionHandler: @escaping (Result<String, EthereumClientError>) -> Void
+        completionHandler: @Sendable @escaping (Result<String, EthereumClientError>) -> Void
     ) {
         eth_call(transaction, resolution: .noOffchain(failOnExecutionError: true), block: block, completionHandler: completionHandler)
     }
@@ -234,7 +234,7 @@ extension BaseEthereumClient {
         _ transaction: EthereumTransaction,
         resolution: CallResolution = .noOffchain(failOnExecutionError: true),
         block: EthereumBlock = .Latest,
-        completionHandler: @escaping (Result<String, EthereumClientError>) -> Void
+        completionHandler: @Sendable @escaping (Result<String, EthereumClientError>) -> Void
     ) {
         Task {
             do {

@@ -6,7 +6,7 @@
 import Logging
 import Foundation
 
-public protocol EthereumAccountProtocol {
+public protocol EthereumAccountProtocol: Sendable {
     var address: EthereumAddress { get }
 
     func sign(data: Data) throws -> Data
@@ -26,7 +26,7 @@ public enum EthereumAccountError: Error {
     case signError
 }
 
-public class EthereumAccount: EthereumAccountProtocol {
+public class EthereumAccount: EthereumAccountProtocol, @unchecked Sendable {
     private let privateKeyData: Data
     private let publicKeyData: Data
     private let logger: Logger
