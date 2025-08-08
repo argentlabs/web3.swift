@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -21,22 +21,22 @@ extension Multicall {
         public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
             switch network {
             case .mainnet:
-                return Multicall.Contract.Registry.mainnet
+                Multicall.Contract.Registry.mainnet
             case .sepolia:
-                return Multicall.Contract.Registry.sepolia
+                Multicall.Contract.Registry.sepolia
             default:
-                return nil
+                nil
             }
         }
 
         public static func multicall2Address(for network: EthereumNetwork) -> EthereumAddress? {
             switch network {
             case .mainnet:
-                return Multicall.Contract.Multicall2.mainnet
+                Multicall.Contract.Multicall2.mainnet
             case .sepolia:
-                return Multicall.Contract.Multicall2.sepolia
+                Multicall.Contract.Multicall2.sepolia
             default:
-                return nil
+                nil
             }
         }
 

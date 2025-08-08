@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -42,7 +42,7 @@ public class ABIFunctionEncoder {
         types.append(.DynamicArray(T.rawType))
     }
 
-    internal var encodedValues = [ABIEncoder.EncodedValue]()
+    var encodedValues = [ABIEncoder.EncodedValue]()
 
     public init(_ name: String) {
         self.name = name
@@ -50,7 +50,7 @@ public class ABIFunctionEncoder {
 
     public func encoded() throws -> Data {
         let methodId = try Self.methodId(name: name, types: types)
-        let allBytes = methodId + (try encodedValues.encoded(isDynamic: false))
+        let allBytes = try methodId + (encodedValues.encoded(isDynamic: false))
         return Data(allBytes)
     }
 

@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -119,7 +119,7 @@ extension URL: ABIType {
 
 extension ABITuple {
     public static var rawType: ABIRawType {
-        .Tuple(Self.types.map { $0.rawType })
+        .Tuple(types.map { $0.rawType })
     }
 
     public static var parser: ParserFunction {

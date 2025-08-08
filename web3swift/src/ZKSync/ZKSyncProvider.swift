@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import web3
@@ -104,7 +104,7 @@ struct EstimateGasParams: Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         var nested = container.nestedContainer(keyedBy: TransactionCodingKeys.self)
-        if let from = from {
+        if let from {
             try nested.encode(from, forKey: .from)
         }
         try nested.encode(to, forKey: .to)
@@ -122,7 +122,7 @@ struct EstimateGasParams: Encodable {
         if let value = value.map(jsonRPCAmount) {
             try nested.encode(value, forKey: .value)
         }
-        if let data = data {
+        if let data {
             try nested.encode(data, forKey: .data)
         }
     }

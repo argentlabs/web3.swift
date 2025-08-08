@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -34,11 +34,11 @@ open class BaseEthereumClient: EthereumClientProtocol {
 
     func failureHandler(_ error: Error) -> EthereumClientError {
         if case let .executionError(result) = error as? JSONRPCError {
-            return EthereumClientError.executionError(result.error)
+            EthereumClientError.executionError(result.error)
         } else if case .executionError = error as? EthereumClientError, let error = error as? EthereumClientError {
-            return error
+            error
         } else {
-            return EthereumClientError.unexpectedReturnValue
+            EthereumClientError.unexpectedReturnValue
         }
     }
 }

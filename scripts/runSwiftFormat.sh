@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SWIFT_VERSION=5.3
+SWIFT_VERSION=5.9
 
 cd "$(dirname "$0")"
 
@@ -17,8 +17,8 @@ if ! which bin/swiftformat >/dev/null; then
     cd bin
     rm -r ./*
 
-    downloadAndUnzip "SwiftFormatTmp" "https://github.com/nicklockwood/SwiftFormat/releases/download/0.50.3/swiftformat.artifactbundle.zip"
-    mv -f ./SwiftFormatTmp/swiftformat.artifactbundle/swiftformat-0.50.3-macos/bin/swiftformat .
+    downloadAndUnzip "SwiftFormatTmp" "https://github.com/nicklockwood/SwiftFormat/releases/download/0.57.2/swiftformat.artifactbundle.zip"
+    mv -f ./SwiftFormatTmp/swiftformat.artifactbundle/swiftformat-0.57.2-macos/bin/swiftformat .
     find . -name "*Tmp" -type d -prune -exec rm -rf '{}' +
     for entry in ./*
     do
@@ -38,12 +38,12 @@ cleanup() {
 }
 
 format() {
-    bin/swiftformat ../web3swift/src/ --config "swiftformat.yml" --swiftversion $SWIFT_VERSION
+    bin/swiftformat ../web3swift/src/ --config "config.swiftformat" --swiftversion $SWIFT_VERSION
     cleanup
 }
 
 lint() {
-    bin/swiftformat --lint ../web3swift/src/ --config "swiftformat.yml" --swiftversion $SWIFT_VERSION
+    bin/swiftformat --lint ../web3swift/src/ --config "config.swiftformat" --swiftversion $SWIFT_VERSION
     cleanup
 }
 

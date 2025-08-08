@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -28,11 +28,10 @@ class ENSResolver {
         name: String,
         supportingWildcard mustSupportWildCard: Bool
     ) async throws -> EthereumAddress {
-        let wildcardResolution: Bool
-        if let supportsWildCard = supportsWildCard {
-            wildcardResolution = supportsWildCard
+        let wildcardResolution: Bool = if let supportsWildCard {
+            supportsWildCard
         } else {
-            wildcardResolution = try await supportsWildcard()
+            try await supportsWildcard()
         }
         supportsWildCard = wildcardResolution
 
@@ -67,11 +66,10 @@ class ENSResolver {
     func resolve(
         address: EthereumAddress
     ) async throws -> String {
-        let wildcardResolution: Bool
-        if let supportsWildCard = supportsWildCard {
-            wildcardResolution = supportsWildCard
+        let wildcardResolution: Bool = if let supportsWildCard {
+            supportsWildCard
         } else {
-            wildcardResolution = try await supportsWildcard()
+            try await supportsWildcard()
         }
         supportsWildCard = wildcardResolution
 

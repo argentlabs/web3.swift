@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -49,11 +49,11 @@ struct RecursiveLogCollector {
     private func getMiddleBlock(from: EthereumBlock, to: EthereumBlock) async -> EthereumBlock? {
         func toBlockNumber() async -> Int? {
             if let toBlockNumber = to.intValue {
-                return toBlockNumber
+                toBlockNumber
             } else if let currentBlock = try? await getCurrentBlock(), let currentBlockNumber = currentBlock.intValue {
-                return currentBlockNumber
+                currentBlockNumber
             } else {
-                return nil
+                nil
             }
         }
 

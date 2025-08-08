@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import Foundation
@@ -9,15 +9,15 @@ import Foundation
 struct DataStr: Codable, Equatable, Hashable {
     private var value: Data
 
-    public init(wrappedValue: Data) {
+    init(wrappedValue: Data) {
         self.value = wrappedValue
     }
 
-    public init(_ value: Data) {
+    init(_ value: Data) {
         self.init(wrappedValue: value)
     }
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let str = try container.decode(String.self)
         guard let data = Data(hex: str) else {
@@ -26,12 +26,12 @@ struct DataStr: Codable, Equatable, Hashable {
         self.value = data
     }
 
-    public func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(value.web3.hexString)
     }
 
-    public var wrappedValue: Data {
+    var wrappedValue: Data {
         get { value }
         set { value = newValue }
     }

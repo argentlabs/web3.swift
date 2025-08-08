@@ -1,6 +1,6 @@
 //
 //  web3.swift
-//  Copyright © 2022 Argent Labs Limited. All rights reserved.
+//  Copyright © Argent Labs Limited. All rights reserved.
 //
 
 import BigInt
@@ -14,30 +14,30 @@ public class ABIEncoder {
         public var bytes: [UInt8] {
             switch self {
             case let .value(bytes: encoded, _, _):
-                return encoded
+                encoded
             case let .container(values, _, _):
-                return values.flatMap(\.bytes)
+                values.flatMap(\.bytes)
             }
         }
 
         var isDynamic: Bool {
             switch self {
             case let .value(_, isDynamic, _):
-                return isDynamic
+                isDynamic
             case let .container(_, isDynamic, _):
-                return isDynamic
+                isDynamic
             }
         }
 
         var staticLength: Int {
             switch self {
             case let .value(_, _, staticLength):
-                return staticLength
+                staticLength
             case let .container(values, isDynamic, _):
                 if isDynamic {
-                    return 32
+                    32
                 } else {
-                    return values.map(\.staticLength).reduce(0, +)
+                    values.map(\.staticLength).reduce(0, +)
                 }
             }
         }
@@ -136,11 +136,10 @@ public class ABIEncoder {
                 throw ABIError.invalidValue
             }
             let len = try encodeRaw(String(bytes.count), forType: ABIRawType.FixedUInt(256)).bytes
-            let pack: Int
-            if bytes.isEmpty {
-                pack = 0
+            let pack: Int = if bytes.isEmpty {
+                0
             } else {
-                pack = (bytes.count - (bytes.count % 32)) / 32 + 1
+                (bytes.count - (bytes.count % 32)) / 32 + 1
             }
 
             if padded {
@@ -174,11 +173,10 @@ public class ABIEncoder {
             }
             let len = try encodeRaw(String(size), forType: ABIRawType.FixedUInt(256)).bytes
 
-            let pack: Int
-            if bytes.isEmpty {
-                pack = 0
+            let pack: Int = if bytes.isEmpty {
+                0
             } else {
-                pack = (bytes.count - (bytes.count % 32)) / 32 + 1
+                (bytes.count - (bytes.count % 32)) / 32 + 1
             }
 
             encoded = len + bytes + [UInt8](repeating: 0x00, count: pack * 32 - bytes.count)
@@ -214,7 +212,7 @@ extension Array where Element == ABIEncoder.EncodedValue {
         try forEach { element in
             switch element {
             case let .container(values, isDynamic, size):
-                try encode(try values.encoded(isDynamic: isDynamic), isDynamic, size)
+                try encode(values.encoded(isDynamic: isDynamic), isDynamic, size)
             case let .value(bytes, isDynamic, _):
                 try encode(bytes, isDynamic, nil)
             }
