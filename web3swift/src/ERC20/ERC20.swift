@@ -6,7 +6,7 @@
 import BigInt
 import Foundation
 
-public protocol ERC20Protocol {
+public protocol ERC20Protocol: Sendable {
     init(client: EthereumRPCProtocol)
 
     func name(tokenContract: EthereumAddress) async throws -> String
@@ -18,16 +18,16 @@ public protocol ERC20Protocol {
     func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock) async throws -> [ERC20Events.Transfer]
 
     // Deprecated
-    func name(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void)
-    func symbol(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void)
-    func decimals(tokenContract: EthereumAddress, completionHandler: @escaping (Result<UInt8, Error>) -> Void)
-    func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void)
-    func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void)
-    func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping (Result<[ERC20Events.Transfer], Error>) -> Void)
-    func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping (Result<[ERC20Events.Transfer], Error>) -> Void)
+    func name(tokenContract: EthereumAddress, completionHandler: @Sendable @escaping (Result<String, Error>) -> Void)
+    func symbol(tokenContract: EthereumAddress, completionHandler: @Sendable @escaping (Result<String, Error>) -> Void)
+    func decimals(tokenContract: EthereumAddress, completionHandler: @Sendable @escaping (Result<UInt8, Error>) -> Void)
+    func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void)
+    func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void)
+    func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @Sendable @escaping (Result<[ERC20Events.Transfer], Error>) -> Void)
+    func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @Sendable @escaping (Result<[ERC20Events.Transfer], Error>) -> Void)
 }
 
-open class ERC20: ERC20Protocol {
+open class ERC20: ERC20Protocol, @unchecked Sendable {
     let client: EthereumRPCProtocol
 
     required public init(client: EthereumRPCProtocol) {
@@ -110,7 +110,7 @@ open class ERC20: ERC20Protocol {
 }
 
 extension ERC20 {
-    public func name(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void) {
+    public func name(tokenContract: EthereumAddress, completionHandler: @Sendable @escaping (Result<String, Error>) -> Void) {
         Task {
             do {
                 let name = try await name(tokenContract: tokenContract)
@@ -121,7 +121,7 @@ extension ERC20 {
         }
     }
 
-    public func symbol(tokenContract: EthereumAddress, completionHandler: @escaping (Result<String, Error>) -> Void) {
+    public func symbol(tokenContract: EthereumAddress, completionHandler: @Sendable @escaping (Result<String, Error>) -> Void) {
         Task {
             do {
                 let symbol = try await symbol(tokenContract: tokenContract)
@@ -132,7 +132,7 @@ extension ERC20 {
         }
     }
 
-    public func decimals(tokenContract: EthereumAddress, completionHandler: @escaping (Result<UInt8, Error>) -> Void) {
+    public func decimals(tokenContract: EthereumAddress, completionHandler: @Sendable @escaping (Result<UInt8, Error>) -> Void) {
         Task {
             do {
                 let decimals = try await decimals(tokenContract: tokenContract)
@@ -143,7 +143,7 @@ extension ERC20 {
         }
     }
 
-    public func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void) {
+    public func balanceOf(tokenContract: EthereumAddress, address: EthereumAddress, completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void) {
         Task {
             do {
                 let balance = try await balanceOf(tokenContract: tokenContract, address: address)
@@ -154,7 +154,7 @@ extension ERC20 {
         }
     }
 
-    public func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completionHandler: @escaping (Result<BigUInt, Error>) -> Void) {
+    public func allowance(tokenContract: EthereumAddress, address: EthereumAddress, spender: EthereumAddress, completionHandler: @Sendable @escaping (Result<BigUInt, Error>) -> Void) {
         Task {
             do {
                 let allowance = try await allowance(tokenContract: tokenContract, address: address, spender: spender)
@@ -165,7 +165,7 @@ extension ERC20 {
         }
     }
 
-    public func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping (Result<[ERC20Events.Transfer], Error>) -> Void) {
+    public func transferEventsTo(recipient: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @Sendable @escaping (Result<[ERC20Events.Transfer], Error>) -> Void) {
         Task {
             do {
                 let events = try await transferEventsTo(recipient: recipient, fromBlock: fromBlock, toBlock: toBlock)
@@ -176,7 +176,7 @@ extension ERC20 {
         }
     }
 
-    public func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @escaping (Result<[ERC20Events.Transfer], Error>) -> Void) {
+    public func transferEventsFrom(sender: EthereumAddress, fromBlock: EthereumBlock, toBlock: EthereumBlock, completionHandler: @Sendable @escaping (Result<[ERC20Events.Transfer], Error>) -> Void) {
         Task {
             do {
                 let events = try await transferEventsFrom(sender: sender, fromBlock: fromBlock, toBlock: toBlock)

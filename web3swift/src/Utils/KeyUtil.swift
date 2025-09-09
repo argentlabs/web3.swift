@@ -101,7 +101,7 @@ public class KeyUtil {
         defer {
             outputWithRecidPtr.deallocate()
         }
-        outputWithRecidPtr.assign(from: outputPtr, count: 64)
+        outputWithRecidPtr.update(from: outputPtr, count: 64)
         outputWithRecidPtr.advanced(by: 64).pointee = UInt8(recid)
 
         let signature = Data(bytes: outputWithRecidPtr, count: 65)
@@ -150,7 +150,7 @@ public class KeyUtil {
         }
         var size = 65
         var rv = Data(count: size)
-        rv.withUnsafeMutableBytes {
+        _ = rv.withUnsafeMutableBytes {
             secp256k1_ec_pubkey_serialize(ctx, $0.bindMemory(to: UInt8.self).baseAddress!, &size, pubkey, UInt32(SECP256K1_EC_UNCOMPRESSED))
         }
         return "0x\(rv[1...].web3.keccak256.web3.hexString.suffix(40))"

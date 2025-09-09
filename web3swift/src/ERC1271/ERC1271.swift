@@ -6,14 +6,14 @@
 import BigInt
 import Foundation
 
-public protocol ERC1271Protocol {
+public protocol ERC1271Protocol: Sendable {
     init(client: EthereumRPCProtocol)
 
     func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data) async throws -> Bool
-    func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data, completionHandler: @escaping (Result<Bool, Error>) -> Void)
+    func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data, completionHandler: @Sendable @escaping (Result<Bool, Error>) -> Void)
 }
 
-public class ERC1271: ERC1271Protocol {
+public class ERC1271: ERC1271Protocol, @unchecked Sendable {
     let client: EthereumRPCProtocol
 
     required public init(client: EthereumRPCProtocol) {
@@ -26,7 +26,7 @@ public class ERC1271: ERC1271Protocol {
         return response.isValid
     }
 
-    public func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+    public func isValidSignature(contract: EthereumAddress, messageHash: Data, signature: Data, completionHandler: @Sendable @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
                 let isValid = try await isValidSignature(contract: contract, messageHash: messageHash, signature: signature)

@@ -19,12 +19,12 @@ struct BatchedCollectionIndex<Base: Collection> {
 
 extension BatchedCollectionIndex: Comparable {
     @usableFromInline
-    static func == <Base>(lhs: BatchedCollectionIndex<Base>, rhs: BatchedCollectionIndex<Base>) -> Bool {
+    static func == <B>(lhs: BatchedCollectionIndex<B>, rhs: BatchedCollectionIndex<B>) -> Bool {
         lhs.range.lowerBound == rhs.range.lowerBound
     }
 
     @usableFromInline
-    static func < <Base>(lhs: BatchedCollectionIndex<Base>, rhs: BatchedCollectionIndex<Base>) -> Bool {
+    static func < <B>(lhs: BatchedCollectionIndex<B>, rhs: BatchedCollectionIndex<B>) -> Bool {
         lhs.range.lowerBound < rhs.range.lowerBound
     }
 }

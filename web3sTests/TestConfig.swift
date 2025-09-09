@@ -6,7 +6,7 @@
 import Foundation
 import web3
 
-struct TestConfig {
+struct TestConfig: Sendable {
     // This is the proxy URL for connecting to the Blockchain. For testing we usually use the Sepolia network on Infura. Using free tier, so might hit rate limits
     static let clientUrl = "https://sepolia.infura.io/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
     static let mainnetUrl = "https://mainnet.infura.io/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
@@ -38,7 +38,7 @@ struct TestConfig {
      enum ZKSync {
          static let chainId = 280
          static let network = EthereumNetwork.custom("\(280)")
-         static let clientURL = URL(string: "https://zksync2-testnet.zksync.dev")!
+         static let clientURL = URL(string: "https://sepolia.era.zksync.dev")!
     }
 }
 

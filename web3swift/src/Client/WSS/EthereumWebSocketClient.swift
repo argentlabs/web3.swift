@@ -23,7 +23,7 @@
         case closed
     }
 
-    public class EthereumWebSocketClient: BaseEthereumClient {
+    public class EthereumWebSocketClient: BaseEthereumClient, @unchecked Sendable {
         public var delegate: EthereumWebSocketClientDelegate? {
             get {
                 provider.delegate
@@ -121,7 +121,7 @@
             }
         }
 
-        public func pendingTransactions(onData: @escaping (String) -> Void) async throws -> EthereumSubscription {
+        public func pendingTransactions(onData: @Sendable @escaping (String) -> Void) async throws -> EthereumSubscription {
             do {
                 let data = try await networkProvider.send(method: "eth_subscribe", params: EthereumSubscriptionType.newPendingTransactions.params, receive: String.self)
                 if let resDataString = data as? String {
@@ -138,7 +138,7 @@
             }
         }
 
-        public func newBlockHeaders(onData: @escaping (EthereumHeader) -> Void) async throws -> EthereumSubscription {
+        public func newBlockHeaders(onData: @Sendable @escaping (EthereumHeader) -> Void) async throws -> EthereumSubscription {
             do {
                 let data = try await networkProvider.send(method: "eth_subscribe", params: EthereumSubscriptionType.newBlockHeaders.params, receive: String.self)
                 if let resDataString = data as? String {
@@ -155,7 +155,7 @@
             }
         }
 
-        public func logs(logsParams: LogsParams? = nil, onData: @escaping (EthereumLog) -> Void) async throws -> EthereumSubscription {
+        public func logs(logsParams: LogsParams? = nil, onData: @Sendable @escaping (EthereumLog) -> Void) async throws -> EthereumSubscription {
             do {
                 let type: EthereumSubscriptionType = .logs(logsParams)
                 let data = try await networkProvider.send(method: "eth_subscribe", params: type.params, receive: String.self)
@@ -173,7 +173,7 @@
             }
         }
 
-        public func syncing(onData: @escaping (EthereumSyncStatus) -> Void) async throws -> EthereumSubscription {
+        public func syncing(onData: @Sendable @escaping (EthereumSyncStatus) -> Void) async throws -> EthereumSubscription {
             do {
                 let data = try await networkProvider.send(method: "eth_subscribe", params: EthereumSubscriptionType.syncing.params, receive: String.self)
                 if let resDataString = data as? String {
@@ -192,7 +192,7 @@
     }
 
     extension EthereumWebSocketClient {
-        public func subscribe(type: EthereumSubscriptionType, completionHandler: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void) {
+        public func subscribe(type: EthereumSubscriptionType, completionHandler: @Sendable @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void) {
             Task {
                 do {
                     let result = try await subscribe(type: type)
@@ -203,7 +203,7 @@
             }
         }
 
-        public func unsubscribe(_ subscription: EthereumSubscription, completionHandler: @escaping (Result<Bool, EthereumClientError>) -> Void) {
+        public func unsubscribe(_ subscription: EthereumSubscription, completionHandler: @Sendable @escaping (Result<Bool, EthereumClientError>) -> Void) {
             Task {
                 do {
                     let result = try await unsubscribe(subscription)
@@ -214,7 +214,7 @@
             }
         }
 
-        public func pendingTransactions(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (String) -> Void) {
+        public func pendingTransactions(onSubscribe: @Sendable @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @Sendable @escaping (String) -> Void) {
             Task {
                 do {
                     let result = try await pendingTransactions(onData: onData)
@@ -225,7 +225,7 @@
             }
         }
 
-        public func newBlockHeaders(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumHeader) -> Void) {
+        public func newBlockHeaders(onSubscribe: @Sendable @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @Sendable @escaping (EthereumHeader) -> Void) {
             Task {
                 do {
                     let result = try await newBlockHeaders(onData: onData)
@@ -236,7 +236,7 @@
             }
         }
 
-        public func logs(logsParams: LogsParams? = nil, onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumLog) -> Void) {
+        public func logs(logsParams: LogsParams? = nil, onSubscribe: @Sendable @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @Sendable @escaping (EthereumLog) -> Void) {
             Task {
                 do {
                     let result = try await logs(logsParams: logsParams, onData: onData)
@@ -247,7 +247,7 @@
             }
         }
 
-        public func syncing(onSubscribe: @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @escaping (EthereumSyncStatus) -> Void) {
+        public func syncing(onSubscribe: @Sendable @escaping (Result<EthereumSubscription, EthereumClientError>) -> Void, onData: @Sendable @escaping (EthereumSyncStatus) -> Void) {
             Task {
                 do {
                     let result = try await syncing(onData: onData)

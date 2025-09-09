@@ -409,7 +409,7 @@ private struct RelayerExecute: ABIFunction {
     var gasLimit: BigUInt?
 
     struct Response: ABIResponse {
-        static var types: [ABIType.Type] = []
+        static let types: [ABIType.Type] = []
 
         init?(values: [ABIDecoder.DecodedValue]) throws {
 
@@ -441,7 +441,7 @@ private struct RelayerWithData32Execute: ABIFunction {
     var gasLimit: BigUInt?
 
     struct Response: ABIResponse {
-        static var types: [ABIType.Type] = []
+        static let types: [ABIType.Type] = []
 
         init?(values: [ABIDecoder.DecodedValue]) throws {
 

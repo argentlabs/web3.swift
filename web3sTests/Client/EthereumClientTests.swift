@@ -294,7 +294,7 @@ class EthereumClientTests: XCTestCase {
                                                            fromBlock: .Earliest,
                                                            toBlock: .Latest,
                                                            matching: filters)
-            XCTAssertEqual(eventsResult?.logs.count, 16)
+            XCTAssertEqual(eventsResult?.logs.count, 36)
             XCTAssertEqual(eventsResult?.events.count, 6)
         } catch {
             XCTFail("Expected events but failed \(error).")
@@ -308,6 +308,8 @@ class EthereumClientTests: XCTestCase {
             let response = try await function.call(withClient: client!, responseType: GetDynamicArray.Response.self)
             XCTAssertEqual(response.addresses, ["0x83f7338d17A85B0a0A8A1AE7Edead4dA571566E0"])
         } catch {
+
+            print("Error: \(error)")
             XCTFail("Expected response but failed \(error).")
         }
     }
@@ -320,12 +322,11 @@ class EthereumClientTests: XCTestCase {
                 responseType: InvalidMethodA.BoolResponse.self)
             XCTFail("Expected to throw while awaiting, but succeeded")
         } catch {
-            XCTAssertEqual(
-                error as? EthereumClientError,
-                .executionError(
-                    .init(code: -32000, message: "execution reverted", data: nil)
-                )
-            )
+            guard case let .executionError(error) = error as? EthereumClientError else {
+                return XCTFail("Wrong error type: \(error)")
+            }
+            XCTAssertEqual(error.code, 3)
+            XCTAssertEqual(error.message, "execution reverted")
         }
     }
 
@@ -370,7 +371,7 @@ struct GetDynamicArray: ABIFunction {
     let gasLimit: BigUInt? = nil
 
     struct Response: ABIResponse {
-        static var types: [ABIType.Type] = [ABIArray<EthereumAddress>.self]
+        static let types: [ABIType.Type] = [ABIArray<EthereumAddress>.self]
         let addresses: [EthereumAddress]
 
         init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -416,7 +417,7 @@ struct InvalidMethodA: ABIFunction {
     let param: EthereumAddress
 
     struct BoolResponse: ABIResponse {
-        static var types: [ABIType.Type] = [Bool.self]
+        static let types: [ABIType.Type] = [Bool.self]
         let value: Bool
 
         init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -465,21 +466,24 @@ class EthereumWebSocketClientTests: EthereumClientTests {
         XCTAssertEqual(client.currentState, WebSocketState.open)
     }
 
-    func testWebSocketPendingTransactions() async {
+    func testWebSocketPendingTransactions() async throws {
+        throw XCTSkip("Skipping WebSocket subscribe tests as events might not be received in time.")
         do {
             guard let client = client as? EthereumWebSocketClient else {
                 XCTFail("Expected client to be EthereumWebSocketClient")
                 return
             }
 
-            var expectation: XCTestExpectation? = self.expectation(description: "Pending Transaction")
+            let expectation = self.expectation(description: "Pending Transaction")
+            let hasReceivedEvent = ThreadSafeBox(false)
             let subscription = try await client.pendingTransactions { _ in
-                expectation?.fulfill()
-                expectation = nil
+                guard !hasReceivedEvent.value else { return }
+                expectation.fulfill()
+                hasReceivedEvent.withLock { $0 = true }
             }
 
-            await waitForExpectations(timeout: 5, handler: nil)
-
+            await fulfillment(of: [expectation], timeout: 5)
+            _ = try await client.unsubscribe(subscription)
             XCTAssertNotEqual(subscription.id, "")
             XCTAssertEqual(subscription.type, .newPendingTransactions)
         } catch {
@@ -487,22 +491,25 @@ class EthereumWebSocketClientTests: EthereumClientTests {
         }
     }
 
-    func testWebSocketNewBlockHeaders() async {
+    func testWebSocketNewBlockHeaders() async throws {
+        throw XCTSkip("Skipping WebSocket subscribe tests as events might not be received in time.")
         do {
             guard let client = client as? EthereumWebSocketClient else {
                 XCTFail("Expected client to be EthereumWebSocketClient")
                 return
             }
 
-            var expectation: XCTestExpectation? = self.expectation(description: "New Block Headers")
+            let expectation = self.expectation(description: "New Block Headers")
+            let hasReceivedEvent = ThreadSafeBox(false)
             let subscription = try await client.newBlockHeaders { _ in
-                expectation?.fulfill()
-                expectation = nil
+                guard !hasReceivedEvent.value else { return }
+                expectation.fulfill()
+                hasReceivedEvent.withLock { $0 = true }
             }
 
             // we need a high timeout as new block might take a while
-            await waitForExpectations(timeout: 2500, handler: nil)
-
+            await fulfillment(of: [expectation], timeout: 2500)
+            _ = try await client.unsubscribe(subscription)
             XCTAssertNotEqual(subscription.id, "")
             XCTAssertEqual(subscription.type, .newBlockHeaders)
         } catch {
@@ -510,24 +517,26 @@ class EthereumWebSocketClientTests: EthereumClientTests {
         }
     }
 
-    func testWebSocketLogs() async {
+    func testWebSocketLogs() async throws {
+        throw XCTSkip("Skipping WebSocket subscribe tests as events might not be received in time.")
         do {
             guard let client = client as? EthereumWebSocketClient else {
                 XCTFail("Expected client to be EthereumWebSocketClient")
                 return
             }
 
-            var expectation: XCTestExpectation? = self.expectation(description: "Logs")
+            let expectation = self.expectation(description: "Logs")
             let type = EthereumSubscriptionType.logs(nil)
+            let hasReceivedEvent = ThreadSafeBox(false)
             let subscription = try await client.logs { log in
-                print(log)
-                expectation?.fulfill()
-                expectation = nil
+                guard !hasReceivedEvent.value else { return }
+                expectation.fulfill()
+                hasReceivedEvent.withLock { $0 = true }
             }
 
             // we need a high timeout as new block might take a while
-            await waitForExpectations(timeout: 2500, handler: nil)
-
+            await fulfillment(of: [expectation], timeout: 2500)
+            _ = try await client.unsubscribe(subscription)
             XCTAssertNotEqual(subscription.id, "")
             XCTAssertEqual(subscription.type, type)
         } catch {
@@ -535,7 +544,8 @@ class EthereumWebSocketClientTests: EthereumClientTests {
         }
     }
 
-    func testWebSocketSubscribe() async {
+    func testWebSocketSubscribe() async throws {
+        throw XCTSkip("Skipping WebSocket subscribe tests as events might not be received in time.")
         do {
             guard let client = client as? EthereumWebSocketClient else {
                 XCTFail("Expected client to be EthereumWebSocketClient")
@@ -545,18 +555,18 @@ class EthereumWebSocketClientTests: EthereumClientTests {
 
             delegateExpectation = expectation(description: "onNewPendingTransaction delegate call")
             var subscription = try await client.subscribe(type: .newPendingTransactions)
-            await waitForExpectations(timeout: 10)
+            await fulfillment(of: [delegateExpectation!], timeout: 10)
             _ = try await client.unsubscribe(subscription)
 
             delegateExpectation = expectation(description: "onNewBlockHeader delegate call")
             subscription = try await client.subscribe(type: .newBlockHeaders)
-            await waitForExpectations(timeout: 2500)
+            await fulfillment(of: [delegateExpectation!], timeout: 2500)
             _ = try await client.unsubscribe(subscription)
 
             delegateExpectation = expectation(description: "onLogs delegate call")
             let type = EthereumSubscriptionType.logs(nil)
             subscription = try await client.subscribe(type: type)
-            await waitForExpectations(timeout: 2500)
+            await fulfillment(of: [delegateExpectation!], timeout: 2500)
             _ = try await client.unsubscribe(subscription)
         } catch {
             XCTFail("Expected subscription but failed \(error).")

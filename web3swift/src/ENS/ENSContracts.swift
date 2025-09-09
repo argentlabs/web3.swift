@@ -8,7 +8,7 @@ import Foundation
 
 public typealias ENSRegistryResolverParameter = ENSContracts.ResolveParameter
 
-public enum ENSContracts {
+public enum ENSContracts: Sendable {
     static let RegistryAddress: EthereumAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
 
     public static func registryAddress(for network: EthereumNetwork) -> EthereumAddress? {
@@ -22,7 +22,7 @@ public enum ENSContracts {
         }
     }
 
-    public enum ResolveParameter {
+    public enum ResolveParameter: Sendable {
         case address(EthereumAddress)
         case name(String)
 
@@ -68,7 +68,7 @@ public enum ENSContracts {
         }
     }
 
-    public enum ENSResolverFunctions {
+    public enum ENSResolverFunctions: Sendable {
         public struct addr: ABIFunction {
             public static let name = "addr"
             public let gasPrice: BigUInt?
@@ -160,7 +160,7 @@ public enum ENSContracts {
         }
 
         public struct resolve: ABIFunction {
-            public static var name: String = "resolve"
+            public static let name: String = "resolve"
             public let gasPrice: BigUInt?
             public let gasLimit: BigUInt?
             public var contract: EthereumAddress
@@ -313,7 +313,7 @@ public enum ENSContracts {
     }
 
     public struct AddressResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [EthereumAddress.self]
+        public static let types: [ABIType.Type] = [EthereumAddress.self]
         public let value: EthereumAddress
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -322,7 +322,7 @@ public enum ENSContracts {
     }
 
     public struct StringResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [String.self]
+        public static let types: [ABIType.Type] = [String.self]
         public let value: String
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -331,7 +331,7 @@ public enum ENSContracts {
     }
 
     public struct AddressAsDataResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [Data.self]
+        public static let types: [ABIType.Type] = [Data.self]
         public let value: EthereumAddress
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {
@@ -341,7 +341,7 @@ public enum ENSContracts {
     }
 
     public struct StringAsDataResponse: ABIResponse, MulticallDecodableResponse {
-        public static var types: [ABIType.Type] = [Data.self]
+        public static let types: [ABIType.Type] = [Data.self]
         public let value: String
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {

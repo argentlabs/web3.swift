@@ -9,7 +9,7 @@ import Foundation
     import FoundationNetworking
 #endif
 
-public class HttpNetworkProvider: NetworkProviderProtocol {
+public class HttpNetworkProvider: NetworkProviderProtocol, @unchecked Sendable {
     public let session: URLSession
     private let url: URL
     private let headers: [String: String]
@@ -24,7 +24,7 @@ public class HttpNetworkProvider: NetworkProviderProtocol {
         session.invalidateAndCancel()
     }
 
-    public func send<P, U>(method: String, params: P, receive: U.Type) async throws -> Any where P: Encodable, U: Decodable {
+    public func send<P, U>(method: String, params: P, receive: U.Type) async throws -> Any where P: Sendable & Encodable, U: Sendable & Decodable {
         if type(of: params) == [Any].self {
             // If params are passed in with Array<Any> and not caught, runtime fatal error
             throw JSONRPCError.encodingError

@@ -54,7 +54,7 @@ public struct ZKSyncTransaction: Equatable {
         self.paymasterParams = paymasterParams
     }
 
-    public struct PaymasterParams: Equatable {
+    public struct PaymasterParams: Sendable, Equatable {
         public var paymaster: EthereumAddress
         public var input: Data
         public init(

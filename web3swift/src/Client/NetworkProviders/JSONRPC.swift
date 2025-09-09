@@ -5,34 +5,34 @@
 
 import Foundation
 
-struct JSONRPCSubscriptionParams<T: Decodable>: Decodable {
+struct JSONRPCSubscriptionParams<T: Sendable & Decodable>: Sendable, Decodable {
     var subscription: String
     var result: T
 }
 
-struct JSONRPCSubscriptionResponse<T: Decodable>: Decodable {
+struct JSONRPCSubscriptionResponse<T: Sendable & Decodable>: Sendable, Decodable {
     var jsonrpc: String
     var method: String
     var params: JSONRPCSubscriptionParams<T>
 }
 
-struct JSONRPCRequest<T: Encodable>: Encodable {
+struct JSONRPCRequest<T: Sendable & Encodable>: Sendable, Encodable {
     let jsonrpc: String
     let method: String
     let params: T
     let id: Int
 }
 
-public struct JSONRPCResult<T: Decodable>: Decodable {
+public struct JSONRPCResult<T: Sendable & Decodable>: Sendable, Decodable {
     public var id: Int
     public var jsonrpc: String
     public var result: T
 }
 
-public struct JSONRPCErrorDetail: Decodable, Equatable, CustomStringConvertible {
-    public var code: Int
-    public var message: String
-    public var data: String?
+public struct JSONRPCErrorDetail: Sendable, Decodable, Equatable, CustomStringConvertible {
+    public let code: Int
+    public let message: String
+    public let data: String?
 
     public init(
         code: Int,
@@ -49,19 +49,19 @@ public struct JSONRPCErrorDetail: Decodable, Equatable, CustomStringConvertible 
     }
 }
 
-public struct JSONRPCErrorResult: Decodable {
+public struct JSONRPCErrorResult: Sendable, Decodable {
     public var id: Int
     public var jsonrpc: String
     public var error: JSONRPCErrorDetail
 }
 
-public enum JSONRPCErrorCode {
-    public static var invalidInput = -32000
-    public static var tooManyResults = -32005
-    public static var contractExecution = 3
+public enum JSONRPCErrorCode: Sendable {
+    public static let invalidInput = -32000
+    public static let tooManyResults = -32005
+    public static let contractExecution = 3
 }
 
-public enum JSONRPCError: Error {
+public enum JSONRPCError: Sendable, Error {
     case executionError(JSONRPCErrorResult)
     case requestRejected(Data)
     case encodingError

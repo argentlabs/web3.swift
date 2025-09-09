@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum EthereumSubscriptionType: Equatable, Hashable {
+public enum EthereumSubscriptionType: Sendable, Equatable, Hashable {
     case newBlockHeaders
     case logs(LogsParams?)
     case newPendingTransactions
@@ -25,7 +25,7 @@ public enum EthereumSubscriptionType: Equatable, Hashable {
     }
 }
 
-public struct EthereumSubscription: Hashable {
+public struct EthereumSubscription: Sendable, Hashable {
     let type: EthereumSubscriptionType
     let id: String
 }
@@ -46,7 +46,7 @@ public enum EthereumSubscriptionParamElement: Encodable {
 }
 
 // MARK: - ParamClass
-public struct LogsParams: Codable, Equatable, Hashable {
+public struct LogsParams: Sendable, Codable, Equatable, Hashable {
     public let address: EthereumAddress?
     public let topics: [String]?
 

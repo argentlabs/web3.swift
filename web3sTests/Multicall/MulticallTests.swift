@@ -6,7 +6,15 @@
 import XCTest
 @testable import web3
 
-class MulticallTests: XCTestCase {
+final class Box<T>: @unchecked Sendable {
+    var value: T
+    
+    init(_ value: T) {
+        self.value = value
+    }
+}
+
+class MulticallTests: XCTestCase, @unchecked Sendable {
     var client: EthereumClientProtocol!
     var multicall: Multicall!
     let testContractAddress = EthereumAddress(TestConfig.erc20Contract)
@@ -20,18 +28,18 @@ class MulticallTests: XCTestCase {
     func testNameAndSymbol() async throws {
         var aggregator = Multicall.Aggregator()
 
-        var name: String?
-        var decimals: UInt8?
+        let nameBox = Box<String?>(nil)
+        let decimalsBox = Box<UInt8?>(nil)
 
         try aggregator.append(ERC20Functions.decimals(contract: testContractAddress)) { output in
-            decimals = try ERC20Responses.decimalsResponse(data: output.get())?.value
+            decimalsBox.value = try ERC20Responses.decimalsResponse(data: output.get())?.value
         }
 
         try aggregator.append(
             function: ERC20Functions.name(contract: testContractAddress),
             response: ERC20Responses.nameResponse.self
         ) { result in
-            name = try? result.get()
+            nameBox.value = try? result.get()
         }
 
         try aggregator.append(ERC20Functions.symbol(contract: testContractAddress))
@@ -44,25 +52,25 @@ class MulticallTests: XCTestCase {
             XCTFail("Unexpected failure while handling output")
         }
 
-        XCTAssertEqual(decimals, 6)
-        XCTAssertEqual(name, "USD Coin")
+        XCTAssertEqual(decimalsBox.value, 6)
+        XCTAssertEqual(nameBox.value, "USD Coin")
     }
     
     func testNameAndSymbolMulticall2() async throws {
         var aggregator = Multicall.Aggregator()
 
-        var name: String?
-        var decimals: UInt8?
+        let nameBox = Box<String?>(nil)
+        let decimalsBox = Box<UInt8?>(nil)
 
         try aggregator.append(ERC20Functions.decimals(contract: testContractAddress)) { output in
-            decimals = try ERC20Responses.decimalsResponse(data: output.get())?.value
+            decimalsBox.value = try ERC20Responses.decimalsResponse(data: output.get())?.value
         }
 
         try aggregator.append(
             function: ERC20Functions.name(contract: testContractAddress),
             response: ERC20Responses.nameResponse.self
         ) { result in
-            name = try? result.get()
+            nameBox.value = try? result.get()
         }
 
         try aggregator.append(ERC20Functions.symbol(contract: testContractAddress))
@@ -76,12 +84,12 @@ class MulticallTests: XCTestCase {
             XCTFail("Unexpected failure while handling output")
         }
 
-        XCTAssertEqual(decimals, 6)
-        XCTAssertEqual(name, "USD Coin")
+        XCTAssertEqual(decimalsBox.value, 6)
+        XCTAssertEqual(nameBox.value, "USD Coin")
     }
 }
 
-class MulticallWebSocketTests: MulticallTests {
+class MulticallWebSocketTests: MulticallTests, @unchecked Sendable {
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)

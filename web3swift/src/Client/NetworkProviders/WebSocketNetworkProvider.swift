@@ -14,15 +14,16 @@
     import GenericJSON
     import NIOWebSocket
     import WebSocketKit
+    import NIOConcurrencyHelpers
 
     #if canImport(FoundationNetworking)
         import FoundationNetworking
     #endif
 
-    public class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol {
-        private struct WebSocketRequest {
-            var payload: String
-            var callback: (Result<Data, JSONRPCError>) -> Void
+    public class WebSocketNetworkProvider: WebSocketNetworkProviderProtocol, @unchecked Sendable {
+        private struct WebSocketRequest: Sendable {
+            let payload: String
+            let callback: @Sendable (Result<Data, JSONRPCError>) -> Void
         }
 
         private class SharedResources {
@@ -171,10 +172,29 @@
             }
         }
 
-        public func send<P, U>(method: String, params: P, receive: U.Type) async throws -> Any where P: Encodable, U: Decodable {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
+        private final class ContinuationStore<U: Sendable>: @unchecked Sendable {
+            private var store: [Int: CheckedContinuation<U, Error>] = [:]
+            private let lock = NIOLock()
+
+            func add(_ id: Int, cont: CheckedContinuation<U, Error>) {
+                lock.lock(); store[id] = cont; lock.unlock()
+            }
+
+            func resume(id: Int, with result: Result<U, Error>) {
+                lock.lock()
+                let cont = store.removeValue(forKey: id)
+                lock.unlock()
+                cont?.resume(with: result)
+            }
+        }
+
+        public func send<P, U>(method: String, params: P, receive: U.Type) async throws -> Any where P: Sendable & Encodable, U: Sendable & Decodable {
+            let store = ContinuationStore<U>()
+
+            return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<U, Error>) in
                 resources.incrementCounter()
                 let id = resources.counter
+                store.add(id, cont: continuation)
 
                 let requestString: String
 
@@ -185,9 +205,30 @@
                     return
                 }
 
-                let wsRequest = WebSocketRequest(payload: requestString, callback: decoding(receive.self) { result in
-                    continuation.resume(with: result)
-                })
+                let wsRequest = WebSocketRequest(
+                    payload: requestString,
+                    callback: { raw in
+                        switch raw {
+                        case let .failure(rpcErr):
+                            store.resume(id: id, with: .failure(rpcErr))
+                        case let .success(data):
+                            do {
+                                // Decode as JSON-RPC response first, then extract result (same as HTTP provider)
+                                if let result = try? JSONDecoder().decode(JSONRPCResult<U>.self, from: data) {
+                                    store.resume(id: id, with: .success(result.result))
+                                } else if let errorResult = try? JSONDecoder().decode(JSONRPCErrorResult.self, from: data) {
+                                    throw JSONRPCError.executionError(errorResult)
+                                } else {
+                                    // Fallback: try direct decoding for backward compatibility
+                                    let decoded = try JSONDecoder().decode(U.self, from: data)
+                                    store.resume(id: id, with: .success(decoded))
+                                }
+                            } catch {
+                                store.resume(id: id, with: .failure(error))
+                            }
+                        }
+                    }
+                )
 
                 // if socket is not connected yet or reconnecting
                 // add request to the queue
@@ -415,7 +456,7 @@
             }
         }
 
-        private func encodeRequest<P: Encodable>(method: String, params: P, id: Int) throws -> String {
+        private func encodeRequest<P: Sendable & Encodable>(method: String, params: P, id: Int) throws -> String {
             let rpcRequest = JSONRPCRequest(jsonrpc: "2.0", method: method, params: params, id: id)
             logger.trace("\(rpcRequest)")
             let data = try JSONEncoder().encode(rpcRequest)
@@ -427,7 +468,7 @@
             return dataString
         }
 
-        private func decoding<T: Decodable>(_ type: T.Type, then: @escaping (Result<Any, JSONRPCError>) -> Void) -> (Result<Data, JSONRPCError>) -> Void {
+        private func decoding<T: Sendable & Decodable>(_ type: T.Type, then: @Sendable @escaping (Result<Any, JSONRPCError>) -> Void) -> @Sendable (Result<Data, JSONRPCError>) -> Void {
             { dataResult in
                 let decodedResult: Result<Any, JSONRPCError> = dataResult.tryMap { data in
                     if let result = try? JSONDecoder().decode(JSONRPCResult<T>.self, from: data) {

@@ -3,13 +3,13 @@
 //  Copyright © Argent Labs Limited. All rights reserved.
 //
 
-import BigInt
+@preconcurrency import BigInt
 import Foundation
 
-public protocol ABIType {
+public protocol ABIType: Sendable {
     static var rawType: ABIRawType { get }
 
-    typealias ParserFunction = ([String]) throws -> ABIType
+    typealias ParserFunction = @Sendable ([String]) throws -> ABIType
     static var parser: ParserFunction { get }
 }
 
@@ -43,6 +43,9 @@ extension EthereumAddress: ABIType {
         }
     }
 }
+
+extension BigInt: @unchecked Sendable {}
+extension BigUInt: @unchecked Sendable {}
 
 extension BigInt: ABIType {
     public static var rawType: ABIRawType { .FixedInt(256) }
@@ -141,7 +144,7 @@ private let DataParser: ABIType.ParserFunction = { data in
 
 extension Data: ABIType {
     public static var rawType: ABIRawType { .DynamicBytes }
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 }
 
 // When decoding it's easier to specify a type, instead of type + static size
@@ -152,7 +155,7 @@ public struct Data1: ABIStaticSizeDataType {
         .FixedBytes(1)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -166,7 +169,7 @@ public struct Data2: ABIStaticSizeDataType {
         .FixedBytes(2)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -180,7 +183,7 @@ public struct Data3: ABIStaticSizeDataType {
         .FixedBytes(3)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -194,7 +197,7 @@ public struct Data4: ABIStaticSizeDataType {
         .FixedBytes(4)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -208,7 +211,7 @@ public struct Data5: ABIStaticSizeDataType {
         .FixedBytes(5)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -222,7 +225,7 @@ public struct Data6: ABIStaticSizeDataType {
         .FixedBytes(6)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -236,7 +239,7 @@ public struct Data7: ABIStaticSizeDataType {
         .FixedBytes(7)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -250,7 +253,7 @@ public struct Data8: ABIStaticSizeDataType {
         .FixedBytes(8)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -264,7 +267,7 @@ public struct Data9: ABIStaticSizeDataType {
         .FixedBytes(9)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -278,7 +281,7 @@ public struct Data10: ABIStaticSizeDataType {
         .FixedBytes(10)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -292,7 +295,7 @@ public struct Data11: ABIStaticSizeDataType {
         .FixedBytes(11)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -306,7 +309,7 @@ public struct Data12: ABIStaticSizeDataType {
         .FixedBytes(12)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -320,7 +323,7 @@ public struct Data13: ABIStaticSizeDataType {
         .FixedBytes(13)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -334,7 +337,7 @@ public struct Data14: ABIStaticSizeDataType {
         .FixedBytes(14)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -348,7 +351,7 @@ public struct Data15: ABIStaticSizeDataType {
         .FixedBytes(15)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -362,7 +365,7 @@ public struct Data16: ABIStaticSizeDataType {
         .FixedBytes(16)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -376,7 +379,7 @@ public struct Data17: ABIStaticSizeDataType {
         .FixedBytes(17)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -390,7 +393,7 @@ public struct Data18: ABIStaticSizeDataType {
         .FixedBytes(18)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -404,7 +407,7 @@ public struct Data19: ABIStaticSizeDataType {
         .FixedBytes(19)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -418,7 +421,7 @@ public struct Data20: ABIStaticSizeDataType {
         .FixedBytes(20)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -432,7 +435,7 @@ public struct Data21: ABIStaticSizeDataType {
         .FixedBytes(21)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -446,7 +449,7 @@ public struct Data22: ABIStaticSizeDataType {
         .FixedBytes(22)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -460,7 +463,7 @@ public struct Data23: ABIStaticSizeDataType {
         .FixedBytes(23)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -474,7 +477,7 @@ public struct Data24: ABIStaticSizeDataType {
         .FixedBytes(24)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -488,7 +491,7 @@ public struct Data25: ABIStaticSizeDataType {
         .FixedBytes(25)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -502,7 +505,7 @@ public struct Data26: ABIStaticSizeDataType {
         .FixedBytes(26)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -516,7 +519,7 @@ public struct Data27: ABIStaticSizeDataType {
         .FixedBytes(27)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -530,7 +533,7 @@ public struct Data28: ABIStaticSizeDataType {
         .FixedBytes(28)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -544,7 +547,7 @@ public struct Data29: ABIStaticSizeDataType {
         .FixedBytes(29)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -558,7 +561,7 @@ public struct Data30: ABIStaticSizeDataType {
         .FixedBytes(30)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -572,7 +575,7 @@ public struct Data31: ABIStaticSizeDataType {
         .FixedBytes(31)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 
@@ -586,7 +589,7 @@ public struct Data32: ABIStaticSizeDataType {
         .FixedBytes(32)
     }
 
-    public static var parser: ParserFunction = DataParser
+    public static let parser: ParserFunction = DataParser
 
     var rawData: Data
 

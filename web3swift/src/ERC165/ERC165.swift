@@ -6,7 +6,7 @@
 import BigInt
 import Foundation
 
-open class ERC165 {
+open class ERC165: @unchecked Sendable {
     public let client: EthereumRPCProtocol
 
     required public init(client: EthereumRPCProtocol) {
@@ -33,7 +33,7 @@ open class ERC165 {
 }
 
 extension ERC165 {
-    public func supportsInterface(contract: EthereumAddress, id: Data, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+    public func supportsInterface(contract: EthereumAddress, id: Data, completionHandler: @escaping @Sendable (Result<Bool, Error>) -> Void) {
         Task {
             do {
                 let result = try await supportsInterface(contract: contract, id: id)
@@ -82,7 +82,7 @@ public enum ERC165Functions {
 
 public enum ERC165Responses {
     public struct supportsInterfaceResponse: ABIResponse {
-        public static var types: [ABIType.Type] = [Bool.self]
+        public static let types: [ABIType.Type] = [Bool.self]
         public let supported: Bool
 
         public init?(values: [ABIDecoder.DecodedValue]) throws {

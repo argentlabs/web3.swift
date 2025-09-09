@@ -11,7 +11,7 @@ import Foundation
     import FoundationNetworking
 #endif
 
-open class BaseEthereumClient: EthereumClientProtocol {
+open class BaseEthereumClient: EthereumClientProtocol, @unchecked Sendable {
     public let url: URL
 
     public let networkProvider: NetworkProviderProtocol
@@ -44,7 +44,7 @@ open class BaseEthereumClient: EthereumClientProtocol {
 }
 
 extension BaseEthereumClient {
-    public func net_version(completionHandler: @escaping (Result<EthereumNetwork, EthereumClientError>) -> Void) {
+    public func net_version(completionHandler: @Sendable @escaping (Result<EthereumNetwork, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await net_version()
@@ -55,7 +55,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_gasPrice(completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
+    public func eth_gasPrice(completionHandler: @Sendable @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_gasPrice()
@@ -66,7 +66,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_blockNumber(completionHandler: @escaping (Result<Int, EthereumClientError>) -> Void) {
+    public func eth_blockNumber(completionHandler: @Sendable @escaping (Result<Int, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_blockNumber()
@@ -77,7 +77,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
+    public func eth_getBalance(address: EthereumAddress, block: EthereumBlock, completionHandler: @Sendable @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getBalance(address: address, block: block)
@@ -88,7 +88,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest, completionHandler: @escaping (Result<String, EthereumClientError>) -> Void) {
+    public func eth_getCode(address: EthereumAddress, block: EthereumBlock = .Latest, completionHandler: @Sendable @escaping (Result<String, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getCode(address: address, block: block)
@@ -99,7 +99,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_estimateGas(_ transaction: EthereumTransaction, completionHandler: @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
+    public func eth_estimateGas(_ transaction: EthereumTransaction, completionHandler: @Sendable @escaping (Result<BigUInt, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_estimateGas(transaction)
@@ -110,7 +110,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completionHandler: @escaping (Result<Int, EthereumClientError>) -> Void) {
+    public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock, completionHandler: @Sendable @escaping (Result<Int, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getTransactionCount(address: address, block: block)
@@ -121,7 +121,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getTransaction(byHash txHash: String, completionHandler: @escaping (Result<EthereumTransaction, EthereumClientError>) -> Void) {
+    public func eth_getTransaction(byHash txHash: String, completionHandler: @Sendable @escaping (Result<EthereumTransaction, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getTransaction(byHash: txHash)
@@ -132,7 +132,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getTransactionReceipt(txHash: String, completionHandler: @escaping (Result<EthereumTransactionReceipt, EthereumClientError>) -> Void) {
+    public func eth_getTransactionReceipt(txHash: String, completionHandler: @Sendable @escaping (Result<EthereumTransactionReceipt, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getTransactionReceipt(txHash: txHash)
@@ -143,7 +143,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getBlockByNumber(_ block: EthereumBlock, completionHandler: @escaping (Result<EthereumBlockInfo, EthereumClientError>) -> Void) {
+    public func eth_getBlockByNumber(_ block: EthereumBlock, completionHandler: @Sendable @escaping (Result<EthereumBlockInfo, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getBlockByNumber(block)
@@ -154,7 +154,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completionHandler: @escaping (Result<String, EthereumClientError>) -> Void) {
+    public func eth_sendRawTransaction(_ transaction: EthereumTransaction, withAccount account: EthereumAccountProtocol, completionHandler: @Sendable @escaping (Result<String, EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_sendRawTransaction(transaction, withAccount: account)
@@ -165,7 +165,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completionHandler: @escaping (Result<[EthereumLog], EthereumClientError>) -> Void) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, topics: [String?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completionHandler: @Sendable @escaping (Result<[EthereumLog], EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
@@ -176,7 +176,7 @@ extension BaseEthereumClient {
         }
     }
 
-    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completionHandler: @escaping (Result<[EthereumLog], EthereumClientError>) -> Void) {
+    public func eth_getLogs(addresses: [EthereumAddress]?, orTopics topics: [[String]?]?, fromBlock from: EthereumBlock = .Earliest, toBlock to: EthereumBlock = .Latest, completionHandler: @Sendable @escaping (Result<[EthereumLog], EthereumClientError>) -> Void) {
         Task {
             do {
                 let result = try await eth_getLogs(addresses: addresses, orTopics: topics, fromBlock: from, toBlock: to)
@@ -187,7 +187,7 @@ extension BaseEthereumClient {
         }
     }
 
-    func failureHandler<T>(_ error: Error, completionHandler: @escaping (Result<T, EthereumClientError>) -> Void) {
+    func failureHandler<T>(_ error: Error, completionHandler: @Sendable @escaping (Result<T, EthereumClientError>) -> Void) {
         if case let .executionError(result) = error as? JSONRPCError {
             completionHandler(.failure(.executionError(result.error)))
         } else if case .executionError = error as? EthereumClientError, let error = error as? EthereumClientError {

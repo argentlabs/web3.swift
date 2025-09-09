@@ -16,7 +16,7 @@ public struct OffchainLookup: ABIRevertError {
         ]
     }
 
-    public static var name: String = "OffchainLookup"
+    public static let name: String = "OffchainLookup"
 
     public var address: EthereumAddress
     public var urls: [String]

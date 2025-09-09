@@ -128,7 +128,7 @@ struct EstimateGasParams: Encodable {
     }
 }
 
-public class ZKSyncClient: BaseEthereumClient, ZKSyncClientProtocol {
+public class ZKSyncClient: BaseEthereumClient, ZKSyncClientProtocol, @unchecked Sendable {
     let networkQueue: OperationQueue
 
     public init(
