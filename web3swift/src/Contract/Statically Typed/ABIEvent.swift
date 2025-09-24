@@ -5,7 +5,7 @@
 
 import Foundation
 
-public protocol ABIEvent {
+public protocol ABIEvent: Sendable {
     static var name: String { get }
     static var types: [ABIType.Type] { get }
     static var typesIndexed: [Bool] { get }
