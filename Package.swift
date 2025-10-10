@@ -13,9 +13,9 @@ let package = Package(
         .library(name: "web3-zksync.swift", targets: ["web3-zksync"])
     ],
     dependencies: [
-        .package(url: "https://github.com/attaswift/BigInt", from: "5.3.0"),
+        .package(url: "https://github.com/attaswift/BigInt", from: "5.7.0"),
         .package(url: "https://github.com/iwill/generic-json-swift", .upToNextMajor(from: "2.0.2")),
-        .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", .upToNextMajor(from: "0.6.0")),
+        .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", exact: "0.21.1"),
         .package(url: "https://github.com/vapor/websocket-kit.git", from: "2.16.1"),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.6.4")
     ],
@@ -29,7 +29,7 @@ let package = Package(
                     .target(name: "Internal_CryptoSwift_PBDKF2"),
                     "BigInt",
                     .product(name: "GenericJSON", package: "generic-json-swift"),
-                    .product(name: "secp256k1", package: "secp256k1.swift"),
+                    .product(name: "libsecp256k1", package: "secp256k1.swift"),
                     .product(name: "WebSocketKit", package: "websocket-kit"),
                     .product(name: "Logging", package: "swift-log")
                 ],

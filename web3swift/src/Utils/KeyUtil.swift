@@ -4,7 +4,7 @@
 //
 
 import Logging
-import secp256k1
+import libsecp256k1
 import Foundation
 
 public enum KeyUtilError: Error {
