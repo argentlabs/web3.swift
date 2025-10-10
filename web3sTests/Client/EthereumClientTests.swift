@@ -149,9 +149,27 @@ class EthereumClientTests: XCTestCase {
         do {
             let logs = try await client?.eth_getLogs(addresses: ["0x23d0a442580c01e420270fba6ca836a8b2353acb"], topics: nil, fromBlock: .Earliest, toBlock: .Latest)
             XCTAssertNotNil(logs, "Logs not available")
+            XCTAssertEqual(logs?.count, 0)
         } catch {
             XCTFail("Expected logs but failed \(error).")
         }
+    }
+
+    func testSimpleEthGetLogsWithFailingRequest() async {
+        guard let client = client else {
+            XCTFail()
+            return
+        }
+        await XCTAssertThrowsErrorAsync(
+            try await client.eth_getLogs(
+                addresses: ["0x3edf60dd017ace33a0220f78741b5581c385a1ba"],
+                topics: [try? ERC20Events.Transfer.signature()],
+                fromBlock: .Earliest,
+                toBlock: .Latest
+            ),
+            EthereumClientError.unexpectedReturnValue,
+            "Too many logs to receive. Should throw an error instead of defaulting to empty array"
+        )
     }
 
     func testOrTopicsEthGetLogs() async {
@@ -604,5 +622,20 @@ extension EthereumWebSocketClientTests: EthereumWebSocketClientDelegate {
     func onLog(subscription: EthereumSubscription, log: EthereumLog) {
         delegateExpectation?.fulfill()
         delegateExpectation = nil
+    }
+}
+
+func XCTAssertThrowsErrorAsync<T, R>(
+    _ expression: @autoclosure () async throws -> T,
+    _ errorThrown: @autoclosure () -> R,
+    _ message: @autoclosure () -> String = "This method should fail",
+    file: StaticString = #filePath,
+    line: UInt = #line
+) async where R: Equatable, R: Error  {
+    do {
+        let _ = try await expression()
+        XCTFail(message(), file: file, line: line)
+    } catch {
+        XCTAssertEqual(error as? R, errorThrown())
     }
 }

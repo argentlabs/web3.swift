@@ -37,9 +37,10 @@ struct RecursiveLogCollector {
                     throw EthereumClientError.unexpectedReturnValue
                 }
                 return lhs + rhs
+            } else {
+                throw error
             }
         }
-        return []
     }
 
     private func getLogs(addresses: [EthereumAddress]?, topics: Topics? = nil, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
