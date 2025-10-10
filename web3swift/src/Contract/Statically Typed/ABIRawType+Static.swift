@@ -44,9 +44,6 @@ extension EthereumAddress: ABIType {
     }
 }
 
-extension BigInt: @unchecked Sendable {}
-extension BigUInt: @unchecked Sendable {}
-
 extension BigInt: ABIType {
     public static var rawType: ABIRawType { .FixedInt(256) }
     public static var parser: ParserFunction {
