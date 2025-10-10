@@ -29,7 +29,7 @@ let package = Package(
                     .target(name: "Internal_CryptoSwift_PBDKF2"),
                     "BigInt",
                     .product(name: "GenericJSON", package: "generic-json-swift"),
-                    .product(name: "libsecp256k1", package: "swift-secp256k1"),
+                    .product(name: "P256K", package: "swift-secp256k1"),
                     .product(name: "WebSocketKit", package: "websocket-kit"),
                     .product(name: "Logging", package: "swift-log")
                 ],

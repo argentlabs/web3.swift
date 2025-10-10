@@ -17,7 +17,7 @@ class EthereumKeyStorageTests: XCTestCase {
     }
 
     func testStoreLocalPrivateKey() {
-        let randomData = Data.randomOfLength(256)!
+        let randomData = Data.randomOfLength(32)!
         let keyStorage = EthereumKeyLocalStorage()
 
         do {
@@ -29,7 +29,7 @@ class EthereumKeyStorageTests: XCTestCase {
     }
 
     func testStoreAndLoadLocalPrivateKey() {
-        let randomData = Data.randomOfLength(256)!
+        let randomData = Data.randomOfLength(32)!
         let keyStorage = EthereumKeyLocalStorage()
         let ethereumAddress = EthereumAddress(TestConfig.publicKey)
         do {
