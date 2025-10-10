@@ -31,15 +31,17 @@ public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol, @uncheck
     private let address: ThreadSafeBox<EthereumAddress?> = ThreadSafeBox(nil)
     private let localFileName = "ethereumkey"
 
-    private var addressPath: String? {
+    private var addressURL: URL? {
         guard let address = address.value else {
             return nil
         }
         if let url = folderPath {
-            return url.appendingPathComponent(address.asString()).path
+            return url.appendingPathComponent(address.asString())
         }
         return nil
     }
+
+    private var addressPath: String? { addressURL?.path }
 
     private var folderPath: URL? {
         if let url = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first {
@@ -48,33 +50,40 @@ public class EthereumKeyLocalStorage: EthereumSingleKeyStorageProtocol, @uncheck
         return nil
     }
 
+    private var localURL: URL? {
+        fileManager
+            .urls(for: .cachesDirectory, in: .userDomainMask)
+            .first?
+            .appendingPathComponent(localFileName)
+    }
+
     private var localPath: String? {
-        if let url = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first {
-            return url.appendingPathComponent(localFileName).path
-        }
-        return nil
+        localURL?.path
     }
 
     private let fileManager = FileManager.default
 
     public func storePrivateKey(key: Data) throws {
-        guard let localPath else {
+        guard let localURL else {
             throw EthereumKeyStorageError.failedToSave
         }
 
-        let success = NSKeyedArchiver.archiveRootObject(key, toFile: localPath)
-
-        if !success {
+        do {
+            try NSKeyedArchiver
+                .archivedData(withRootObject: key, requiringSecureCoding: false)
+                .write(to: localURL)
+        } catch {
             throw EthereumKeyStorageError.failedToSave
         }
     }
 
     public func loadPrivateKey() throws -> Data {
-        guard let localPath else {
+        guard let localURL else {
             throw EthereumKeyStorageError.failedToLoad
         }
 
-        guard let data = NSKeyedUnarchiver.unarchiveObject(withFile: localPath) as? Data else {
+        guard let archivedData = try? Data(contentsOf: localURL),
+              let data = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSData.self, from: archivedData) as? Data else {
             throw EthereumKeyStorageError.failedToLoad
         }
 
@@ -112,13 +121,15 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
             }
         }
 
-        guard let localPath = self.addressPath else {
+        guard let localURL = self.addressURL else {
             throw EthereumKeyStorageError.failedToSave
         }
 
-        let success = NSKeyedArchiver.archiveRootObject(key, toFile: localPath)
-
-        if !success {
+        do {
+            try NSKeyedArchiver
+                .archivedData(withRootObject: key, requiringSecureCoding: false)
+                .write(to: localURL)
+        } catch {
             throw EthereumKeyStorageError.failedToSave
         }
     }
@@ -134,11 +145,12 @@ extension EthereumKeyLocalStorage: EthereumMultipleKeyStorageProtocol {
             }
         }
 
-        guard let localPath = self.addressPath else {
+        guard let localURL = self.addressURL else {
             throw EthereumKeyStorageError.failedToLoad
         }
 
-        guard let data = NSKeyedUnarchiver.unarchiveObject(withFile: localPath) as? Data else {
+        guard let archivedData = try? Data(contentsOf: localURL),
+              let data = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSData.self, from: archivedData) as? Data else {
             throw EthereumKeyStorageError.failedToLoad
         }
 
