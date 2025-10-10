@@ -80,7 +80,9 @@ public extension Web3Extensions where Base == String {
     }
 
     var orZero: String {
-        if base.isEmpty { return "0" }
+        if base.isEmpty {
+            return "0"
+        }
         return base
     }
 
