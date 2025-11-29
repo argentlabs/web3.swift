@@ -8,7 +8,12 @@ import Foundation
 
 public extension BigUInt {
     init?(hex: String) {
-        self.init(hex.web3.noHexPrefix.lowercased(), radix: 16)
+        let stripped = hex.web3.noHexPrefix.lowercased()
+        if stripped.isEmpty {
+            self.init(0)
+        } else {
+            self.init(stripped, radix: 16)
+        }
     }
 }
 
@@ -24,13 +29,23 @@ public extension Web3Extensions where Base == BigUInt {
 
 public extension BigInt {
     init?(hex: String) {
-        self.init(hex.web3.noHexPrefix.lowercased(), radix: 16)
+        let stripped = hex.web3.noHexPrefix.lowercased()
+        if stripped.isEmpty {
+            self.init(0)
+        } else {
+            self.init(stripped, radix: 16)
+        }
     }
 }
 
 public extension Int {
     init?(hex: String) {
-        self.init(hex.web3.noHexPrefix, radix: 16)
+        let stripped = hex.web3.noHexPrefix
+        if stripped.isEmpty {
+            self.init(0)
+        } else {
+            self.init(stripped, radix: 16)
+        }
     }
 }
 
