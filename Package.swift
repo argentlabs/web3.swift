@@ -15,7 +15,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/attaswift/BigInt", from: "5.3.0"),
         .package(url: "https://github.com/iwill/generic-json-swift", .upToNextMajor(from: "2.0.2")),
-        .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", .upToNextMajor(from: "0.6.0")),
+        .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", exact: "0.12.2"),
         .package(url: "https://github.com/vapor/websocket-kit.git", from: "2.16.1"),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.6.4")
     ],
