@@ -244,9 +244,14 @@ extension EthereumRPCProtocol {
             }
         } catch {
             if let error = error as? JSONRPCError,
-               case let .executionError(innerError) = error,
-               innerError.error.code == JSONRPCErrorCode.tooManyResults {
-                throw EthereumClientError.tooManyResults
+               case let .executionError(innerError) = error {
+                if innerError.error.isLogRangeLimited {
+                    throw EthereumClientError.tooManyResults
+                }
+                // Keep the node's code and message. Flattening every failure to
+                // `unexpectedReturnValue` here is what made range-limit rejections
+                // indistinguishable from any other error further up the stack.
+                throw EthereumClientError.executionError(innerError.error)
             } else {
                 throw EthereumClientError.unexpectedReturnValue
             }
