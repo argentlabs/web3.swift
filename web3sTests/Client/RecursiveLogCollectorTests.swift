@@ -263,6 +263,12 @@ final class RecursiveLogCollectorTests: XCTestCase {
         }
     }
 
+    // Known gap, deliberately not covered here: a provider that words throttling differently
+    // (Tenderly returns -32005 "rate limit exceeded") is still classified as a range limit and
+    // triggers a split, which amplifies the throttling. Matching more prose would only move the
+    // guess around. The fix is to stop classifying errors at all — let the caller declare a
+    // maximum block range and chunk proactively — which is tracked separately.
+
     /// T6 — a failure inside one half of a split must propagate, not be swallowed by `try?`.
     func testFailureWithinSplitPropagates() async {
         // The left half of the split succeeds; anything in the upper quarter fails.

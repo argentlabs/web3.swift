@@ -13,7 +13,7 @@ class ERC1271Tests: XCTestCase {
     override func setUp() {
         super.setUp()
         if self.client == nil {
-            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
+            self.client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
         }
         // Expected owner 0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793
         self.erc1271 = ERC1271(client: self.client)

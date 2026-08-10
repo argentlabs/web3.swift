@@ -13,8 +13,8 @@ class ENSTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: .sepolia)
-        mainnetClient = EthereumHttpClient(url: URL(string: TestConfig.mainnetUrl)!, network: .mainnet)
+        client = TestConfig.makeClient(url: TestConfig.clientUrl, network: .sepolia)
+        mainnetClient = TestConfig.makeClient(url: TestConfig.mainnetUrl, network: .mainnet)
     }
 
     func testGivenName_ThenResolvesNameHash() {

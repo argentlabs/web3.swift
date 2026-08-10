@@ -13,7 +13,7 @@ class SiweVerifierTests: XCTestCase {
     override func setUp() {
         super.setUp()
         if self.client == nil {
-            self.client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: .sepolia)
+            self.client = TestConfig.makeClient(url: TestConfig.clientUrl, network: .sepolia)
         }
     }
 

@@ -24,7 +24,7 @@ class ERC721Tests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
+        client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
         erc721 = ERC721(client: client)
     }
 
@@ -111,7 +111,7 @@ class ERC721MetadataTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
+        client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
         erc721 = ERC721Metadata(client: client, metadataSession: URLSession.shared)
     }
 
@@ -163,7 +163,7 @@ class ERC721EnumerableTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
+        client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
         erc721 = ERC721Enumerable(client: client)
     }
 
