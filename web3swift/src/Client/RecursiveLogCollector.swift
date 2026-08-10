@@ -26,50 +26,60 @@ struct RecursiveLogCollector {
     func getAllLogs(addresses: [EthereumAddress]?, topics: Topics?, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
         do {
             return try await getLogs(addresses: addresses, topics: topics, from: from, to: to)
-        } catch {
-            if let error = error as? EthereumClientError, error == .tooManyResults {
-                guard let middleBlock = await getMiddleBlock(from: from, to: to) else {
-                    throw EthereumClientError.unexpectedReturnValue
-                }
-
-                guard let lhs = try? await getAllLogs(addresses: addresses, topics: topics, from: from, to: middleBlock),
-                      let rhs = try? await getAllLogs(addresses: addresses, topics: topics, from: middleBlock, to: to) else {
-                    throw EthereumClientError.unexpectedReturnValue
-                }
-                return lhs + rhs
-            }
+        } catch let error as EthereumClientError where error == .tooManyResults {
+            return try await splitAndCollect(addresses: addresses, topics: topics, from: from, to: to)
         }
-        return []
+        // Any other error propagates. Returning an empty array here would be
+        // indistinguishable from "this range genuinely contains no logs".
+    }
+
+    /// Halves the range and collects both sides. Only called for errors that narrowing can fix.
+    private func splitAndCollect(
+        addresses: [EthereumAddress]?,
+        topics: Topics?,
+        from: EthereumBlock,
+        to: EthereumBlock
+    ) async throws -> [EthereumLog] {
+        guard
+            let fromBlock = await resolveBlockNumber(from),
+            let toBlock = await resolveBlockNumber(to),
+            // Below two blocks there is nothing left to halve, so recursing would not
+            // terminate. Surface the original error instead.
+            toBlock - fromBlock >= 2 else {
+            throw EthereumClientError.tooManyResults
+        }
+
+        let middle = fromBlock + (toBlock - fromBlock) / 2
+
+        let lhs = try await getAllLogs(
+            addresses: addresses,
+            topics: topics,
+            from: EthereumBlock(rawValue: fromBlock),
+            to: EthereumBlock(rawValue: middle)
+        )
+        let rhs = try await getAllLogs(
+            addresses: addresses,
+            topics: topics,
+            // Start after `middle`; both halves including it would duplicate its logs.
+            from: EthereumBlock(rawValue: middle + 1),
+            to: EthereumBlock(rawValue: toBlock)
+        )
+        return lhs + rhs
+    }
+
+    /// Resolves a block to a concrete number so the range can be halved.
+    /// `.Earliest` is block zero; `.Latest` and `.Pending` resolve to the current head.
+    private func resolveBlockNumber(_ block: EthereumBlock) async -> Int? {
+        if let number = block.intValue {
+            return number
+        }
+        if block == .Earliest {
+            return 0
+        }
+        return try? await ethClient.eth_blockNumber()
     }
 
     private func getLogs(addresses: [EthereumAddress]?, topics: Topics? = nil, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
         try await ethClient.getLogs(addresses: addresses, topics: topics, fromBlock: from, toBlock: to)
-    }
-
-    private func getMiddleBlock(from: EthereumBlock, to: EthereumBlock) async -> EthereumBlock? {
-        func toBlockNumber() async -> Int? {
-            if let toBlockNumber = to.intValue {
-                toBlockNumber
-            } else if let currentBlock = try? await getCurrentBlock(), let currentBlockNumber = currentBlock.intValue {
-                currentBlockNumber
-            } else {
-                nil
-            }
-        }
-
-        guard let fromBlockNumber = from.intValue, let toBlockNumber = await toBlockNumber() else {
-            return nil
-        }
-
-        return EthereumBlock(rawValue: fromBlockNumber + (toBlockNumber - fromBlockNumber) / 2)
-    }
-
-    private func getCurrentBlock() async throws -> EthereumBlock {
-        do {
-            let block = try await ethClient.eth_blockNumber()
-            return EthereumBlock(rawValue: block)
-        } catch {
-            throw EthereumClientError.unexpectedReturnValue
-        }
     }
 }
