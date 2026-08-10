@@ -223,6 +223,11 @@ class SiweVerifierTests: XCTestCase {
 }
 
 final class SiweVerifierWebSocketTests: SiweVerifierTests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
 
     override func setUp() {
         if self.client == nil {

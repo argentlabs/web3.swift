@@ -30,6 +30,11 @@ jobs:
 
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
+      # Optional. Unset secrets arrive as an empty string, which falls back to the keyless
+      # public endpoints in TestConfig. Set them to a dedicated provider URL to get a private
+      # rate-limit budget and remove the throttling flakiness.
+      WEB3SWIFT_TEST_RPC_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_URL }}
+      WEB3SWIFT_TEST_RPC_MAINNET_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_MAINNET_URL }}
 
     steps:
     - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -44,7 +49,9 @@ jobs:
       run: swift test
 
   test_linux:
-    needs: [run_lint, test_macos]
+    # Only gated on lint. Previously this also needed test_macos, so a red macOS run meant
+    # Linux never executed at all and the platform went untested.
+    needs: run_lint
 
     runs-on: ubuntu-latest
 
@@ -53,6 +60,11 @@ jobs:
 
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
+      # Optional. Unset secrets arrive as an empty string, which falls back to the keyless
+      # public endpoints in TestConfig. Set them to a dedicated provider URL to get a private
+      # rate-limit budget and remove the throttling flakiness.
+      WEB3SWIFT_TEST_RPC_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_URL }}
+      WEB3SWIFT_TEST_RPC_MAINNET_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_MAINNET_URL }}
 
     steps:
     - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4

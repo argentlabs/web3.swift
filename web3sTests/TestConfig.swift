@@ -6,20 +6,71 @@
 import Foundation
 import web3
 
-struct TestConfig: Sendable {
-    // This is the proxy URL for connecting to the Blockchain. For testing we usually use the Sepolia network on Infura. Using free tier, so might hit rate limits
-    static let clientUrl = "https://sepolia.infura.io/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
-    static let mainnetUrl = "https://mainnet.infura.io/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
+/// Reads an override from the environment, falling back to a keyless default.
+///
+/// Keeps provider credentials out of the repository: export the variable locally, or set it
+/// as a CI secret, and nothing sensitive is ever committed.
+private func testEndpoint(_ variable: String, default fallback: String) -> String {
+    guard let value = ProcessInfo.processInfo.environment[variable], !value.isEmpty else {
+        return fallback
+    }
+    return value
+}
 
-    // This is the proxy wss URL for connecting to the Blockchain. For testing we usually use the Sepolia network on Infura. Using free tier, so might hit rate limits
-    static let wssUrl = "wss://sepolia.infura.io/ws/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
-    static let wssMainnetUrl = "wss://mainnet.infura.io/ws/v3/b2f4b3f635d8425c96854c3d28ba6bb0"
+struct TestConfig: Sendable {
+    // RPC endpoints.
+    //
+    // These default to keyless public endpoints, so the suite runs with no credentials and no
+    // shared rate-limit bucket. The previous defaults were a single free-tier Infura key
+    // committed here, which every contributor and every CI run drained in common — once its
+    // credits ran out, the whole suite failed with unrelated-looking errors.
+    //
+    // To use your own provider, export these before running; the values stay out of the repo:
+    //
+    //     WEB3SWIFT_TEST_RPC_URL=https://... \
+    //     WEB3SWIFT_TEST_RPC_MAINNET_URL=https://... \
+    //     swift test
+    //
+    // Note that providers cap eth_getLogs by block range, so a substitute endpoint may need
+    // `logsFromBlock`/`logsToBlock` narrowed. The endpoint must also serve log queries with no
+    // address filter, since `transferEventsTo`/`transferEventsFrom` search across all contracts
+    // by design — publicnode, for one, rejects those with -32701 unless you pay for a dedicated
+    // node.
+    static let clientUrl = testEndpoint(
+        "WEB3SWIFT_TEST_RPC_URL",
+        default: "https://sepolia.gateway.tenderly.co"
+    )
+    // Deliberately a different provider from `clientUrl`: it spreads the suite's request volume
+    // across two free endpoints instead of exhausting one.
+    static let mainnetUrl = testEndpoint(
+        "WEB3SWIFT_TEST_RPC_MAINNET_URL",
+        default: "https://ethereum-rpc.publicnode.com"
+    )
+
+    static let wssUrl = testEndpoint(
+        "WEB3SWIFT_TEST_RPC_WSS_URL",
+        default: "wss://sepolia.gateway.tenderly.co"
+    )
+    static let wssMainnetUrl = testEndpoint(
+        "WEB3SWIFT_TEST_RPC_WSS_MAINNET_URL",
+        default: "wss://mainnet.gateway.tenderly.co"
+    )
 
     // An EOA with some Ether, so that we can test sending transactions (pay for gas). Set by CI
 //    static let privateKey = "SET_YOUR_KEY_HERE"
 
     // This is the expected public key (address) from the above private key
 //    static let publicKey = "SET_YOUR_PUBLIC_ADDRESS_HERE"
+
+    // Block window used by the log and event tests.
+    //
+    // Providers cap eth_getLogs by block range (Infura rejects anything over 10,000 blocks), so
+    // scanning `.Earliest ... .Latest` no longer works — Sepolia is past 11M blocks and a full
+    // scan would need over a thousand sequential requests. These tests query a fixed historical
+    // window around the fixture transactions instead. The window is in the past and immutable,
+    // so the expected counts stay stable over time.
+    static let logsFromBlock = EthereumBlock(rawValue: 4_885_000)
+    static let logsToBlock = EthereumBlock(rawValue: 4_925_000)
 
     // A test ERC20 token contract (USDC)
     static let erc20Contract = "0xF31B086459C2cdaC006Feedd9080223964a9cDdB"

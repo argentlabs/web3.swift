@@ -58,6 +58,11 @@ class ABIEventTests: XCTestCase {
 }
 
 class ABIEventWebSocketTests: ABIEventTests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)

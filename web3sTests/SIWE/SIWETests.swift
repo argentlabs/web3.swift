@@ -55,6 +55,11 @@ class SIWETests: XCTestCase {
 }
 
 final class SIWEWebSocketTests: SIWETests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
 
     override func setUp() {
         if self.client == nil {

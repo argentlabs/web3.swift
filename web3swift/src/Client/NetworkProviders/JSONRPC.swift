@@ -73,13 +73,21 @@ extension JSONRPCErrorDetail {
     /// `-32602` on its own is *not* enough — it is also returned for genuinely malformed
     /// requests, which must surface rather than send the caller into a pointless recursion.
     var isLogRangeLimited: Bool {
+        let text = message.lowercased()
+
+        // Infura reuses -32005 for rate limiting ("Too Many Requests") as well as for oversized
+        // log results. Splitting the range in that case would double the request count and make
+        // the throttling worse, so treat it as a plain failure.
+        guard !text.contains("too many requests") else {
+            return false
+        }
+
         if code == JSONRPCErrorCode.tooManyResults {
             return true
         }
         guard code == JSONRPCErrorCode.invalidParams else {
             return false
         }
-        let text = message.lowercased()
         return text.contains("exceeds limit")
             || text.contains("block range")
             || text.contains("range is too large")

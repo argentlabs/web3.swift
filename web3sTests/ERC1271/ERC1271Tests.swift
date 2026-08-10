@@ -103,6 +103,11 @@ class ERC1271Tests: XCTestCase {
 }
 
 final class ERC1271WebSocketTests: ERC1271Tests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
 
     override func setUp() {
         if self.client == nil {

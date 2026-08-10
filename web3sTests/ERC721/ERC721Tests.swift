@@ -209,6 +209,11 @@ class ERC721EnumerableTests: XCTestCase {
 }
 
 class ERC721WebSocketTests: ERC721Tests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
@@ -216,6 +221,11 @@ class ERC721WebSocketTests: ERC721Tests {
 }
 
 class ERC721MetadataWebSocketTests: ERC721MetadataTests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
@@ -223,6 +233,11 @@ class ERC721MetadataWebSocketTests: ERC721MetadataTests {
 }
 
 class ERC721EnumerableWebSocketTests: ERC721EnumerableTests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)

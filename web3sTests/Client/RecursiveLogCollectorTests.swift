@@ -22,6 +22,8 @@ private struct ScriptedError: Sendable {
     static let rangeExceeded = ScriptedError(code: -32602, message: "range 20000 exceeds limit of 10000")
     static let invalidParams = ScriptedError(code: -32602, message: "invalid argument 0: hex string has length 39")
     static let generic = ScriptedError(code: -32000, message: "header not found")
+    /// Infura reuses -32005 for throttling as well as oversized results.
+    static let rateLimited = ScriptedError(code: -32005, message: "Too Many Requests")
 }
 
 /// Answers `eth_getLogs` from a scripted block range rather than the network.
@@ -239,6 +241,25 @@ final class RecursiveLogCollectorTests: XCTestCase {
             XCTFail("Expected a thrown error, got \(logs.count) logs")
         } catch {
             XCTAssertEqual(provider.requestedRanges.count, 1, "Expected no recursion on a non-range error")
+        }
+    }
+
+    /// T7 — `-32005` also means "Too Many Requests". Splitting a throttled query would double
+    /// the request count and make the throttling worse, so it must surface instead.
+    func testRateLimitErrorThrowsWithoutRecursing() async {
+        let provider = StubNetworkProvider(overLimitError: .rateLimited)
+        let collector = RecursiveLogCollector(ethClient: makeClient(provider))
+
+        do {
+            let logs = try await collector.getAllLogs(
+                addresses: nil,
+                topics: nil,
+                from: EthereumBlock(rawValue: 0),
+                to: EthereumBlock(rawValue: 40000)
+            )
+            XCTFail("Expected a thrown error, got \(logs.count) logs")
+        } catch {
+            XCTAssertEqual(provider.requestedRanges.count, 1, "Expected no recursion when rate limited")
         }
     }
 
