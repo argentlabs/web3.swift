@@ -1,0 +1,3 @@
+* @argentlabs/team-ios
+.github/workflows/** @argentlabs/team-ios-admin @dmcrodrigues
+scripts/ci/** @argentlabs/team-ios-admin @dmcrodrigues

@@ -5,6 +5,10 @@ on:
     branches: [ develop ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -14,7 +18,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
     - name: Lint
       run: ./scripts/runSwiftFormat.sh -l
@@ -28,7 +32,7 @@ jobs:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
     - name: SetupKey
       run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
@@ -51,7 +55,7 @@ jobs:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
     - name: SetupKey
       run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
