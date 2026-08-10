@@ -8,7 +8,10 @@ import XCTest
 @testable import web3
 import BigInt
 
-@MainActor
+// Deliberately not @MainActor. These are synchronous encoding tests with no actor state, and
+// SwiftPM's generated test discovery on Linux calls them from a nonisolated context — isolating
+// them fails the build there (Swift 6.0) or aborts the run by failing a cast (Swift 6.1).
+// macOS never generates that file, so the breakage is invisible on it.
 final class ZKSyncTransactionTests: XCTestCase {
     let signature = "0x55943b2228183717fd3be583bde0f6ec168247ea8d304eb13b3e7e76ebf6bf2c3c77734e163711c5963ac25a15f95d9ac63b82c2c427fd4eb011c5e3a22f89221b".web3.hexData!
     let chainId = TestConfig.ZKSync.chainId
