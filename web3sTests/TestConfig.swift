@@ -6,55 +6,27 @@
 import Foundation
 import web3
 
-/// Reads an override from the environment, falling back to a keyless default.
-///
-/// Keeps provider credentials out of the repository: export the variable locally, or set it
-/// as a CI secret, and nothing sensitive is ever committed.
-private func testEndpoint(_ variable: String, default fallback: String) -> String {
-    guard let value = ProcessInfo.processInfo.environment[variable], !value.isEmpty else {
-        return fallback
-    }
-    return value
-}
-
 struct TestConfig: Sendable {
     // RPC endpoints.
     //
-    // These default to keyless public endpoints, so the suite runs with no credentials and no
-    // shared rate-limit bucket. The previous defaults were a single free-tier Infura key
-    // committed here, which every contributor and every CI run drained in common — once its
-    // credits ran out, the whole suite failed with unrelated-looking errors.
+    // Keyless public endpoints, so the suite runs on a fresh clone with no credentials and no
+    // account to manage. These previously pointed at a single free-tier Infura key committed
+    // here, which every contributor and every CI run drained in common — once its credits ran
+    // out the whole suite failed with unrelated-looking errors.
     //
-    // To use your own provider, export these before running; the values stay out of the repo:
-    //
-    //     WEB3SWIFT_TEST_RPC_URL=https://... \
-    //     WEB3SWIFT_TEST_RPC_MAINNET_URL=https://... \
-    //     swift test
-    //
-    // Note that providers cap eth_getLogs by block range, so a substitute endpoint may need
-    // `logsFromBlock`/`logsToBlock` narrowed. The endpoint must also serve log queries with no
-    // address filter, since `transferEventsTo`/`transferEventsFrom` search across all contracts
-    // by design — publicnode, for one, rejects those with -32701 unless you pay for a dedicated
-    // node.
-    static let clientUrl = testEndpoint(
-        "WEB3SWIFT_TEST_RPC_URL",
-        default: "https://sepolia.gateway.tenderly.co"
-    )
+    // Two constraints on any replacement. Providers cap eth_getLogs by block range, so a
+    // narrower endpoint needs `logsFromBlock`/`logsToBlock` narrowed to match. And the endpoint
+    // must serve log queries that carry no address filter, since `transferEventsTo` and
+    // `transferEventsFrom` search across all contracts by design — publicnode, for one, rejects
+    // those with -32701 unless you pay for a dedicated node.
+    static let clientUrl = "https://sepolia.gateway.tenderly.co"
+
     // Deliberately a different provider from `clientUrl`: it spreads the suite's request volume
     // across two free endpoints instead of exhausting one.
-    static let mainnetUrl = testEndpoint(
-        "WEB3SWIFT_TEST_RPC_MAINNET_URL",
-        default: "https://ethereum-rpc.publicnode.com"
-    )
+    static let mainnetUrl = "https://ethereum-rpc.publicnode.com"
 
-    static let wssUrl = testEndpoint(
-        "WEB3SWIFT_TEST_RPC_WSS_URL",
-        default: "wss://sepolia.gateway.tenderly.co"
-    )
-    static let wssMainnetUrl = testEndpoint(
-        "WEB3SWIFT_TEST_RPC_WSS_MAINNET_URL",
-        default: "wss://mainnet.gateway.tenderly.co"
-    )
+    static let wssUrl = "wss://sepolia.gateway.tenderly.co"
+    static let wssMainnetUrl = "wss://mainnet.gateway.tenderly.co"
 
     // An EOA with some Ether, so that we can test sending transactions (pay for gas). Set by CI
 //    static let privateKey = "SET_YOUR_KEY_HERE"
@@ -72,19 +44,11 @@ struct TestConfig: Sendable {
     static let logsFromBlock = EthereumBlock(rawValue: 4_885_000)
     static let logsToBlock = EthereumBlock(rawValue: 4_925_000)
 
-    /// Largest block span the configured endpoint accepts for one `eth_getLogs` call.
+    /// How many blocks the endpoint above accepts in one `eth_getLogs` call.
     ///
-    /// Unset by default: the default endpoint serves the whole window above in a single request.
-    /// Point the suite at a provider with a narrower cap — Infura allows 10,000 — and set this
-    /// so queries are chunked to fit:
-    ///
-    ///     WEB3SWIFT_TEST_MAX_BLOCK_RANGE=10000 swift test
-    ///
-    /// Note the closure: `flatMap(Int.init)` binds to web3's `Int(hex:)` overload and would
-    /// read "10000" as hexadecimal.
-    static let maxBlockRange: Int? = ProcessInfo.processInfo
-        .environment["WEB3SWIFT_TEST_MAX_BLOCK_RANGE"]
-        .flatMap { Int($0) }
+    /// `nil` because it serves the whole window in a single request. An endpoint with a
+    /// narrower cap — Infura allows 10,000 — needs this set so queries are chunked to fit.
+    static let maxBlockRange: Int? = nil
 
     // A test ERC20 token contract (USDC)
     static let erc20Contract = "0xF31B086459C2cdaC006Feedd9080223964a9cDdB"

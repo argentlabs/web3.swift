@@ -30,11 +30,6 @@ jobs:
 
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
-      # Optional. Unset secrets arrive as an empty string, which falls back to the keyless
-      # public endpoints in TestConfig. Set them to a dedicated provider URL to get a private
-      # rate-limit budget and remove the throttling flakiness.
-      WEB3SWIFT_TEST_RPC_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_URL }}
-      WEB3SWIFT_TEST_RPC_MAINNET_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_MAINNET_URL }}
 
     steps:
     - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -56,15 +51,13 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: swift:5.9-jammy
+      # Package.resolved is format v3, which Swift 5.9 cannot parse. This job had not run in
+      # about a year — it was gated behind test_macos, which was permanently red — so the
+      # mismatch went unnoticed.
+      image: swift:6.1-jammy
 
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
-      # Optional. Unset secrets arrive as an empty string, which falls back to the keyless
-      # public endpoints in TestConfig. Set them to a dedicated provider URL to get a private
-      # rate-limit budget and remove the throttling flakiness.
-      WEB3SWIFT_TEST_RPC_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_URL }}
-      WEB3SWIFT_TEST_RPC_MAINNET_URL: ${{ secrets.WEB3SWIFT_TEST_RPC_MAINNET_URL }}
 
     steps:
     - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
