@@ -24,13 +24,69 @@ struct RecursiveLogCollector {
     let ethClient: EthereumRPCProtocol
 
     func getAllLogs(addresses: [EthereumAddress]?, topics: Topics?, from: EthereumBlock, to: EthereumBlock) async throws -> [EthereumLog] {
+        // When the node's limit is known, fit the query to it up front. That needs no error
+        // classification at all, and costs no failed request to discover the boundary.
+        if let maxBlockRange = ethClient.maxBlockRange,
+           let chunked = try await collectInChunks(
+               addresses: addresses,
+               topics: topics,
+               from: from,
+               to: to,
+               maxBlockRange: maxBlockRange
+           ) {
+            return chunked
+        }
+
         do {
             return try await getLogs(addresses: addresses, topics: topics, from: from, to: to)
         } catch let error as EthereumClientError where error == .tooManyResults {
+            // Fallback for callers that have not declared a limit. `-32005` is the only
+            // structural hint a node gives, and it is ambiguous — some providers reuse it for
+            // rate limiting, where splitting makes things worse. Set `maxBlockRange` to avoid
+            // relying on it.
             return try await splitAndCollect(addresses: addresses, topics: topics, from: from, to: to)
         }
         // Any other error propagates. Returning an empty array here would be
         // indistinguishable from "this range genuinely contains no logs".
+    }
+
+    /// Splits the window into spans no wider than the node accepts and concatenates the results.
+    ///
+    /// Returns `nil` when the bounds cannot be resolved to concrete numbers, leaving the caller
+    /// to send the query unchunked.
+    private func collectInChunks(
+        addresses: [EthereumAddress]?,
+        topics: Topics?,
+        from: EthereumBlock,
+        to: EthereumBlock,
+        maxBlockRange: Int
+    ) async throws -> [EthereumLog]? {
+        guard
+            maxBlockRange > 0,
+            let fromBlock = await resolveBlockNumber(from),
+            let toBlock = await resolveBlockNumber(to) else {
+            return nil
+        }
+        guard fromBlock <= toBlock else {
+            return []
+        }
+
+        var logs: [EthereumLog] = []
+        var start = fromBlock
+        while start <= toBlock {
+            // `maxBlockRange` counts blocks inclusive of both bounds, so a limit of 10,000
+            // permits `from...from + 9_999`. Providers word their caps that way, and being one
+            // block over is enough to be rejected.
+            let end = min(start + maxBlockRange - 1, toBlock)
+            logs += try await getLogs(
+                addresses: addresses,
+                topics: topics,
+                from: EthereumBlock(rawValue: start),
+                to: EthereumBlock(rawValue: end)
+            )
+            start = end + 1
+        }
+        return logs
     }
 
     /// Halves the range and collects both sides. Only called for errors that narrowing can fix.

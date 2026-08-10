@@ -30,6 +30,19 @@ public protocol EthereumRPCProtocol: Sendable, AnyObject {
     var networkProvider: NetworkProviderProtocol { get }
     var network: EthereumNetwork { get }
 
+    /// How many blocks this node accepts in a single `eth_getLogs` call, if it caps them.
+    ///
+    /// Counted inclusive of both bounds, matching how providers document the limit: `10_000`
+    /// permits `from...from + 9_999`.
+    ///
+    /// Set it and log queries are chunked to fit before they are sent. Leave it `nil` and a
+    /// query is sent as asked; if the node rejects it for being too broad, the error surfaces.
+    ///
+    /// Providers publish this limit but signal breaches inconsistently — different JSON-RPC
+    /// codes, different HTTP statuses, different wording, all of which change without notice.
+    /// Declaring the limit is reliable in a way that inferring it from an error never is.
+    var maxBlockRange: Int? { get }
+
     func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int
     func net_version() async throws -> EthereumNetwork
     func eth_gasPrice() async throws -> BigUInt
@@ -55,6 +68,9 @@ public protocol EthereumRPCProtocol: Sendable, AnyObject {
 }
 
 extension EthereumRPCProtocol {
+    /// Uncapped unless a conformer says otherwise.
+    public var maxBlockRange: Int? { nil }
+
     public func eth_getTransactionCount(address: EthereumAddress, block: EthereumBlock) async throws -> Int {
         do {
             let data = try await networkProvider.send(method: "eth_getTransactionCount", params: [address.asString(), block.stringValue], receive: String.self)
@@ -245,7 +261,7 @@ extension EthereumRPCProtocol {
         } catch {
             if let error = error as? JSONRPCError,
                case let .executionError(innerError) = error {
-                if innerError.error.isLogRangeLimited {
+                if innerError.error.code == JSONRPCErrorCode.tooManyResults {
                     throw EthereumClientError.tooManyResults
                 }
                 // Keep the node's code and message. Flattening every failure to

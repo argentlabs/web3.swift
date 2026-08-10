@@ -95,7 +95,8 @@ extension TestConfig {
                 wrapping: HttpNetworkProvider(session: session, url: url)
             ),
             url: url,
-            network: network
+            network: network,
+            maxBlockRange: TestConfig.maxBlockRange
         )
     }
 }

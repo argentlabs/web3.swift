@@ -72,6 +72,20 @@ struct TestConfig: Sendable {
     static let logsFromBlock = EthereumBlock(rawValue: 4_885_000)
     static let logsToBlock = EthereumBlock(rawValue: 4_925_000)
 
+    /// Largest block span the configured endpoint accepts for one `eth_getLogs` call.
+    ///
+    /// Unset by default: the default endpoint serves the whole window above in a single request.
+    /// Point the suite at a provider with a narrower cap — Infura allows 10,000 — and set this
+    /// so queries are chunked to fit:
+    ///
+    ///     WEB3SWIFT_TEST_MAX_BLOCK_RANGE=10000 swift test
+    ///
+    /// Note the closure: `flatMap(Int.init)` binds to web3's `Int(hex:)` overload and would
+    /// read "10000" as hexadecimal.
+    static let maxBlockRange: Int? = ProcessInfo.processInfo
+        .environment["WEB3SWIFT_TEST_MAX_BLOCK_RANGE"]
+        .flatMap { Int($0) }
+
     // A test ERC20 token contract (USDC)
     static let erc20Contract = "0xF31B086459C2cdaC006Feedd9080223964a9cDdB"
 

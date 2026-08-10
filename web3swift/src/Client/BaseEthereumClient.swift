@@ -20,16 +20,20 @@ open class BaseEthereumClient: EthereumClientProtocol, @unchecked Sendable {
 
     public var network: EthereumNetwork
 
+    public let maxBlockRange: Int?
+
     public init(
         networkProvider: NetworkProviderProtocol,
         url: URL,
         logger: Logger? = nil,
-        network: EthereumNetwork
+        network: EthereumNetwork,
+        maxBlockRange: Int? = nil
     ) {
         self.url = url
         self.networkProvider = networkProvider
         self.logger = logger ?? Logger(label: "web3.swift.eth-client")
         self.network = network
+        self.maxBlockRange = maxBlockRange
     }
 
     func failureHandler(_ error: Error) -> EthereumClientError {
