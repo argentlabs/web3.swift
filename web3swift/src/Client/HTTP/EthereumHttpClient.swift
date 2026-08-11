@@ -18,7 +18,8 @@ public class EthereumHttpClient: BaseEthereumClient, @unchecked Sendable {
         headers: [String: String]? = nil,
         sessionConfig: URLSessionConfiguration = URLSession.shared.configuration,
         logger: Logger? = nil,
-        network: EthereumNetwork
+        network: EthereumNetwork,
+        maxBlockRange: Int? = nil
     ) {
         let networkQueue = OperationQueue()
         networkQueue.name = "web3swift.client.networkQueue"
@@ -26,6 +27,12 @@ public class EthereumHttpClient: BaseEthereumClient, @unchecked Sendable {
         self.networkQueue = networkQueue
 
         let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: networkQueue)
-        super.init(networkProvider: HttpNetworkProvider(session: session, url: url, headers: headers), url: url, logger: logger, network: network)
+        super.init(
+            networkProvider: HttpNetworkProvider(session: session, url: url, headers: headers),
+            url: url,
+            logger: logger,
+            network: network,
+            maxBlockRange: maxBlockRange
+        )
     }
 }

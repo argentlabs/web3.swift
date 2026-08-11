@@ -1,6 +1,7 @@
 #!/bin/sh
 
 SWIFT_VERSION=5.9
+SWIFTFORMAT_VERSION=0.57.2
 
 cd "$(dirname "$0")"
 
@@ -10,15 +11,27 @@ function downloadAndUnzip {
     rm tool.zip
 }
 
-if ! which bin/swiftformat >/dev/null; then
-    echo "warning: SwiftFormat not installed, installing..."
+# Check the cached binary's version, not just its presence. A stale cache from an older
+# release fails with a misleading "Unknown option" against the current config file.
+if [ -x bin/swiftformat ]; then
+    INSTALLED_VERSION=$(bin/swiftformat --version 2>/dev/null)
+else
+    INSTALLED_VERSION=""
+fi
+
+if [ "$INSTALLED_VERSION" != "$SWIFTFORMAT_VERSION" ]; then
+    if [ -n "$INSTALLED_VERSION" ]; then
+        echo "warning: SwiftFormat $INSTALLED_VERSION found, need $SWIFTFORMAT_VERSION. Reinstalling..."
+    else
+        echo "warning: SwiftFormat not installed, installing $SWIFTFORMAT_VERSION..."
+    fi
 
     mkdir -p -- "bin"
     cd bin
-    rm -r ./*
+    rm -rf ./*
 
-    downloadAndUnzip "SwiftFormatTmp" "https://github.com/nicklockwood/SwiftFormat/releases/download/0.57.2/swiftformat.artifactbundle.zip"
-    mv -f ./SwiftFormatTmp/swiftformat.artifactbundle/swiftformat-0.57.2-macos/bin/swiftformat .
+    downloadAndUnzip "SwiftFormatTmp" "https://github.com/nicklockwood/SwiftFormat/releases/download/$SWIFTFORMAT_VERSION/swiftformat.artifactbundle.zip"
+    mv -f ./SwiftFormatTmp/swiftformat.artifactbundle/swiftformat-$SWIFTFORMAT_VERSION-macos/bin/swiftformat .
     find . -name "*Tmp" -type d -prune -exec rm -rf '{}' +
     for entry in ./*
     do

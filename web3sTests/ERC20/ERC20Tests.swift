@@ -14,7 +14,7 @@ class ERC20Tests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
+        client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
         erc20 = ERC20(client: client!)
     }
 
@@ -64,7 +64,8 @@ class ERC20Tests: XCTestCase {
             let sig = try! ERC20Events.Transfer.signature()
             let topics = [ sig, result.hexString]
 
-            let eventResults = try await client?.getEvents(addresses: nil, topics: topics, fromBlock: .Earliest, toBlock: .Latest, eventTypes: [ERC20Events.Transfer.self])
+            // Filtered by contract address: some providers reject unfiltered log queries outright.
+            let eventResults = try await client?.getEvents(addresses: [EthereumAddress(TestConfig.erc20Contract)], topics: topics, fromBlock: TestConfig.logsFromBlock, toBlock: TestConfig.logsToBlock, eventTypes: [ERC20Events.Transfer.self])
             XCTAssert(eventResults!.events.count > 0)
         } catch {
             XCTFail("Expected eventResults but failed \(error).")
@@ -73,7 +74,7 @@ class ERC20Tests: XCTestCase {
 
     func testGivenAddressWithInTransfers_ThenGetsTheTransferEvents() async {
         do {
-            let events = try await erc20?.transferEventsTo(recipient: "0x162142f0508F557C02bEB7C473682D7C91Bcef41", fromBlock: .Earliest, toBlock: .Latest)
+            let events = try await erc20?.transferEventsTo(recipient: "0x162142f0508F557C02bEB7C473682D7C91Bcef41", fromBlock: TestConfig.logsFromBlock, toBlock: TestConfig.logsToBlock)
             XCTAssert(events!.count > 0)
         } catch {
             XCTFail("Expected events but failed \(error).")
@@ -82,7 +83,7 @@ class ERC20Tests: XCTestCase {
 
     func testGivenAddressWithoutInTransfers_ThenGetsNoTransferEvents() async {
         do {
-            let events = try await erc20?.transferEventsTo(recipient: "0x78eac6878f5ef99bf2b12698f03faf8b33f02676", fromBlock: .Earliest, toBlock: .Latest)
+            let events = try await erc20?.transferEventsTo(recipient: "0x78eac6878f5ef99bf2b12698f03faf8b33f02676", fromBlock: TestConfig.logsFromBlock, toBlock: TestConfig.logsToBlock)
             XCTAssertEqual(events?.count, 0)
         } catch {
             XCTFail("Expected events but failed \(error).")
@@ -91,7 +92,7 @@ class ERC20Tests: XCTestCase {
 
     func testGivenAddressWithOutgoingEvents_ThenGetsTheTransferEvents() async {
         do {
-            let events = try await erc20?.transferEventsFrom(sender: "0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793", fromBlock: .Earliest, toBlock: .Latest)
+            let events = try await erc20?.transferEventsFrom(sender: "0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793", fromBlock: TestConfig.logsFromBlock, toBlock: TestConfig.logsToBlock)
             XCTAssertEqual(events?.first?.log.transactionHash, "0x9bf24689047a2af63aed77da170410df3c14762ebf4bd6d37acfb1cf968b7d32")
             XCTAssertEqual(events?.first?.to, EthereumAddress("0x162142f0508F557C02bEB7C473682D7C91Bcef41"))
             XCTAssertEqual(events?.first?.value, 10000000)
@@ -103,7 +104,7 @@ class ERC20Tests: XCTestCase {
 
     func testGivenAddressWithoutOutgoingEvents_ThenGetsTheTransferEvents() async {
         do {
-            let events = try await erc20?.transferEventsFrom(sender: "0x78eac6878f5ef99bf2b12698f03faf8b33f02676", fromBlock: .Earliest, toBlock: .Latest)
+            let events = try await erc20?.transferEventsFrom(sender: "0x78eac6878f5ef99bf2b12698f03faf8b33f02676", fromBlock: TestConfig.logsFromBlock, toBlock: TestConfig.logsToBlock)
             XCTAssertEqual(events?.count, 0)
         } catch {
             XCTFail("Expected events but failed \(error).")
@@ -112,6 +113,11 @@ class ERC20Tests: XCTestCase {
 }
 
 class ERC20WebSocketTests: ERC20Tests {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)

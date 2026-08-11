@@ -140,11 +140,12 @@ private final class StubNetworkProvider: NetworkProviderProtocol, @unchecked Sen
     }
 }
 
-private func makeClient(_ provider: StubNetworkProvider) -> BaseEthereumClient {
+private func makeClient(_ provider: StubNetworkProvider, maxBlockRange: Int? = nil) -> BaseEthereumClient {
     BaseEthereumClient(
         networkProvider: provider,
         url: URL(string: "https://stub.invalid")!,
-        network: .mainnet
+        network: .mainnet,
+        maxBlockRange: maxBlockRange
     )
 }
 
@@ -189,10 +190,11 @@ final class RecursiveLogCollectorTests: XCTestCase {
         )
     }
 
-    /// T3 — the new mapping: Infura's `-32602` range-cap error must split, not fail.
-    func testRangeLimitErrorSplitsAndAggregates() async throws {
+    /// T3 — with the node's limit declared, the query is fitted to it before being sent.
+    /// No error is provoked, so no error has to be recognised.
+    func testDeclaredMaxBlockRangeChunksProactively() async throws {
         let provider = StubNetworkProvider(overLimitError: .rangeExceeded)
-        let collector = RecursiveLogCollector(ethClient: makeClient(provider))
+        let collector = RecursiveLogCollector(ethClient: makeClient(provider, maxBlockRange: 10000))
 
         let logs = try await collector.getAllLogs(
             addresses: nil,
@@ -201,30 +203,66 @@ final class RecursiveLogCollectorTests: XCTestCase {
             to: EthereumBlock(rawValue: 40000)
         )
 
-        XCTAssertGreaterThan(logs.count, 1, "Expected the query to be split into several sub-ranges")
+        // 0...40000 is 40,001 blocks: four full chunks of 10,000 and a final chunk of one.
+        XCTAssertEqual(provider.requestedRanges.count, 5, "No request should be wasted discovering the limit")
+        XCTAssertEqual(logs.count, 5)
         XCTAssertTrue(
-            provider.requestedRanges.allSatisfy { $0.lowerBound >= 0 },
-            "Sub-ranges should stay within the requested window"
+            provider.requestedRanges.allSatisfy { $0.upperBound - $0.lowerBound + 1 <= 10000 },
+            "Every request should already fit the declared limit"
         )
     }
 
-    /// T4 — `.Earliest` must resolve to a concrete block so the split can start.
-    func testEarliestFromBlockResolvesAndSplits() async throws {
+    /// T4 — chunking covers the window exactly: contiguous, no gaps, no overlap.
+    func testDeclaredMaxBlockRangeCoversWindowWithoutGapsOrOverlap() async throws {
+        let provider = StubNetworkProvider(overLimitError: .rangeExceeded)
+        let collector = RecursiveLogCollector(ethClient: makeClient(provider, maxBlockRange: 10000))
+
+        _ = try await collector.getAllLogs(
+            addresses: nil,
+            topics: nil,
+            from: EthereumBlock(rawValue: 100),
+            to: EthereumBlock(rawValue: 25000)
+        )
+
+        let ranges = provider.requestedRanges.sorted { $0.lowerBound < $1.lowerBound }
+        XCTAssertEqual(ranges.first?.lowerBound, 100)
+        XCTAssertEqual(ranges.last?.upperBound, 25000)
+        for (earlier, later) in zip(ranges, ranges.dropFirst()) {
+            XCTAssertEqual(later.lowerBound, earlier.upperBound + 1, "Chunks must be contiguous")
+        }
+    }
+
+    /// T5 — `.Earliest`/`.Latest` resolve to concrete bounds before chunking.
+    func testDeclaredMaxBlockRangeResolvesSymbolicBounds() async throws {
+        let provider = StubNetworkProvider(overLimitError: .rangeExceeded)
+        let collector = RecursiveLogCollector(ethClient: makeClient(provider, maxBlockRange: 10000))
+
+        let logs = try await collector.getAllLogs(addresses: nil, topics: nil, from: .Earliest, to: .Latest)
+
+        XCTAssertGreaterThan(logs.count, 1, "Expected .Earliest/.Latest to resolve rather than fail")
+        XCTAssertTrue(provider.requestedRanges.allSatisfy { $0.upperBound - $0.lowerBound + 1 <= 10000 })
+    }
+
+    /// T6 — without a declared limit, a range rejection is no longer guessed at from its
+    /// message. It surfaces, carrying the node's own code and text.
+    func testRangeErrorSurfacesWhenNoLimitDeclared() async {
         let provider = StubNetworkProvider(overLimitError: .rangeExceeded)
         let collector = RecursiveLogCollector(ethClient: makeClient(provider))
 
-        let logs = try await collector.getAllLogs(
-            addresses: nil,
-            topics: nil,
-            from: .Earliest,
-            to: .Latest
-        )
-
-        XCTAssertGreaterThan(logs.count, 1, "Expected .Earliest to resolve rather than abort the split")
+        do {
+            let logs = try await collector.getAllLogs(
+                addresses: nil,
+                topics: nil,
+                from: EthereumBlock(rawValue: 0),
+                to: EthereumBlock(rawValue: 40000)
+            )
+            XCTFail("Expected a thrown error, got \(logs.count) logs")
+        } catch {
+            XCTAssertEqual(provider.requestedRanges.count, 1, "Expected no recursion without a declared limit")
+        }
     }
 
-    /// T5 — `-32602` is generic "invalid params". Only the range-cap message may recurse;
-    /// a genuinely malformed request must surface immediately.
+    /// T7 — a genuinely malformed request surfaces immediately.
     func testInvalidParamsErrorThrowsWithoutRecursing() async {
         let provider = StubNetworkProvider(overLimitError: .invalidParams)
         let collector = RecursiveLogCollector(ethClient: makeClient(provider))
@@ -238,14 +276,14 @@ final class RecursiveLogCollectorTests: XCTestCase {
             )
             XCTFail("Expected a thrown error, got \(logs.count) logs")
         } catch {
-            XCTAssertEqual(provider.requestedRanges.count, 1, "Expected no recursion on a non-range error")
+            XCTAssertEqual(provider.requestedRanges.count, 1, "Expected no recursion on a malformed request")
         }
     }
 
-    /// T6 — a failure inside one half of a split must propagate, not be swallowed by `try?`.
+    /// T8 — a failure inside one half of a split must propagate, not be swallowed by `try?`.
     func testFailureWithinSplitPropagates() async {
         // The left half of the split succeeds; anything in the upper quarter fails.
-        let provider = StubNetworkProvider(overLimitError: .rangeExceeded, failFromBlocksAtOrAbove: 30000)
+        let provider = StubNetworkProvider(overLimitError: .tooManyResults, failFromBlocksAtOrAbove: 30000)
         let collector = RecursiveLogCollector(ethClient: makeClient(provider))
 
         do {

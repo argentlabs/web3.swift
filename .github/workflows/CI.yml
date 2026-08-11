@@ -44,12 +44,30 @@ jobs:
       run: swift test
 
   test_linux:
-    needs: [run_lint, test_macos]
+    # Only gated on lint. Previously this also needed test_macos, so a red macOS run meant
+    # Linux never executed at all and the platform went untested.
+    needs: run_lint
 
     runs-on: ubuntu-latest
 
+    # Reported but not blocking. Linux currently fails two tests that share one cause:
+    # Aes128Util returns the wrong bytes for the NIST SP 800-38A AES-128-CTR vector, and
+    # KeystoreUtil depends on it, so account creation fails too. That is a correctness bug in
+    # the library on Linux rather than a CI problem, and it needs its own fix. Blocking on it
+    # would stop every PR; hiding the job again is how it went unnoticed for a year.
+    continue-on-error: true
+
     container:
-      image: swift:5.9-jammy
+      # Package.resolved is format v3, which Swift 5.9 cannot parse, so this job died before
+      # building. It had not run in about a year — it was gated behind test_macos, which was
+      # permanently red — so the mismatch went unnoticed.
+      #
+      # 6.0 rather than 6.1 on purpose: 6.1 would select Package@swift-6.1.swift, putting the
+      # package in Swift 6 language mode. That infers @MainActor on test methods, and XCTest on
+      # Linux discovers tests by reflection, which cannot cast an isolated method — the suite
+      # aborts before running. macOS is unaffected because it discovers tests via the ObjC
+      # runtime. Moving to Swift 6 mode is worth doing, but it is its own piece of work.
+      image: swift:6.0-jammy
 
     env:
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}

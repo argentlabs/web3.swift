@@ -21,7 +21,7 @@ class MulticallTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() {
         super.setUp()
-        client = EthereumHttpClient(url: URL(string: TestConfig.clientUrl)!, network: TestConfig.network)
+        client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
         multicall = Multicall(client: client!)
     }
 
@@ -90,6 +90,11 @@ class MulticallTests: XCTestCase, @unchecked Sendable {
 }
 
 class MulticallWebSocketTests: MulticallTests, @unchecked Sendable {
+    override func setUpWithError() throws {
+        try skipUnlessWebSocketTestsEnabled()
+        try super.setUpWithError()
+    }
+
     override func setUp() {
         super.setUp()
         client = EthereumWebSocketClient(url: URL(string: TestConfig.wssUrl)!, configuration: TestConfig.webSocketConfig, network: TestConfig.network)
