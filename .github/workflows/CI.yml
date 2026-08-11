@@ -50,13 +50,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Reported but not blocking. Linux currently fails two tests that share one cause:
-    # Aes128Util returns the wrong bytes for the NIST SP 800-38A AES-128-CTR vector, and
-    # KeystoreUtil depends on it, so account creation fails too. That is a correctness bug in
-    # the library on Linux rather than a CI problem, and it needs its own fix. Blocking on it
-    # would stop every PR; hiding the job again is how it went unnoticed for a year.
-    continue-on-error: true
-
     container:
       # Package.resolved is format v3, which Swift 5.9 cannot parse, so this job died before
       # building. It had not run in about a year — it was gated behind test_macos, which was
