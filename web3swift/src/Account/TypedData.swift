@@ -68,11 +68,15 @@ extension TypedData {
 
     /// Type encoding as per EIP712
     public func encodeType(primaryType: String) -> Data {
+        let parsedPrimaryType = getParsedType(primaryType: primaryType)
         var depSet = findDependencies(primaryType: primaryType)
-        depSet.remove(primaryType)
-        let sorted = [primaryType] + Array(depSet).sorted()
-        let encoded = sorted.map { type in
-            let param = types[type]!.map { "\($0.type) \($0.name)" }.joined(separator: ",")
+        depSet.remove(parsedPrimaryType)
+        let sorted = [parsedPrimaryType] + Array(depSet).sorted()
+        let encoded = sorted.compactMap { type -> String? in
+            guard let params = types[type] else {
+                return nil
+            }
+            let param = params.map { "\($0.type) \($0.name)" }.joined(separator: ",")
             return "\(type)(\(param))"
         }.joined()
 
@@ -109,7 +113,7 @@ extension TypedData {
                         throw ABIError.invalidValue
                     }
 
-                    let encoded = try json.arrayValue!.flatMap { try encodeData(data: $0, type: parsedType) }
+                    let encoded = try json.arrayValue!.flatMap { try encodeData(data: $0, type: parsedType).web3.keccak256.web3.bytes }
                     return Data(encoded).web3.keccak256.web3.bytes
                 }
 
