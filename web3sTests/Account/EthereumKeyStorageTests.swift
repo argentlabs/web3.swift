@@ -41,32 +41,34 @@ class EthereumKeyStorageTests: XCTestCase {
         }
     }
     
+    // These two go through KeyUtil.generatePublicKey, so the key has to be a real 32 byte
+    // secp256k1 scalar. They used to pass 256 random bytes and rely on the first 32 being
+    // taken silently.
     func testEncryptAndStorePrivateKey() {
-        let randomData = Data.randomOfLength(256)!
+        let privateKey = "2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173".web3.hexData!
         let keyStorage = EthereumKeyLocalStorage() as EthereumSingleKeyStorageProtocol
         let password = "myP4ssw0rD"
 
         do {
-            try keyStorage.encryptAndStorePrivateKey(key: randomData, keystorePassword: password)
+            try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
             let decrypted = try keyStorage.loadAndDecryptPrivateKey(keystorePassword: password)
-            XCTAssertEqual(decrypted, randomData)
+            XCTAssertEqual(decrypted, privateKey)
         } catch let error {
             XCTFail("Failed to encrypt and store private key with error: \(error)")
         }
     }
 
     func testEncryptAndStorePrivateKeyMultiple() {
-        let randomData = Data.randomOfLength(256)!
+        let privateKey = "2639f727ded571d584643895d43d02a7a190f8249748a2c32200cfc12dde7173".web3.hexData!
         let keyStorage = EthereumKeyLocalStorage() as EthereumMultipleKeyStorageProtocol
         let password = "myP4ssw0rD"
 
         do {
-            _ = KeyUtil.generateAddress(from: randomData)
-            try keyStorage.encryptAndStorePrivateKey(key: randomData, keystorePassword: password)
-            let publicKey = try KeyUtil.generatePublicKey(from: randomData)
+            try keyStorage.encryptAndStorePrivateKey(key: privateKey, keystorePassword: password)
+            let publicKey = try KeyUtil.generatePublicKey(from: privateKey)
             let address = KeyUtil.generateAddress(from: publicKey)
             let decrypted = try keyStorage.loadAndDecryptPrivateKey(for: address, keystorePassword: password)
-            XCTAssertEqual(decrypted, randomData)
+            XCTAssertEqual(decrypted, privateKey)
         } catch let error {
             XCTFail("Failed to encrypt and store private key with error: \(error)")
         }

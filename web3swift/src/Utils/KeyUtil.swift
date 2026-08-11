@@ -26,6 +26,13 @@ public class KeyUtil {
     }
 
     public static func generatePublicKey(from privateKey: Data) throws -> Data {
+        // secp256k1 reads a fixed 32 bytes through the pointer, so a shorter key would read
+        // past the end of the buffer rather than be rejected.
+        guard privateKey.count == 32 else {
+            logger.warning("Failed to generate a public key: private key is not 32 bytes.")
+            throw KeyUtilError.privateKeyInvalid
+        }
+
         guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
             logger.warning("Failed to generate a public key: invalid context.")
             throw KeyUtilError.invalidContext
@@ -72,6 +79,18 @@ public class KeyUtil {
     }
 
     public static func sign(message: Data, with privateKey: Data, hashing: Bool) throws -> Data {
+        guard privateKey.count == 32 else {
+            logger.warning("Failed to sign message: private key is not 32 bytes.")
+            throw KeyUtilError.privateKeyInvalid
+        }
+
+        // Same fixed-width read as above, this time over the digest. recoverPublicKey already
+        // rejects anything other than 32 bytes; signing never did.
+        guard hashing || message.count == 32 else {
+            logger.warning("Failed to sign message: an unhashed message must be a 32 byte digest.")
+            throw KeyUtilError.badArguments
+        }
+
         guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
             logger.warning("Failed to sign message: invalid context.")
             throw KeyUtilError.invalidContext
