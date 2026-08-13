@@ -26,6 +26,13 @@ public class KeyUtil {
     }
 
     public static func generatePublicKey(from privateKey: Data) throws -> Data {
+        // secp256k1 reads a fixed 32 bytes through the pointer, so a shorter key would read
+        // past the end of the buffer rather than be rejected.
+        guard privateKey.count == 32 else {
+            logger.warning("Failed to generate a public key: private key is not 32 bytes.")
+            throw KeyUtilError.privateKeyInvalid
+        }
+
         guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
             logger.warning("Failed to generate a public key: invalid context.")
             throw KeyUtilError.invalidContext
@@ -35,19 +42,22 @@ public class KeyUtil {
             secp256k1_context_destroy(ctx)
         }
 
-        let privateKeyPtr = (privateKey as NSData).bytes.assumingMemoryBound(to: UInt8.self)
-        guard secp256k1_ec_seckey_verify(ctx, privateKeyPtr) == 1 else {
-            logger.warning("Failed to generate a public key: private key is not valid.")
-            throw KeyUtilError.privateKeyInvalid
-        }
-
         let publicKeyPtr = UnsafeMutablePointer<secp256k1_pubkey>.allocate(capacity: 1)
         defer {
             publicKeyPtr.deallocate()
         }
-        guard secp256k1_ec_pubkey_create(ctx, publicKeyPtr, privateKeyPtr) == 1 else {
-            logger.warning("Failed to generate a public key: public key could not be created.")
-            throw KeyUtilError.unknownError
+
+        try privateKey.withUnsafeBytes { privateKeyBuffer in
+            guard let privateKeyPtr = privateKeyBuffer.bindMemory(to: UInt8.self).baseAddress,
+                  secp256k1_ec_seckey_verify(ctx, privateKeyPtr) == 1 else {
+                logger.warning("Failed to generate a public key: private key is not valid.")
+                throw KeyUtilError.privateKeyInvalid
+            }
+
+            guard secp256k1_ec_pubkey_create(ctx, publicKeyPtr, privateKeyPtr) == 1 else {
+                logger.warning("Failed to generate a public key: public key could not be created.")
+                throw KeyUtilError.unknownError
+            }
         }
 
         var publicKeyLength = 65
@@ -69,6 +79,18 @@ public class KeyUtil {
     }
 
     public static func sign(message: Data, with privateKey: Data, hashing: Bool) throws -> Data {
+        guard privateKey.count == 32 else {
+            logger.warning("Failed to sign message: private key is not 32 bytes.")
+            throw KeyUtilError.privateKeyInvalid
+        }
+
+        // Same fixed-width read as above, this time over the digest. recoverPublicKey already
+        // rejects anything other than 32 bytes; signing never did.
+        guard hashing || message.count == 32 else {
+            logger.warning("Failed to sign message: an unhashed message must be a 32 byte digest.")
+            throw KeyUtilError.badArguments
+        }
+
         guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY)) else {
             logger.warning("Failed to sign message: invalid context.")
             throw KeyUtilError.invalidContext
@@ -79,15 +101,20 @@ public class KeyUtil {
         }
 
         let msgData = hashing ? message.web3.keccak256 : message
-        let msg = (msgData as NSData).bytes.assumingMemoryBound(to: UInt8.self)
-        let privateKeyPtr = (privateKey as NSData).bytes.assumingMemoryBound(to: UInt8.self)
         let signaturePtr = UnsafeMutablePointer<secp256k1_ecdsa_recoverable_signature>.allocate(capacity: 1)
         defer {
             signaturePtr.deallocate()
         }
-        guard secp256k1_ecdsa_sign_recoverable(ctx, signaturePtr, msg, privateKeyPtr, nil, nil) == 1 else {
-            logger.warning("Failed to sign message: recoverable ECDSA signature creation failed.")
-            throw KeyUtilError.signatureFailure
+
+        try msgData.withUnsafeBytes { msgBuffer in
+            try privateKey.withUnsafeBytes { privateKeyBuffer in
+                guard let msg = msgBuffer.bindMemory(to: UInt8.self).baseAddress,
+                      let privateKeyPtr = privateKeyBuffer.bindMemory(to: UInt8.self).baseAddress,
+                      secp256k1_ecdsa_sign_recoverable(ctx, signaturePtr, msg, privateKeyPtr, nil, nil) == 1 else {
+                    logger.warning("Failed to sign message: recoverable ECDSA signature creation failed.")
+                    throw KeyUtilError.signatureFailure
+                }
+            }
         }
 
         let outputPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: 64)
