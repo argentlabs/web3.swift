@@ -66,4 +66,11 @@ fastlane/screenshots
 fastlane/test_output
 
 scripts/bin/*
+
+# No longer generated — the funded key comes from TESTS_PRIVATEKEY now. Kept ignored so a stale
+# copy in an existing clone does not get committed by accident.
 TestConfig_private.swift
+
+# Where TESTS_PRIVATEKEY tends to end up locally, via direnv or a sourced file.
+.envrc
+.env

@@ -31,17 +31,19 @@ struct TransferMatchingSignatureEvent: ABIEvent {
 
 class EthereumClientTests: XCTestCase {
     var client: EthereumClientProtocol?
-    var account: EthereumAccount?
-    
+
+    // The funded account's address. These read-only calls assert against its on-chain history,
+    // which is public, so they need the address but not the key.
+    let fundedAddress = EthereumAddress(TestConfig.publicKey)
+
     override func setUp() {
         super.setUp()
         client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
-        account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
     }
 
     func testEthGetTransactionCount() async {
         do {
-            let count = try await client?.eth_getTransactionCount(address: account!.address, block: .Latest)
+            let count = try await client?.eth_getTransactionCount(address: fundedAddress, block: .Latest)
             XCTAssertNotEqual(count, 0)
         } catch {
             XCTFail("Expected count but failed \(error).")
@@ -50,7 +52,7 @@ class EthereumClientTests: XCTestCase {
 
     func testEthGetTransactionCountPending() async {
         do {
-            let count = try await client?.eth_getTransactionCount(address: account!.address, block: .Pending)
+            let count = try await client?.eth_getTransactionCount(address: fundedAddress, block: .Pending)
             XCTAssertNotEqual(count, 0)
         } catch {
             XCTFail("Expected count but failed \(error).")
@@ -59,7 +61,7 @@ class EthereumClientTests: XCTestCase {
 
     func testEthGetBalance() async throws {
         do {
-            let balance = try await client?.eth_getBalance(address: account?.address ?? .zero, block: .Latest)
+            let balance = try await client?.eth_getBalance(address: fundedAddress, block: .Latest)
             XCTAssertNotNil(balance, "Balance not available")
         } catch {
             XCTFail("Expected balance but failed \(error).")
@@ -117,13 +119,16 @@ class EthereumClientTests: XCTestCase {
         }
     }
 
-    func testEthSendRawTransaction() async {
+    // The only test in the suite that spends Ether, so the only one that needs the funded key.
+    func testEthSendRawTransaction() async throws {
+        let account = try EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: try requireFundedPrivateKey()))
+
         do {
             let gasPrice = try await client?.eth_gasPrice()
             let tx = EthereumTransaction(from: nil, to: "0x3c1bd6b420448cf16a389c8b0115ccb3660bb854", value: BigUInt(1), data: nil, nonce: 2, gasPrice: gasPrice ?? BigUInt(9000000), gasLimit: BigUInt(30000), chainId: EthereumNetwork.sepolia.intValue)
 
-            let txHash = try await client?.eth_sendRawTransaction(tx, withAccount: account!)
-            XCTAssertNotNil(txHash, "No tx hash, ensure key is valid in TestConfig.swift")
+            let txHash = try await client?.eth_sendRawTransaction(tx, withAccount: account)
+            XCTAssertNotNil(txHash, "No tx hash returned for the funded account")
         } catch {
             XCTFail("Expected tx but failed \(error).")
         }
