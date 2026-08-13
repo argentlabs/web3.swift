@@ -140,13 +140,11 @@ extension EthereumClientError {
 
 class OffchainLookupTests: XCTestCase {
     var client: EthereumClientProtocol!
-    var account: EthereumAccount!
     var offchainLookup = OffchainLookup(address: .zero, urls: [], callData: Data(), callbackFunction: Data(), extraData: Data())
-    
+
     override func setUp() {
         super.setUp()
         client = TestConfig.makeClient(url: TestConfig.clientUrl, network: TestConfig.network)
-        account = try? EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
     }
 
     func test_GivenFunctionWithOffchainLookupError_ThenDecodesLookupParamsCorrectly() async throws {

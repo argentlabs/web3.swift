@@ -21,7 +21,8 @@ final class ZKSyncTransactionTests: XCTestCase {
     let from = EthereumAddress(TestConfig.publicKey)
     let to = EthereumAddress("0x64d0eA4FC60f27E74f1a70Aa6f39D403bBe56793")
 
-    let eoaAccount = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.privateKey))
+    // Signing needs a key but not a funded one, so this uses the committed throwaway account.
+    let eoaAccount = try! EthereumAccount(keyStorage: TestEthereumKeyStorage(privateKey: TestConfig.signingPrivateKey))
     
     let eoaTransfer = ZKSyncTransaction(
         from: .init(TestConfig.publicKey),
@@ -41,11 +42,24 @@ final class ZKSyncTransactionTests: XCTestCase {
         XCTAssertEqual(signed.raw?.web3.hexString, "0x71f891048405f5e1008405f5e10083080a229464d0ea4fc60f27e74f1a70aa6f39d403bbe56793865af3107a400080820118808082011894e78e5ecb061fe3dd1672ddda7b5116213b23b99a82c350c0b84155943b2228183717fd3be583bde0f6ec168247ea8d304eb13b3e7e76ebf6bf2c3c77734e163711c5963ac25a15f95d9ac63b82c2c427fd4eb011c5e3a22f89221bc0")
     }
     
-    func test_GivenETHTransfer_WhenSigningWithEOAAccount_ThenSignsAndEncodesCorrectly()  {
-        let signed = try? eoaAccount.sign(zkTransaction: eoaTransfer)
-        
-        XCTAssertEqual(signed?.raw?.web3.hexString,
-                       "0x71f891048405f5e1008405f5e10083080a229464d0ea4fc60f27e74f1a70aa6f39d403bbe56793865af3107a400080820118808082011894e78e5ecb061fe3dd1672ddda7b5116213b23b99a82c350c0b841c956ba7bfdf54a6d3f3b21c51465ad37df22b6258835b6e162259d6d3eec02ae11f9d17c3aafd47df49bd77e33befed87bbaff44e4c497228bfa8bcc9fa64bc31bc0")
+    // Signed by the committed throwaway account rather than the funded one, so the expected value
+    // differs from the pre-recorded `signature` used by the encode-only tests above. ECDSA here is
+    // deterministic (RFC 6979), so this stays stable.
+    func test_GivenETHTransfer_WhenSigningWithEOAAccount_ThenSignsAndEncodesCorrectly() throws {
+        let transfer = with(eoaTransfer) { $0.from = .init(TestConfig.signingPublicKey) }
+
+        let signed = try XCTUnwrap(try? eoaAccount.sign(zkTransaction: transfer))
+
+        // Check the signature is the right one rather than only that it has not changed: recover
+        // the signer from the EIP-712 digest and confirm it is the account that signed.
+        let signer = try KeyUtil.recoverPublicKey(
+            message: try transfer.eip712Representation.signableHash(),
+            signature: signed.signature.raw
+        )
+        XCTAssertEqual(signer, TestConfig.signingPublicKey.lowercased())
+
+        XCTAssertEqual(signed.raw?.web3.hexString,
+                       "0x71f891048405f5e1008405f5e10083080a229464d0ea4fc60f27e74f1a70aa6f39d403bbe56793865af3107a400080820118808082011894f39fd6e51aad88f6f4ce6ab8827279cfffb9226682c350c0b841f507c970595e5f6a3ea175b52a152b99f7234659f4331c1bcdd0a69ce76d54b2088b306121ee4b0630f8e94e3610de6bda693cc3a2127b2fdee5875640b644f01cc0")
     }
 
     func test_GivenERC20Transfer_EncodesCorrectly() {

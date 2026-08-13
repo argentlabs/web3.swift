@@ -4,7 +4,26 @@
 //
 
 import Foundation
+import XCTest
 import web3
+
+/// The funded account's key, or a skip.
+///
+/// Call this from any test that has to spend Ether. Outside contributors and fresh clones do not
+/// have the key, and a skip tells them that plainly instead of failing on something they cannot
+/// fix.
+func requireFundedPrivateKey() throws -> String {
+    guard let key = TestConfig.fundedPrivateKey else {
+        throw XCTSkip(
+            """
+            Skipping: this test spends Ether and needs the funded account. Export TESTS_PRIVATEKEY \
+            to run it. Pull requests from forks never receive repository secrets, so it is expected \
+            to skip there.
+            """
+        )
+    }
+    return key
+}
 
 struct TestConfig: Sendable {
     // RPC endpoints.
@@ -28,11 +47,36 @@ struct TestConfig: Sendable {
     static let wssUrl = "wss://sepolia.gateway.tenderly.co"
     static let wssMainnetUrl = "wss://mainnet.gateway.tenderly.co"
 
-    // An EOA with some Ether, so that we can test sending transactions (pay for gas). Set by CI
-//    static let privateKey = "SET_YOUR_KEY_HERE"
+    // A throwaway key, committed on purpose. It holds nothing on any network and never will.
+    //
+    // Most of what used to need "the" key only needs *a* key: deriving an address, producing a
+    // deterministic signature, unlocking a fake key store. Those use this one, so the suite runs
+    // on a fresh clone with no setup, and on pull requests from forks, which GitHub never gives
+    // secrets to.
+    //
+    // This is the well-known Anvil/Hardhat account #0. It is public by design — never put
+    // anything in it.
+    static let signingPrivateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 
-    // This is the expected public key (address) from the above private key
-//    static let publicKey = "SET_YOUR_PUBLIC_ADDRESS_HERE"
+    // The address `signingPrivateKey` derives to.
+    static let signingPublicKey = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+
+    // The address of the funded account. An address is not a secret, and the log and nonce tests
+    // need this specific one because the fixtures they assert against are its on-chain history.
+    static let publicKey = "0xE78e5ecb061fE3DD1672dDDA7b5116213B23B99A"
+
+    // The key for the account above, which holds real Sepolia Ether. Supplied through the
+    // environment so it never has to be written to a file: CI passes the repository secret,
+    // and locally you can `export TESTS_PRIVATEKEY=0x...` if you have it.
+    //
+    // Nil whenever it is absent, which is the normal case for outside contributors. The handful
+    // of tests that have to pay gas skip themselves rather than failing.
+    static let fundedPrivateKey: String? = {
+        guard let key = ProcessInfo.processInfo.environment["TESTS_PRIVATEKEY"], !key.isEmpty else {
+            return nil
+        }
+        return key
+    }()
 
     // Block window used by the log and event tests.
     //

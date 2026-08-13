@@ -3,6 +3,10 @@ name: CI
 on:
   pull_request:
     branches: [ develop ]
+  # Pull requests from forks run without secrets, so the tests that spend Ether skip there. Running
+  # again on the merge commit is what actually exercises them.
+  push:
+    branches: [ develop ]
   workflow_dispatch:
 
 permissions:
@@ -29,13 +33,12 @@ jobs:
     runs-on: macos-latest
 
     env:
+      # Empty for pull requests from forks, which GitHub never gives secrets to. The tests that
+      # spend Ether skip themselves when it is absent; everything else runs.
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
 
     steps:
     - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
-    - name: SetupKey
-      run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
 
     - name: Build
       run: swift build
@@ -63,13 +66,12 @@ jobs:
       image: swift:6.0-jammy
 
     env:
+      # Empty for pull requests from forks, which GitHub never gives secrets to. The tests that
+      # spend Ether skip themselves when it is absent; everything else runs.
       TESTS_PRIVATEKEY: ${{ secrets.TESTS_PRIVATEKEY }}
 
     steps:
     - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
-    - name: SetupKey
-      run: ./scripts/setupKey.sh "${{ secrets.TESTS_PRIVATEKEY }}"
 
     - name: Build
       run: swift build

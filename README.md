@@ -172,9 +172,19 @@ Take a look at [ZKSyncTransaction](https://github.com/argentlabs/web3.swift/blob
 
 ### Running Tests
 
-Some of the tests require a private key, which is not stored in the repository. You can ignore these while testing locally, as CI will use the encrypted secret key from Github.
+`swift test` works on a fresh clone with no setup. The tests hit public RPC endpoints and sign with a
+throwaway key that is committed in `TestConfig.swift`, so nothing has to be configured.
 
-It's better to run only the tests you need, instead of the whole test suite while developing. If you ever need to set up the key locally, take a look at `TestConfig.swift` where you can manually set it up. Alternatively you can set it up by calling the script `setupKey.sh` and passing the value (adding 0x) so it's written to an ignored file.
+One test spends Ether and needs the funded account, whose key is a repository secret. It skips
+unless the key is present, which is the normal case locally and on pull requests from forks — GitHub
+never gives secrets to forks. If you do have the key:
+
+```sh
+export TESTS_PRIVATEKEY=0x...
+swift test
+```
+
+While developing it is usually quicker to run only the tests you need, with `swift test --filter`.
 
 ## Dependencies
 
