@@ -42,16 +42,11 @@ final class ZKSyncTransactionTests: XCTestCase {
         XCTAssertEqual(signed.raw?.web3.hexString, "0x71f891048405f5e1008405f5e10083080a229464d0ea4fc60f27e74f1a70aa6f39d403bbe56793865af3107a400080820118808082011894e78e5ecb061fe3dd1672ddda7b5116213b23b99a82c350c0b84155943b2228183717fd3be583bde0f6ec168247ea8d304eb13b3e7e76ebf6bf2c3c77734e163711c5963ac25a15f95d9ac63b82c2c427fd4eb011c5e3a22f89221bc0")
     }
     
-    // Signed by the committed throwaway account rather than the funded one, so the expected value
-    // differs from the pre-recorded `signature` used by the encode-only tests above. ECDSA here is
-    // deterministic (RFC 6979), so this stays stable.
     func test_GivenETHTransfer_WhenSigningWithEOAAccount_ThenSignsAndEncodesCorrectly() throws {
         let transfer = with(eoaTransfer) { $0.from = .init(TestConfig.signingPublicKey) }
 
         let signed = try XCTUnwrap(try? eoaAccount.sign(zkTransaction: transfer))
 
-        // Check the signature is the right one rather than only that it has not changed: recover
-        // the signer from the EIP-712 digest and confirm it is the account that signed.
         let signer = try KeyUtil.recoverPublicKey(
             message: try transfer.eip712Representation.signableHash(),
             signature: signed.signature.raw
