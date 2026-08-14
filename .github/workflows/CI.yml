@@ -54,16 +54,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      # Package.resolved is format v3, which Swift 5.9 cannot parse, so this job died before
-      # building. It had not run in about a year — it was gated behind test_macos, which was
-      # permanently red — so the mismatch went unnoticed.
-      #
-      # 6.0 rather than 6.1 on purpose: 6.1 would select Package@swift-6.1.swift, putting the
-      # package in Swift 6 language mode. That infers @MainActor on test methods, and XCTest on
-      # Linux discovers tests by reflection, which cannot cast an isolated method — the suite
-      # aborts before running. macOS is unaffected because it discovers tests via the ObjC
-      # runtime. Moving to Swift 6 mode is worth doing, but it is its own piece of work.
-      image: swift:6.0-jammy
+      image: swift:6.3-jammy
 
     env:
       # Empty for pull requests from forks, which GitHub never gives secrets to. The tests that
