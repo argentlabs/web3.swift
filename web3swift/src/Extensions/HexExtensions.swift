@@ -8,7 +8,7 @@ import Foundation
 
 public extension BigUInt {
     init?(hex: String) {
-        self.init(hex.web3.noHexPrefix.lowercased(), radix: 16)
+        self.init(hex.web3.digitsOrZero, radix: 16)
     }
 }
 
@@ -24,7 +24,19 @@ public extension Web3Extensions where Base == BigUInt {
 
 public extension BigInt {
     init?(hex: String) {
-        self.init(hex.web3.noHexPrefix.lowercased(), radix: 16)
+        self.init(hex.web3.digitsOrZero, radix: 16)
+    }
+}
+
+extension Web3Extensions where Base == String {
+    /// The hex digits, with an empty string standing in for zero.
+    ///
+    /// `"0x"` means zero on the wire and these initialisers have always read it that way. BigInt
+    /// 5.7 stopped parsing the empty string, so spell the substitution out. `Int(hex:)`
+    /// deliberately does not use this — it still returns nil for an empty string.
+    var digitsOrZero: String {
+        let digits = base.web3.noHexPrefix.lowercased()
+        return digits.isEmpty ? "0" : digits
     }
 }
 
