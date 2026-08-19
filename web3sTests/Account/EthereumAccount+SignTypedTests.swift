@@ -256,4 +256,82 @@ class EthereumAccount_SignTypedTests: XCTestCase {
         let signed = try? account.signMessage(message: typedData)
         XCTAssertEqual(signed, "0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c")
     }
+
+    // Regression test: encodeType(primaryType:) used to force-unwrap `types[type]!` using the raw,
+    // still-bracketed primaryType instead of stripping array brackets first (unlike the rest of the
+    // file, which already stripped them via getParsedType). Any custom-type array field with more
+    // than one bracket pair (e.g. "Item[2][2]") fell through encodeData's non-array fallback and
+    // reached encodeType with brackets still attached, crashing the process.
+    func test_GivenPrimaryTypeWithArrayBrackets_EncodeTypeStripsThemAndMatchesBareType() {
+        let json = """
+            {
+              "types": {
+                "EIP712Domain": [ { "name": "name", "type": "string" } ],
+                "Item": [ { "name": "value", "type": "uint256" } ]
+              },
+              "primaryType": "Item",
+              "domain": { "name": "Test" },
+              "message": { "value": "1" }
+            }
+            """.data(using: .utf8)!
+        let typedData = try! decoder.decode(TypedData.self, from: json)
+
+        XCTAssertEqual(
+            typedData.encodeType(primaryType: "Item[2][2][2]"),
+            typedData.encodeType(primaryType: "Item")
+        )
+    }
+
+    // A custom-type array field with more than one bracket pair still isn't encoded correctly end
+    // to end (encodeData's array fast paths only handle a single bracket pair), but after the fix
+    // above it must fail safely by throwing rather than crashing.
+    func test_GivenMultiDimensionalCustomTypeArray_ItThrowsInsteadOfCrashing() {
+        let json = """
+            {
+              "types": {
+                "EIP712Domain": [ { "name": "name", "type": "string" } ],
+                "Item": [ { "name": "value", "type": "uint256" } ],
+                "Container": [ { "name": "items", "type": "Item[2][2]" } ]
+              },
+              "primaryType": "Container",
+              "domain": { "name": "Test" },
+              "message": {
+                "items": [[{ "value": "1" }, { "value": "2" }], [{ "value": "3" }, { "value": "4" }]]
+              }
+            }
+            """.data(using: .utf8)!
+        let typedData = try! decoder.decode(TypedData.self, from: json)
+
+        XCTAssertThrowsError(try typedData.signableHash())
+    }
+
+    // Cross-verified against @metamask/eth-sig-util's TypedDataUtils.encodeData, which hashes each
+    // element of a struct-typed array individually before hashing the concatenation, identically for
+    // both dynamic (Type[]) and fixed-size (Type[N]) arrays. The fixed-size branch here used to skip
+    // the per-element hash, producing a different (incorrect) result than the dynamic branch would
+    // for the same logical array.
+    func test_GivenFixedSizeArrayOfCustomType_ItEncodesCorrectly() {
+        let json = """
+            {
+              "types": {
+                "EIP712Domain": [ { "name": "name", "type": "string" } ],
+                "Item": [ { "name": "value", "type": "uint256" } ],
+                "Container": [ { "name": "items", "type": "Item[2]" } ]
+              },
+              "primaryType": "Container",
+              "domain": { "name": "Test" },
+              "message": {
+                "items": [{ "value": "1" }, { "value": "2" }]
+              }
+            }
+            """.data(using: .utf8)!
+        let typedData = try! decoder.decode(TypedData.self, from: json)
+
+        // Expected value computed via @metamask/eth-sig-util's TypedDataUtils.encodeData for the
+        // identical types/message shape.
+        XCTAssertEqual(
+            try! typedData.encodeData(data: typedData.message, type: typedData.primaryType).web3.hexString,
+            "0x66d487afcb5ae933a736f0c863dcad471af77f7c568c8953f5db315c636c8836a362f4d704cfd7a900838c9292111c38c69ffbf07bcb368701c31b8f8d51625a"
+        )
+    }
 }
