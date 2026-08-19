@@ -74,6 +74,25 @@ class EthereumKeyStorageTests: XCTestCase {
         }
     }
     
+    // A key file written by NSKeyedArchiver.archiveRootObject(_:toFile:) — the call this library
+    // used before moving to archivedData(withRootObject:requiringSecureCoding:). Anyone upgrading
+    // has one of these on disk, so it has to keep loading.
+    func testLoadsAPrivateKeyArchivedByAnEarlierVersion() throws {
+        let legacyArchive = Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGiCwxVJG51bGxPECArfhUWKK7Spqv3FYgJz0883q2+7wARIjNEVWZ3iJmquwgRGiQpMjdJTFFTVlwAAAAAAAABAQAAAAAAAAANAAAAAAAAAAAAAAAAAAAAfw==")!
+        let expected = Data([
+            0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c,
+            0xde, 0xad, 0xbe, 0xef, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb
+        ])
+
+        let url = try XCTUnwrap(FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first)
+            .appendingPathComponent("ethereumkey")
+        try legacyArchive.write(to: url)
+
+        let keyStorage = EthereumKeyLocalStorage() as EthereumSingleKeyStorageProtocol
+
+        XCTAssertEqual(try keyStorage.loadPrivateKey(), expected)
+    }
+
     func testDeleteAllPrivateKeys() {
         let keyStorage = EthereumKeyLocalStorage()
         do {
