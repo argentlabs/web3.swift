@@ -10,19 +10,12 @@ Use Xcode to add to the project (**File -> Swift Packages**) or add this to your
 ```swift
 .package(url: "https://github.com/argentlabs/web3.swift", from: "1.1.0")
 ```
-### CocoaPods (not recommended)
+### CocoaPods
 
-Add web3.swift to your `Podfile`:
-
-```ruby
-pod 'web3.swift'
-```
-
-Then run the following command:
-
-```bash
-$ pod install
-```
+No longer supported. The last published pod is 1.6.0 from March 2023, and it stays installable, but
+it will not be updated — CocoaPods trunk stops accepting new podspecs in December 2026, and several
+of the pod's dependencies were frozen years earlier at versions well behind what this package uses.
+Please migrate to Swift Package Manager.
 
 ## Usage
 
@@ -192,7 +185,6 @@ We built web3.swift to be as lightweight as possible. However, given the cryptog
 
 - [keccac-tiny](https://github.com/coruus/keccak-tiny): An implementation of the FIPS-202-defined SHA-3 and SHAKE functions in 120 cloc (156 lines).
 - [Tiny AES](https://github.com/kokke/tiny-AES-c):  A small and portable implementation of the AES ECB, CTR and CBC encryption algorithms.
-- [secp256k1.swift](https://github.com/Boilertalk/secp256k1.swift)
 
 Package dependencies:
 - [BigInt](https://github.com/attaswift/BigInt) 

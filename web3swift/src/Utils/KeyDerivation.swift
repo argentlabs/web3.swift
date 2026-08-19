@@ -7,9 +7,7 @@ import Foundation
 #if canImport(CommonCrypto)
     import CommonCrypto
 #endif
-#if !COCOAPODS
-    import Internal_CryptoSwift_PBDKF2
-#endif
+import Internal_CryptoSwift_PBDKF2
 
 enum KeyDerivationAlgorithm {
     case pbkdf2sha256
