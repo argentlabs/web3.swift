@@ -46,6 +46,16 @@ class HexExtensionsTests: XCTestCase {
         XCTAssertEqual(BigInt(hex: "0x2A521C551E7F200D")!, 3049531049592692749)
     }
 
+    // Nodes return a bare "0x" for zero, so it has to parse. BigInt 5.7 stopped accepting the
+    // empty string, which is what this and the two cases above guard against.
+    func testBigIntegersFromABareHexPrefix() {
+        XCTAssertEqual(BigUInt(hex: "0x")!, 0)
+        XCTAssertEqual(BigInt(hex: "0x")!, 0)
+
+        // Int deliberately does not follow: it has always returned nil for an empty string.
+        XCTAssertNil(Int(hex: "0x"))
+    }
+
     func testBigIntToHexStringNoLeadingZeros() {
         XCTAssertEqual(BigUInt(5000000000).web3.hexStringNoLeadingZeroes, "0x12a05f200")
     }
